@@ -1,15 +1,30 @@
-import { Moon, Sun } from "lucide-react";
+import { Moon, Sun, Contrast, Palette } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useEffect } from "react";
 
 export function ThemeToggle() {
   const { setTheme, theme } = useTheme();
+
+  // Apply data-theme attribute for custom themes
+  useEffect(() => {
+    const root = document.documentElement;
+    if (theme?.startsWith('high-contrast') || theme?.startsWith('colorblind')) {
+      root.setAttribute('data-theme', theme);
+      // Remove dark class for custom themes
+      root.classList.remove('dark');
+    } else {
+      root.removeAttribute('data-theme');
+    }
+  }, [theme]);
 
   return (
     <DropdownMenu>
@@ -20,7 +35,8 @@ export function ThemeToggle() {
           <span className="sr-only">Toggle theme</span>
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuLabel>Standard Themes</DropdownMenuLabel>
         <DropdownMenuItem onClick={() => setTheme("light")}>
           <Sun className="mr-2 h-4 w-4" />
           <span>Light</span>
@@ -29,9 +45,27 @@ export function ThemeToggle() {
           <Moon className="mr-2 h-4 w-4" />
           <span>Dark</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setTheme("system")}>
-          <span className="mr-2 h-4 w-4">💻</span>
-          <span>System</span>
+        
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>High Contrast</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => setTheme("high-contrast-light")}>
+          <Contrast className="mr-2 h-4 w-4" />
+          <span>High Contrast Light</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("high-contrast-dark")}>
+          <Contrast className="mr-2 h-4 w-4" />
+          <span>High Contrast Dark</span>
+        </DropdownMenuItem>
+        
+        <DropdownMenuSeparator />
+        <DropdownMenuLabel>Colorblind-Friendly</DropdownMenuLabel>
+        <DropdownMenuItem onClick={() => setTheme("colorblind-light")}>
+          <Palette className="mr-2 h-4 w-4" />
+          <span>Colorblind Light</span>
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={() => setTheme("colorblind-dark")}>
+          <Palette className="mr-2 h-4 w-4" />
+          <span>Colorblind Dark</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
