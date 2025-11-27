@@ -47,6 +47,16 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+        "first-line": {
+          DEFAULT: "hsl(var(--first-line))",
+          light: "hsl(var(--first-line-light))",
+          foreground: "hsl(var(--first-line-foreground))",
+        },
+        "second-line": {
+          DEFAULT: "hsl(var(--second-line))",
+          light: "hsl(var(--second-line-light))",
+          foreground: "hsl(var(--second-line-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
