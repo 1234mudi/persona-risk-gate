@@ -168,7 +168,7 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-3">
               {personas.map((persona, index) => (
                 <PersonaCard
                   key={index}
