@@ -74,7 +74,7 @@ All colors MUST be HSL.
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
-  .dark {
+  [data-theme="dark"] {
     --background: 215 30% 8%;
     --foreground: 210 20% 95%;
 
