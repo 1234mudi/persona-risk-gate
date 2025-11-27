@@ -441,16 +441,13 @@ const Dashboard2ndLine = () => {
                       <TableHead className="min-w-[100px]">Risk ID</TableHead>
                       <TableHead className="min-w-[200px]">Risk Title</TableHead>
                       <TableHead className="min-w-[100px]">Risk Level</TableHead>
-                      <TableHead className="min-w-[150px]">Business Unit</TableHead>
                       <TableHead className="min-w-[120px]">Category</TableHead>
                       <TableHead className="min-w-[180px]">Owner</TableHead>
-                      <TableHead className="min-w-[140px]">Inherent Risk</TableHead>
-                      <TableHead className="min-w-[120px]">Inherent Trend</TableHead>
+                      <TableHead className="min-w-[180px]">Inherent Risk</TableHead>
                       <TableHead className="min-w-[180px]">Related Controls</TableHead>
                       <TableHead className="min-w-[160px]">Control Effectiveness</TableHead>
                       <TableHead className="min-w-[160px]">Test Results</TableHead>
-                      <TableHead className="min-w-[140px]">Residual Risk</TableHead>
-                      <TableHead className="min-w-[120px]">Residual Trend</TableHead>
+                      <TableHead className="min-w-[180px]">Residual Risk</TableHead>
                       <TableHead className="min-w-[160px]">Status</TableHead>
                       <TableHead className="min-w-[140px]">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[120px] text-center">Actions</TableHead>
@@ -503,43 +500,17 @@ const Dashboard2ndLine = () => {
                           </Badge>
                         </TableCell>
                         <TableCell>
-                          <span className="text-sm px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 font-medium">
-                            {risk.businessUnit}
-                          </span>
-                        </TableCell>
-                        <TableCell>
                           <span className={`text-sm px-3 py-1 rounded-md font-medium ${getCategoryColor(risk.category)}`}>
                             {risk.category}
                           </span>
                         </TableCell>
                         <TableCell className="text-sm">{risk.owner}</TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-3`}>
-                              {risk.inherentRisk.level}
-                            </Badge>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={() => handleEdit("inherent", risk.id, risk.inherentRisk.level)}
-                                  >
-                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Edit Inherent Risk</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1">
+                          <div className="space-y-2">
+                            <div className="flex items-center gap-2">
+                              <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-3`}>
+                                {risk.inherentRisk.level}
+                              </Badge>
                               {risk.inherentTrend.up ? (
                                 <TrendingUp className="w-4 h-4 text-red-600" />
                               ) : (
@@ -548,6 +519,23 @@ const Dashboard2ndLine = () => {
                               <span className={`text-sm font-medium ${risk.inherentTrend.up ? "text-red-600" : "text-green-600"}`}>
                                 {risk.inherentTrend.value}
                               </span>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={() => handleEdit("inherent", risk.id, risk.inherentRisk.level)}
+                                    >
+                                      <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Edit Inherent Risk</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline text-left">
                               View Previous Assessments
@@ -617,42 +605,19 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-2">
-                            <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-3`}>
-                              {risk.residualRisk.level}
-                            </Badge>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-6 w-6"
-                                    onClick={() => handleEdit("residual", risk.id, risk.residualRisk.level)}
-                                  >
-                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Edit Residual Risk</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex flex-col gap-1">
+                          <div className="space-y-2">
                             <div className="flex items-center gap-2">
-                              <div className="flex items-center gap-1">
-                                {risk.residualTrend.up ? (
-                                  <TrendingUp className="w-4 h-4 text-red-600" />
-                                ) : (
-                                  <TrendingDown className="w-4 h-4 text-green-600" />
-                                )}
-                                <span className={`text-sm font-medium ${risk.residualTrend.up ? "text-red-600" : "text-green-600"}`}>
-                                  {risk.residualTrend.value}
-                                </span>
-                              </div>
+                              <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-3`}>
+                                {risk.residualRisk.level}
+                              </Badge>
+                              {risk.residualTrend.up ? (
+                                <TrendingUp className="w-4 h-4 text-red-600" />
+                              ) : (
+                                <TrendingDown className="w-4 h-4 text-green-600" />
+                              )}
+                              <span className={`text-sm font-medium ${risk.residualTrend.up ? "text-red-600" : "text-green-600"}`}>
+                                {risk.residualTrend.value}
+                              </span>
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
@@ -660,13 +625,13 @@ const Dashboard2ndLine = () => {
                                       variant="ghost"
                                       size="icon"
                                       className="h-6 w-6"
-                                      onClick={() => handleEdit("trend", risk.id, risk.residualTrend.value)}
+                                      onClick={() => handleEdit("residual", risk.id, risk.residualRisk.level)}
                                     >
                                       <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Edit Residual Trend</p>
+                                    <p>Edit Residual Risk</p>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
@@ -865,12 +830,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Michael Chen (Operations)",
-    inherentRisk: { level: "[3B, Medium]", color: "yellow" },
+    inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "13%", up: false },
     relatedControls: { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective" },
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
-    residualRisk: { level: "[3, Low]", color: "green" },
+    residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "7%", up: true },
     status: "Sent for Assessment",
     lastAssessed: "2025-10-20",
@@ -885,12 +850,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Branch Manager",
-    inherentRisk: { level: "[4A, High]", color: "red" },
+    inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "12%", up: false },
     relatedControls: { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective" },
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "" },
-    residualRisk: { level: "[3A, Medium]", color: "yellow" },
+    residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "14%", up: true },
     status: "Sent for Assessment",
     lastAssessed: "2025-10-18",
@@ -905,12 +870,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Teller Supervisor",
-    inherentRisk: { level: "[3C, Medium]", color: "yellow" },
+    inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "8%", up: true },
     relatedControls: { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive" },
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
-    residualRisk: { level: "[2, Low]", color: "green" },
+    residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "5%", up: false },
     status: "In Progress",
     lastAssessed: "2025-10-15",
@@ -924,12 +889,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Technology",
     owner: "CISO Office",
-    inherentRisk: { level: "[5A, Critical]", color: "red" },
+    inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "20%", up: true },
     relatedControls: { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive" },
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
-    residualRisk: { level: "[4, High]", color: "red" },
+    residualRisk: { level: "High", color: "red" },
     residualTrend: { value: "18%", up: true },
     status: "Pending Approval",
     lastAssessed: "2025-10-22",
@@ -944,12 +909,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Technology",
     owner: "Security Team",
-    inherentRisk: { level: "[4B, High]", color: "red" },
+    inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "15%", up: true },
     relatedControls: { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive" },
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "" },
-    residualRisk: { level: "[3B, Medium]", color: "yellow" },
+    residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "12%", up: false },
     status: "Pending Approval",
     lastAssessed: "2025-10-21",
@@ -963,12 +928,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Compliance",
     owner: "Compliance Officer",
-    inherentRisk: { level: "[4A, High]", color: "red" },
+    inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "10%", up: false },
     relatedControls: { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive" },
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
-    residualRisk: { level: "[2, Low]", color: "green" },
+    residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "6%", up: false },
     status: "Completed",
     lastAssessed: "2025-10-19",
@@ -983,12 +948,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Compliance",
     owner: "AML Team Lead",
-    inherentRisk: { level: "[5B, Critical]", color: "red" },
+    inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "22%", up: true },
     relatedControls: { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective" },
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "" },
-    residualRisk: { level: "[4A, High]", color: "red" },
+    residualRisk: { level: "High", color: "red" },
     residualTrend: { value: "19%", up: true },
     status: "Overdue",
     lastAssessed: "2025-09-28",
@@ -1002,12 +967,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Corporate Banking",
     category: "Financial",
     owner: "Treasury Department",
-    inherentRisk: { level: "[3A, Medium]", color: "yellow" },
+    inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "9%", up: false },
     relatedControls: { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive" },
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
-    residualRisk: { level: "[2A, Low]", color: "green" },
+    residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "4%", up: false },
     status: "In Progress",
     lastAssessed: "2025-10-17",
@@ -1021,12 +986,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Procurement Manager",
-    inherentRisk: { level: "[4C, High]", color: "red" },
+    inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "16%", up: true },
     relatedControls: { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive" },
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
-    residualRisk: { level: "[3C, Medium]", color: "yellow" },
+    residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "13%", up: true },
     status: "Sent for Assessment",
     lastAssessed: "2025-10-16",
@@ -1040,12 +1005,12 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Technology",
     owner: "Data Protection Officer",
-    inherentRisk: { level: "[5A, Critical]", color: "red" },
+    inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "25%", up: true },
     relatedControls: { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive" },
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "" },
-    residualRisk: { level: "[3A, Medium]", color: "yellow" },
+    residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "11%", up: false },
     status: "Completed",
     lastAssessed: "2025-10-23",
