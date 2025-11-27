@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -65,6 +65,7 @@ interface RiskData {
 const Dashboard2ndLine = () => {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-001", "R-002", "R-003"]));
   const [editDialog, setEditDialog] = useState<{
     open: boolean;
     type: "inherent" | "controls" | "effectiveness" | "residual" | "trend" | null;
@@ -86,6 +87,18 @@ const Dashboard2ndLine = () => {
     riskId: null,
   });
   const [riskData, setRiskData] = useState<RiskData[]>(initialRiskData);
+
+  const toggleRow = (riskId: string) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(riskId)) {
+        newSet.delete(riskId);
+      } else {
+        newSet.add(riskId);
+      }
+      return newSet;
+    });
+  };
 
   const handleEdit = (type: typeof editDialog.type, riskId: string, currentValue: string) => {
     setEditDialog({ open: true, type, riskId, currentValue });
@@ -143,6 +156,67 @@ const Dashboard2ndLine = () => {
   ];
 
   const filteredRiskData = riskData.filter(risk => risk.tabCategory === activeTab);
+
+  // Filter and organize risks by hierarchy
+  const getVisibleRisks = () => {
+    const visible: RiskData[] = [];
+    filteredRiskData.forEach(risk => {
+      if (risk.riskLevel === "Level 1") {
+        visible.push(risk);
+        if (expandedRows.has(risk.id)) {
+          const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+          level2Risks.forEach(l2 => {
+            visible.push(l2);
+            if (expandedRows.has(l2.id)) {
+              const level3Risks = filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
+              visible.push(...level3Risks);
+            }
+          });
+        }
+      }
+    });
+    return visible;
+  };
+
+  const hasChildren = (risk: RiskData) => {
+    if (risk.riskLevel === "Level 1") {
+      return filteredRiskData.some(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+    }
+    if (risk.riskLevel === "Level 2") {
+      return filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === risk.title);
+    }
+    return false;
+  };
+
+  const getRiskLevelColor = (level: string) => {
+    switch(level) {
+      case "Level 1": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400";
+      case "Level 2": return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400";
+      case "Level 3": return "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch(status) {
+      case "Sent for Assessment": return "bg-cyan-500 text-white";
+      case "In Progress": return "bg-amber-500 text-white";
+      case "Pending Approval": return "bg-purple-500 text-white";
+      case "Completed": return "bg-green-500 text-white";
+      case "Overdue": return "bg-red-500 text-white";
+      default: return "bg-blue-500 text-white";
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch(category) {
+      case "Operational": return "bg-indigo-50 dark:bg-indigo-950/30";
+      case "Technology": return "bg-cyan-50 dark:bg-cyan-950/30";
+      case "Compliance": return "bg-purple-50 dark:bg-purple-950/30";
+      case "Financial": return "bg-green-50 dark:bg-green-950/30";
+      default: return "bg-muted/30";
+    }
+  };
 
   const getRiskBadgeColor = (color: string) => {
     switch (color) {
@@ -248,19 +322,56 @@ const Dashboard2ndLine = () => {
             <CardTitle className="text-xl font-semibold">My Risk Assessments</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
-            {/* Tabs */}
-            <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as typeof activeTab)} className="mb-6">
-              <TabsList className="grid w-full max-w-3xl grid-cols-3">
-                <TabsTrigger value="own">Risks I Own ({riskData.filter(r => r.tabCategory === "own").length})</TabsTrigger>
-                <TabsTrigger value="assess">
-                  Risks I have to Assess ({riskData.filter(r => r.tabCategory === "assess").length})
-                </TabsTrigger>
-                <TabsTrigger value="approve">Risks I have to Approve ({riskData.filter(r => r.tabCategory === "approve").length})</TabsTrigger>
-              </TabsList>
-              <TabsContent value="own" className="mt-0" />
-              <TabsContent value="assess" className="mt-0" />
-              <TabsContent value="approve" className="mt-0" />
-            </Tabs>
+            {/* Modern Segmented Tabs */}
+            <div className="mb-6">
+              <div className="inline-flex items-center gap-2 p-1 bg-muted/50 rounded-lg border border-border/50">
+                <button
+                  onClick={() => setActiveTab("own")}
+                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all ${
+                    activeTab === "own"
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  }`}
+                >
+                  Risks I Own
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                    activeTab === "own" ? "bg-white/20" : "bg-muted"
+                  }`}>
+                    {riskData.filter(r => r.tabCategory === "own").length}
+                  </span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("assess")}
+                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all ${
+                    activeTab === "assess"
+                      ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  }`}
+                >
+                  Risks I have to Assess
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                    activeTab === "assess" ? "bg-white/20" : "bg-muted"
+                  }`}>
+                    {riskData.filter(r => r.tabCategory === "assess").length}
+                  </span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("approve")}
+                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all ${
+                    activeTab === "approve"
+                      ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  }`}
+                >
+                  Risks I have to Approve
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                    activeTab === "approve" ? "bg-white/20" : "bg-muted"
+                  }`}>
+                    {riskData.filter(r => r.tabCategory === "approve").length}
+                  </span>
+                </button>
+              </div>
+            </div>
 
             {/* Info Banner */}
             <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
@@ -346,39 +457,61 @@ const Dashboard2ndLine = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredRiskData.map((risk, index) => {
+                    {getVisibleRisks().map((risk, index) => {
                       const isLevel1 = risk.riskLevel === "Level 1";
                       const isLevel2 = risk.riskLevel === "Level 2";
                       const isLevel3 = risk.riskLevel === "Level 3";
+                      const isExpanded = expandedRows.has(risk.id);
+                      const canExpand = hasChildren(risk);
                       
                       return (
-                      <TableRow key={index} className="hover:bg-muted/50 transition-colors">
+                      <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
+                        isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
+                        isLevel2 ? 'bg-purple-50/20 dark:bg-purple-950/10' : 
+                        'bg-orange-50/10 dark:bg-orange-950/10'
+                      }`}>
                         <TableCell>
                           <Checkbox />
                         </TableCell>
                         <TableCell className="font-medium">{risk.id}</TableCell>
                         <TableCell>
-                          <div className={`${isLevel2 ? 'pl-6' : isLevel3 ? 'pl-12' : ''}`}>
+                          <div className={`flex items-center gap-2 ${isLevel2 ? 'pl-8' : isLevel3 ? 'pl-16' : ''}`}>
+                            {canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0"
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </button>
+                            )}
+                            {!canExpand && <div className="w-6" />}
                             <button 
                               className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline"
                               onClick={() => toast.info(`Opening details for ${risk.title}`)}
                             >
                               {risk.title}
                             </button>
-                            {risk.parentRisk && (
-                              <div className="text-xs text-muted-foreground mt-1">
-                                Parent: {risk.parentRisk}
-                              </div>
-                            )}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs font-medium`}>
                             {risk.riskLevel}
                           </Badge>
                         </TableCell>
-                        <TableCell className="text-sm">{risk.businessUnit}</TableCell>
-                        <TableCell className="text-sm">{risk.category}</TableCell>
+                        <TableCell>
+                          <span className="text-sm px-3 py-1 rounded-md bg-slate-100 dark:bg-slate-800 font-medium">
+                            {risk.businessUnit}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className={`text-sm px-3 py-1 rounded-md font-medium ${getCategoryColor(risk.category)}`}>
+                            {risk.category}
+                          </span>
+                        </TableCell>
                         <TableCell className="text-sm">{risk.owner}</TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
@@ -544,7 +677,7 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Badge className="bg-blue-500 text-white rounded-full">
+                          <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
                             {risk.status}
                           </Badge>
                         </TableCell>
