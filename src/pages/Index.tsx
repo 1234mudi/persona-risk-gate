@@ -68,53 +68,58 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       {/* Header */}
-      <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-first-line flex items-center justify-center">
-              <Shield className="w-6 h-6 text-white" />
+      <header className="border-b border-border/50 bg-gradient-to-r from-primary/5 to-first-line/10 backdrop-blur-sm">
+        <div className="container mx-auto px-6 py-2">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-first-line flex items-center justify-center">
+                <Shield className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-lg font-semibold text-foreground">
+                Risk & Control Self- Assessment (RCSA)
+              </h1>
             </div>
-            <h1 className="text-xl font-semibold text-foreground">
-              Risk & Control Self- Assessment (RCSA)
-            </h1>
+            <p className="text-xs text-muted-foreground pl-10.5">
+              A comprehensive platform for managing enterprise risk assessments, control evaluations, and remediation tracking across your organization.
+            </p>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-4">
-        <div className="grid lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
+      <main className="container mx-auto px-6 py-2">
+        <div className="grid lg:grid-cols-2 gap-4 max-w-7xl mx-auto">
           {/* Login Form Section */}
           <div className="flex items-start justify-center">
-            <Card className="w-full max-w-md p-6 shadow-lg border-border/50">
-              <div className="space-y-4">
-                <div className="space-y-1 text-center">
-                  <h2 className="text-2xl font-bold text-foreground">Welcome Back</h2>
-                  <p className="text-sm text-muted-foreground">
+            <Card className="w-full max-w-md p-4 shadow-lg border-border/50">
+              <div className="space-y-3">
+                <div className="space-y-0.5 text-center">
+                  <h2 className="text-xl font-bold text-foreground">Welcome Back</h2>
+                  <p className="text-xs text-muted-foreground">
                     Sign in to your workspace to continue
                   </p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-3">
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email or Username</Label>
+                <form onSubmit={handleLogin} className="space-y-2">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="email" className="text-sm">Email or Username</Label>
                     <Input
                       id="email"
                       type="text"
                       placeholder="Enter your email or username"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-10"
+                      className="h-9"
                       required
                     />
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <Label htmlFor="password">Password</Label>
+                      <Label htmlFor="password" className="text-sm">Password</Label>
                       <a
                         href="#"
-                        className="text-sm text-primary hover:text-primary/80 transition-colors"
+                        className="text-xs text-primary hover:text-primary/80 transition-colors"
                       >
                         Forgot password?
                       </a>
@@ -125,7 +130,7 @@ const Index = () => {
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-10"
+                      className="h-9"
                       required
                     />
                   </div>
@@ -144,7 +149,7 @@ const Index = () => {
                     </Label>
                   </div>
 
-                  <Button type="submit" className="w-full h-10 text-base font-medium">
+                  <Button type="submit" className="w-full h-9 text-sm font-medium">
                     Sign In
                   </Button>
                 </form>
@@ -160,15 +165,15 @@ const Index = () => {
           </div>
 
           {/* Persona Cards Section */}
-          <div className="space-y-2">
-            <div className="space-y-1">
-              <h2 className="text-2xl font-bold text-foreground">Quick Access</h2>
-              <p className="text-sm text-muted-foreground">
+          <div className="space-y-1.5">
+            <div className="space-y-0.5">
+              <h2 className="text-xl font-bold text-foreground">Quick Access</h2>
+              <p className="text-xs text-muted-foreground">
                 Select a persona for instant test environment access
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-2 gap-2">
               {personas.map((persona, index) => (
                 <PersonaCard
                   key={index}
