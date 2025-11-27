@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight } from "lucide-react";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -256,6 +257,7 @@ const Dashboard2ndLine = () => {
               </div>
             </div>
             <div className="flex items-center gap-3">
+              <ThemeToggle />
               <Button variant="outline" size="sm">
                 <UsersIcon className="w-4 h-4 mr-2" />
                 My Team

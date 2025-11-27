@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { PersonaCard } from "@/components/PersonaCard";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
 
@@ -71,13 +72,16 @@ const Index = () => {
       <header className="border-b border-border/50 bg-gradient-to-r from-primary/5 to-first-line/10 backdrop-blur-sm">
         <div className="container mx-auto px-6 py-2">
           <div className="space-y-1">
-            <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-first-line flex items-center justify-center">
-                <Shield className="w-5 h-5 text-white" />
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-first-line flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
+                <h1 className="text-lg font-semibold text-foreground">
+                  Risk & Control Self- Assessment (RCSA)
+                </h1>
               </div>
-              <h1 className="text-lg font-semibold text-foreground">
-                Risk & Control Self- Assessment (RCSA)
-              </h1>
+              <ThemeToggle />
             </div>
             <p className="text-xs text-muted-foreground pl-10.5">
               A comprehensive platform for managing enterprise risk assessments, control evaluations, and remediation tracking across your organization.
