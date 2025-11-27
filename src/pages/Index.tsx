@@ -82,10 +82,10 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-6">
-        <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
+      <main className="container mx-auto px-6 py-4">
+        <div className="grid lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
           {/* Login Form Section */}
-          <div className="flex items-center justify-center">
+          <div className="flex items-start justify-center">
             <Card className="w-full max-w-md p-6 shadow-lg border-border/50">
               <div className="space-y-4">
                 <div className="space-y-1 text-center">
@@ -160,7 +160,7 @@ const Index = () => {
           </div>
 
           {/* Persona Cards Section */}
-          <div className="space-y-4">
+          <div className="space-y-2">
             <div className="space-y-1">
               <h2 className="text-2xl font-bold text-foreground">Quick Access</h2>
               <p className="text-sm text-muted-foreground">
@@ -168,7 +168,7 @@ const Index = () => {
               </p>
             </div>
 
-            <div className="space-y-3">
+            <div className="space-y-2">
               {personas.map((persona, index) => (
                 <PersonaCard
                   key={index}

@@ -21,12 +21,12 @@ export const PersonaCard = ({ icon: Icon, name, description, line, onSelect }: P
 
   return (
     <Card 
-      className={`${lineClass} border-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-4 group`}
+      className={`${lineClass} border-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-3 group`}
       onClick={onSelect}
     >
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2">
         <div className={`${iconClass} transition-transform duration-300 group-hover:scale-110`}>
-          <Icon className="w-6 h-6" />
+          <Icon className="w-5 h-5" />
         </div>
         <div className="flex-1 space-y-1">
           <h3 className="font-semibold text-base text-foreground group-hover:text-primary transition-colors">
