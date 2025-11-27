@@ -7,11 +7,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card } from "@/components/ui/card";
 import { PersonaCard } from "@/components/PersonaCard";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
     e.preventDefault();
@@ -20,10 +22,13 @@ const Index = () => {
     });
   };
 
-  const handlePersonaLogin = (personaName: string) => {
+  const handlePersonaLogin = (personaName: string, route?: string) => {
     toast.success("Quick login successful", {
       description: `Logging in as ${personaName}`,
     });
+    if (route) {
+      setTimeout(() => navigate(route), 500);
+    }
   };
 
   const personas = [
@@ -46,15 +51,16 @@ const Index = () => {
       line: "first" as const,
     },
     {
-      icon: Shield,
-      name: "Chief Risk Officer",
-      description: "Monitor enterprise risk posture, review key metrics, and guide strategic risk decisions.",
-      line: "second" as const,
-    },
-    {
       icon: BarChart3,
       name: "2nd Line Risk Analyst",
       description: "Validate assessments, challenge ratings, and ensure quality across reviews.",
+      line: "second" as const,
+      route: "/dashboard/2nd-line-analyst",
+    },
+    {
+      icon: Shield,
+      name: "Chief Risk Officer",
+      description: "Monitor enterprise risk posture, review key metrics, and guide strategic risk decisions.",
       line: "second" as const,
     },
   ];
@@ -170,7 +176,7 @@ const Index = () => {
                   name={persona.name}
                   description={persona.description}
                   line={persona.line}
-                  onSelect={() => handlePersonaLogin(persona.name)}
+                  onSelect={() => handlePersonaLogin(persona.name, (persona as any).route)}
                 />
               ))}
             </div>
