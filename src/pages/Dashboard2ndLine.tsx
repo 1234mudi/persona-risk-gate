@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -166,6 +166,20 @@ const Dashboard2ndLine = () => {
       ],
       description: "Focus on challenged & pending items to maintain robust oversight.",
     },
+    {
+      title: "Operational Loss Events",
+      value: "$4.2M",
+      subLabel: "Total Financial Loss",
+      trend: "+15% vs. Last Quarter",
+      trendUp: false,
+      icon: DollarSign,
+      segments: [
+        { label: "External Fraud", value: 1.2, sublabel: "External Fraud: $1.2M", color: "bg-red-800" },
+        { label: "Process Error", value: 1.8, sublabel: "Process Error: $1.8M", color: "bg-orange-500" },
+        { label: "System Failures", value: 1.2, sublabel: "System Failures: $1.2M", color: "bg-orange-300" },
+      ],
+      description: "Top 3 drivers caused over 90% of losses. Validate RCSA focus.",
+    },
   ];
 
   const filteredRiskData = riskData.filter(risk => risk.tabCategory === activeTab);
@@ -302,26 +316,33 @@ const Dashboard2ndLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Scorecards */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {metrics.map((metric, index) => (
             <Card key={index} className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card">
-              <CardContent className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <h3 className="text-xl font-bold text-foreground">{metric.title}</h3>
-                  <div className="w-14 h-14 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
-                    <metric.icon className="w-7 h-7 text-primary" />
+              <CardContent className="p-4">
+                <div className="flex items-start justify-between mb-3">
+                  <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
+                  <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <metric.icon className="w-5 h-5 text-primary" />
                   </div>
                 </div>
                 
-                <div className="space-y-3">
+                <div className="space-y-2">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-5xl font-bold text-foreground">
-                      {metric.value}{metric.isPercentage ? "%" : ""}
+                    <span className="text-3xl font-bold text-foreground">
+                      {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
                     </span>
                   </div>
+                  {metric.subLabel && (
+                    <p className="text-sm font-medium text-muted-foreground">{metric.subLabel}</p>
+                  )}
                   
                   <div className="flex items-center gap-2">
-                    <TrendingUp className={`w-4 h-4 ${metric.trendUp ? "text-green-600" : "text-red-600"}`} />
+                    {metric.trendUp ? (
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-4 h-4 text-red-600" />
+                    )}
                     <span className={`text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
                       {metric.trend}
                     </span>
@@ -329,7 +350,7 @@ const Dashboard2ndLine = () => {
                   
                   {/* Status Bar */}
                   <div className="space-y-2">
-                    <div className="flex h-8 rounded-lg overflow-hidden">
+                    <div className="flex h-6 rounded-lg overflow-hidden">
                       {metric.segments.map((segment, idx) => {
                         const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
                         const percentage = (segment.value / total) * 100;
@@ -344,7 +365,7 @@ const Dashboard2ndLine = () => {
                     </div>
                     
                     {/* Legend */}
-                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                    <div className="flex flex-wrap gap-x-2 gap-y-1">
                       {metric.segments.map((segment, idx) => (
                         <div key={idx} className="flex items-center gap-1.5">
                           <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
@@ -356,7 +377,7 @@ const Dashboard2ndLine = () => {
                     </div>
                   </div>
                   
-                  <p className="text-sm text-muted-foreground leading-snug pt-2">
+                  <p className="text-xs text-muted-foreground leading-snug pt-2">
                     {metric.description}
                   </p>
                 </div>
