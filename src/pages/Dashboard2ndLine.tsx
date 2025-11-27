@@ -1,4 +1,6 @@
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2 } from "lucide-react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -20,8 +22,95 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+
+interface RiskData {
+  id: string;
+  title: string;
+  riskLevel: string;
+  parentRisk?: string;
+  businessUnit: string;
+  category: string;
+  owner: string;
+  inherentRisk: { level: string; color: string };
+  inherentTrend: { value: string; up: boolean };
+  relatedControls: { id: string; name: string; type: string; nature: string };
+  controlEffectiveness: { label: string; color: string };
+  testResults: { label: string; sublabel: string };
+  residualRisk: { level: string; color: string };
+  residualTrend: { value: string; up: boolean };
+  status: string;
+  lastAssessed: string;
+  previousAssessments: number;
+  tabCategory: "own" | "assess" | "approve";
+}
 
 const Dashboard2ndLine = () => {
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
+  const [editDialog, setEditDialog] = useState<{
+    open: boolean;
+    type: "inherent" | "controls" | "effectiveness" | "residual" | "trend" | null;
+    riskId: string | null;
+    currentValue: string;
+  }>({
+    open: false,
+    type: null,
+    riskId: null,
+    currentValue: "",
+  });
+  const [actionDialog, setActionDialog] = useState<{
+    open: boolean;
+    type: "reassign" | "collaborate" | "reassess" | null;
+    riskId: string | null;
+  }>({
+    open: false,
+    type: null,
+    riskId: null,
+  });
+  const [riskData, setRiskData] = useState<RiskData[]>(initialRiskData);
+
+  const handleEdit = (type: typeof editDialog.type, riskId: string, currentValue: string) => {
+    setEditDialog({ open: true, type, riskId, currentValue });
+  };
+
+  const handleSaveEdit = () => {
+    toast.success("Changes saved successfully");
+    setEditDialog({ open: false, type: null, riskId: null, currentValue: "" });
+  };
+
+  const handleAction = (type: typeof actionDialog.type, riskId: string) => {
+    setActionDialog({ open: true, type, riskId });
+  };
+
+  const handleActionSubmit = () => {
+    const actionName = actionDialog.type === "reassign" ? "Reassignment" : 
+                       actionDialog.type === "collaborate" ? "Collaboration request" : 
+                       "Reassessment";
+    toast.success(`${actionName} completed successfully`);
+    setActionDialog({ open: false, type: null, riskId: null });
+  };
+
+  const handleLogout = () => {
+    navigate("/");
+  };
   const metrics = [
     {
       title: "Assessments Pending Review",
@@ -53,44 +142,7 @@ const Dashboard2ndLine = () => {
     },
   ];
 
-  const riskData = [
-    {
-      id: "R-001",
-      title: "Operational Process Failure",
-      riskLevel: "Level 1",
-      businessUnit: "Retail Banking",
-      category: "Operational",
-      owner: "Michael Chen (Operations)",
-      inherentRisk: { level: "[3B, Medium]", color: "yellow" },
-      inherentTrend: { value: "13%", up: false },
-      relatedControls: { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective" },
-      controlEffectiveness: { label: "Design Effective", color: "green" },
-      testResults: { label: "Design Effective", sublabel: "Operating Effective" },
-      residualRisk: { level: "[3, Low]", color: "green" },
-      residualTrend: { value: "7%", up: true },
-      status: "Sent for Assessment",
-      lastAssessed: "2025-10-20",
-      previousAssessments: 5,
-    },
-    {
-      id: "R-002",
-      title: "Branch Audit Compliance",
-      riskLevel: "Level 2",
-      businessUnit: "Retail Banking",
-      category: "Operational",
-      owner: "Branch Manager",
-      inherentRisk: { level: "[4A, High]", color: "red" },
-      inherentTrend: { value: "12%", up: false },
-      relatedControls: { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective" },
-      controlEffectiveness: { label: "Operating Effective", color: "green" },
-      testResults: { label: "Operating Effective", sublabel: "" },
-      residualRisk: { level: "[3A, Medium]", color: "yellow" },
-      residualTrend: { value: "14%", up: true },
-      status: "Sent for Assessment",
-      lastAssessed: "2025-10-18",
-      previousAssessments: 6,
-    },
-  ];
+  const filteredRiskData = riskData.filter(risk => risk.tabCategory === activeTab);
 
   const getRiskBadgeColor = (color: string) => {
     switch (color) {
@@ -137,6 +189,23 @@ const Dashboard2ndLine = () => {
               <Button size="sm">
                 Export Report
               </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    2nd Line Analyst
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Current Persona</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Switch Persona / Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
           </div>
         </div>
@@ -180,14 +249,17 @@ const Dashboard2ndLine = () => {
           </CardHeader>
           <CardContent className="p-6">
             {/* Tabs */}
-            <Tabs defaultValue="assess" className="mb-6">
+            <Tabs value={activeTab} onValueChange={(val) => setActiveTab(val as typeof activeTab)} className="mb-6">
               <TabsList className="grid w-full max-w-3xl grid-cols-3">
-                <TabsTrigger value="own">Risks I Own</TabsTrigger>
-                <TabsTrigger value="assess" className="bg-primary text-primary-foreground data-[state=active]:bg-primary data-[state=active]:text-primary-foreground">
-                  Risks I have to Assess
+                <TabsTrigger value="own">Risks I Own ({riskData.filter(r => r.tabCategory === "own").length})</TabsTrigger>
+                <TabsTrigger value="assess">
+                  Risks I have to Assess ({riskData.filter(r => r.tabCategory === "assess").length})
                 </TabsTrigger>
-                <TabsTrigger value="approve">Risks I have to Approve</TabsTrigger>
+                <TabsTrigger value="approve">Risks I have to Approve ({riskData.filter(r => r.tabCategory === "approve").length})</TabsTrigger>
               </TabsList>
+              <TabsContent value="own" className="mt-0" />
+              <TabsContent value="assess" className="mt-0" />
+              <TabsContent value="approve" className="mt-0" />
             </Tabs>
 
             {/* Info Banner */}
@@ -274,21 +346,36 @@ const Dashboard2ndLine = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {riskData.map((risk, index) => (
+                    {filteredRiskData.map((risk, index) => {
+                      const isLevel1 = risk.riskLevel === "Level 1";
+                      const isLevel2 = risk.riskLevel === "Level 2";
+                      const isLevel3 = risk.riskLevel === "Level 3";
+                      
+                      return (
                       <TableRow key={index} className="hover:bg-muted/50 transition-colors">
                         <TableCell>
                           <Checkbox />
                         </TableCell>
                         <TableCell className="font-medium">{risk.id}</TableCell>
                         <TableCell>
-                          <button className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline">
-                            {risk.title}
-                          </button>
+                          <div className={`${isLevel2 ? 'pl-6' : isLevel3 ? 'pl-12' : ''}`}>
+                            <button 
+                              className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                              onClick={() => toast.info(`Opening details for ${risk.title}`)}
+                            >
+                              {risk.title}
+                            </button>
+                            {risk.parentRisk && (
+                              <div className="text-xs text-muted-foreground mt-1">
+                                Parent: {risk.parentRisk}
+                              </div>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell>
-                          <div className="space-y-1">
-                            <div className="text-xs text-muted-foreground">{risk.riskLevel}</div>
-                          </div>
+                          <Badge variant="outline" className="text-xs">
+                            {risk.riskLevel}
+                          </Badge>
                         </TableCell>
                         <TableCell className="text-sm">{risk.businessUnit}</TableCell>
                         <TableCell className="text-sm">{risk.category}</TableCell>
@@ -300,8 +387,15 @@ const Dashboard2ndLine = () => {
                             </Badge>
                             <TooltipProvider>
                               <Tooltip>
-                                <TooltipTrigger>
-                                  <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={() => handleEdit("inherent", risk.id, risk.inherentRisk.level)}
+                                  >
+                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                  </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p>Edit Inherent Risk</p>
@@ -339,8 +433,15 @@ const Dashboard2ndLine = () => {
                             </div>
                             <TooltipProvider>
                               <Tooltip>
-                                <TooltipTrigger>
-                                  <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={() => handleEdit("controls", risk.id, risk.relatedControls.name)}
+                                  >
+                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                  </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p>Edit Related Controls</p>
@@ -354,8 +455,15 @@ const Dashboard2ndLine = () => {
                             {getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color)}
                             <TooltipProvider>
                               <Tooltip>
-                                <TooltipTrigger>
-                                  <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={() => handleEdit("effectiveness", risk.id, risk.controlEffectiveness.label)}
+                                  >
+                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                  </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p>Edit Control Effectiveness</p>
@@ -382,8 +490,15 @@ const Dashboard2ndLine = () => {
                             </Badge>
                             <TooltipProvider>
                               <Tooltip>
-                                <TooltipTrigger>
-                                  <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                <TooltipTrigger asChild>
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    className="h-6 w-6"
+                                    onClick={() => handleEdit("residual", risk.id, risk.residualRisk.level)}
+                                  >
+                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                  </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p>Edit Residual Risk</p>
@@ -394,15 +509,34 @@ const Dashboard2ndLine = () => {
                         </TableCell>
                         <TableCell>
                           <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-1">
-                              {risk.residualTrend.up ? (
-                                <TrendingUp className="w-4 h-4 text-red-600" />
-                              ) : (
-                                <TrendingDown className="w-4 h-4 text-green-600" />
-                              )}
-                              <span className={`text-sm font-medium ${risk.residualTrend.up ? "text-red-600" : "text-green-600"}`}>
-                                {risk.residualTrend.value}
-                              </span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex items-center gap-1">
+                                {risk.residualTrend.up ? (
+                                  <TrendingUp className="w-4 h-4 text-red-600" />
+                                ) : (
+                                  <TrendingDown className="w-4 h-4 text-green-600" />
+                                )}
+                                <span className={`text-sm font-medium ${risk.residualTrend.up ? "text-red-600" : "text-green-600"}`}>
+                                  {risk.residualTrend.value}
+                                </span>
+                              </div>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-6 w-6"
+                                      onClick={() => handleEdit("trend", risk.id, risk.residualTrend.value)}
+                                    >
+                                      <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Edit Residual Trend</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             </div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline text-left">
                               View Previous Assessments
@@ -423,57 +557,65 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <TooltipProvider>
-                            <div className="flex items-center justify-center gap-2">
+                          <div className="flex items-center justify-center gap-2">
+                            <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary"
+                                    className="h-8 w-8 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                                    onClick={() => handleAction("reassign", risk.id)}
                                   >
-                                    <UserPlus className="w-4 h-4" />
+                                    <UserPlus className="w-4 h-4 text-blue-600" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p>Reassign</p>
                                 </TooltipContent>
                               </Tooltip>
+                            </TooltipProvider>
 
+                            <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary"
+                                    className="h-8 w-8 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                                    onClick={() => handleAction("collaborate", risk.id)}
                                   >
-                                    <UsersIcon className="w-4 h-4" />
+                                    <UsersIcon className="w-4 h-4 text-purple-600" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p>Collaborate</p>
                                 </TooltipContent>
                               </Tooltip>
+                            </TooltipProvider>
 
+                            <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="w-8 h-8 rounded-full hover:bg-primary/10 hover:text-primary"
+                                    className="h-8 w-8 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
+                                    onClick={() => handleAction("reassess", risk.id)}
                                   >
-                                    <RotateCcw className="w-4 h-4" />
+                                    <RotateCcw className="w-4 h-4 text-green-600" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
                                   <p>Reassess</p>
                                 </TooltipContent>
                               </Tooltip>
-                            </div>
-                          </TooltipProvider>
+                            </TooltipProvider>
+                          </div>
                         </TableCell>
                       </TableRow>
-                    ))}
+                    );
+                    })}
                   </TableBody>
                 </Table>
               </div>
@@ -481,8 +623,302 @@ const Dashboard2ndLine = () => {
           </CardContent>
         </Card>
       </main>
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ ...editDialog, open: false })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              Edit {editDialog.type === "inherent" ? "Inherent Risk" : 
+                    editDialog.type === "controls" ? "Related Controls" :
+                    editDialog.type === "effectiveness" ? "Control Effectiveness" :
+                    editDialog.type === "residual" ? "Residual Risk" : "Residual Trend"}
+            </DialogTitle>
+            <DialogDescription>
+              Update the value for risk {editDialog.riskId}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-value">New Value</Label>
+              <Input
+                id="edit-value"
+                defaultValue={editDialog.currentValue}
+                placeholder="Enter new value"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog({ ...editDialog, open: false })}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Action Dialog */}
+      <Dialog open={actionDialog.open} onOpenChange={(open) => !open && setActionDialog({ ...actionDialog, open: false })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {actionDialog.type === "reassign" ? "Reassign Risk" :
+               actionDialog.type === "collaborate" ? "Collaborate on Risk" :
+               "Reassess Risk"}
+            </DialogTitle>
+            <DialogDescription>
+              {actionDialog.type === "reassign" ? "Select a new owner for this risk assessment" :
+               actionDialog.type === "collaborate" ? "Invite team members to collaborate on this risk" :
+               "Schedule a new assessment for this risk"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {actionDialog.type === "reassign" && (
+              <div className="space-y-2">
+                <Label htmlFor="assignee">Assign To</Label>
+                <Select>
+                  <SelectTrigger id="assignee">
+                    <SelectValue placeholder="Select assignee" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="analyst1">Risk Analyst 1</SelectItem>
+                    <SelectItem value="analyst2">Risk Analyst 2</SelectItem>
+                    <SelectItem value="manager">Risk Manager</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
+            {actionDialog.type === "collaborate" && (
+              <div className="space-y-2">
+                <Label htmlFor="collaborators">Add Collaborators</Label>
+                <Input
+                  id="collaborators"
+                  placeholder="Enter email addresses (comma separated)"
+                />
+              </div>
+            )}
+            {actionDialog.type === "reassess" && (
+              <div className="space-y-2">
+                <Label htmlFor="assessment-date">Assessment Date</Label>
+                <Input
+                  id="assessment-date"
+                  type="date"
+                />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActionDialog({ ...actionDialog, open: false })}>
+              Cancel
+            </Button>
+            <Button onClick={handleActionSubmit}>
+              {actionDialog.type === "reassign" ? "Reassign" :
+               actionDialog.type === "collaborate" ? "Send Invites" :
+               "Schedule Assessment"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
+
+// Sample data with 10 rows across different tabs and hierarchy levels
+const initialRiskData: RiskData[] = [
+  {
+    id: "R-001",
+    title: "Operational Process Failure",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Operational",
+    owner: "Michael Chen (Operations)",
+    inherentRisk: { level: "[3B, Medium]", color: "yellow" },
+    inherentTrend: { value: "13%", up: false },
+    relatedControls: { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "[3, Low]", color: "green" },
+    residualTrend: { value: "7%", up: true },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-10-20",
+    previousAssessments: 5,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-001-A",
+    title: "Branch Transaction Processing",
+    riskLevel: "Level 2",
+    parentRisk: "Operational Process Failure",
+    businessUnit: "Retail Banking",
+    category: "Operational",
+    owner: "Branch Manager",
+    inherentRisk: { level: "[4A, High]", color: "red" },
+    inherentTrend: { value: "12%", up: false },
+    relatedControls: { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "" },
+    residualRisk: { level: "[3A, Medium]", color: "yellow" },
+    residualTrend: { value: "14%", up: true },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-10-18",
+    previousAssessments: 6,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-001-A-1",
+    title: "Cash Handling Errors",
+    riskLevel: "Level 3",
+    parentRisk: "Branch Transaction Processing",
+    businessUnit: "Retail Banking",
+    category: "Operational",
+    owner: "Teller Supervisor",
+    inherentRisk: { level: "[3C, Medium]", color: "yellow" },
+    inherentTrend: { value: "8%", up: true },
+    relatedControls: { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "[2, Low]", color: "green" },
+    residualTrend: { value: "5%", up: false },
+    status: "In Progress",
+    lastAssessed: "2025-10-15",
+    previousAssessments: 8,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-002",
+    title: "Cybersecurity Threat",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Technology",
+    owner: "CISO Office",
+    inherentRisk: { level: "[5A, Critical]", color: "red" },
+    inherentTrend: { value: "20%", up: true },
+    relatedControls: { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "[4, High]", color: "red" },
+    residualTrend: { value: "18%", up: true },
+    status: "Pending Approval",
+    lastAssessed: "2025-10-22",
+    previousAssessments: 12,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-002-A",
+    title: "Phishing Attacks",
+    riskLevel: "Level 2",
+    parentRisk: "Cybersecurity Threat",
+    businessUnit: "Retail Banking",
+    category: "Technology",
+    owner: "Security Team",
+    inherentRisk: { level: "[4B, High]", color: "red" },
+    inherentTrend: { value: "15%", up: true },
+    relatedControls: { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "" },
+    residualRisk: { level: "[3B, Medium]", color: "yellow" },
+    residualTrend: { value: "12%", up: false },
+    status: "Pending Approval",
+    lastAssessed: "2025-10-21",
+    previousAssessments: 9,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-003",
+    title: "Regulatory Compliance Risk",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Compliance",
+    owner: "Compliance Officer",
+    inherentRisk: { level: "[4A, High]", color: "red" },
+    inherentTrend: { value: "10%", up: false },
+    relatedControls: { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "[2, Low]", color: "green" },
+    residualTrend: { value: "6%", up: false },
+    status: "Completed",
+    lastAssessed: "2025-10-19",
+    previousAssessments: 15,
+    tabCategory: "own",
+  },
+  {
+    id: "R-003-A",
+    title: "AML Reporting Gaps",
+    riskLevel: "Level 2",
+    parentRisk: "Regulatory Compliance Risk",
+    businessUnit: "Retail Banking",
+    category: "Compliance",
+    owner: "AML Team Lead",
+    inherentRisk: { level: "[5B, Critical]", color: "red" },
+    inherentTrend: { value: "22%", up: true },
+    relatedControls: { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "" },
+    residualRisk: { level: "[4A, High]", color: "red" },
+    residualTrend: { value: "19%", up: true },
+    status: "Overdue",
+    lastAssessed: "2025-09-28",
+    previousAssessments: 11,
+    tabCategory: "own",
+  },
+  {
+    id: "R-004",
+    title: "Market Risk Exposure",
+    riskLevel: "Level 1",
+    businessUnit: "Corporate Banking",
+    category: "Financial",
+    owner: "Treasury Department",
+    inherentRisk: { level: "[3A, Medium]", color: "yellow" },
+    inherentTrend: { value: "9%", up: false },
+    relatedControls: { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "[2A, Low]", color: "green" },
+    residualTrend: { value: "4%", up: false },
+    status: "In Progress",
+    lastAssessed: "2025-10-17",
+    previousAssessments: 7,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-005",
+    title: "Third-Party Vendor Risk",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Operational",
+    owner: "Procurement Manager",
+    inherentRisk: { level: "[4C, High]", color: "red" },
+    inherentTrend: { value: "16%", up: true },
+    relatedControls: { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "[3C, Medium]", color: "yellow" },
+    residualTrend: { value: "13%", up: true },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-10-16",
+    previousAssessments: 4,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-006",
+    title: "Data Privacy Breach",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Technology",
+    owner: "Data Protection Officer",
+    inherentRisk: { level: "[5A, Critical]", color: "red" },
+    inherentTrend: { value: "25%", up: true },
+    relatedControls: { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "" },
+    residualRisk: { level: "[3A, Medium]", color: "yellow" },
+    residualTrend: { value: "11%", up: false },
+    status: "Completed",
+    lastAssessed: "2025-10-23",
+    previousAssessments: 10,
+    tabCategory: "own",
+  },
+];
 
 export default Dashboard2ndLine;
