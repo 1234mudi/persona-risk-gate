@@ -35,32 +35,32 @@ const Index = () => {
     {
       icon: UserCheck,
       name: "Risk Owner",
-      description: "Approve self-assessments, review final risks, and authorize remediation plans.",
+      description: "Approves the Risk & Control Self- Assessment(RCSA) results and oversee the status of critical risk remediation actions within the assigned business area.",
       line: "first" as const,
     },
     {
       icon: ClipboardCheck,
       name: "1st Line Risk Analyst",
-      description: "Perform assessments, update risk and control data, and submit evidence for testing.",
+      description: "Executes the Risk & Control Self- Assessment(RCSA) process, involves rating inherent risk, documenting control evidence, and identifying control weaknesses or gaps.",
       line: "first" as const,
     },
     {
       icon: Users,
       name: "1st Line Risk Manager",
-      description: "Plan assessment cycles, track team progress, and ensure timely completion of RCSA tasks.",
+      description: "Review, validate, and submit the team's completed Risk & Control Self- Assessment(RCSA) package, plus actively manage and track all assigned remediation action plans.",
       line: "first" as const,
     },
     {
       icon: BarChart3,
       name: "2nd Line Risk Analyst",
-      description: "Validate assessments, challenge ratings, and ensure quality across reviews.",
+      description: "Independently review and challenge 1st Line Risk & Control Self- Assessment(RCSA) submissions, validate control effectiveness ratings, and log formal findings or corrections.",
       line: "second" as const,
       route: "/dashboard/2nd-line-analyst",
     },
     {
       icon: Shield,
       name: "Chief Risk Officer",
-      description: "Monitor enterprise risk posture, review key metrics, and guide strategic risk decisions.",
+      description: "Monitor the enterprise-wide aggregated risk posture via dashboards, and authorize organizational risk strategies and material control investments.",
       line: "second" as const,
     },
   ];
@@ -75,27 +75,27 @@ const Index = () => {
               <Shield className="w-6 h-6 text-white" />
             </div>
             <h1 className="text-xl font-semibold text-foreground">
-              Risk and Compliance Self Assessment
+              Risk & Control Self- Assessment (RCSA)
             </h1>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-12">
-        <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto">
+      <main className="container mx-auto px-6 py-6">
+        <div className="grid lg:grid-cols-2 gap-8 max-w-7xl mx-auto">
           {/* Login Form Section */}
           <div className="flex items-center justify-center">
-            <Card className="w-full max-w-md p-8 shadow-lg border-border/50">
-              <div className="space-y-6">
-                <div className="space-y-2 text-center">
-                  <h2 className="text-3xl font-bold text-foreground">Welcome Back</h2>
-                  <p className="text-muted-foreground">
+            <Card className="w-full max-w-md p-6 shadow-lg border-border/50">
+              <div className="space-y-4">
+                <div className="space-y-1 text-center">
+                  <h2 className="text-2xl font-bold text-foreground">Welcome Back</h2>
+                  <p className="text-sm text-muted-foreground">
                     Sign in to your workspace to continue
                   </p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-4">
+                <form onSubmit={handleLogin} className="space-y-3">
                   <div className="space-y-2">
                     <Label htmlFor="email">Email or Username</Label>
                     <Input
@@ -104,7 +104,7 @@ const Index = () => {
                       placeholder="Enter your email or username"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-11"
+                      className="h-10"
                       required
                     />
                   </div>
@@ -125,7 +125,7 @@ const Index = () => {
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-11"
+                      className="h-10"
                       required
                     />
                   </div>
@@ -144,7 +144,7 @@ const Index = () => {
                     </Label>
                   </div>
 
-                  <Button type="submit" className="w-full h-11 text-base font-medium">
+                  <Button type="submit" className="w-full h-10 text-base font-medium">
                     Sign In
                   </Button>
                 </form>
@@ -160,15 +160,15 @@ const Index = () => {
           </div>
 
           {/* Persona Cards Section */}
-          <div className="space-y-6">
-            <div className="space-y-2">
+          <div className="space-y-4">
+            <div className="space-y-1">
               <h2 className="text-2xl font-bold text-foreground">Quick Access</h2>
-              <p className="text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Select a persona for instant test environment access
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3">
               {personas.map((persona, index) => (
                 <PersonaCard
                   key={index}
