@@ -128,31 +128,43 @@ const Dashboard2ndLine = () => {
   const metrics = [
     {
       title: "Assessments Pending Review",
-      value: "24",
+      value: 24,
+      trend: "+12% since last month",
+      trendUp: true,
       icon: FileCheck,
-      trend: "+12%",
-      trendUp: true,
+      segments: [
+        { label: "Overdue", value: 4, sublabel: "4 Overdue", color: "bg-red-600" },
+        { label: "Due Today", value: 3, sublabel: "3 Due Today", color: "bg-amber-500" },
+        { label: "Not Due Yet", value: 17, sublabel: "17 Not Due Yet", color: "bg-green-600" },
+      ],
+      description: "Prioritize \"Overdue\" and \"Due Today\" to maintain timely risk validation.",
     },
     {
-      title: "High-Risk Items",
-      value: "8",
+      title: "High Residual Risks",
+      value: 24,
+      trend: "+5 since last quarter",
+      trendUp: false,
       icon: AlertTriangle,
-      trend: "-3%",
-      trendUp: false,
+      segments: [
+        { label: "Critical", value: 8, sublabel: "8 Critical", color: "bg-red-600" },
+        { label: "High", value: 16, sublabel: "16 High", color: "bg-amber-500" },
+        { label: "Medium", value: 45, sublabel: "45 Medium", color: "bg-green-600" },
+      ],
+      description: "Immediately prioritize review of Critical & High risks.",
     },
     {
-      title: "Evidence Pending Validation",
-      value: "16",
-      icon: Clock,
-      trend: "+5%",
+      title: "RCSA Review & Challenge Process",
+      value: 88,
+      isPercentage: true,
+      trend: "+7% since last month",
       trendUp: true,
-    },
-    {
-      title: "Overdue Assessments",
-      value: "3",
-      icon: Shield,
-      trend: "0%",
-      trendUp: false,
+      icon: FileCheck,
+      segments: [
+        { label: "Agreed (88%)", value: 155, sublabel: "155 Agreed", color: "bg-green-600" },
+        { label: "Pending (8%)", value: 15, sublabel: "15 Pending", color: "bg-amber-500" },
+        { label: "Challenged (4%)", value: 8, sublabel: "8 Challenged", color: "bg-red-600" },
+      ],
+      description: "Focus on challenged & pending items to maintain robust oversight.",
     },
   ];
 
@@ -290,28 +302,63 @@ const Dashboard2ndLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Scorecards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
           {metrics.map((metric, index) => (
-            <Card key={index} className="border-border/50 shadow-sm hover:shadow-md transition-shadow">
+            <Card key={index} className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card">
               <CardContent className="p-6">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start justify-between mb-4">
+                  <h3 className="text-xl font-bold text-foreground">{metric.title}</h3>
+                  <div className="w-14 h-14 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
+                    <metric.icon className="w-7 h-7 text-primary" />
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-5xl font-bold text-foreground">
+                      {metric.value}{metric.isPercentage ? "%" : ""}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    <TrendingUp className={`w-4 h-4 ${metric.trendUp ? "text-green-600" : "text-red-600"}`} />
+                    <span className={`text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                      {metric.trend}
+                    </span>
+                  </div>
+                  
+                  {/* Status Bar */}
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">{metric.title}</p>
-                    <p className="text-3xl font-bold text-foreground">{metric.value}</p>
-                    <div className="flex items-center gap-1">
-                      {metric.trendUp ? (
-                        <TrendingUp className="w-4 h-4 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-4 h-4 text-red-600" />
-                      )}
-                      <span className={`text-xs font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
-                        {metric.trend}
-                      </span>
+                    <div className="flex h-8 rounded-lg overflow-hidden">
+                      {metric.segments.map((segment, idx) => {
+                        const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
+                        const percentage = (segment.value / total) * 100;
+                        return (
+                          <div
+                            key={idx}
+                            className={segment.color}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-x-4 gap-y-1">
+                      {metric.segments.map((segment, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5">
+                          <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {segment.sublabel || segment.label}
+                          </span>
+                        </div>
+                      ))}
                     </div>
                   </div>
-                  <div className="w-12 h-12 rounded-lg bg-second-line/10 flex items-center justify-center">
-                    <metric.icon className="w-6 h-6 text-second-line" />
-                  </div>
+                  
+                  <p className="text-sm text-muted-foreground leading-snug pt-2">
+                    {metric.description}
+                  </p>
                 </div>
               </CardContent>
             </Card>
