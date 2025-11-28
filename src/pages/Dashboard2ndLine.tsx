@@ -697,7 +697,7 @@ const Dashboard2ndLine = () => {
                         </TableCell>
                         <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className={`flex items-start gap-2 ${isLevel2 ? 'pl-8' : isLevel3 ? 'pl-16' : ''}`}>
+                          <div className="flex items-start gap-2">
                             {canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
@@ -770,24 +770,28 @@ const Dashboard2ndLine = () => {
                             {risk.assessors.map((assessor, idx) => (
                               <Tooltip key={idx}>
                                 <TooltipTrigger asChild>
-                                  <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 flex items-center gap-1 cursor-pointer">
+                                  <Badge 
+                                    variant="outline" 
+                                    className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 flex items-center gap-1 cursor-pointer"
+                                  >
                                     {assessor}
                                     {risk.currentEditor === assessor && (
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <Lock className="w-3 h-3 text-amber-500" />
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>The assessment is currently being edited by this user</p>
-                                        </TooltipContent>
-                                      </Tooltip>
+                                      <Lock className="w-3 h-3 text-amber-500" />
                                     )}
                                   </Badge>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <div className="flex items-center gap-2">
-                                    <Mail className="w-4 h-4" />
-                                    <span>{assessorEmails[assessor] || `${assessor.toLowerCase().replace(' ', '.')}@company.com`}</span>
+                                  <div className="space-y-1">
+                                    <div className="flex items-center gap-2">
+                                      <Mail className="w-4 h-4" />
+                                      <span>{assessorEmails[assessor] || `${assessor.toLowerCase().replace(' ', '.')}@company.com`}</span>
+                                    </div>
+                                    {risk.currentEditor === assessor && (
+                                      <div className="flex items-center gap-2 text-amber-500 text-xs">
+                                        <Lock className="w-3 h-3" />
+                                        <span>The assessment is currently being edited by this user</span>
+                                      </div>
+                                    )}
                                   </div>
                                 </TooltipContent>
                               </Tooltip>
