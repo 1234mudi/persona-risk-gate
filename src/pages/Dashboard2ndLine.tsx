@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -318,7 +318,39 @@ const Dashboard2ndLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Scorecards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          {/* Quick Links Card */}
+          <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <Link className="w-5 h-5 text-primary" />
+                Quick Links
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                <ClipboardCheck className="w-4 h-4" />
+                View Risks to be Assessed
+              </a>
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                <CheckCircle className="w-4 h-4" />
+                View Risks to be Approved
+              </a>
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                <AlertTriangle className="w-4 h-4" />
+                View Open Challenges
+              </a>
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                <CheckSquare className="w-4 h-4" />
+                View Completed Challenges
+              </a>
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
+                <AlertCircle className="w-4 h-4" />
+                View Open Risk Events
+              </a>
+            </CardContent>
+          </Card>
+
           {metrics.map((metric, index) => (
             <Card key={index} className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card relative">
               <CardContent className="p-4">
