@@ -50,6 +50,7 @@ interface RiskData {
   businessUnit: string;
   category: string;
   owner: string;
+  assessors: string[];
   inherentRisk: { level: string; color: string };
   inherentTrend: { value: string; up: boolean };
   relatedControls: { id: string; name: string; type: string; nature: string };
@@ -393,10 +394,10 @@ const Dashboard2ndLine = () => {
           ))}
         </div>
 
-        {/* My Risk Assessments Section */}
+        {/* Active Risk Profile Section */}
         <Card className="border-border/50 shadow-sm">
           <CardHeader className="border-b border-border/50">
-            <CardTitle className="text-xl font-semibold">My Risk Assessments</CardTitle>
+            <CardTitle className="text-xl font-semibold">Active Risk Profile</CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             {/* Modern Segmented Tabs */}
@@ -455,9 +456,9 @@ const Dashboard2ndLine = () => {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  {activeTab === "own" && "Review and manage risks that you own. Monitor control effectiveness and residual risk levels."}
-                  {activeTab === "assess" && "Review and assess risks that require your evaluation. Update risk ratings and controls by clicking the edit icon in any editable field."}
-                  {activeTab === "approve" && "Review and approve risk assessments submitted by your team. Verify accuracy and completeness before final approval."}
+                  {activeTab === "own" && "These are risks you own and are responsible for managing. Review control effectiveness and ensure residual risks remain within acceptable tolerance."}
+                  {activeTab === "assess" && "These risks require your assessment and input. Evaluate risk ratings, validate controls, and provide your professional judgment on the adequacy of mitigation measures."}
+                  {activeTab === "approve" && "These risk assessments are awaiting your approval. Review completeness, validate assessment quality, and ensure alignment with enterprise risk appetite before approving."}
                 </p>
               </div>
             </div>
@@ -517,16 +518,16 @@ const Dashboard2ndLine = () => {
                         <Checkbox />
                       </TableHead>
                       <TableHead className="min-w-[100px] py-2">Risk ID</TableHead>
-                      <TableHead className="min-w-[200px] py-2">Risk Title</TableHead>
+                      <TableHead className="min-w-[220px] py-2">Risk Title</TableHead>
                       <TableHead className="min-w-[100px] py-2">Risk Hierarchy</TableHead>
-                      <TableHead className="min-w-[120px] py-2">Category</TableHead>
+                      <TableHead className="min-w-[180px] py-2">Assessors/Collaborators</TableHead>
+                      <TableHead className="min-w-[140px] py-2">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[180px] py-2">Inherent Risk</TableHead>
                       <TableHead className="min-w-[180px] py-2">Related Controls</TableHead>
-                      <TableHead className="min-w-[160px] py-2">Control Effectiveness</TableHead>
-                      <TableHead className="min-w-[160px] py-2">Test Results</TableHead>
+                      <TableHead className="min-w-[200px] py-2">Calculated Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[180px] py-2">Control Test Results</TableHead>
                       <TableHead className="min-w-[180px] py-2">Residual Risk</TableHead>
                       <TableHead className="min-w-[160px] py-2">Status</TableHead>
-                      <TableHead className="min-w-[140px] py-2">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[120px] text-center py-2">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -571,6 +572,9 @@ const Dashboard2ndLine = () => {
                                 {risk.title}
                               </button>
                               <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                              <span className={`text-xs px-2 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
+                                {risk.category}
+                              </span>
                             </div>
                           </div>
                         </TableCell>
@@ -580,9 +584,21 @@ const Dashboard2ndLine = () => {
                           </Badge>
                         </TableCell>
                         <TableCell className="py-2">
-                          <span className={`text-sm px-3 py-1 rounded-md font-medium ${getCategoryColor(risk.category)}`}>
-                            {risk.category}
-                          </span>
+                          <div className="flex flex-wrap gap-1">
+                            {risk.assessors.map((assessor, idx) => (
+                              <Badge key={idx} variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
+                                {assessor}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2">
+                          <div className="space-y-0.5">
+                            <div className="text-sm">{risk.lastAssessed}</div>
+                            <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
+                              View History ({risk.previousAssessments})
+                            </button>
+                          </div>
                         </TableCell>
                         <TableCell className="py-2">
                           <div className="space-y-1">
@@ -673,11 +689,17 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-2">
-                          <div className="space-y-0.5">
-                            <div className="text-sm font-medium">{risk.testResults.label}</div>
-                            {risk.testResults.sublabel && (
-                              <div className="text-xs text-muted-foreground">{risk.testResults.sublabel}</div>
-                            )}
+                          <div className="space-y-1">
+                            <div className="flex flex-wrap gap-1">
+                              <Badge className="bg-green-500 text-white rounded-full px-2.5 py-1 text-xs">
+                                {risk.testResults.label}
+                              </Badge>
+                              {risk.testResults.sublabel && (
+                                <Badge className="bg-green-500 text-white rounded-full px-2.5 py-1 text-xs">
+                                  {risk.testResults.sublabel}
+                                </Badge>
+                              )}
+                            </div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
                               View Previous
                             </button>
@@ -724,14 +746,6 @@ const Dashboard2ndLine = () => {
                           <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
                             {risk.status}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="py-2">
-                          <div className="space-y-0.5">
-                            <div className="text-sm">{risk.lastAssessed}</div>
-                            <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-                              View History ({risk.previousAssessments})
-                            </button>
-                          </div>
                         </TableCell>
                         <TableCell className="py-2">
                           <div className="flex items-center justify-center gap-1">
@@ -909,6 +923,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Michael Chen (Operations)",
+    assessors: ["Sarah Johnson", "David Kim"],
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "13%", up: false },
     relatedControls: { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective" },
@@ -929,6 +944,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Branch Manager",
+    assessors: ["Emily White"],
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "12%", up: false },
     relatedControls: { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective" },
@@ -949,6 +965,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Teller Supervisor",
+    assessors: ["James Brown", "Lisa Martinez", "Tom Wilson"],
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "8%", up: true },
     relatedControls: { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive" },
@@ -968,6 +985,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Technology",
     owner: "CISO Office",
+    assessors: ["Alex Turner", "Maria Garcia"],
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "20%", up: true },
     relatedControls: { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive" },
@@ -988,6 +1006,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Technology",
     owner: "Security Team",
+    assessors: ["Robert Chen", "Nina Patel"],
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "15%", up: true },
     relatedControls: { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive" },
@@ -1007,6 +1026,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Compliance",
     owner: "Compliance Officer",
+    assessors: ["Kevin Lee"],
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "10%", up: false },
     relatedControls: { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive" },
@@ -1027,6 +1047,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Compliance",
     owner: "AML Team Lead",
+    assessors: ["Patricia Adams", "Daniel Foster"],
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "22%", up: true },
     relatedControls: { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective" },
@@ -1046,6 +1067,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Corporate Banking",
     category: "Financial",
     owner: "Treasury Department",
+    assessors: ["Michelle Wong"],
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "9%", up: false },
     relatedControls: { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive" },
@@ -1065,6 +1087,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Procurement Manager",
+    assessors: ["Rachel Green", "Steven Park"],
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "16%", up: true },
     relatedControls: { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive" },
@@ -1084,6 +1107,7 @@ const initialRiskData: RiskData[] = [
     businessUnit: "Retail Banking",
     category: "Technology",
     owner: "Data Protection Officer",
+    assessors: ["Angela Smith"],
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "25%", up: true },
     relatedControls: { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive" },
