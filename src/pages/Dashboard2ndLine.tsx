@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -72,6 +72,7 @@ interface RiskData {
 
 const Dashboard2ndLine = () => {
   const navigate = useNavigate();
+  const reportSectionRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-001", "R-002", "R-003"]));
   const [editDialog, setEditDialog] = useState<{
@@ -131,6 +132,17 @@ const Dashboard2ndLine = () => {
 
   const handleLogout = () => {
     navigate("/");
+  };
+
+  const handleQuickLinkClick = (tab: "own" | "assess" | "approve") => {
+    setActiveTab(tab);
+    // Scroll to the report section smoothly
+    setTimeout(() => {
+      reportSectionRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 100);
   };
   const metrics = [
     {
@@ -334,11 +346,11 @@ const Dashboard2ndLine = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <button onClick={() => setActiveTab("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
+              <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
                 <ClipboardCheck className="w-4 h-4" />
                 View Risks to be Assessed
               </button>
-              <button onClick={() => setActiveTab("approve")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
+              <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
                 <CheckCircle className="w-4 h-4" />
                 View Risks to be Approved
               </button>
@@ -434,7 +446,7 @@ const Dashboard2ndLine = () => {
         </div>
 
         {/* Active Risk Profile Section */}
-        <Card className="border-border/50 shadow-sm">
+        <Card ref={reportSectionRef} className="border-border/50 shadow-sm">
           <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold">Active Risk Profile</CardTitle>
