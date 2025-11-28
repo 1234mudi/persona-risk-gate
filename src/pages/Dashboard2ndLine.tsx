@@ -414,7 +414,7 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" variant="outline" className="h-7 border-cyan-500 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-900/20">
+                      <Button size="sm" className="h-7 bg-cyan-500 hover:bg-cyan-600 text-white">
                         <RefreshCw className="h-3.5 w-3.5 mr-1" />
                         Reassess
                       </Button>
@@ -425,7 +425,18 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" variant="outline" className="h-7 border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20">
+                      <Button size="sm" className="h-7 bg-green-500 hover:bg-green-600 text-white">
+                        <UsersIcon className="h-3.5 w-3.5 mr-1" />
+                        Collaborate
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Invite collaborators to work on risks</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" className="h-7 bg-purple-500 hover:bg-purple-600 text-white">
                         <UserPlus className="h-3.5 w-3.5 mr-1" />
                         Reassign
                       </Button>
@@ -556,8 +567,7 @@ const Dashboard2ndLine = () => {
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[160px] py-2 border-r border-b border-border">Status</TableHead>
-                      <TableHead className="min-w-[120px] text-center py-2 border-b border-border">Actions</TableHead>
+                      <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -751,67 +761,10 @@ const Dashboard2ndLine = () => {
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-b border-border">
                           <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
                             {risk.status}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="py-2 border-b border-border">
-                          <div className="flex items-center justify-center gap-1">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
-                                    onClick={() => handleAction("reassign", risk.id)}
-                                  >
-                                    <UserPlus className="w-3.5 h-3.5 text-blue-600" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Reassign</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20"
-                                    onClick={() => handleAction("collaborate", risk.id)}
-                                  >
-                                     <UsersIcon className="w-3.5 h-3.5 text-purple-600" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Collaborate</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-7 w-7 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
-                                    onClick={() => handleAction("reassess", risk.id)}
-                                  >
-                                    <RotateCcw className="w-3.5 h-3.5 text-green-600" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Reassess</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
                         </TableCell>
                       </TableRow>
                     );
