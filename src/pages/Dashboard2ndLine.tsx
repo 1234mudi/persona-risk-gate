@@ -604,12 +604,14 @@ const Dashboard2ndLine = () => {
                             )}
                             {!canExpand && <div className="w-6" />}
                             <div className="flex flex-col gap-1">
-                              <button 
-                                className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                                onClick={() => toast.info(`Opening details for ${risk.title}`)}
-                              >
-                                {risk.title}
-                              </button>
+                <a 
+                  href="https://lovable.dev/projects/1521b1c2-74ba-484f-9f36-62cde302113b"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                >
+                  {risk.title}
+                </a>
                               <span className="text-xs text-muted-foreground">{risk.owner}</span>
                               <span className={`text-xs px-2 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
                                 {risk.category}
