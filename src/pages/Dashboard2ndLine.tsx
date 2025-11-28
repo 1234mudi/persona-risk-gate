@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -396,8 +396,47 @@ const Dashboard2ndLine = () => {
 
         {/* Active Risk Profile Section */}
         <Card className="border-border/50 shadow-sm">
-          <CardHeader className="border-b border-border/50">
-            <CardTitle className="text-xl font-semibold">Active Risk Profile</CardTitle>
+          <CardHeader className="border-b border-border/50 space-y-0">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-xl font-semibold">Active Risk Profile</CardTitle>
+              <TooltipProvider>
+                <div className="flex items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" className="h-8 bg-blue-500 hover:bg-blue-600 text-white">
+                        <Plus className="h-3.5 w-3.5 mr-1" />
+                        Add New Risk
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Create a new risk entry</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" variant="outline" className="h-8 border-blue-500 text-blue-600 hover:bg-blue-50">
+                        <RefreshCw className="h-3.5 w-3.5 mr-1" />
+                        Reassess
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Reassess selected risks</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" variant="outline" className="h-8 border-blue-500 text-blue-600 hover:bg-blue-50">
+                        <UserPlus className="h-3.5 w-3.5 mr-1" />
+                        Reassign
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Reassign risks to another owner</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
+            </div>
           </CardHeader>
           <CardContent className="p-6">
             {/* Modern Segmented Tabs */}
@@ -405,7 +444,7 @@ const Dashboard2ndLine = () => {
               <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50">
                 <button
                   onClick={() => setActiveTab("own")}
-                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all border-r border-border/50 ${
+                  className={`px-6 py-2.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
                     activeTab === "own"
                       ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -420,7 +459,7 @@ const Dashboard2ndLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all border-r border-border/50 ${
+                  className={`px-6 py-2.5 font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
                     activeTab === "assess"
                       ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -435,7 +474,7 @@ const Dashboard2ndLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("approve")}
-                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all ${
+                  className={`px-6 py-2.5 rounded-r-md font-medium text-sm transition-all ${
                     activeTab === "approve"
                       ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -465,16 +504,21 @@ const Dashboard2ndLine = () => {
 
             {/* Filters and Actions */}
             <div className="flex flex-wrap items-center gap-4 mb-6">
-              <Select defaultValue="retail">
-                <SelectTrigger className="w-48 bg-primary text-primary-foreground border-primary">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="retail">Retail Banking</SelectItem>
-                  <SelectItem value="corporate">Corporate Banking</SelectItem>
-                  <SelectItem value="investment">Investment Banking</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
+                  Assessment Context
+                </Label>
+                <Select defaultValue="retail">
+                  <SelectTrigger id="assessment-context" className="w-48 bg-primary text-primary-foreground border-primary">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="retail">Retail Banking</SelectItem>
+                    <SelectItem value="corporate">Corporate Banking</SelectItem>
+                    <SelectItem value="investment">Investment Banking</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               <Select defaultValue="all">
                 <SelectTrigger className="w-40">
@@ -491,44 +535,29 @@ const Dashboard2ndLine = () => {
                 <Input placeholder="Search risks..." className="pl-10" />
                 <Shield className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
-
-              <div className="ml-auto flex gap-2">
-                <Button className="bg-primary">
-                  <FileCheck className="w-4 h-4 mr-2" />
-                  Add New Risk
-                </Button>
-                <Button variant="outline" className="border-primary text-primary">
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  Reassess
-                </Button>
-                <Button variant="outline" className="border-primary text-primary">
-                  <UserPlus className="w-4 h-4 mr-2" />
-                  Reassign
-                </Button>
-              </div>
             </div>
 
             {/* Table */}
             <div className="border rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
-                <Table>
+                <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
-                      <TableHead className="w-12 py-2">
+                      <TableHead className="w-12 py-2 border-r border-b border-border">
                         <Checkbox />
                       </TableHead>
-                      <TableHead className="min-w-[100px] py-2">Risk ID</TableHead>
-                      <TableHead className="min-w-[220px] py-2">Risk Title</TableHead>
-                      <TableHead className="min-w-[100px] py-2">Risk Hierarchy</TableHead>
-                      <TableHead className="min-w-[180px] py-2">Assessors/Collaborators</TableHead>
-                      <TableHead className="min-w-[140px] py-2">Last Assessed Date</TableHead>
-                      <TableHead className="min-w-[180px] py-2">Inherent Risk</TableHead>
-                      <TableHead className="min-w-[180px] py-2">Related Controls</TableHead>
-                      <TableHead className="min-w-[200px] py-2">Calculated Control Effectiveness</TableHead>
-                      <TableHead className="min-w-[180px] py-2">Control Test Results</TableHead>
-                      <TableHead className="min-w-[180px] py-2">Residual Risk</TableHead>
-                      <TableHead className="min-w-[160px] py-2">Status</TableHead>
-                      <TableHead className="min-w-[120px] text-center py-2">Actions</TableHead>
+                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
+                      <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
+                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
+                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Related Controls</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Residual Risk</TableHead>
+                      <TableHead className="min-w-[160px] py-2 border-r border-b border-border">Status</TableHead>
+                      <TableHead className="min-w-[120px] text-center py-2 border-b border-border">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -545,11 +574,11 @@ const Dashboard2ndLine = () => {
                         isLevel2 ? 'bg-purple-50/20 dark:bg-purple-950/10' : 
                         'bg-orange-50/10 dark:bg-orange-950/10'
                       }`}>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <Checkbox />
                         </TableCell>
-                        <TableCell className="font-medium py-2">{risk.id}</TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className={`flex items-start gap-2 ${isLevel2 ? 'pl-8' : isLevel3 ? 'pl-16' : ''}`}>
                             {canExpand && (
                               <button
@@ -578,12 +607,12 @@ const Dashboard2ndLine = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs font-medium`}>
                             {risk.riskLevel}
                           </Badge>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex flex-wrap gap-1">
                             {risk.assessors.map((assessor, idx) => (
                               <Badge key={idx} variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
@@ -592,7 +621,7 @@ const Dashboard2ndLine = () => {
                             ))}
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-0.5">
                             <div className="text-sm">{risk.lastAssessed}</div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
@@ -600,7 +629,7 @@ const Dashboard2ndLine = () => {
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-2`}>
@@ -637,7 +666,7 @@ const Dashboard2ndLine = () => {
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center gap-2">
                             <div className="space-y-0.5">
                               <div className="text-xs text-muted-foreground">{risk.relatedControls.id}</div>
@@ -647,26 +676,10 @@ const Dashboard2ndLine = () => {
                                 <span>{risk.relatedControls.nature}</span>
                               </div>
                             </div>
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-5 w-5"
-                                    onClick={() => handleEdit("controls", risk.id, risk.relatedControls.name)}
-                                  >
-                                    <Edit2 className="w-3 h-3 text-muted-foreground hover:text-primary cursor-pointer" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Edit Related Controls</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+...
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center gap-2">
                             {getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color)}
                             <TooltipProvider>
@@ -688,24 +701,20 @@ const Dashboard2ndLine = () => {
                             </TooltipProvider>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
                             <div className="flex flex-wrap gap-1">
                               <Badge className="bg-green-500 text-white rounded-full px-2.5 py-1 text-xs">
                                 {risk.testResults.label}
                               </Badge>
-                              {risk.testResults.sublabel && (
-                                <Badge className="bg-green-500 text-white rounded-full px-2.5 py-1 text-xs">
-                                  {risk.testResults.sublabel}
-                                </Badge>
-                              )}
+...
                             </div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
                               View Previous
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-2`}>
@@ -742,12 +751,12 @@ const Dashboard2ndLine = () => {
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
                             {risk.status}
                           </Badge>
                         </TableCell>
-                        <TableCell className="py-2">
+                        <TableCell className="py-2 border-b border-border">
                           <div className="flex items-center justify-center gap-1">
                             <TooltipProvider>
                               <Tooltip>
