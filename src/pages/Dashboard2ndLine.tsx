@@ -396,14 +396,14 @@ const Dashboard2ndLine = () => {
 
         {/* Active Risk Profile Section */}
         <Card className="border-border/50 shadow-sm">
-          <CardHeader className="border-b border-border/50 space-y-0">
+          <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
             <div className="flex items-center justify-between">
-              <CardTitle className="text-xl font-semibold">Active Risk Profile</CardTitle>
+              <CardTitle className="text-lg font-semibold">Active Risk Profile</CardTitle>
               <TooltipProvider>
                 <div className="flex items-center gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-8 bg-blue-500 hover:bg-blue-600 text-white">
+                      <Button size="sm" className="h-7 bg-blue-500 hover:bg-blue-600 text-white">
                         <Plus className="h-3.5 w-3.5 mr-1" />
                         Add New Risk
                       </Button>
@@ -414,7 +414,7 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" variant="outline" className="h-8 border-blue-500 text-blue-600 hover:bg-blue-50">
+                      <Button size="sm" variant="outline" className="h-7 border-cyan-500 text-cyan-600 hover:bg-cyan-50 dark:hover:bg-cyan-900/20">
                         <RefreshCw className="h-3.5 w-3.5 mr-1" />
                         Reassess
                       </Button>
@@ -425,7 +425,7 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" variant="outline" className="h-8 border-blue-500 text-blue-600 hover:bg-blue-50">
+                      <Button size="sm" variant="outline" className="h-7 border-purple-500 text-purple-600 hover:bg-purple-50 dark:hover:bg-purple-900/20">
                         <UserPlus className="h-3.5 w-3.5 mr-1" />
                         Reassign
                       </Button>
@@ -438,13 +438,13 @@ const Dashboard2ndLine = () => {
               </TooltipProvider>
             </div>
           </CardHeader>
-          <CardContent className="p-6">
+          <CardContent className="p-4">
             {/* Modern Segmented Tabs */}
-            <div className="mb-6">
+            <div className="mb-3">
               <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50">
                 <button
                   onClick={() => setActiveTab("own")}
-                  className={`px-6 py-2.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                  className={`px-4 py-1.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
                     activeTab === "own"
                       ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -459,7 +459,7 @@ const Dashboard2ndLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-6 py-2.5 font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                  className={`px-4 py-1.5 font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
                     activeTab === "assess"
                       ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -474,7 +474,7 @@ const Dashboard2ndLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("approve")}
-                  className={`px-6 py-2.5 rounded-r-md font-medium text-sm transition-all ${
+                  className={`px-4 py-1.5 rounded-r-md font-medium text-sm transition-all ${
                     activeTab === "approve"
                       ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -491,10 +491,10 @@ const Dashboard2ndLine = () => {
             </div>
 
             {/* Info Banner */}
-            <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4 mb-6">
-              <div className="flex items-start gap-3">
-                <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-                <p className="text-sm text-yellow-800 dark:text-yellow-200">
+            <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2.5 mb-3">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-yellow-800 dark:text-yellow-200">
                   {activeTab === "own" && "These are risks you own and are responsible for managing. Review control effectiveness and ensure residual risks remain within acceptable tolerance."}
                   {activeTab === "assess" && "These risks require your assessment and input. Evaluate risk ratings, validate controls, and provide your professional judgment on the adequacy of mitigation measures."}
                   {activeTab === "approve" && "These risk assessments are awaiting your approval. Review completeness, validate assessment quality, and ensure alignment with enterprise risk appetite before approving."}
@@ -503,13 +503,13 @@ const Dashboard2ndLine = () => {
             </div>
 
             {/* Filters and Actions */}
-            <div className="flex flex-wrap items-center gap-4 mb-6">
-              <div className="flex flex-col gap-1.5">
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <div className="flex flex-col gap-1">
                 <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
                   Assessment Context
                 </Label>
                 <Select defaultValue="retail">
-                  <SelectTrigger id="assessment-context" className="w-48 bg-primary text-primary-foreground border-primary">
+                  <SelectTrigger id="assessment-context" className="w-48 h-8 bg-primary text-primary-foreground border-primary">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -521,7 +521,7 @@ const Dashboard2ndLine = () => {
               </div>
 
               <Select defaultValue="all">
-                <SelectTrigger className="w-40">
+                <SelectTrigger className="w-40 h-8">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -532,7 +532,7 @@ const Dashboard2ndLine = () => {
               </Select>
 
               <div className="relative flex-1 min-w-[200px]">
-                <Input placeholder="Search risks..." className="pl-10" />
+                <Input placeholder="Search risks..." className="pl-10 h-8" />
                 <Shield className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
             </div>
