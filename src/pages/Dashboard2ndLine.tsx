@@ -267,7 +267,8 @@ const Dashboard2ndLine = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/10">
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/10">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
@@ -604,14 +605,21 @@ const Dashboard2ndLine = () => {
                             )}
                             {!canExpand && <div className="w-6" />}
                             <div className="flex flex-col gap-1">
-                <a 
-                  href="https://lovable.dev/projects/1521b1c2-74ba-484f-9f36-62cde302113b"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                >
-                  {risk.title}
-                </a>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <a 
+                                    href="https://preview--enhanced-risk-assessment.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJub25jZSI6IjZhOGIzMjVlMDNhNDQ0MjkyYzcwMDIxOTNjNzIyNTI5IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY0OTEzOTQ0LCJuYmYiOjE3NjQzMDkxNDQsImlhdCI6MTc2NDMwOTE0NH0.s8EKKWcZzjfA00Q1h1pLUyOPYdraiiGgKajQVcg4XdM/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                  >
+                                    {risk.title}
+                                  </a>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Click on this link to open the risk assessment form</p>
+                                </TooltipContent>
+                              </Tooltip>
                               <span className="text-xs text-muted-foreground">{risk.owner}</span>
                               <span className={`text-xs px-2 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
                                 {risk.category}
@@ -874,7 +882,8 @@ const Dashboard2ndLine = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </div>
+    </TooltipProvider>
   );
 };
 
