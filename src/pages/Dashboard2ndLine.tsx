@@ -328,14 +328,14 @@ const Dashboard2ndLine = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-2">
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
+              <button onClick={() => setActiveTab("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
                 <ClipboardCheck className="w-4 h-4" />
                 View Risks to be Assessed
-              </a>
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
+              </button>
+              <button onClick={() => setActiveTab("approve")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
                 <CheckCircle className="w-4 h-4" />
                 View Risks to be Approved
-              </a>
+              </button>
               <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
                 <AlertTriangle className="w-4 h-4" />
                 View Open Challenges
@@ -478,6 +478,17 @@ const Dashboard2ndLine = () => {
                       <p>Reassign risks to another owner</p>
                     </TooltipContent>
                   </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" className="h-7 bg-orange-500 hover:bg-orange-600 text-white">
+                        <AlertTriangle className="h-3.5 w-3.5 mr-1" />
+                        Review & Challenge
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Review and challenge risk assessments</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </TooltipProvider>
             </div>
@@ -509,7 +520,7 @@ const Dashboard2ndLine = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   }`}
                 >
-                  Risks I have to Assess
+                  Risks to be Assessed
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "assess" ? "bg-white/20" : "bg-muted"
                   }`}>
@@ -524,7 +535,7 @@ const Dashboard2ndLine = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   }`}
                 >
-                  Risks I have to Approve
+                  Risks to be Approved
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "approve" ? "bg-white/20" : "bg-muted"
                   }`}>
