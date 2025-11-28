@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -77,6 +77,27 @@ const Dashboard2ndLine = () => {
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-001", "R-002", "R-003"]));
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // Email mapping for assessors
+  const assessorEmails: Record<string, string> = {
+    "John Smith": "john.smith@company.com",
+    "Sarah Johnson": "sarah.johnson@company.com",
+    "Mike Davis": "mike.davis@company.com",
+    "James Brown": "james.brown@company.com",
+    "Lisa Martinez": "lisa.martinez@company.com",
+    "Tom Wilson": "tom.wilson@company.com",
+    "Alex Turner": "alex.turner@company.com",
+    "Maria Garcia": "maria.garcia@company.com",
+    "Robert Chen": "robert.chen@company.com",
+    "Nina Patel": "nina.patel@company.com",
+    "David Lee": "david.lee@company.com",
+    "Emma White": "emma.white@company.com",
+    "Chris Anderson": "chris.anderson@company.com",
+    "Sophia Taylor": "sophia.taylor@company.com",
+    "Daniel Kim": "daniel.kim@company.com",
+    "Olivia Brown": "olivia.brown@company.com",
+    "George Harris": "george.harris@company.com",
+  };
   const [editDialog, setEditDialog] = useState<{
     open: boolean;
     type: "inherent" | "controls" | "effectiveness" | "residual" | "trend" | null;
@@ -747,19 +768,29 @@ const Dashboard2ndLine = () => {
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex flex-wrap gap-1">
                             {risk.assessors.map((assessor, idx) => (
-                              <Badge key={idx} variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 flex items-center gap-1">
-                                {assessor}
-                                {risk.currentEditor === assessor && (
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <Lock className="w-3 h-3 text-amber-500" />
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Currently editing this assessment</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                )}
-                              </Badge>
+                              <Tooltip key={idx}>
+                                <TooltipTrigger asChild>
+                                  <Badge variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 flex items-center gap-1 cursor-pointer">
+                                    {assessor}
+                                    {risk.currentEditor === assessor && (
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <Lock className="w-3 h-3 text-amber-500" />
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>The assessment is currently being edited by this user</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <div className="flex items-center gap-2">
+                                    <Mail className="w-4 h-4" />
+                                    <span>{assessorEmails[assessor] || `${assessor.toLowerCase().replace(' ', '.')}@company.com`}</span>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
                             ))}
                           </div>
                         </TableCell>
@@ -1402,8 +1433,8 @@ const initialRiskData: RiskData[] = [
     assessors: ["George Harris"],
     assessmentProgress: {
       assess: "completed",
-      reviewChallenge: "in-progress",
-      approve: "not-started",
+      reviewChallenge: "completed",
+      approve: "completed",
     },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "17%", up: false },
@@ -1412,7 +1443,7 @@ const initialRiskData: RiskData[] = [
     testResults: { label: "Design Effective", sublabel: "" },
     residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "12%", up: true },
-    status: "Review & Challenge",
+    status: "Complete",
     lastAssessed: "2025-10-28",
     previousAssessments: 7,
     tabCategory: "assess",
