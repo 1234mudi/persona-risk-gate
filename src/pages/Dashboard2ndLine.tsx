@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -318,7 +318,7 @@ const Dashboard2ndLine = () => {
         {/* Scorecards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {metrics.map((metric, index) => (
-            <Card key={index} className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card">
+            <Card key={index} className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card relative">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
@@ -380,6 +380,13 @@ const Dashboard2ndLine = () => {
                   <p className="text-xs text-muted-foreground leading-snug pt-2">
                     {metric.description}
                   </p>
+                </div>
+                
+                {/* AI Generated Icon */}
+                <div className="absolute bottom-3 right-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
                 </div>
               </CardContent>
             </Card>
