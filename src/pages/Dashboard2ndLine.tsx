@@ -280,7 +280,7 @@ const Dashboard2ndLine = () => {
                 <h1 className="text-xl font-semibold text-foreground">
                   2nd Line Risk Analyst Dashboard
                 </h1>
-                <p className="text-sm text-muted-foreground">Risk & Compliance Self Assessment</p>
+                <p className="text-sm text-muted-foreground">Risk and Control Self Assessment</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
