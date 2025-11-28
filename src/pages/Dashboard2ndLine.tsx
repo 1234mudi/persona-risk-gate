@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -76,6 +76,7 @@ const Dashboard2ndLine = () => {
   const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-001", "R-002", "R-003"]));
+  const [showScrollTop, setShowScrollTop] = useState(false);
   const [editDialog, setEditDialog] = useState<{
     open: boolean;
     type: "inherent" | "controls" | "effectiveness" | "residual" | "trend" | null;
@@ -152,6 +153,23 @@ const Dashboard2ndLine = () => {
       setHighlightedTab(null);
     }, 1500);
   };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+  };
+
+  // Track scroll position for scroll button
+  useState(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  });
   const metrics = [
     {
       title: "Assessments Pending Review",
@@ -256,6 +274,7 @@ const Dashboard2ndLine = () => {
       case "Sent for Assessment": return "bg-cyan-500 text-white";
       case "In Progress": return "bg-amber-500 text-white";
       case "Pending Approval": return "bg-purple-500 text-white";
+      case "Review & Challenge": return "bg-orange-500 text-white";
       case "Completed": return "bg-green-500 text-white";
       case "Overdue": return "bg-red-500 text-white";
       default: return "bg-blue-500 text-white";
@@ -294,7 +313,7 @@ const Dashboard2ndLine = () => {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/10">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-background dark:via-background dark:to-secondary/10">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
@@ -312,13 +331,6 @@ const Dashboard2ndLine = () => {
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <Button variant="outline" size="sm">
-                <UsersIcon className="w-4 h-4 mr-2" />
-                My Team
-              </Button>
-              <Button size="sm">
-                Export Report
-              </Button>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
@@ -346,7 +358,7 @@ const Dashboard2ndLine = () => {
         {/* Scorecards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {/* Quick Links Card */}
-          <Card className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card">
+          <Card className="border-[3px] border-border/50 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Link className="w-5 h-5 text-primary" />
@@ -378,7 +390,7 @@ const Dashboard2ndLine = () => {
           </Card>
 
           {metrics.map((metric, index) => (
-            <Card key={index} className="border-border/50 shadow-sm hover:shadow-md transition-shadow bg-card relative">
+            <Card key={index} className="border-[3px] border-border/50 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
@@ -454,7 +466,7 @@ const Dashboard2ndLine = () => {
         </div>
 
         {/* Active Risk Profile Section */}
-        <Card ref={reportSectionRef} className="border-border/50 shadow-sm">
+        <Card ref={reportSectionRef} className="border-[3px] border-border/50 shadow-sm bg-white dark:bg-card">
           <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold">Active Risk Profile</CardTitle>
@@ -625,7 +637,9 @@ const Dashboard2ndLine = () => {
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
                       <TableHead className="w-12 py-2 border-r border-b border-border">
-                        <Checkbox />
+                        <div className="flex items-center justify-center">
+                          <Checkbox />
+                        </div>
                       </TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
@@ -656,7 +670,9 @@ const Dashboard2ndLine = () => {
                         'bg-orange-50/10 dark:bg-orange-950/10'
                       }`}>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <Checkbox />
+                          <div className="flex items-center justify-center">
+                            <Checkbox />
+                          </div>
                         </TableCell>
                         <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
@@ -988,6 +1004,26 @@ const Dashboard2ndLine = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Scroll to Top/Bottom Button */}
+      {showScrollTop && (
+        <div className="fixed bottom-8 right-8 flex flex-col gap-2 z-50">
+          <Button
+            size="icon"
+            onClick={scrollToTop}
+            className="h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+          >
+            <ArrowUp className="h-5 w-5" />
+          </Button>
+          <Button
+            size="icon"
+            onClick={scrollToBottom}
+            className="h-12 w-12 rounded-full shadow-lg bg-primary hover:bg-primary/90"
+          >
+            <ArrowDown className="h-5 w-5" />
+          </Button>
+        </div>
+      )}
       </div>
     </TooltipProvider>
   );
@@ -1253,6 +1289,159 @@ const initialRiskData: RiskData[] = [
     lastAssessed: "2025-10-23",
     previousAssessments: 10,
     tabCategory: "own",
+  },
+  {
+    id: "R-007",
+    title: "Credit Risk Management",
+    riskLevel: "Level 1",
+    businessUnit: "Corporate Banking",
+    category: "Financial",
+    owner: "Credit Risk Manager",
+    assessors: ["Thomas Anderson", "Jennifer Lee"],
+    currentEditor: "Thomas Anderson",
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "in-progress",
+      approve: "not-started",
+    },
+    inherentRisk: { level: "High", color: "red" },
+    inherentTrend: { value: "18%", up: true },
+    relatedControls: { id: "Control-032", name: "Credit Scoring Model", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "Medium", color: "yellow" },
+    residualTrend: { value: "10%", up: false },
+    status: "Review & Challenge",
+    lastAssessed: "2025-10-24",
+    previousAssessments: 8,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-008",
+    title: "Liquidity Risk",
+    riskLevel: "Level 1",
+    businessUnit: "Treasury",
+    category: "Financial",
+    owner: "Treasury Manager",
+    assessors: ["Brian Wilson", "Sandra Martinez"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "in-progress",
+    },
+    inherentRisk: { level: "High", color: "red" },
+    inherentTrend: { value: "14%", up: false },
+    relatedControls: { id: "Control-035", name: "Cash Flow Monitoring", type: "Manual", nature: "Detective" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "" },
+    residualRisk: { level: "Low", color: "green" },
+    residualTrend: { value: "5%", up: false },
+    status: "Pending Approval",
+    lastAssessed: "2025-10-25",
+    previousAssessments: 6,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-009",
+    title: "Business Continuity Planning",
+    riskLevel: "Level 1",
+    businessUnit: "Operations",
+    category: "Operational",
+    owner: "BCP Coordinator",
+    assessors: ["Mark Thompson"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "in-progress",
+      approve: "not-started",
+    },
+    inherentRisk: { level: "Medium", color: "yellow" },
+    inherentTrend: { value: "11%", up: true },
+    relatedControls: { id: "Control-037", name: "Disaster Recovery Plan", type: "Manual", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "Low", color: "green" },
+    residualTrend: { value: "6%", up: false },
+    status: "Review & Challenge",
+    lastAssessed: "2025-10-26",
+    previousAssessments: 4,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-010",
+    title: "Fraud Detection Systems",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Technology",
+    owner: "Fraud Prevention Team",
+    assessors: ["Linda Chen", "Paul Roberts"],
+    currentEditor: "Linda Chen",
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "in-progress",
+    },
+    inherentRisk: { level: "Critical", color: "red" },
+    inherentTrend: { value: "23%", up: true },
+    relatedControls: { id: "Control-040", name: "AI Fraud Detection", type: "Automated", nature: "Detective" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "High", color: "red" },
+    residualTrend: { value: "16%", up: false },
+    status: "Pending Approval",
+    lastAssessed: "2025-10-27",
+    previousAssessments: 9,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-011",
+    title: "Model Risk Management",
+    riskLevel: "Level 1",
+    businessUnit: "Risk Analytics",
+    category: "Financial",
+    owner: "Model Risk Officer",
+    assessors: ["George Harris"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "in-progress",
+      approve: "not-started",
+    },
+    inherentRisk: { level: "High", color: "red" },
+    inherentTrend: { value: "17%", up: false },
+    relatedControls: { id: "Control-042", name: "Model Validation", type: "Manual", nature: "Detective" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "" },
+    residualRisk: { level: "Medium", color: "yellow" },
+    residualTrend: { value: "12%", up: true },
+    status: "Review & Challenge",
+    lastAssessed: "2025-10-28",
+    previousAssessments: 7,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-012",
+    title: "Interest Rate Risk",
+    riskLevel: "Level 1",
+    businessUnit: "Treasury",
+    category: "Financial",
+    owner: "ALM Manager",
+    assessors: ["Catherine Wright", "William Davis"],
+    currentEditor: "Catherine Wright",
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "in-progress",
+    },
+    inherentRisk: { level: "Medium", color: "yellow" },
+    inherentTrend: { value: "9%", up: false },
+    relatedControls: { id: "Control-045", name: "Interest Rate Derivatives", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Low", color: "green" },
+    residualTrend: { value: "4%", up: false },
+    status: "Pending Approval",
+    lastAssessed: "2025-10-29",
+    previousAssessments: 11,
+    tabCategory: "approve",
   },
 ];
 
