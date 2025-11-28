@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock } from "lucide-react";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -51,6 +51,12 @@ interface RiskData {
   category: string;
   owner: string;
   assessors: string[];
+  currentEditor?: string;
+  assessmentProgress: {
+    assess: "not-started" | "in-progress" | "completed";
+    reviewChallenge: "not-started" | "in-progress" | "completed";
+    approve: "not-started" | "in-progress" | "completed";
+  };
   inherentRisk: { level: string; color: string };
   inherentTrend: { value: string; up: boolean };
   relatedControls: { id: string; name: string; type: string; nature: string };
@@ -604,6 +610,7 @@ const Dashboard2ndLine = () => {
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
@@ -676,10 +683,46 @@ const Dashboard2ndLine = () => {
                           </Badge>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
+                          <div className="space-y-1">
+                            <div className="flex gap-1">
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.assess === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.assess === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.reviewChallenge === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.reviewChallenge === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.approve === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.approve === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                            </div>
+                            <div className="flex justify-between text-[10px] text-muted-foreground">
+                              <span>Assess</span>
+                              <span>R&C</span>
+                              <span>Approve</span>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex flex-wrap gap-1">
                             {risk.assessors.map((assessor, idx) => (
-                              <Badge key={idx} variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800">
+                              <Badge key={idx} variant="outline" className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 flex items-center gap-1">
                                 {assessor}
+                                {risk.currentEditor === assessor && (
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <Lock className="w-3 h-3 text-amber-500" />
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Currently editing this assessment</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
                               </Badge>
                             ))}
                           </div>
@@ -940,6 +983,11 @@ const initialRiskData: RiskData[] = [
     category: "Operational",
     owner: "Michael Chen (Operations)",
     assessors: ["Sarah Johnson", "David Kim"],
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "13%", up: false },
     relatedControls: { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective" },
@@ -961,6 +1009,11 @@ const initialRiskData: RiskData[] = [
     category: "Operational",
     owner: "Branch Manager",
     assessors: ["Emily White"],
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "12%", up: false },
     relatedControls: { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective" },
@@ -982,6 +1035,12 @@ const initialRiskData: RiskData[] = [
     category: "Operational",
     owner: "Teller Supervisor",
     assessors: ["James Brown", "Lisa Martinez", "Tom Wilson"],
+    currentEditor: "James Brown",
+    assessmentProgress: {
+      assess: "in-progress",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "8%", up: true },
     relatedControls: { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive" },
@@ -1002,6 +1061,12 @@ const initialRiskData: RiskData[] = [
     category: "Technology",
     owner: "CISO Office",
     assessors: ["Alex Turner", "Maria Garcia"],
+    currentEditor: "Alex Turner",
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "in-progress",
+    },
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "20%", up: true },
     relatedControls: { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive" },
@@ -1023,6 +1088,12 @@ const initialRiskData: RiskData[] = [
     category: "Technology",
     owner: "Security Team",
     assessors: ["Robert Chen", "Nina Patel"],
+    currentEditor: "Nina Patel",
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "in-progress",
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "15%", up: true },
     relatedControls: { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive" },
@@ -1043,6 +1114,11 @@ const initialRiskData: RiskData[] = [
     category: "Compliance",
     owner: "Compliance Officer",
     assessors: ["Kevin Lee"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "completed",
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "10%", up: false },
     relatedControls: { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive" },
@@ -1064,6 +1140,12 @@ const initialRiskData: RiskData[] = [
     category: "Compliance",
     owner: "AML Team Lead",
     assessors: ["Patricia Adams", "Daniel Foster"],
+    currentEditor: "Patricia Adams",
+    assessmentProgress: {
+      assess: "in-progress",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "22%", up: true },
     relatedControls: { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective" },
@@ -1084,6 +1166,12 @@ const initialRiskData: RiskData[] = [
     category: "Financial",
     owner: "Treasury Department",
     assessors: ["Michelle Wong"],
+    currentEditor: "Michelle Wong",
+    assessmentProgress: {
+      assess: "in-progress",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "9%", up: false },
     relatedControls: { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive" },
@@ -1104,6 +1192,11 @@ const initialRiskData: RiskData[] = [
     category: "Operational",
     owner: "Procurement Manager",
     assessors: ["Rachel Green", "Steven Park"],
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "16%", up: true },
     relatedControls: { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive" },
@@ -1124,6 +1217,11 @@ const initialRiskData: RiskData[] = [
     category: "Technology",
     owner: "Data Protection Officer",
     assessors: ["Angela Smith"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "completed",
+    },
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "25%", up: true },
     relatedControls: { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive" },
