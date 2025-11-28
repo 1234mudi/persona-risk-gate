@@ -74,6 +74,7 @@ const Dashboard2ndLine = () => {
   const navigate = useNavigate();
   const reportSectionRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
+  const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-001", "R-002", "R-003"]));
   const [editDialog, setEditDialog] = useState<{
     open: boolean;
@@ -136,6 +137,8 @@ const Dashboard2ndLine = () => {
 
   const handleQuickLinkClick = (tab: "own" | "assess" | "approve") => {
     setActiveTab(tab);
+    setHighlightedTab(tab);
+    
     // Scroll to the report section smoothly
     setTimeout(() => {
       reportSectionRef.current?.scrollIntoView({ 
@@ -143,6 +146,11 @@ const Dashboard2ndLine = () => {
         block: 'start' 
       });
     }, 100);
+    
+    // Clear highlight after animation completes
+    setTimeout(() => {
+      setHighlightedTab(null);
+    }, 1500);
   };
   const metrics = [
     {
@@ -521,7 +529,7 @@ const Dashboard2ndLine = () => {
                     activeTab === "own"
                       ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  }`}
+                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                 >
                   Risks I Own
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
@@ -536,7 +544,7 @@ const Dashboard2ndLine = () => {
                     activeTab === "assess"
                       ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  }`}
+                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                 >
                   Risks to be Assessed
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
@@ -551,7 +559,7 @@ const Dashboard2ndLine = () => {
                     activeTab === "approve"
                       ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  }`}
+                  } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                 >
                   Risks to be Approved
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
