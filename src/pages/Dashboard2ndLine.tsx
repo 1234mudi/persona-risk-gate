@@ -257,13 +257,12 @@ const Dashboard2ndLine = () => {
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
         if (expandedRows.has(risk.id)) {
+          // Get Level 2 children
           const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+          // For each Level 2, get its Level 3 children and add them directly
           level2Risks.forEach(l2 => {
-            visible.push(l2);
-            if (expandedRows.has(l2.id)) {
-              const level3Risks = filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
-              visible.push(...level3Risks);
-            }
+            const level3Risks = filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
+            visible.push(...level3Risks);
           });
         }
       }
@@ -271,14 +270,19 @@ const Dashboard2ndLine = () => {
     return visible;
   };
 
+  const getLevel2Children = (level1Risk: RiskData): RiskData[] => {
+    return filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === level1Risk.title);
+  };
+
   const hasChildren = (risk: RiskData) => {
     if (risk.riskLevel === "Level 1") {
-      return filteredRiskData.some(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+      // Check if there are any Level 3 grandchildren through Level 2
+      const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+      return level2Risks.some(l2 => 
+        filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title)
+      );
     }
-    if (risk.riskLevel === "Level 2") {
-      return filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === risk.title);
-    }
-    return false;
+    return false; // Level 2 and Level 3 no longer expandable as separate rows
   };
 
   const getRiskLevelColor = (level: string) => {
@@ -687,7 +691,6 @@ const Dashboard2ndLine = () => {
                       return (
                       <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
                         isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
-                        isLevel2 ? 'bg-purple-50/20 dark:bg-purple-950/10' : 
                         'bg-orange-50/10 dark:bg-orange-950/10'
                       }`}>
                         <TableCell className="py-2 border-r border-b border-border">
@@ -698,7 +701,7 @@ const Dashboard2ndLine = () => {
                         <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-start gap-2">
-                            {canExpand && (
+                            {isLevel1 && canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
                                 className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
@@ -710,34 +713,68 @@ const Dashboard2ndLine = () => {
                                 )}
                               </button>
                             )}
-                            {!canExpand && <div className="w-6" />}
-                            <div className="flex flex-col gap-1">
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <a 
-                                    href="https://preview--enhanced-risk-assessment.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJub25jZSI6IjZhOGIzMjVlMDNhNDQ0MjkyYzcwMDIxOTNjNzIyNTI5IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY0OTEzOTQ0LCJuYmYiOjE3NjQzMDkxNDQsImlhdCI6MTc2NDMwOTE0NH0.s8EKKWcZzjfA00Q1h1pLUyOPYdraiiGgKajQVcg4XdM/"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                                  >
-                                    {risk.title}
-                                  </a>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Click on this link to open the risk assessment form</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <span className="text-xs text-muted-foreground">{risk.owner}</span>
-                              <span className={`text-xs px-2 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
-                                {risk.category}
-                              </span>
+                            {isLevel1 && !canExpand && <div className="w-6" />}
+                            {isLevel3 && <div className="w-6 ml-4" />}
+                            
+                            <div className="flex flex-col gap-2">
+                              {/* Level 1 Title */}
+                              <div className="flex flex-col gap-1">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <a 
+                                      href="https://preview--enhanced-risk-assessment.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJub25jZSI6IjZhOGIzMjVlMDNhNDQ0MjkyYzcwMDIxOTNjNzIyNTI5IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY0OTEzOTQ0LCJuYmYiOjE3NjQzMDkxNDQsImlhdCI6MTc2NDMwOTE0NH0.s8EKKWcZzjfA00Q1h1pLUyOPYdraiiGgKajQVcg4XdM/"
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                    >
+                                      {risk.title}
+                                    </a>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Click on this link to open the risk assessment form</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                                <span className={`text-xs px-2 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
+                                  {risk.category}
+                                </span>
+                              </div>
+                              
+                              {/* Level 2 Children (displayed within Level 1 row) */}
+                              {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
+                                <div key={l2Risk.id} className="flex flex-col gap-1 pl-4 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <a 
+                                        href="https://preview--enhanced-risk-assessment.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJub25jZSI6IjZhOGIzMjVlMDNhNDQ0MjkyYzcwMDIxOTNjNzIyNTI5IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY0OTEzOTQ0LCJuYmYiOjE3NjQzMDkxNDQsImlhdCI6MTc2NDMwOTE0NH0.s8EKKWcZzjfA00Q1h1pLUyOPYdraiiGgKajQVcg4XdM/"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
+                                      >
+                                        └ {l2Risk.title}
+                                      </a>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Click on this link to open the risk assessment form</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  <span className="text-xs text-muted-foreground">{l2Risk.owner}</span>
+                                </div>
+                              ))}
                             </div>
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs font-medium`}>
-                            {risk.riskLevel}
-                          </Badge>
+                          <div className="flex flex-col gap-1">
+                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs font-medium`}>
+                              {risk.riskLevel}
+                            </Badge>
+                            {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
+                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} border text-xs font-medium`}>
+                                {l2Risk.riskLevel}
+                              </Badge>
+                            ))}
+                          </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
