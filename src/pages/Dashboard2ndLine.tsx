@@ -401,10 +401,10 @@ const Dashboard2ndLine = () => {
           <CardContent className="p-6">
             {/* Modern Segmented Tabs */}
             <div className="mb-6">
-              <div className="inline-flex items-center gap-2 p-1 bg-muted/50 rounded-lg border border-border/50">
+              <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50">
                 <button
                   onClick={() => setActiveTab("own")}
-                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all ${
+                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all border-r border-border/50 ${
                     activeTab === "own"
                       ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -419,7 +419,7 @@ const Dashboard2ndLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all ${
+                  className={`px-6 py-2.5 rounded-md font-medium text-sm transition-all border-r border-border/50 ${
                     activeTab === "assess"
                       ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -455,8 +455,9 @@ const Dashboard2ndLine = () => {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                  Review and assess risks that require your evaluation. Update risk ratings and controls by clicking the{" "}
-                  <Edit2 className="w-4 h-4 inline mx-1" /> icon in any editable field.
+                  {activeTab === "own" && "Review and manage risks that you own. Monitor control effectiveness and residual risk levels."}
+                  {activeTab === "assess" && "Review and assess risks that require your evaluation. Update risk ratings and controls by clicking the edit icon in any editable field."}
+                  {activeTab === "approve" && "Review and approve risk assessments submitted by your team. Verify accuracy and completeness before final approval."}
                 </p>
               </div>
             </div>
@@ -512,22 +513,21 @@ const Dashboard2ndLine = () => {
                 <Table>
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
-                      <TableHead className="w-12">
+                      <TableHead className="w-12 py-2">
                         <Checkbox />
                       </TableHead>
-                      <TableHead className="min-w-[100px]">Risk ID</TableHead>
-                      <TableHead className="min-w-[200px]">Risk Title</TableHead>
-                      <TableHead className="min-w-[100px]">Risk Level</TableHead>
-                      <TableHead className="min-w-[120px]">Category</TableHead>
-                      <TableHead className="min-w-[180px]">Owner</TableHead>
-                      <TableHead className="min-w-[180px]">Inherent Risk</TableHead>
-                      <TableHead className="min-w-[180px]">Related Controls</TableHead>
-                      <TableHead className="min-w-[160px]">Control Effectiveness</TableHead>
-                      <TableHead className="min-w-[160px]">Test Results</TableHead>
-                      <TableHead className="min-w-[180px]">Residual Risk</TableHead>
-                      <TableHead className="min-w-[160px]">Status</TableHead>
-                      <TableHead className="min-w-[140px]">Last Assessed Date</TableHead>
-                      <TableHead className="min-w-[120px] text-center">Actions</TableHead>
+                      <TableHead className="min-w-[100px] py-2">Risk ID</TableHead>
+                      <TableHead className="min-w-[200px] py-2">Risk Title</TableHead>
+                      <TableHead className="min-w-[100px] py-2">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[120px] py-2">Category</TableHead>
+                      <TableHead className="min-w-[180px] py-2">Inherent Risk</TableHead>
+                      <TableHead className="min-w-[180px] py-2">Related Controls</TableHead>
+                      <TableHead className="min-w-[160px] py-2">Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[160px] py-2">Test Results</TableHead>
+                      <TableHead className="min-w-[180px] py-2">Residual Risk</TableHead>
+                      <TableHead className="min-w-[160px] py-2">Status</TableHead>
+                      <TableHead className="min-w-[140px] py-2">Last Assessed Date</TableHead>
+                      <TableHead className="min-w-[120px] text-center py-2">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -544,16 +544,16 @@ const Dashboard2ndLine = () => {
                         isLevel2 ? 'bg-purple-50/20 dark:bg-purple-950/10' : 
                         'bg-orange-50/10 dark:bg-orange-950/10'
                       }`}>
-                        <TableCell>
+                        <TableCell className="py-2">
                           <Checkbox />
                         </TableCell>
-                        <TableCell className="font-medium">{risk.id}</TableCell>
-                        <TableCell>
-                          <div className={`flex items-center gap-2 ${isLevel2 ? 'pl-8' : isLevel3 ? 'pl-16' : ''}`}>
+                        <TableCell className="font-medium py-2">{risk.id}</TableCell>
+                        <TableCell className="py-2">
+                          <div className={`flex items-start gap-2 ${isLevel2 ? 'pl-8' : isLevel3 ? 'pl-16' : ''}`}>
                             {canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
-                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0"
+                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
                               >
                                 {isExpanded ? (
                                   <ChevronDown className="w-4 h-4 text-muted-foreground" />
@@ -563,37 +563,39 @@ const Dashboard2ndLine = () => {
                               </button>
                             )}
                             {!canExpand && <div className="w-6" />}
-                            <button 
-                              className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline"
-                              onClick={() => toast.info(`Opening details for ${risk.title}`)}
-                            >
-                              {risk.title}
-                            </button>
+                            <div className="flex flex-col gap-1">
+                              <button 
+                                className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline"
+                                onClick={() => toast.info(`Opening details for ${risk.title}`)}
+                              >
+                                {risk.title}
+                              </button>
+                              <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                            </div>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-2">
                           <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs font-medium`}>
                             {risk.riskLevel}
                           </Badge>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-2">
                           <span className={`text-sm px-3 py-1 rounded-md font-medium ${getCategoryColor(risk.category)}`}>
                             {risk.category}
                           </span>
                         </TableCell>
-                        <TableCell className="text-sm">{risk.owner}</TableCell>
-                        <TableCell>
-                          <div className="space-y-2">
+                        <TableCell className="py-2">
+                          <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-3`}>
+                              <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-2`}>
                                 {risk.inherentRisk.level}
                               </Badge>
                               {risk.inherentTrend.up ? (
-                                <TrendingUp className="w-4 h-4 text-red-600" />
+                                <TrendingUp className="w-3 h-3 text-red-600" />
                               ) : (
-                                <TrendingDown className="w-4 h-4 text-green-600" />
+                                <TrendingDown className="w-3 h-3 text-green-600" />
                               )}
-                              <span className={`text-sm font-medium ${risk.inherentTrend.up ? "text-red-600" : "text-green-600"}`}>
+                              <span className={`text-xs font-medium ${risk.inherentTrend.up ? "text-red-600" : "text-green-600"}`}>
                                 {risk.inherentTrend.value}
                               </span>
                               <TooltipProvider>
@@ -602,10 +604,10 @@ const Dashboard2ndLine = () => {
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="h-6 w-6"
+                                      className="h-5 w-5"
                                       onClick={() => handleEdit("inherent", risk.id, risk.inherentRisk.level)}
                                     >
-                                      <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                      <Edit2 className="w-3 h-3 text-muted-foreground hover:text-primary cursor-pointer" />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -615,13 +617,13 @@ const Dashboard2ndLine = () => {
                               </TooltipProvider>
                             </div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline text-left">
-                              View Previous Assessments
+                              View Previous
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-2">
                           <div className="flex items-center gap-2">
-                            <div className="space-y-1">
+                            <div className="space-y-0.5">
                               <div className="text-xs text-muted-foreground">{risk.relatedControls.id}</div>
                               <div className="text-sm font-medium text-blue-600 dark:text-blue-400">{risk.relatedControls.name}</div>
                               <div className="flex gap-2 text-xs text-muted-foreground">
@@ -635,10 +637,10 @@ const Dashboard2ndLine = () => {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6"
+                                    className="h-5 w-5"
                                     onClick={() => handleEdit("controls", risk.id, risk.relatedControls.name)}
                                   >
-                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                    <Edit2 className="w-3 h-3 text-muted-foreground hover:text-primary cursor-pointer" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -648,7 +650,7 @@ const Dashboard2ndLine = () => {
                             </TooltipProvider>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-2">
                           <div className="flex items-center gap-2">
                             {getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color)}
                             <TooltipProvider>
@@ -657,10 +659,10 @@ const Dashboard2ndLine = () => {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-6 w-6"
+                                    className="h-5 w-5"
                                     onClick={() => handleEdit("effectiveness", risk.id, risk.controlEffectiveness.label)}
                                   >
-                                    <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                    <Edit2 className="w-3 h-3 text-muted-foreground hover:text-primary cursor-pointer" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -670,29 +672,29 @@ const Dashboard2ndLine = () => {
                             </TooltipProvider>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
+                        <TableCell className="py-2">
+                          <div className="space-y-0.5">
                             <div className="text-sm font-medium">{risk.testResults.label}</div>
                             {risk.testResults.sublabel && (
                               <div className="text-xs text-muted-foreground">{risk.testResults.sublabel}</div>
                             )}
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-                              View Previous Test Results
+                              View Previous
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="space-y-2">
+                        <TableCell className="py-2">
+                          <div className="space-y-1">
                             <div className="flex items-center gap-2">
-                              <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-3`}>
+                              <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-2`}>
                                 {risk.residualRisk.level}
                               </Badge>
                               {risk.residualTrend.up ? (
-                                <TrendingUp className="w-4 h-4 text-red-600" />
+                                <TrendingUp className="w-3 h-3 text-red-600" />
                               ) : (
-                                <TrendingDown className="w-4 h-4 text-green-600" />
+                                <TrendingDown className="w-3 h-3 text-green-600" />
                               )}
-                              <span className={`text-sm font-medium ${risk.residualTrend.up ? "text-red-600" : "text-green-600"}`}>
+                              <span className={`text-xs font-medium ${risk.residualTrend.up ? "text-red-600" : "text-green-600"}`}>
                                 {risk.residualTrend.value}
                               </span>
                               <TooltipProvider>
@@ -701,10 +703,10 @@ const Dashboard2ndLine = () => {
                                     <Button
                                       variant="ghost"
                                       size="icon"
-                                      className="h-6 w-6"
+                                      className="h-5 w-5"
                                       onClick={() => handleEdit("residual", risk.id, risk.residualRisk.level)}
                                     >
-                                      <Edit2 className="w-4 h-4 text-muted-foreground hover:text-primary cursor-pointer" />
+                                      <Edit2 className="w-3 h-3 text-muted-foreground hover:text-primary cursor-pointer" />
                                     </Button>
                                   </TooltipTrigger>
                                   <TooltipContent>
@@ -714,35 +716,35 @@ const Dashboard2ndLine = () => {
                               </TooltipProvider>
                             </div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline text-left">
-                              View Previous Assessments
+                              View Previous
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="py-2">
                           <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
                             {risk.status}
                           </Badge>
                         </TableCell>
-                        <TableCell>
-                          <div className="space-y-1">
+                        <TableCell className="py-2">
+                          <div className="space-y-0.5">
                             <div className="text-sm">{risk.lastAssessed}</div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
                               View History ({risk.previousAssessments})
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell>
-                          <div className="flex items-center justify-center gap-2">
+                        <TableCell className="py-2">
+                          <div className="flex items-center justify-center gap-1">
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-8 w-8 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
+                                    className="h-7 w-7 rounded-full hover:bg-blue-100 dark:hover:bg-blue-900/20"
                                     onClick={() => handleAction("reassign", risk.id)}
                                   >
-                                    <UserPlus className="w-4 h-4 text-blue-600" />
+                                    <UserPlus className="w-3.5 h-3.5 text-blue-600" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -757,10 +759,10 @@ const Dashboard2ndLine = () => {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-8 w-8 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20"
+                                    className="h-7 w-7 rounded-full hover:bg-purple-100 dark:hover:bg-purple-900/20"
                                     onClick={() => handleAction("collaborate", risk.id)}
                                   >
-                                    <UsersIcon className="w-4 h-4 text-purple-600" />
+                                     <UsersIcon className="w-3.5 h-3.5 text-purple-600" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
@@ -775,10 +777,10 @@ const Dashboard2ndLine = () => {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    className="h-8 w-8 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
+                                    className="h-7 w-7 rounded-full hover:bg-green-100 dark:hover:bg-green-900/20"
                                     onClick={() => handleAction("reassess", risk.id)}
                                   >
-                                    <RotateCcw className="w-4 h-4 text-green-600" />
+                                    <RotateCcw className="w-3.5 h-3.5 text-green-600" />
                                   </Button>
                                 </TooltipTrigger>
                                 <TooltipContent>
