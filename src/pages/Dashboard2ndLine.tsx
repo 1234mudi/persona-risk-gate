@@ -313,7 +313,7 @@ const Dashboard2ndLine = () => {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-background dark:via-background dark:to-secondary/10">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:bg-background dark:bg-none">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
@@ -358,7 +358,7 @@ const Dashboard2ndLine = () => {
         {/* Scorecards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {/* Quick Links Card */}
-          <Card className="border-[3px] border-border/50 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card">
+          <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:bg-card dark:bg-none">
             <CardHeader className="pb-2">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Link className="w-5 h-5 text-primary" />
@@ -390,7 +390,7 @@ const Dashboard2ndLine = () => {
           </Card>
 
           {metrics.map((metric, index) => (
-            <Card key={index} className="border-[3px] border-border/50 shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative">
+            <Card key={index} className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:bg-card dark:bg-none relative">
               <CardContent className="p-4">
                 <div className="flex items-start justify-between mb-3">
                   <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
@@ -466,7 +466,7 @@ const Dashboard2ndLine = () => {
         </div>
 
         {/* Active Risk Profile Section */}
-        <Card ref={reportSectionRef} className="border-[3px] border-border/50 shadow-sm bg-white dark:bg-card">
+        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
           <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
             <div className="flex items-center justify-between">
               <CardTitle className="text-lg font-semibold">Active Risk Profile</CardTitle>
