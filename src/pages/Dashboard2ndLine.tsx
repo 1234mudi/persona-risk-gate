@@ -1,6 +1,7 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X } from "lucide-react";
+import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,8 @@ const Dashboard2ndLine = () => {
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-001", "R-002", "R-003"]));
   const [showScrollTop, setShowScrollTop] = useState(false);
+  const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
+  const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
 
   // Email mapping for assessors
   const assessorEmails: Record<string, string> = {
@@ -119,6 +122,53 @@ const Dashboard2ndLine = () => {
     riskId: null,
   });
   const [riskData, setRiskData] = useState<RiskData[]>(initialRiskData);
+
+  // Selection helpers
+  const visibleRisks = useMemo(() => {
+    const visible: RiskData[] = [];
+    const filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    filtered.forEach(risk => {
+      if (risk.riskLevel === "Level 1") {
+        visible.push(risk);
+        if (expandedRows.has(risk.id)) {
+          const level2Risks = filtered.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+          level2Risks.forEach(l2 => {
+            const level3Risks = filtered.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
+            visible.push(...level3Risks);
+          });
+        }
+      }
+    });
+    return visible;
+  }, [riskData, activeTab, expandedRows]);
+
+  const toggleRiskSelection = (riskId: string) => {
+    setSelectedRisks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(riskId)) {
+        newSet.delete(riskId);
+      } else {
+        newSet.add(riskId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedRisks.size === visibleRisks.length) {
+      setSelectedRisks(new Set());
+    } else {
+      setSelectedRisks(new Set(visibleRisks.map(r => r.id)));
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedRisks(new Set());
+  };
+
+  const getSelectedRiskData = () => {
+    return riskData.filter(r => selectedRisks.has(r.id));
+  };
 
   const toggleRow = (riskId: string) => {
     setExpandedRows(prev => {
@@ -655,6 +705,36 @@ const Dashboard2ndLine = () => {
               </div>
             </div>
 
+            {/* Bulk Action Toolbar - Shows when items are selected */}
+            {selectedRisks.size > 0 && (
+              <div className="mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg shadow-sm animate-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary" className="font-medium">
+                      {selectedRisks.size} risk{selectedRisks.size !== 1 ? 's' : ''} selected
+                    </Badge>
+                    <button 
+                      onClick={clearSelection}
+                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                      Clear selection
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      size="sm" 
+                      className="h-8 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md hover:shadow-lg transition-all"
+                      onClick={() => setBulkAssessmentOpen(true)}
+                    >
+                      <Sparkles className="w-4 h-4 mr-1.5" />
+                      Perform Assessment
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Table */}
             <div className="border rounded-lg overflow-hidden">
               <div className="overflow-x-auto">
@@ -663,7 +743,10 @@ const Dashboard2ndLine = () => {
                     <TableRow>
                       <TableHead className="w-12 py-2 border-r border-b border-border">
                         <div className="flex items-center justify-center">
-                          <Checkbox />
+                          <Checkbox 
+                            checked={visibleRisks.length > 0 && selectedRisks.size === visibleRisks.length}
+                            onCheckedChange={toggleSelectAll}
+                          />
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
@@ -695,7 +778,10 @@ const Dashboard2ndLine = () => {
                       }`}>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center justify-center">
-                            <Checkbox />
+                            <Checkbox 
+                              checked={selectedRisks.has(risk.id)}
+                              onCheckedChange={() => toggleRiskSelection(risk.id)}
+                            />
                           </div>
                         </TableCell>
                         <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
@@ -1096,6 +1182,14 @@ const Dashboard2ndLine = () => {
           </Button>
         </div>
       )}
+
+      {/* Bulk Assessment Modal */}
+      <BulkAssessmentModal
+        open={bulkAssessmentOpen}
+        onOpenChange={setBulkAssessmentOpen}
+        selectedRisks={getSelectedRiskData()}
+        onComplete={clearSelection}
+      />
       </div>
     </TooltipProvider>
   );
