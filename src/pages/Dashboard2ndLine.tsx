@@ -254,6 +254,7 @@ const Dashboard2ndLine = () => {
         { label: "Not Due Yet", value: 17, sublabel: "17 Not Due Yet", color: "bg-green-600" },
       ],
       description: "Prioritize \"Overdue\" and \"Due Today\" to maintain timely risk validation.",
+      tooltip: "Shows the total number of risk assessments awaiting your review. Overdue items require immediate attention to ensure timely validation and compliance with assessment cycles.",
     },
     {
       title: "High Residual Risks",
@@ -267,6 +268,7 @@ const Dashboard2ndLine = () => {
         { label: "Medium", value: 45, sublabel: "45 Medium", color: "bg-green-600" },
       ],
       description: "Immediately prioritize review of Critical & High risks.",
+      tooltip: "Displays risks that remain elevated even after controls are applied. Critical and High residual risks indicate areas where additional mitigation strategies may be needed.",
     },
     {
       title: "RCSA Review & Challenge Process",
@@ -281,6 +283,7 @@ const Dashboard2ndLine = () => {
         { label: "Challenged (4%)", value: 8, sublabel: "8 Challenged", color: "bg-red-600" },
       ],
       description: "Focus on challenged & pending items to maintain robust oversight.",
+      tooltip: "Tracks the 2nd Line review and challenge completion rate. A higher percentage indicates stronger oversight and quality assurance of 1st Line risk assessments.",
     },
     {
       title: "Operational Loss Events",
@@ -295,6 +298,7 @@ const Dashboard2ndLine = () => {
         { label: "System Failures", value: 1.2, sublabel: "System Failures: $1.2M", color: "bg-orange-300" },
       ],
       description: "Top 3 drivers caused over 90% of losses. Validate RCSA focus.",
+      tooltip: "Summarizes financial losses from operational events across your risk portfolio. Use this to validate that your RCSA coverage aligns with actual loss drivers.",
     },
   ];
 
@@ -465,14 +469,16 @@ const Dashboard2ndLine = () => {
           </Card>
 
           {metrics.map((metric, index) => (
-            <Card key={index} className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative">
-              <CardContent className="p-4">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
-                  <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
-                    <metric.icon className="w-5 h-5 text-primary" />
-                  </div>
-                </div>
+            <Tooltip key={index}>
+              <TooltipTrigger asChild>
+                <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
+                      <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
+                        <metric.icon className="w-5 h-5 text-primary" />
+                      </div>
+                    </div>
                 
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-2">
@@ -537,6 +543,11 @@ const Dashboard2ndLine = () => {
                 </div>
               </CardContent>
             </Card>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-xs text-sm">
+            <p>{metric.tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
           ))}
         </div>
 
