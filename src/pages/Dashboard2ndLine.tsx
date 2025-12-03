@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo } from "react";
+import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
@@ -46,6 +47,7 @@ import { toast } from "sonner";
 interface RiskData {
   id: string;
   title: string;
+  dueDate: string;
   riskLevel: string;
   parentRisk?: string;
   businessUnit: string;
@@ -760,6 +762,7 @@ const Dashboard2ndLine = () => {
                           />
                         </div>
                       </TableHead>
+                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
@@ -795,6 +798,18 @@ const Dashboard2ndLine = () => {
                             />
                           </div>
                         </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className={`text-sm font-medium ${
+                            new Date(risk.dueDate) < new Date() 
+                              ? 'text-destructive' 
+                              : 'text-foreground'
+                          }`}>
+                            {format(new Date(risk.dueDate), 'MMM dd, yyyy')}
+                          </div>
+                          {new Date(risk.dueDate) < new Date() && (
+                            <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
+                          )}
+                        </TableCell>
                         <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-start gap-2">
@@ -819,7 +834,7 @@ const Dashboard2ndLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <a 
-                                      href="https://preview--enhanced-risk-assessment.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJub25jZSI6IjZhOGIzMjVlMDNhNDQ0MjkyYzcwMDIxOTNjNzIyNTI5IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY0OTEzOTQ0LCJuYmYiOjE3NjQzMDkxNDQsImlhdCI6MTc2NDMwOTE0NH0.s8EKKWcZzjfA00Q1h1pLUyOPYdraiiGgKajQVcg4XdM/"
+                                      href="https://preview--enhanced-risk-forge.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/"
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
@@ -843,7 +858,7 @@ const Dashboard2ndLine = () => {
                                   <Tooltip>
                                     <TooltipTrigger asChild>
                                       <a 
-                                        href="https://preview--enhanced-risk-assessment.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJub25jZSI6IjZhOGIzMjVlMDNhNDQ0MjkyYzcwMDIxOTNjNzIyNTI5IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiIxNTIxYjFjMi03NGJhLTQ4NGYtOWYzNi02MmNkZTMwMjExM2IiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY0OTEzOTQ0LCJuYmYiOjE3NjQzMDkxNDQsImlhdCI6MTc2NDMwOTE0NH0.s8EKKWcZzjfA00Q1h1pLUyOPYdraiiGgKajQVcg4XdM/"
+                                        href="https://preview--enhanced-risk-forge.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/"
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
@@ -1211,6 +1226,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-001",
     title: "Operational Process Failure",
+    dueDate: "2025-12-15",
     riskLevel: "Level 1",
     businessUnit: "Retail Banking",
     category: "Operational",
@@ -1236,6 +1252,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-001-A",
     title: "Branch Transaction Processing",
+    dueDate: "2025-11-28",
     riskLevel: "Level 2",
     parentRisk: "Operational Process Failure",
     businessUnit: "Retail Banking",
@@ -1262,6 +1279,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-001-A-1",
     title: "Cash Handling Errors",
+    dueDate: "2025-12-08",
     riskLevel: "Level 3",
     parentRisk: "Branch Transaction Processing",
     businessUnit: "Retail Banking",
@@ -1289,6 +1307,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-002",
     title: "Cybersecurity Threat",
+    dueDate: "2025-12-20",
     riskLevel: "Level 1",
     businessUnit: "Retail Banking",
     category: "Technology",
@@ -1315,6 +1334,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-002-A",
     title: "Phishing Attacks",
+    dueDate: "2025-11-25",
     riskLevel: "Level 2",
     parentRisk: "Cybersecurity Threat",
     businessUnit: "Retail Banking",
@@ -1342,6 +1362,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-003",
     title: "Regulatory Compliance Risk",
+    dueDate: "2025-12-01",
     riskLevel: "Level 1",
     businessUnit: "Retail Banking",
     category: "Compliance",
@@ -1367,6 +1388,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-003-A",
     title: "AML Reporting Gaps",
+    dueDate: "2025-11-30",
     riskLevel: "Level 2",
     parentRisk: "Regulatory Compliance Risk",
     businessUnit: "Retail Banking",
@@ -1394,6 +1416,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-004",
     title: "Market Risk Exposure",
+    dueDate: "2025-12-10",
     riskLevel: "Level 1",
     businessUnit: "Corporate Banking",
     category: "Financial",
@@ -1420,6 +1443,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-005",
     title: "Third-Party Vendor Risk",
+    dueDate: "2025-12-05",
     riskLevel: "Level 1",
     businessUnit: "Retail Banking",
     category: "Operational",
@@ -1445,6 +1469,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-006",
     title: "Data Privacy Breach",
+    dueDate: "2025-11-20",
     riskLevel: "Level 1",
     businessUnit: "Retail Banking",
     category: "Technology",
@@ -1470,6 +1495,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-007",
     title: "Credit Risk Management",
+    dueDate: "2025-12-18",
     riskLevel: "Level 1",
     businessUnit: "Corporate Banking",
     category: "Financial",
@@ -1496,6 +1522,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-008",
     title: "Liquidity Risk",
+    dueDate: "2025-11-22",
     riskLevel: "Level 1",
     businessUnit: "Treasury",
     category: "Financial",
@@ -1521,6 +1548,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-009",
     title: "Business Continuity Planning",
+    dueDate: "2025-12-12",
     riskLevel: "Level 1",
     businessUnit: "Operations",
     category: "Operational",
@@ -1546,6 +1574,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-010",
     title: "Fraud Detection Systems",
+    dueDate: "2025-11-15",
     riskLevel: "Level 1",
     businessUnit: "Retail Banking",
     category: "Technology",
@@ -1572,6 +1601,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-011",
     title: "Model Risk Management",
+    dueDate: "2025-12-25",
     riskLevel: "Level 1",
     businessUnit: "Risk Analytics",
     category: "Financial",
@@ -1597,6 +1627,7 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-012",
     title: "Interest Rate Risk",
+    dueDate: "2025-11-18",
     riskLevel: "Level 1",
     businessUnit: "Treasury",
     category: "Financial",
