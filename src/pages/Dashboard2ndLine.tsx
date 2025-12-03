@@ -834,7 +834,7 @@ const Dashboard2ndLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <a 
-                                      href="https://preview--enhanced-risk-forge.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/"
+                                      href={`https://preview--enhanced-risk-forge.lovable.app/?riskTitle=${encodeURIComponent(risk.title)}&__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/`}
                                       target="_blank"
                                       rel="noopener noreferrer"
                                       className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
@@ -858,7 +858,7 @@ const Dashboard2ndLine = () => {
                                   <Tooltip>
                                     <TooltipTrigger asChild>
                                       <a 
-                                        href="https://preview--enhanced-risk-forge.lovable.app/?__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/"
+                                        href={`https://preview--enhanced-risk-forge.lovable.app/?riskTitle=${encodeURIComponent(l2Risk.title)}&__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/`}
                                         target="_blank"
                                         rel="noopener noreferrer"
                                         className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
