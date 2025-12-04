@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -50,17 +51,10 @@ const AssessmentCard = ({
   secondaryCta,
   sectionKey,
   tabIndex,
-}: AssessmentCardProps & { sectionKey: string; tabIndex: number }) => {
-  const handleNavigate = (action: string) => {
-    const baseUrl = "https://risk-zenith-forge.lovable.app/";
-    const params = new URLSearchParams({
-      section: sectionKey,
-      riskId: riskId,
-      action: action,
-      tab: tabIndex.toString(),
-    });
-    // Use tab index in hash for direct tab navigation
-    window.open(`${baseUrl}?${params.toString()}#tab-${tabIndex}`, "_blank");
+  onNavigate,
+}: AssessmentCardProps & { sectionKey: string; tabIndex: number; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
+  const handleNavigate = () => {
+    onNavigate(sectionKey, riskId, riskName);
   };
 
   return (
@@ -113,14 +107,14 @@ const AssessmentCard = ({
           <Button 
             variant="outline" 
             className="w-full justify-start gap-2 h-10 text-sm bg-background/80 hover:bg-background border-border/50"
-            onClick={() => handleNavigate("primary")}
+            onClick={handleNavigate}
           >
             {primaryCta.icon}
             {primaryCta.label}
           </Button>
           <Button 
             className={`w-full justify-start gap-2 h-10 text-sm ${accentColor} text-white hover:opacity-90`}
-            onClick={() => handleNavigate("assess")}
+            onClick={handleNavigate}
           >
             {secondaryCta.icon}
             {secondaryCta.label}
@@ -136,7 +130,14 @@ export const RiskAssessmentOverviewModal = ({
   onOpenChange,
   risk,
 }: RiskAssessmentOverviewModalProps) => {
+  const navigate = useNavigate();
+
   if (!risk) return null;
+
+  const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
+    onOpenChange(false);
+    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
+  };
 
   const cards = [
     {
@@ -241,7 +242,7 @@ export const RiskAssessmentOverviewModal = ({
           <div className="flex-1 overflow-auto p-6 bg-gradient-to-b from-background to-muted/20">
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 h-full">
               {cards.map((card, index) => (
-                <AssessmentCard key={index} {...card} />
+                <AssessmentCard key={index} {...card} onNavigate={handleNavigateToSection} />
               ))}
             </div>
           </div>
