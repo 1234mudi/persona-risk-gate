@@ -49,17 +49,18 @@ const AssessmentCard = ({
   primaryCta,
   secondaryCta,
   sectionKey,
-}: AssessmentCardProps & { sectionKey: string }) => {
+  tabIndex,
+}: AssessmentCardProps & { sectionKey: string; tabIndex: number }) => {
   const handleNavigate = (action: string) => {
     const baseUrl = "https://risk-zenith-forge.lovable.app/";
     const params = new URLSearchParams({
       section: sectionKey,
       riskId: riskId,
       action: action,
-      tab: sectionKey,
+      tab: tabIndex.toString(),
     });
-    // Use hash fragment for direct section navigation
-    window.open(`${baseUrl}?${params.toString()}#${sectionKey}`, "_blank");
+    // Use tab index in hash for direct tab navigation
+    window.open(`${baseUrl}?${params.toString()}#tab-${tabIndex}`, "_blank");
   };
 
   return (
@@ -149,6 +150,7 @@ export const RiskAssessmentOverviewModal = ({
       accentColor: "bg-orange-500",
       bgGradient: "bg-gradient-to-br from-orange-50 to-amber-50/50 dark:from-orange-950/30 dark:to-amber-950/20",
       sectionKey: "inherent-rating",
+      tabIndex: 1,
       primaryCta: {
         label: "Reload from previous cycle",
         icon: <RotateCcw className="w-4 h-4" />,
@@ -169,6 +171,7 @@ export const RiskAssessmentOverviewModal = ({
       accentColor: "bg-blue-500",
       bgGradient: "bg-gradient-to-br from-blue-50 to-cyan-50/50 dark:from-blue-950/30 dark:to-cyan-950/20",
       sectionKey: "control-effectiveness",
+      tabIndex: 2,
       primaryCta: {
         label: "Use most recent test results",
         icon: <ClipboardList className="w-4 h-4" />,
@@ -189,6 +192,7 @@ export const RiskAssessmentOverviewModal = ({
       accentColor: "bg-emerald-500",
       bgGradient: "bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-950/30 dark:to-green-950/20",
       sectionKey: "residual-rating",
+      tabIndex: 3,
       primaryCta: {
         label: "Auto-calculated",
         icon: <Calculator className="w-4 h-4" />,
@@ -209,6 +213,7 @@ export const RiskAssessmentOverviewModal = ({
       accentColor: "bg-purple-500",
       bgGradient: "bg-gradient-to-br from-purple-50 to-violet-50/50 dark:from-purple-950/30 dark:to-violet-950/20",
       sectionKey: "risk-treatment",
+      tabIndex: 4,
       primaryCta: {
         label: "Define Treatment Plan",
         icon: <FileText className="w-4 h-4" />,
