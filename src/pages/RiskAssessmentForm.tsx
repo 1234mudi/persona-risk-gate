@@ -437,7 +437,7 @@ const RiskAssessmentForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20 flex">
       {/* Main Content Area */}
-      <div className="flex-1 pr-14">
+      <div className="flex-1 pr-10">
         {/* Header */}
         <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
           <div className="px-4 py-3">
@@ -1130,71 +1130,42 @@ const RiskAssessmentForm = () => {
         </div>
       </div>
 
-      {/* Right Icon Toolbar - Fixed on right edge */}
-      <div className="fixed top-0 right-0 h-full w-14 bg-background border-l border-border z-50 flex flex-col items-center py-4 gap-1">
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className={`w-10 h-10 rounded-lg ${rightPanelOpen && rightPanelTab === 'chat' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : ''}`}
+      {/* Right Vertical Tab Bar - Fixed on right edge */}
+      <div className="fixed top-0 right-0 h-full w-10 bg-muted/50 border-l border-border z-50 flex flex-col items-center pt-20">
+        <button
           onClick={() => { setRightPanelOpen(true); setRightPanelTab('chat'); }}
-          title="Pending Assessment"
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'chat' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
-          <ClipboardCheck className="w-5 h-5" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className={`w-10 h-10 rounded-lg ${rightPanelOpen && rightPanelTab === 'comments' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : ''}`}
+          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Previous Assessments</span>
+        </button>
+        <button
           onClick={() => { setRightPanelOpen(true); setRightPanelTab('comments'); }}
-          title="Comments"
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors relative ${rightPanelOpen && rightPanelTab === 'comments' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
-          <MessageCircle className="w-5 h-5" />
-          {cellComments.filter(c => c.status === 'pending').length > 0 && (
-            <span className="absolute top-0 right-0 w-4 h-4 bg-amber-500 text-white text-[10px] rounded-full flex items-center justify-center">
-              {cellComments.filter(c => c.status === 'pending').length}
-            </span>
-          )}
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="w-10 h-10 rounded-lg"
-          onClick={() => setCollaborateOpen(true)}
-          title="Collaboration"
+          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Review & Challenge</span>
+        </button>
+        <button
+          onClick={() => setBottomTab('treatment-plans')}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${bottomTab === 'treatment-plans' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
-          <Users className="w-5 h-5" />
-        </Button>
-        <Separator className="my-2 w-8" />
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className={`w-10 h-10 rounded-lg ${rightPanelOpen && rightPanelTab === 'activity' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : ''}`}
-          onClick={() => { setRightPanelOpen(true); setRightPanelTab('activity'); }}
-          title="Activity Log"
-        >
-          <History className="w-5 h-5" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="w-10 h-10 rounded-lg"
-          title="Metrics & Losses"
+          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Treatment</span>
+        </button>
+        <button
           onClick={() => setBottomTab('metrics-losses')}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${bottomTab === 'metrics-losses' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
-          <BarChart3 className="w-5 h-5" />
-        </Button>
-        <Button 
-          variant="ghost" 
-          size="icon"
-          className="w-10 h-10 rounded-lg"
-          title="Additional Details"
+          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Metrics & Losses</span>
+        </button>
+        <button
+          onClick={() => { setRightPanelOpen(true); setRightPanelTab('activity'); }}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'activity' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
-          <FileText className="w-5 h-5" />
-        </Button>
+          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Additional Details</span>
+        </button>
       </div>
 
       {/* Right Sliding Panel - Overlay */}
-      <div className={`fixed top-0 right-14 h-full w-80 bg-background border-l border-border z-40 transition-transform duration-300 shadow-xl ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-10 h-full w-80 bg-background border-l border-border z-40 transition-transform duration-300 shadow-xl ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
