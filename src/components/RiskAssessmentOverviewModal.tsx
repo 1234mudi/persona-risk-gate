@@ -53,7 +53,9 @@ const AssessmentCard = ({
   tabIndex,
   onNavigate,
 }: AssessmentCardProps & { sectionKey: string; tabIndex: number; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
-  const handleNavigate = () => {
+  const handleNavigate = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
     onNavigate(sectionKey, riskId, riskName);
   };
 
