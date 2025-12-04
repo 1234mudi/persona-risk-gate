@@ -132,7 +132,7 @@ const RiskAssessmentForm = () => {
   const [bottomTab, setBottomTab] = useState("previous-assessments");
   const [showWeights, setShowWeights] = useState(true);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [rightPanelOpen, setRightPanelOpen] = useState(true);
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
   const [rightPanelTab, setRightPanelTab] = useState<'chat' | 'comments' | 'activity'>('chat');
   const [collaborateOpen, setCollaborateOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
