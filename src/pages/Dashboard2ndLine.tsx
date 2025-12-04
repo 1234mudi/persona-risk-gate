@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { useNavigate } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
+import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -82,6 +83,13 @@ const Dashboard2ndLine = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
+  const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
+  const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ id: string; title: string } | null>(null);
+
+  const handleRiskNameClick = (riskId: string, riskTitle: string) => {
+    setSelectedRiskForOverview({ id: riskId, title: riskTitle });
+    setRiskOverviewModalOpen(true);
+  };
 
   // Email mapping for assessors
   const assessorEmails: Record<string, string> = {
@@ -859,17 +867,15 @@ const Dashboard2ndLine = () => {
                               <div className="flex flex-col gap-1">
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <a 
-                                      href={`https://preview--enhanced-risk-forge.lovable.app/?riskTitle=${encodeURIComponent(risk.title)}&__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/`}
-                                      target="_blank"
-                                      rel="noopener noreferrer"
+                                    <button 
+                                      onClick={() => handleRiskNameClick(risk.id, risk.title)}
                                       className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                                     >
                                       {risk.title}
-                                    </a>
+                                    </button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Click on this link to open the risk assessment form</p>
+                                    <p>Click to open the risk assessment overview</p>
                                   </TooltipContent>
                                 </Tooltip>
                                 <span className="text-xs text-muted-foreground">{risk.owner}</span>
@@ -883,17 +889,15 @@ const Dashboard2ndLine = () => {
                                 <div key={l2Risk.id} className="flex flex-col gap-1 pl-4 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <a 
-                                        href={`https://preview--enhanced-risk-forge.lovable.app/?riskTitle=${encodeURIComponent(l2Risk.title)}&__lovable_token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoib3ZwQ1lDNkp4aGFGeG9VRWhaS00yZU9XQUV4MiIsInByb2plY3RfaWQiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJub25jZSI6IjVlZDIzMzE1ZmE0NTkxZDE3ZjY2OGE1MTExNDMzMmQ0IiwiaXNzIjoibG92YWJsZS1hcGkiLCJzdWIiOiI3NmQ4ZGU1MS0wMGY2LTRiYWYtYmM4NC0wZmFiNDE0ZjUwZGYiLCJhdWQiOlsibG92YWJsZS1hcHAiXSwiZXhwIjoxNzY1MzUxNDY3LCJuYmYiOjE3NjQ3NDY2NjcsImlhdCI6MTc2NDc0NjY2N30.nRk5bDs8wXxAG8dmcP_5p05dws9upMjri5r0okzb9jA/`}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
+                                      <button 
+                                        onClick={() => handleRiskNameClick(l2Risk.id, l2Risk.title)}
                                         className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
                                       >
                                         └ {l2Risk.title}
-                                      </a>
+                                      </button>
                                     </TooltipTrigger>
                                     <TooltipContent>
-                                      <p>Click on this link to open the risk assessment form</p>
+                                      <p>Click to open the risk assessment overview</p>
                                     </TooltipContent>
                                   </Tooltip>
                                   <span className="text-xs text-muted-foreground">{l2Risk.owner}</span>
@@ -1218,6 +1222,13 @@ const Dashboard2ndLine = () => {
         onOpenChange={setBulkAssessmentOpen}
         selectedRisks={getSelectedRiskData()}
         onComplete={clearSelection}
+      />
+
+      {/* Risk Assessment Overview Modal */}
+      <RiskAssessmentOverviewModal
+        open={riskOverviewModalOpen}
+        onOpenChange={setRiskOverviewModalOpen}
+        risk={selectedRiskForOverview}
       />
       </div>
     </TooltipProvider>
