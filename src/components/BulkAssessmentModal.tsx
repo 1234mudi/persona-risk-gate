@@ -2,14 +2,9 @@ import { useState } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
-import { Sparkles, CheckCircle, Clock, AlertCircle, ChevronDown, ChevronRight, Loader2, X, Save, Send } from "lucide-react";
+import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Save, Send, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 interface RiskData {
@@ -34,95 +29,72 @@ interface BulkAssessmentModalProps {
   onComplete: () => void;
 }
 
-interface RiskAssessmentState {
-  inherentRisk: string;
-  residualRisk: string;
-  controlEffectiveness: string;
-  comments: string;
-}
-
-interface BulkFieldState {
-  value: string;
-  applyToAll: boolean;
-}
+// Mock controls data
+const mockControls = [
+  { id: "CTRL-001", name: "Segregation of Duties", type: "Preventive", owner: "IT Operations" },
+  { id: "CTRL-002", name: "Access Control Review", type: "Detective", owner: "Security Team" },
+  { id: "CTRL-003", name: "Data Encryption", type: "Preventive", owner: "IT Security" },
+  { id: "CTRL-004", name: "Audit Trail Monitoring", type: "Detective", owner: "Compliance" },
+];
 
 export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onComplete }: BulkAssessmentModalProps) => {
-  const [expandedRisks, setExpandedRisks] = useState<Set<string>>(new Set());
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   
-  // Bulk fields with "Apply to All" toggles
-  const [bulkInherentRisk, setBulkInherentRisk] = useState<BulkFieldState>({ value: "", applyToAll: true });
-  const [bulkResidualRisk, setBulkResidualRisk] = useState<BulkFieldState>({ value: "", applyToAll: true });
-  const [bulkControlEffectiveness, setBulkControlEffectiveness] = useState<BulkFieldState>({ value: "", applyToAll: true });
-  const [bulkComments, setBulkComments] = useState<BulkFieldState>({ value: "", applyToAll: true });
+  // Inherent Risk ratings
+  const [inherentLikelihood, setInherentLikelihood] = useState("");
+  const [inherentImpact, setInherentImpact] = useState("");
+  const [inherentVelocity, setInherentVelocity] = useState("");
 
-  // Individual risk overrides
-  const [riskOverrides, setRiskOverrides] = useState<Record<string, RiskAssessmentState>>(() => {
-    const initial: Record<string, RiskAssessmentState> = {};
-    selectedRisks.forEach(risk => {
-      initial[risk.id] = {
-        inherentRisk: risk.inherentRisk.level,
-        residualRisk: risk.residualRisk.level,
-        controlEffectiveness: "Design Effective",
-        comments: "",
-      };
+  // Control Effectiveness ratings
+  const [controlRatings, setControlRatings] = useState<Record<string, { design: string; operating: string; testing: string }>>(() => {
+    const initial: Record<string, { design: string; operating: string; testing: string }> = {};
+    mockControls.forEach(control => {
+      initial[control.id] = { design: "", operating: "", testing: "" };
     });
     return initial;
   });
 
-  const toggleRiskExpand = (riskId: string) => {
-    setExpandedRisks(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(riskId)) {
-        newSet.delete(riskId);
-      } else {
-        newSet.add(riskId);
-      }
-      return newSet;
-    });
-  };
-
-  const getRiskLevelColor = (level: string) => {
-    switch (level) {
-      case "Level 1": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400";
-      case "Level 2": return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400";
-      case "Level 3": return "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400";
-      default: return "bg-muted text-muted-foreground";
-    }
-  };
-
-  const getStatusBadge = (status: "not-started" | "in-progress" | "completed") => {
-    switch (status) {
-      case "completed": 
-        return <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-xs"><CheckCircle className="w-3 h-3 mr-1" />Complete</Badge>;
-      case "in-progress": 
-        return <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-xs"><Clock className="w-3 h-3 mr-1" />In Progress</Badge>;
-      default: 
-        return <Badge variant="outline" className="text-xs"><AlertCircle className="w-3 h-3 mr-1" />Not Started</Badge>;
-    }
-  };
+  // Residual Risk ratings
+  const [residualLikelihood, setResidualLikelihood] = useState("");
+  const [residualImpact, setResidualImpact] = useState("");
+  const [residualVelocity, setResidualVelocity] = useState("");
 
   const handleAISuggest = async () => {
     setIsGeneratingAI(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    setBulkInherentRisk({ value: "High", applyToAll: true });
-    setBulkResidualRisk({ value: "Medium", applyToAll: true });
-    setBulkControlEffectiveness({ value: "Operating Effective", applyToAll: true });
-    setBulkComments({ 
-      value: "AI Assessment: Based on comprehensive analysis of risk profiles, control environment maturity, and industry benchmarks. Ratings reflect current operational context and regulatory requirements.", 
-      applyToAll: true 
+    // Apply AI suggestions
+    setInherentLikelihood("4");
+    setInherentImpact("3");
+    setInherentVelocity("2");
+    
+    setControlRatings({
+      "CTRL-001": { design: "4", operating: "3", testing: "4" },
+      "CTRL-002": { design: "3", operating: "4", testing: "3" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
     });
     
+    setResidualLikelihood("2");
+    setResidualImpact("2");
+    setResidualVelocity("1");
+    
     setIsGeneratingAI(false);
-    toast.success("AI suggestions applied to bulk fields");
+    toast.success("AI suggestions applied to all sections");
   };
 
-  const updateRiskOverride = (riskId: string, field: keyof RiskAssessmentState, value: string) => {
-    setRiskOverrides(prev => ({
+  const updateControlRating = (controlId: string, field: "design" | "operating" | "testing", value: string) => {
+    setControlRatings(prev => ({
       ...prev,
-      [riskId]: { ...prev[riskId], [field]: value },
+      [controlId]: { ...prev[controlId], [field]: value },
     }));
+  };
+
+  const calculateAvgScore = (controlId: string) => {
+    const ratings = controlRatings[controlId];
+    const values = [ratings.design, ratings.operating, ratings.testing].filter(Boolean).map(Number);
+    if (values.length === 0) return "-";
+    return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
   };
 
   const handleSaveAsDraft = () => {
@@ -135,313 +107,391 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     onOpenChange(false);
   };
 
-  const filledFieldsCount = [bulkInherentRisk.value, bulkResidualRisk.value, bulkControlEffectiveness.value].filter(Boolean).length;
-  const progressPercent = (filledFieldsCount / 3) * 100;
+  const getControlTypeBadge = (type: string) => {
+    if (type === "Preventive") {
+      return <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-300 dark:border-green-700 text-xs font-medium">{type}</Badge>;
+    }
+    return <Badge className="bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400 border-orange-300 dark:border-orange-700 text-xs font-medium">{type}</Badge>;
+  };
+
+  const ratingOptions = [
+    { value: "1", label: "1 - Low" },
+    { value: "2", label: "2 - Low-Medium" },
+    { value: "3", label: "3 - Medium" },
+    { value: "4", label: "4 - High" },
+    { value: "5", label: "5 - Critical" },
+  ];
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[90vw] w-[90vw] h-[90vh] max-h-[90vh] p-0 flex flex-col gap-0 overflow-hidden">
-        {/* Sticky Header */}
-        <div className="sticky top-0 z-10 bg-background border-b border-border px-6 py-4 flex items-center justify-between shrink-0">
-          <div className="flex items-center gap-4">
+      <DialogContent className="max-w-[95vw] w-[95vw] h-[92vh] max-h-[92vh] p-0 flex flex-col gap-0 overflow-hidden bg-gradient-to-br from-orange-50/30 via-background to-green-50/20 dark:from-orange-950/10 dark:via-background dark:to-green-950/10">
+        {/* Header */}
+        <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm border-b border-border px-6 py-4 flex items-center justify-between shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center shadow-lg">
+              <Layers className="w-5 h-5 text-white" />
+            </div>
             <div>
               <h2 className="text-xl font-semibold">Bulk Risk Assessment</h2>
               <p className="text-sm text-muted-foreground">
-                {selectedRisks.length} risks selected • {filledFieldsCount}/3 required fields completed
+                Perform bulk assessment for {selectedRisks.length} selected risks
               </p>
             </div>
-            <Progress value={progressPercent} className="w-24 h-2" />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" size="sm" onClick={() => onOpenChange(false)}>
-              <X className="w-4 h-4 mr-1" />
+            <Button variant="outline" size="sm" onClick={() => onOpenChange(false)} className="h-9">
               Cancel
             </Button>
-            <Button variant="outline" size="sm" onClick={handleSaveAsDraft}>
-              <Save className="w-4 h-4 mr-1" />
+            <Button variant="outline" size="sm" onClick={handleSaveAsDraft} className="h-9">
+              <Save className="w-4 h-4 mr-1.5" />
               Save as Draft
             </Button>
-            <Button size="sm" onClick={handleSubmitAll} className="bg-primary">
-              <Send className="w-4 h-4 mr-1" />
-              Submit All ({selectedRisks.length})
+            <Button size="sm" onClick={handleSubmitAll} className="h-9 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white">
+              <Send className="w-4 h-4 mr-1.5" />
+              Submit Assessment ({selectedRisks.length})
             </Button>
           </div>
         </div>
 
-        {/* Scrollable Content */}
-        <ScrollArea className="flex-1 h-full">
-          <div className="p-6 space-y-6">
-            {/* Selected Risks Summary */}
-            <section className="space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Selected Risks</h3>
-                <span className="text-xs text-muted-foreground">{selectedRisks.length} items</span>
+        {/* Content */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* Left Sidebar - Selected Risks */}
+          <div className="w-[280px] border-r border-border bg-background/50 flex flex-col shrink-0">
+            <div className="p-4 border-b border-border">
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <Info className="w-4 h-4 text-muted-foreground" />
+                Selected Risks
               </div>
-              <div className="bg-muted/20 rounded-lg border border-border overflow-hidden">
-                <div className="grid grid-cols-[100px_1fr_100px_120px] gap-4 px-4 py-2 bg-muted/40 text-xs font-medium text-muted-foreground border-b border-border">
-                  <span>Risk ID</span>
-                  <span>Title</span>
-                  <span>Hierarchy</span>
-                  <span>Status</span>
-                </div>
-                <div className="divide-y divide-border/50 max-h-[180px] overflow-y-auto">
-                  {selectedRisks.map(risk => (
-                    <div key={risk.id} className="grid grid-cols-[100px_1fr_100px_120px] gap-4 px-4 py-3 items-center hover:bg-muted/30 transition-colors">
-                      <span className="font-mono text-sm font-medium">{risk.id}</span>
-                      <span className="text-sm truncate" title={risk.title}>{risk.title}</span>
-                      <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs w-fit`}>
-                        {risk.riskLevel}
-                      </Badge>
-                      {getStatusBadge(risk.assessmentProgress.assess)}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            {/* Bulk Edit Panel */}
-            <section className="space-y-4">
-              <div className="flex items-center justify-between">
-                <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">Bulk Assessment Fields</h3>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
-                  onClick={handleAISuggest} 
-                  disabled={isGeneratingAI}
-                  className="h-8"
-                >
-                  {isGeneratingAI ? (
-                    <Loader2 className="w-4 h-4 mr-1.5 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-4 h-4 mr-1.5 text-primary" />
-                  )}
-                  AI Auto-Fill
-                </Button>
-              </div>
-
-              <div className="bg-card rounded-lg border border-border p-5 space-y-5">
-                <div className="grid grid-cols-2 gap-6">
-                  {/* Inherent Risk */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Inherent Risk Rating</Label>
-                      <div className="flex items-center gap-2">
-                        <Checkbox 
-                          id="applyInherent"
-                          checked={bulkInherentRisk.applyToAll}
-                          onCheckedChange={(checked) => setBulkInherentRisk(prev => ({ ...prev, applyToAll: !!checked }))}
-                        />
-                        <Label htmlFor="applyInherent" className="text-xs text-muted-foreground cursor-pointer">Apply to all</Label>
-                      </div>
-                    </div>
-                    <Select 
-                      value={bulkInherentRisk.value} 
-                      onValueChange={(v) => setBulkInherentRisk(prev => ({ ...prev, value: v }))}
-                    >
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select rating" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Critical">Critical</SelectItem>
-                        <SelectItem value="High">High</SelectItem>
-                        <SelectItem value="Medium">Medium</SelectItem>
-                        <SelectItem value="Low">Low</SelectItem>
-                      </SelectContent>
-                    </Select>
+              <p className="text-xs text-primary mt-1">{selectedRisks.length} risks selected</p>
+            </div>
+            <ScrollArea className="flex-1">
+              <div className="p-3 space-y-2">
+                {selectedRisks.map(risk => (
+                  <div 
+                    key={risk.id} 
+                    className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors"
+                  >
+                    <Badge variant="outline" className="text-xs font-mono mb-2 border-primary/50 text-primary">
+                      {risk.id}
+                    </Badge>
+                    <p className="text-sm font-medium leading-tight mb-1">{risk.title}</p>
+                    <p className="text-xs text-muted-foreground">{risk.category}</p>
                   </div>
-
-                  {/* Residual Risk */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Residual Risk Rating</Label>
-                      <div className="flex items-center gap-2">
-                        <Checkbox 
-                          id="applyResidual"
-                          checked={bulkResidualRisk.applyToAll}
-                          onCheckedChange={(checked) => setBulkResidualRisk(prev => ({ ...prev, applyToAll: !!checked }))}
-                        />
-                        <Label htmlFor="applyResidual" className="text-xs text-muted-foreground cursor-pointer">Apply to all</Label>
-                      </div>
-                    </div>
-                    <Select 
-                      value={bulkResidualRisk.value} 
-                      onValueChange={(v) => setBulkResidualRisk(prev => ({ ...prev, value: v }))}
-                    >
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select rating" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Critical">Critical</SelectItem>
-                        <SelectItem value="High">High</SelectItem>
-                        <SelectItem value="Medium">Medium</SelectItem>
-                        <SelectItem value="Low">Low</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Control Effectiveness */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Control Effectiveness</Label>
-                      <div className="flex items-center gap-2">
-                        <Checkbox 
-                          id="applyControl"
-                          checked={bulkControlEffectiveness.applyToAll}
-                          onCheckedChange={(checked) => setBulkControlEffectiveness(prev => ({ ...prev, applyToAll: !!checked }))}
-                        />
-                        <Label htmlFor="applyControl" className="text-xs text-muted-foreground cursor-pointer">Apply to all</Label>
-                      </div>
-                    </div>
-                    <Select 
-                      value={bulkControlEffectiveness.value} 
-                      onValueChange={(v) => setBulkControlEffectiveness(prev => ({ ...prev, value: v }))}
-                    >
-                      <SelectTrigger className="h-10">
-                        <SelectValue placeholder="Select effectiveness" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="Design Effective">Design Effective</SelectItem>
-                        <SelectItem value="Operating Effective">Operating Effective</SelectItem>
-                        <SelectItem value="Partially Effective">Partially Effective</SelectItem>
-                        <SelectItem value="Ineffective">Ineffective</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  {/* Comments */}
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <Label className="text-sm font-medium">Assessment Comments</Label>
-                      <div className="flex items-center gap-2">
-                        <Checkbox 
-                          id="applyComments"
-                          checked={bulkComments.applyToAll}
-                          onCheckedChange={(checked) => setBulkComments(prev => ({ ...prev, applyToAll: !!checked }))}
-                        />
-                        <Label htmlFor="applyComments" className="text-xs text-muted-foreground cursor-pointer">Apply to all</Label>
-                      </div>
-                    </div>
-                    <Textarea 
-                      placeholder="Enter comments to apply to selected risks..."
-                      value={bulkComments.value}
-                      onChange={(e) => setBulkComments(prev => ({ ...prev, value: e.target.value }))}
-                      className="min-h-[80px] resize-none"
-                    />
-                  </div>
-                </div>
+                ))}
               </div>
-            </section>
-
-            {/* Individual Review (Optional Accordion) */}
-            <section className="space-y-3">
-              <h3 className="text-sm font-medium text-muted-foreground uppercase tracking-wide">
-                Individual Review <span className="font-normal">(Optional)</span>
-              </h3>
-              <p className="text-xs text-muted-foreground">
-                Expand any risk below to override bulk values. Individual changes will take precedence over bulk settings.
-              </p>
-
-              <div className="space-y-2">
-                {selectedRisks.map(risk => {
-                  const isExpanded = expandedRisks.has(risk.id);
-                  const override = riskOverrides[risk.id];
-                  
-                  return (
-                    <Collapsible key={risk.id} open={isExpanded} onOpenChange={() => toggleRiskExpand(risk.id)}>
-                      <CollapsibleTrigger className="w-full">
-                        <div className="flex items-center justify-between p-3 bg-muted/20 hover:bg-muted/40 rounded-lg border border-border/50 transition-colors">
-                          <div className="flex items-center gap-3">
-                            {isExpanded ? (
-                              <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                            ) : (
-                              <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                            )}
-                            <span className="font-mono text-sm font-medium">{risk.id}</span>
-                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs`}>
-                              {risk.riskLevel}
-                            </Badge>
-                            <span className="text-sm text-muted-foreground truncate max-w-[400px]">{risk.title}</span>
-                          </div>
-                          <span className="text-xs text-muted-foreground">Click to override</span>
-                        </div>
-                      </CollapsibleTrigger>
-                      
-                      <CollapsibleContent>
-                        <div className="mt-1 p-4 bg-card rounded-lg border border-border space-y-4">
-                          <div className="grid grid-cols-3 gap-4">
-                            <div className="space-y-2">
-                              <Label className="text-xs text-muted-foreground">Inherent Risk Override</Label>
-                              <Select 
-                                value={override?.inherentRisk} 
-                                onValueChange={(v) => updateRiskOverride(risk.id, "inherentRisk", v)}
-                              >
-                                <SelectTrigger className="h-9">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Critical">Critical</SelectItem>
-                                  <SelectItem value="High">High</SelectItem>
-                                  <SelectItem value="Medium">Medium</SelectItem>
-                                  <SelectItem value="Low">Low</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label className="text-xs text-muted-foreground">Residual Risk Override</Label>
-                              <Select 
-                                value={override?.residualRisk} 
-                                onValueChange={(v) => updateRiskOverride(risk.id, "residualRisk", v)}
-                              >
-                                <SelectTrigger className="h-9">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Critical">Critical</SelectItem>
-                                  <SelectItem value="High">High</SelectItem>
-                                  <SelectItem value="Medium">Medium</SelectItem>
-                                  <SelectItem value="Low">Low</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-
-                            <div className="space-y-2">
-                              <Label className="text-xs text-muted-foreground">Control Effectiveness Override</Label>
-                              <Select 
-                                value={override?.controlEffectiveness} 
-                                onValueChange={(v) => updateRiskOverride(risk.id, "controlEffectiveness", v)}
-                              >
-                                <SelectTrigger className="h-9">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  <SelectItem value="Design Effective">Design Effective</SelectItem>
-                                  <SelectItem value="Operating Effective">Operating Effective</SelectItem>
-                                  <SelectItem value="Partially Effective">Partially Effective</SelectItem>
-                                  <SelectItem value="Ineffective">Ineffective</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          </div>
-
-                          <div className="space-y-2">
-                            <Label className="text-xs text-muted-foreground">Comments Override</Label>
-                            <Textarea 
-                              value={override?.comments}
-                              onChange={(e) => updateRiskOverride(risk.id, "comments", e.target.value)}
-                              placeholder="Enter specific comments for this risk..."
-                              className="min-h-[60px] text-sm resize-none"
-                            />
-                          </div>
-                        </div>
-                      </CollapsibleContent>
-                    </Collapsible>
-                  );
-                })}
-              </div>
-            </section>
+            </ScrollArea>
           </div>
-        </ScrollArea>
+
+          {/* Main Content - Assessment Sections */}
+          <div className="flex-1 flex flex-col overflow-hidden">
+            {/* AI Suggestions Button */}
+            <div className="px-6 py-3 flex justify-end border-b border-border/50">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={handleAISuggest} 
+                disabled={isGeneratingAI}
+                className="text-primary hover:text-primary hover:bg-primary/10"
+              >
+                {isGeneratingAI ? (
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                ) : (
+                  <Sparkles className="w-4 h-4 mr-2" />
+                )}
+                Apply AI Suggestions (All Sections)
+              </Button>
+            </div>
+
+            <ScrollArea className="flex-1">
+              <div className="p-6 space-y-6">
+                {/* Section 1: Inherent Risk Assessment */}
+                <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 border-b border-border">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-semibold text-sm shadow">
+                        1
+                      </div>
+                      <AlertTriangle className="w-5 h-5 text-orange-500" />
+                      <span className="font-medium">Inherent Risk Assessment - Rate each factor from 1 (Low) to 5 (Critical)</span>
+                    </div>
+                    <Badge variant="outline" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
+                      Applies to all {selectedRisks.length} selected risks
+                    </Badge>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Factor</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Description</th>
+                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">
+                            Rating (Bulk) <span className="text-destructive">*</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-border/50 hover:bg-muted/20">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                              <span className="font-medium">Likelihood</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-muted-foreground">Probability of risk event occurring</td>
+                          <td className="py-4 px-4">
+                            <Select value={inherentLikelihood} onValueChange={setInherentLikelihood}>
+                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border border-border z-50">
+                                {ratingOptions.map(opt => (
+                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                        <tr className="border-b border-border/50 hover:bg-muted/20">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                              <span className="font-medium">Impact</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-muted-foreground">Potential impact on business operations</td>
+                          <td className="py-4 px-4">
+                            <Select value={inherentImpact} onValueChange={setInherentImpact}>
+                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border border-border z-50">
+                                {ratingOptions.map(opt => (
+                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                              <span className="font-medium">Velocity</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-muted-foreground">Speed at which risk can materialize</td>
+                          <td className="py-4 px-4">
+                            <Select value={inherentVelocity} onValueChange={setInherentVelocity}>
+                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border border-border z-50">
+                                {ratingOptions.map(opt => (
+                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                {/* Section 2: Control Effectiveness Assessment */}
+                <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-900/10 border-b border-border">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-semibold text-sm shadow">
+                        2
+                      </div>
+                      <div className="w-5 h-5 rounded-full border-2 border-green-500 flex items-center justify-center">
+                        <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      </div>
+                      <span className="font-medium">Control Effectiveness Assessment - Rate each dimension from 1 (Ineffective) to 5 (Highly Effective)</span>
+                    </div>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Control ID</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Control Name</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Control Type</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Owner</th>
+                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
+                            Design <span className="text-destructive">*</span>
+                          </th>
+                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
+                            Operating <span className="text-destructive">*</span>
+                          </th>
+                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
+                            Testing <span className="text-destructive">*</span>
+                          </th>
+                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[80px]">Avg Score</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {mockControls.map((control) => (
+                          <tr key={control.id} className="border-b border-border/50 hover:bg-muted/20">
+                            <td className="py-3 px-4">
+                              <Badge variant="outline" className="font-mono text-xs">{control.id}</Badge>
+                            </td>
+                            <td className="py-3 px-4 font-medium text-sm">{control.name}</td>
+                            <td className="py-3 px-4">{getControlTypeBadge(control.type)}</td>
+                            <td className="py-3 px-4 text-sm text-muted-foreground">{control.owner}</td>
+                            <td className="py-3 px-4">
+                              <Select 
+                                value={controlRatings[control.id]?.design || ""} 
+                                onValueChange={(v) => updateControlRating(control.id, "design", v)}
+                              >
+                                <SelectTrigger className="h-9 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {[1, 2, 3, 4, 5].map(n => (
+                                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Select 
+                                value={controlRatings[control.id]?.operating || ""} 
+                                onValueChange={(v) => updateControlRating(control.id, "operating", v)}
+                              >
+                                <SelectTrigger className="h-9 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {[1, 2, 3, 4, 5].map(n => (
+                                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="py-3 px-4">
+                              <Select 
+                                value={controlRatings[control.id]?.testing || ""} 
+                                onValueChange={(v) => updateControlRating(control.id, "testing", v)}
+                              >
+                                <SelectTrigger className="h-9 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {[1, 2, 3, 4, 5].map(n => (
+                                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                            <td className="py-3 px-4 text-center text-sm font-medium text-muted-foreground">
+                              {calculateAvgScore(control.id)}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+
+                {/* Section 3: Residual Risk Assessment */}
+                <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-900/10 border-b border-border">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-semibold text-sm shadow">
+                        3
+                      </div>
+                      <CheckCircle className="w-5 h-5 text-green-500" />
+                      <span className="font-medium">Residual Risk Assessment - Rate each factor from 1 (Low) to 5 (Critical) after control mitigation</span>
+                    </div>
+                    <Badge variant="outline" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
+                      Applies to all {selectedRisks.length} selected risks
+                    </Badge>
+                  </div>
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="border-b border-border bg-muted/30">
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Factor</th>
+                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Description</th>
+                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">
+                            Rating (Bulk) <span className="text-destructive">*</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="border-b border-border/50 hover:bg-muted/20">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                              <span className="font-medium">Likelihood</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-muted-foreground">Probability after control mitigation</td>
+                          <td className="py-4 px-4">
+                            <Select value={residualLikelihood} onValueChange={setResidualLikelihood}>
+                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border border-border z-50">
+                                {ratingOptions.map(opt => (
+                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                        <tr className="border-b border-border/50 hover:bg-muted/20">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                              <span className="font-medium">Impact</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-muted-foreground">Remaining impact after controls</td>
+                          <td className="py-4 px-4">
+                            <Select value={residualImpact} onValueChange={setResidualImpact}>
+                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border border-border z-50">
+                                {ratingOptions.map(opt => (
+                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                        <tr className="hover:bg-muted/20">
+                          <td className="py-4 px-4">
+                            <div className="flex items-center gap-2">
+                              <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                              <span className="font-medium">Velocity</span>
+                            </div>
+                          </td>
+                          <td className="py-4 px-4 text-muted-foreground">Risk velocity after mitigation</td>
+                          <td className="py-4 px-4">
+                            <Select value={residualVelocity} onValueChange={setResidualVelocity}>
+                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                <SelectValue placeholder="Select" />
+                              </SelectTrigger>
+                              <SelectContent className="bg-popover border border-border z-50">
+                                {ratingOptions.map(opt => (
+                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </ScrollArea>
+          </div>
+        </div>
       </DialogContent>
     </Dialog>
   );
