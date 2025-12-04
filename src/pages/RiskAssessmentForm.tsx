@@ -133,7 +133,7 @@ const RiskAssessmentForm = () => {
   const [showWeights, setShowWeights] = useState(true);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
-  const [rightPanelTab, setRightPanelTab] = useState<'chat' | 'comments' | 'activity'>('chat');
+  const [rightPanelTab, setRightPanelTab] = useState<'assessments' | 'review' | 'treatment' | 'metrics' | 'details'>('assessments');
   const [collaborateOpen, setCollaborateOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
@@ -455,10 +455,10 @@ const RiskAssessmentForm = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => { setRightPanelOpen(true); setRightPanelTab('chat'); }}
+                  onClick={() => { setRightPanelOpen(true); setRightPanelTab('review'); }}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Chat
+                  Review
                 </Button>
 
                 {/* Summarize & Export Dialog */}
@@ -1006,32 +1006,32 @@ const RiskAssessmentForm = () => {
       {/* Right Vertical Tab Bar - Fixed on right edge */}
       <div className="fixed top-0 right-0 h-full w-10 bg-muted/50 border-l border-border z-50 flex flex-col items-center pt-20">
         <button
-          onClick={() => { setRightPanelOpen(true); setRightPanelTab('chat'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'chat' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
+          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'assessments'); setRightPanelTab('assessments'); }}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'assessments' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
           <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Previous Assessments</span>
         </button>
         <button
-          onClick={() => { setRightPanelOpen(true); setRightPanelTab('comments'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors relative ${rightPanelOpen && rightPanelTab === 'comments' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
+          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'review'); setRightPanelTab('review'); }}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors relative ${rightPanelOpen && rightPanelTab === 'review' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
           <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Review & Challenge</span>
         </button>
         <button
-          onClick={() => setBottomTab('treatment-plans')}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${bottomTab === 'treatment-plans' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
+          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'treatment'); setRightPanelTab('treatment'); }}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'treatment' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
           <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Treatment</span>
         </button>
         <button
-          onClick={() => setBottomTab('metrics-losses')}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${bottomTab === 'metrics-losses' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
+          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'metrics'); setRightPanelTab('metrics'); }}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'metrics' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
           <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Metrics & Losses</span>
         </button>
         <button
-          onClick={() => { setRightPanelOpen(true); setRightPanelTab('activity'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'activity' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
+          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'details'); setRightPanelTab('details'); }}
+          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'details' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
         >
           <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Additional Details</span>
         </button>
@@ -1042,90 +1042,55 @@ const RiskAssessmentForm = () => {
         <div className="flex flex-col h-full">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
-            <div className="flex gap-1">
-              <Button 
-                variant={rightPanelTab === 'chat' ? 'default' : 'ghost'} 
-                size="sm" 
-                className="h-8 px-3"
-                onClick={() => setRightPanelTab('chat')}
-              >
-                <MessageSquare className="w-4 h-4 mr-1" />
-                Chat
-              </Button>
-              <Button 
-                variant={rightPanelTab === 'comments' ? 'default' : 'ghost'} 
-                size="sm" 
-                className="h-8 px-3"
-                onClick={() => setRightPanelTab('comments')}
-              >
-                <MessageCircle className="w-4 h-4 mr-1" />
-                Comments
-                {cellComments.filter(c => c.status === 'pending').length > 0 && (
-                  <Badge className="ml-1 bg-amber-500 text-white text-[10px] px-1">{cellComments.filter(c => c.status === 'pending').length}</Badge>
-                )}
-              </Button>
-              <Button 
-                variant={rightPanelTab === 'activity' ? 'default' : 'ghost'} 
-                size="sm" 
-                className="h-8 px-3"
-                onClick={() => setRightPanelTab('activity')}
-              >
-                <Clock className="w-4 h-4" />
-              </Button>
-            </div>
+            <h3 className="font-semibold text-sm">
+              {rightPanelTab === 'assessments' && 'Previous Assessments'}
+              {rightPanelTab === 'review' && 'Review & Challenge'}
+              {rightPanelTab === 'treatment' && 'Treatment Plans'}
+              {rightPanelTab === 'metrics' && 'Metrics & Losses'}
+              {rightPanelTab === 'details' && 'Additional Details'}
+            </h3>
             <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setRightPanelOpen(false)}>
               <X className="w-4 h-4" />
             </Button>
           </div>
 
-          {/* Chat Tab */}
-          {rightPanelTab === 'chat' && (
-            <>
-              <ScrollArea className="flex-1 p-3">
-                <div className="space-y-3">
-                  {chatMessages.map((msg) => (
-                    <div key={msg.id} className={`${msg.type === 'system' ? 'text-center' : 'flex gap-2'}`}>
-                      {msg.type === 'system' ? (
-                        <div className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded-full inline-block">{msg.message}</div>
-                      ) : (
-                        <>
-                          <div className={`w-7 h-7 rounded-full flex items-center justify-center text-white text-[10px] font-medium shrink-0 ${msg.user === 'You' ? 'bg-blue-600' : 'bg-purple-500'}`}>
-                            {msg.avatar}
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="font-medium text-xs">{msg.user}</span>
-                              <span className="text-[10px] text-muted-foreground">{msg.timestamp}</span>
-                            </div>
-                            <p className="text-sm">{msg.message}</p>
-                          </div>
-                        </>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-              <div className="p-3 border-t">
-                <div className="flex gap-2">
-                  <Input 
-                    placeholder="Type a message..." 
-                    className="h-8 text-sm"
-                    value={chatMessage}
-                    onChange={(e) => setChatMessage(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSendChat()}
-                  />
-                  <Button size="sm" className="h-8 px-2" onClick={handleSendChat}>
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
-            </>
-          )}
-
-          {/* Comments Tab */}
-          {rightPanelTab === 'comments' && (
+          {/* Previous Assessments Tab */}
+          {rightPanelTab === 'assessments' && (
             <ScrollArea className="flex-1 p-3">
               <div className="space-y-3">
+                {previousAssessments.map((assessment) => (
+                  <div key={assessment.id} className="border rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs text-blue-600">{assessment.id}</span>
+                      <Badge variant="outline" className="text-[10px]">{assessment.status}</Badge>
+                    </div>
+                    <div className="text-xs text-muted-foreground mb-2">{assessment.date}</div>
+                    <div className="grid grid-cols-2 gap-2 text-xs">
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Inherent:</span>
+                        <Badge className={`text-[10px] px-1.5 ${assessment.inherent >= 3.5 ? 'bg-red-100 text-red-700' : assessment.inherent >= 2.5 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                          {assessment.inherent}
+                        </Badge>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-muted-foreground">Residual:</span>
+                        <Badge className={`text-[10px] px-1.5 ${assessment.residual >= 3.5 ? 'bg-red-100 text-red-700' : assessment.residual >= 2.5 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                          {assessment.residual}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="text-[10px] text-muted-foreground mt-2">By: {assessment.assessor}</div>
+                  </div>
+                ))}
+              </div>
+            </ScrollArea>
+          )}
+
+          {/* Review & Challenge Tab */}
+          {rightPanelTab === 'review' && (
+            <ScrollArea className="flex-1 p-3">
+              <div className="space-y-3">
+                <div className="text-xs text-muted-foreground mb-2">Cell Comments ({cellComments.length})</div>
                 {cellComments.map((comment) => (
                   <div key={comment.id} className="border rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
@@ -1153,22 +1118,100 @@ const RiskAssessmentForm = () => {
             </ScrollArea>
           )}
 
-          {/* Activity Tab */}
-          {rightPanelTab === 'activity' && (
+          {/* Treatment Plans Tab */}
+          {rightPanelTab === 'treatment' && (
             <ScrollArea className="flex-1 p-3">
               <div className="space-y-3">
-                {activityLog.map((activity) => (
-                  <div key={activity.id} className="flex gap-2 text-sm">
-                    <div className="w-6 h-6 rounded-full bg-slate-500 flex items-center justify-center text-white text-[10px] shrink-0">
-                      {activity.avatar}
+                {treatmentPlans.map((plan) => (
+                  <div key={plan.id} className="border rounded-lg p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-xs text-blue-600">{plan.id}</span>
+                      <Badge className={`text-[10px] px-1.5 ${
+                        plan.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 
+                        plan.status === 'Planned' ? 'bg-amber-100 text-amber-700' : 
+                        'bg-slate-100 text-slate-700'
+                      }`}>{plan.status}</Badge>
                     </div>
-                    <div>
-                      <span className="font-medium">{activity.user}</span>
-                      <span className="text-muted-foreground"> {activity.action}</span>
-                      <div className="text-[10px] text-muted-foreground">{activity.timestamp}</div>
+                    <p className="text-sm mb-2">{plan.action}</p>
+                    <div className="text-xs text-muted-foreground mb-2">
+                      <div>Owner: {plan.owner}</div>
+                      <div>Due: {plan.dueDate}</div>
                     </div>
+                    <div className="w-full bg-muted rounded-full h-1.5">
+                      <div 
+                        className="bg-primary h-1.5 rounded-full transition-all" 
+                        style={{ width: `${plan.progress}%` }}
+                      />
+                    </div>
+                    <div className="text-[10px] text-right text-muted-foreground mt-1">{plan.progress}%</div>
                   </div>
                 ))}
+              </div>
+            </ScrollArea>
+          )}
+
+          {/* Metrics & Losses Tab */}
+          {rightPanelTab === 'metrics' && (
+            <ScrollArea className="flex-1 p-3">
+              <div className="space-y-4">
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-2">Key Risk Indicators</div>
+                  {metricsData.kris.map((kri, idx) => (
+                    <div key={idx} className="border rounded-lg p-3 mb-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-sm font-medium">{kri.name}</span>
+                        <TrendingUp className={`w-4 h-4 ${kri.trend === 'up' ? 'text-emerald-500' : kri.trend === 'down' ? 'text-red-500' : 'text-amber-500'}`} />
+                      </div>
+                      <div className="flex items-center justify-between text-xs">
+                        <span>Current: <strong>{kri.current}</strong></span>
+                        <span className="text-muted-foreground">Target: {kri.target}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-2">Losses</div>
+                  {metricsData.losses.map((loss) => (
+                    <div key={loss.id} className="border rounded-lg p-3 mb-2">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-mono text-xs text-red-600">{loss.id}</span>
+                        <span className="text-xs text-muted-foreground">{loss.date}</span>
+                      </div>
+                      <p className="text-sm mb-1">{loss.description}</p>
+                      <div className="text-sm font-semibold text-red-600">${loss.amount.toLocaleString()}</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </ScrollArea>
+          )}
+
+          {/* Additional Details Tab */}
+          {rightPanelTab === 'details' && (
+            <ScrollArea className="flex-1 p-3">
+              <div className="space-y-4">
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-2">Activity Log</div>
+                  {activityLog.map((activity) => (
+                    <div key={activity.id} className="flex gap-2 text-sm mb-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-500 flex items-center justify-center text-white text-[10px] shrink-0">
+                        {activity.avatar}
+                      </div>
+                      <div>
+                        <span className="font-medium">{activity.user}</span>
+                        <span className="text-muted-foreground"> {activity.action}</span>
+                        <div className="text-[10px] text-muted-foreground">{activity.timestamp}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <Separator />
+                <div>
+                  <div className="text-xs font-medium text-muted-foreground mb-2">Attachments</div>
+                  <div className="text-sm text-muted-foreground text-center py-4 border border-dashed rounded-lg">
+                    No attachments yet
+                  </div>
+                </div>
               </div>
             </ScrollArea>
           )}
