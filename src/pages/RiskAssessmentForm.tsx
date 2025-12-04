@@ -575,7 +575,7 @@ const RiskAssessmentForm = () => {
             <div className="flex items-center justify-between">
               {/* Left - Back & Collaboration */}
               <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate('/dashboard/2nd-line-analyst')}>
+              <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/2nd-line-analyst?openOverview=true&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`)}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
