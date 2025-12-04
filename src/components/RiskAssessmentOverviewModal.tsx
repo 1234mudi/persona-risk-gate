@@ -48,7 +48,18 @@ const AssessmentCard = ({
   bgGradient,
   primaryCta,
   secondaryCta,
-}: AssessmentCardProps) => {
+  sectionKey,
+}: AssessmentCardProps & { sectionKey: string }) => {
+  const handleNavigate = (action: string) => {
+    const baseUrl = "https://risk-zenith-forge.lovable.app/";
+    const params = new URLSearchParams({
+      section: sectionKey,
+      riskId: riskId,
+      action: action,
+    });
+    window.open(`${baseUrl}?${params.toString()}`, "_blank");
+  };
+
   return (
     <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 ${bgGradient}`}>
       {/* Accent bar */}
@@ -99,12 +110,14 @@ const AssessmentCard = ({
           <Button 
             variant="outline" 
             className="w-full justify-start gap-2 h-10 text-sm bg-background/80 hover:bg-background border-border/50"
+            onClick={() => handleNavigate("primary")}
           >
             {primaryCta.icon}
             {primaryCta.label}
           </Button>
           <Button 
             className={`w-full justify-start gap-2 h-10 text-sm ${accentColor} text-white hover:opacity-90`}
+            onClick={() => handleNavigate("assess")}
           >
             {secondaryCta.icon}
             {secondaryCta.label}
@@ -122,7 +135,7 @@ export const RiskAssessmentOverviewModal = ({
 }: RiskAssessmentOverviewModalProps) => {
   if (!risk) return null;
 
-  const cards: AssessmentCardProps[] = [
+  const cards = [
     {
       title: "Inherent Rating",
       riskId: risk.id,
@@ -133,6 +146,7 @@ export const RiskAssessmentOverviewModal = ({
       icon: <AlertTriangle className="w-5 h-5 text-orange-600" />,
       accentColor: "bg-orange-500",
       bgGradient: "bg-gradient-to-br from-orange-50 to-amber-50/50 dark:from-orange-950/30 dark:to-amber-950/20",
+      sectionKey: "inherent-rating",
       primaryCta: {
         label: "Reload from previous cycle",
         icon: <RotateCcw className="w-4 h-4" />,
@@ -152,6 +166,7 @@ export const RiskAssessmentOverviewModal = ({
       icon: <Shield className="w-5 h-5 text-blue-600" />,
       accentColor: "bg-blue-500",
       bgGradient: "bg-gradient-to-br from-blue-50 to-cyan-50/50 dark:from-blue-950/30 dark:to-cyan-950/20",
+      sectionKey: "control-effectiveness",
       primaryCta: {
         label: "Use most recent test results",
         icon: <ClipboardList className="w-4 h-4" />,
@@ -171,6 +186,7 @@ export const RiskAssessmentOverviewModal = ({
       icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
       accentColor: "bg-emerald-500",
       bgGradient: "bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-950/30 dark:to-green-950/20",
+      sectionKey: "residual-rating",
       primaryCta: {
         label: "Auto-calculated",
         icon: <Calculator className="w-4 h-4" />,
@@ -190,6 +206,7 @@ export const RiskAssessmentOverviewModal = ({
       icon: <FileText className="w-5 h-5 text-purple-600" />,
       accentColor: "bg-purple-500",
       bgGradient: "bg-gradient-to-br from-purple-50 to-violet-50/50 dark:from-purple-950/30 dark:to-violet-950/20",
+      sectionKey: "risk-treatment",
       primaryCta: {
         label: "Define Treatment Plan",
         icon: <FileText className="w-4 h-4" />,
