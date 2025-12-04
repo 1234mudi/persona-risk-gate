@@ -437,7 +437,7 @@ const RiskAssessmentForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20">
       {/* Main Content Area */}
-      <div className="pr-10">
+      <div className="pr-12">
         {/* Header */}
         <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
           <div className="px-4 py-3">
@@ -1004,41 +1004,38 @@ const RiskAssessmentForm = () => {
       </div>
 
       {/* Right Vertical Tab Bar - Fixed on right edge */}
-      <div className="fixed top-0 right-0 h-full w-10 bg-muted/50 border-l border-border z-[60] flex flex-col items-center pt-20">
-        <button
-          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'assessments'); setRightPanelTab('assessments'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'assessments' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
-        >
-          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Previous Assessments</span>
-        </button>
-        <button
-          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'review'); setRightPanelTab('review'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors relative ${rightPanelOpen && rightPanelTab === 'review' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
-        >
-          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Review & Challenge</span>
-        </button>
-        <button
-          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'treatment'); setRightPanelTab('treatment'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'treatment' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
-        >
-          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Treatment</span>
-        </button>
-        <button
-          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'metrics'); setRightPanelTab('metrics'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'metrics' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
-        >
-          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Metrics & Losses</span>
-        </button>
-        <button
-          onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'details'); setRightPanelTab('details'); }}
-          className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'details' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
-        >
-          <span className="text-xs font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">Additional Details</span>
-        </button>
+      <div className="fixed top-0 right-0 h-full w-12 bg-background border-l border-border z-[60] flex flex-col pt-20">
+        {[
+          { id: 'assessments', label: 'Previous Assessments' },
+          { id: 'review', label: 'Review & Challenge' },
+          { id: 'treatment', label: 'Treatment' },
+          { id: 'metrics', label: 'Metrics & Losses' },
+          { id: 'details', label: 'Additional Details' },
+        ].map((tab) => (
+          <button
+            key={tab.id}
+            onClick={() => {
+              if (rightPanelOpen && rightPanelTab === tab.id) {
+                setRightPanelOpen(false);
+              } else {
+                setRightPanelOpen(true);
+                setRightPanelTab(tab.id as any);
+              }
+            }}
+            className={`py-4 flex items-center justify-center border-l-2 transition-colors ${
+              rightPanelOpen && rightPanelTab === tab.id 
+                ? 'border-l-primary bg-primary/10 text-primary' 
+                : 'border-l-transparent hover:bg-muted text-muted-foreground'
+            }`}
+          >
+            <span className="text-[10px] font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">{tab.label}</span>
+          </button>
+        ))}
       </div>
 
-      {/* Right Sliding Panel - Overlay */}
-      <div className={`fixed top-0 right-10 h-full w-80 bg-background border-l border-border z-[55] transition-transform duration-300 shadow-xl ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      {/* Right Sliding Panel */}
+      {rightPanelOpen && (
+        <div className="fixed top-0 right-12 h-full w-80 bg-background border-l border-border z-[55] shadow-xl">
         <div className="flex flex-col h-full">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
@@ -1216,7 +1213,8 @@ const RiskAssessmentForm = () => {
             </ScrollArea>
           )}
         </div>
-      </div>
+        </div>
+      )}
     </div>
   );
 };
