@@ -37,7 +37,10 @@ import {
   MoreHorizontal,
   Flag,
   ThumbsUp,
-  ThumbsDown
+  ThumbsDown,
+  Info,
+  Copy,
+  Clipboard
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -177,6 +180,129 @@ const RiskAssessmentForm = () => {
     { id: "ASM-1035", date: "2024-07-20", inherent: 4.0, residual: 2.5, status: "Approved", assessor: "Sarah Johnson" },
     { id: "ASM-1028", date: "2024-04-12", inherent: 3.5, residual: 2.8, status: "Approved", assessor: "Michael Chen" },
   ];
+
+  // Historical data for section-specific assessments
+  const [selectedHistoryDate, setSelectedHistoryDate] = useState(0);
+  
+  const inherentHistory = [
+    { 
+      date: "2024-03-15", 
+      score: 3.7, 
+      factors: [
+        { name: "Financial Impact", rating: 3, weight: 30 },
+        { name: "Reputational Impact", rating: 4, weight: 25 },
+        { name: "Operational Impact", rating: 3, weight: 20 },
+        { name: "Regulatory Impact", rating: 4, weight: 25 },
+      ]
+    },
+    { 
+      date: "2023-12-10", 
+      score: 3.9, 
+      factors: [
+        { name: "Financial Impact", rating: 4, weight: 30 },
+        { name: "Reputational Impact", rating: 4, weight: 25 },
+        { name: "Operational Impact", rating: 3, weight: 20 },
+        { name: "Regulatory Impact", rating: 4, weight: 25 },
+      ]
+    },
+    { 
+      date: "2023-09-05", 
+      score: 3.5, 
+      factors: [
+        { name: "Financial Impact", rating: 3, weight: 30 },
+        { name: "Reputational Impact", rating: 3, weight: 25 },
+        { name: "Operational Impact", rating: 4, weight: 20 },
+        { name: "Regulatory Impact", rating: 3, weight: 25 },
+      ]
+    },
+  ];
+
+  const controlHistory = [
+    { 
+      date: "2024-03-15", 
+      score: 2.8, 
+      controls: [
+        { name: "KYC Verification Process", design: 3, operating: 2, testing: 3 },
+        { name: "Customer Due Diligence", design: 4, operating: 3, testing: 3 },
+        { name: "Periodic Review Process", design: 3, operating: 3, testing: 2 },
+      ]
+    },
+    { 
+      date: "2023-12-10", 
+      score: 2.5, 
+      controls: [
+        { name: "KYC Verification Process", design: 2, operating: 2, testing: 3 },
+        { name: "Customer Due Diligence", design: 3, operating: 3, testing: 2 },
+        { name: "Periodic Review Process", design: 2, operating: 3, testing: 2 },
+      ]
+    },
+    { 
+      date: "2023-09-05", 
+      score: 3.0, 
+      controls: [
+        { name: "KYC Verification Process", design: 3, operating: 3, testing: 3 },
+        { name: "Customer Due Diligence", design: 3, operating: 3, testing: 3 },
+        { name: "Periodic Review Process", design: 3, operating: 3, testing: 3 },
+      ]
+    },
+  ];
+
+  const residualHistory = [
+    { 
+      date: "2024-03-15", 
+      score: 2.4, 
+      factors: [
+        { name: "Post-Control Financial", rating: 2, weight: 30 },
+        { name: "Post-Control Reputational", rating: 3, weight: 25 },
+        { name: "Post-Control Operational", rating: 2, weight: 20 },
+        { name: "Post-Control Regulatory", rating: 3, weight: 25 },
+      ]
+    },
+    { 
+      date: "2023-12-10", 
+      score: 3.2, 
+      factors: [
+        { name: "Post-Control Financial", rating: 3, weight: 30 },
+        { name: "Post-Control Reputational", rating: 3, weight: 25 },
+        { name: "Post-Control Operational", rating: 3, weight: 20 },
+        { name: "Post-Control Regulatory", rating: 4, weight: 25 },
+      ]
+    },
+    { 
+      date: "2023-09-05", 
+      score: 3.5, 
+      factors: [
+        { name: "Post-Control Financial", rating: 3, weight: 30 },
+        { name: "Post-Control Reputational", rating: 4, weight: 25 },
+        { name: "Post-Control Operational", rating: 3, weight: 20 },
+        { name: "Post-Control Regulatory", rating: 4, weight: 25 },
+      ]
+    },
+  ];
+
+  const getHistoryTitle = () => {
+    switch (activeTab) {
+      case "inherent-rating": return "Inherent Risk History";
+      case "control-effectiveness": return "Control Effectiveness History";
+      case "residual-rating": return "Residual Risk History";
+      default: return "Previous Assessments";
+    }
+  };
+
+  const getHistoryData = () => {
+    switch (activeTab) {
+      case "inherent-rating": return inherentHistory;
+      case "control-effectiveness": return controlHistory;
+      case "residual-rating": return residualHistory;
+      default: return inherentHistory;
+    }
+  };
+
+  const getHistoryRatingBadge = (rating: number) => {
+    if (rating >= 4) return { label: "High", color: "bg-red-100 text-red-700 border-red-200" };
+    if (rating >= 3) return { label: "Medium", color: "bg-amber-100 text-amber-700 border-amber-200" };
+    return { label: "Low", color: "bg-emerald-100 text-emerald-700 border-emerald-200" };
+  };
 
   // Treatment plans
   const [treatmentPlans] = useState([
@@ -1006,31 +1132,36 @@ const RiskAssessmentForm = () => {
       {/* Right Vertical Tab Bar - Fixed on right edge */}
       <div className="fixed top-0 right-0 h-full w-12 bg-background border-l border-border z-[60] flex flex-col pt-20">
         {[
-          { id: 'assessments', label: 'Previous Assessments' },
-          { id: 'review', label: 'Review & Challenge' },
-          { id: 'treatment', label: 'Treatment' },
-          { id: 'metrics', label: 'Metrics & Losses' },
-          { id: 'details', label: 'Additional Details' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => {
-              if (rightPanelOpen && rightPanelTab === tab.id) {
-                setRightPanelOpen(false);
-              } else {
-                setRightPanelOpen(true);
-                setRightPanelTab(tab.id as any);
-              }
-            }}
-            className={`py-4 flex items-center justify-center border-l-2 transition-colors ${
-              rightPanelOpen && rightPanelTab === tab.id 
-                ? 'border-l-primary bg-primary/10 text-primary' 
-                : 'border-l-transparent hover:bg-muted text-muted-foreground'
-            }`}
-          >
-            <span className="text-[10px] font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">{tab.label}</span>
-          </button>
-        ))}
+          { id: 'assessments', label: 'Previous Assessments', icon: History },
+          { id: 'review', label: 'Review & Challenge', icon: MessageSquare },
+          { id: 'treatment', label: 'Treatment', icon: Clipboard },
+          { id: 'metrics', label: 'Metrics & Losses', icon: BarChart3 },
+          { id: 'details', label: 'Additional Details', icon: FileText },
+        ].map((tab) => {
+          const Icon = tab.icon;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => {
+                if (rightPanelOpen && rightPanelTab === tab.id) {
+                  setRightPanelOpen(false);
+                } else {
+                  setRightPanelOpen(true);
+                  setRightPanelTab(tab.id as any);
+                  setSelectedHistoryDate(0);
+                }
+              }}
+              className={`py-3 flex flex-col items-center justify-center gap-1 border-l-2 transition-colors ${
+                rightPanelOpen && rightPanelTab === tab.id 
+                  ? 'border-l-primary bg-primary/10 text-primary' 
+                  : 'border-l-transparent hover:bg-muted text-muted-foreground'
+              }`}
+            >
+              <Icon className="w-4 h-4" />
+              <span className="text-[9px] font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* Right Sliding Panel */}
@@ -1040,7 +1171,7 @@ const RiskAssessmentForm = () => {
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
             <h3 className="font-semibold text-sm">
-              {rightPanelTab === 'assessments' && 'Previous Assessments'}
+              {rightPanelTab === 'assessments' && getHistoryTitle()}
               {rightPanelTab === 'review' && 'Review & Challenge'}
               {rightPanelTab === 'treatment' && 'Treatment Plans'}
               {rightPanelTab === 'metrics' && 'Metrics & Losses'}
@@ -1053,32 +1184,109 @@ const RiskAssessmentForm = () => {
 
           {/* Previous Assessments Tab */}
           {rightPanelTab === 'assessments' && (
-            <ScrollArea className="flex-1 p-3">
-              <div className="space-y-3">
-                {previousAssessments.map((assessment) => (
-                  <div key={assessment.id} className="border rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-xs text-blue-600">{assessment.id}</span>
-                      <Badge variant="outline" className="text-[10px]">{assessment.status}</Badge>
-                    </div>
-                    <div className="text-xs text-muted-foreground mb-2">{assessment.date}</div>
-                    <div className="grid grid-cols-2 gap-2 text-xs">
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Inherent:</span>
-                        <Badge className={`text-[10px] px-1.5 ${assessment.inherent >= 3.5 ? 'bg-red-100 text-red-700' : assessment.inherent >= 2.5 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                          {assessment.inherent}
-                        </Badge>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-muted-foreground">Residual:</span>
-                        <Badge className={`text-[10px] px-1.5 ${assessment.residual >= 3.5 ? 'bg-red-100 text-red-700' : assessment.residual >= 2.5 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                          {assessment.residual}
-                        </Badge>
-                      </div>
-                    </div>
-                    <div className="text-[10px] text-muted-foreground mt-2">By: {assessment.assessor}</div>
-                  </div>
-                ))}
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {/* Section Title */}
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">{getHistoryTitle()}</span>
+                  <Info className="w-3.5 h-3.5 text-muted-foreground" />
+                </div>
+
+                {/* Date Selection Badges */}
+                <div className="flex flex-wrap gap-2">
+                  {getHistoryData().map((item, idx) => (
+                    <Badge
+                      key={item.date}
+                      variant={selectedHistoryDate === idx ? "default" : "outline"}
+                      className={`cursor-pointer transition-all ${
+                        selectedHistoryDate === idx 
+                          ? "bg-slate-900 text-white hover:bg-slate-800" 
+                          : "bg-background hover:bg-muted"
+                      }`}
+                      onClick={() => setSelectedHistoryDate(idx)}
+                    >
+                      {item.date}
+                    </Badge>
+                  ))}
+                </div>
+
+                {/* Score and Copy Button */}
+                <div className="flex items-center justify-between">
+                  <Badge 
+                    variant="outline" 
+                    className={`text-sm px-3 py-1 ${getHistoryRatingBadge(getHistoryData()[selectedHistoryDate]?.score || 0).color}`}
+                  >
+                    Score: {getHistoryData()[selectedHistoryDate]?.score} ({getHistoryRatingBadge(getHistoryData()[selectedHistoryDate]?.score || 0).label})
+                  </Badge>
+                  <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+                    <Copy className="w-3.5 h-3.5" />
+                    Copy to current
+                  </Button>
+                </div>
+
+                {/* Data Table */}
+                <div className="border rounded-lg overflow-hidden">
+                  {activeTab === "control-effectiveness" ? (
+                    // Control Effectiveness Table
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-muted/50 border-b">
+                          <th className="text-left px-3 py-2 font-medium text-muted-foreground">Control</th>
+                          <th className="text-center px-2 py-2 font-medium text-muted-foreground">Design</th>
+                          <th className="text-center px-2 py-2 font-medium text-muted-foreground">Operating</th>
+                          <th className="text-center px-2 py-2 font-medium text-muted-foreground">Testing</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(getHistoryData()[selectedHistoryDate] as any)?.controls?.map((control: any, idx: number) => (
+                          <tr key={idx} className="border-b last:border-b-0">
+                            <td className="px-3 py-2.5 text-foreground">{control.name}</td>
+                            <td className="px-2 py-2.5 text-center">
+                              <Badge variant="outline" className={getHistoryRatingBadge(control.design).color}>
+                                {control.design}
+                              </Badge>
+                            </td>
+                            <td className="px-2 py-2.5 text-center">
+                              <Badge variant="outline" className={getHistoryRatingBadge(control.operating).color}>
+                                {control.operating}
+                              </Badge>
+                            </td>
+                            <td className="px-2 py-2.5 text-center">
+                              <Badge variant="outline" className={getHistoryRatingBadge(control.testing).color}>
+                                {control.testing}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    // Factors Table (Inherent & Residual)
+                    <table className="w-full text-sm">
+                      <thead>
+                        <tr className="bg-muted/50 border-b">
+                          <th className="text-left px-3 py-2 font-medium text-muted-foreground">Factor</th>
+                          <th className="text-center px-3 py-2 font-medium text-muted-foreground">Rating</th>
+                          <th className="text-right px-3 py-2 font-medium text-muted-foreground">Weight (%)</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(getHistoryData()[selectedHistoryDate] as any)?.factors?.map((factor: any, idx: number) => (
+                          <tr key={idx} className="border-b last:border-b-0">
+                            <td className="px-3 py-2.5 text-foreground">{factor.name}</td>
+                            <td className="px-3 py-2.5 text-center">
+                              <Badge variant="outline" className={`${getHistoryRatingBadge(factor.rating).color}`}>
+                                {getHistoryRatingBadge(factor.rating).label} ({factor.rating})
+                              </Badge>
+                            </td>
+                            <td className="px-3 py-2.5 text-right text-muted-foreground">{factor.weight}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
               </div>
             </ScrollArea>
           )}
