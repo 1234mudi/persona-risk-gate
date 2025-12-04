@@ -9,6 +9,7 @@ import {
   Send, 
   X,
   TrendingUp,
+  TrendingDown,
   Eye,
   EyeOff,
   Sparkles,
@@ -40,7 +41,11 @@ import {
   ThumbsDown,
   Info,
   Copy,
-  Clipboard
+  Clipboard,
+  Bell,
+  AtSign,
+  Upload,
+  Calendar
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -1293,99 +1298,237 @@ const RiskAssessmentForm = () => {
 
           {/* Review & Challenge Tab */}
           {rightPanelTab === 'review' && (
-            <ScrollArea className="flex-1 p-3">
-              <div className="space-y-3">
-                <div className="text-xs text-muted-foreground mb-2">Cell Comments ({cellComments.length})</div>
-                {cellComments.map((comment) => (
-                  <div key={comment.id} className="border rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-[10px]">{comment.avatar}</div>
-                        <span className="font-medium text-xs">{comment.user}</span>
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {/* Section Header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Bell className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm font-medium">Activity & Comments</span>
+                  </div>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs text-muted-foreground hover:text-foreground">
+                    Mark all read
+                  </Button>
+                </div>
+
+                {/* Sub-tabs */}
+                <div className="flex gap-1 p-1 bg-muted/50 rounded-lg">
+                  <Button variant="secondary" size="sm" className="h-7 text-xs gap-1.5 flex-1">
+                    <AtSign className="w-3 h-3" />
+                    Notifications
+                    <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-[10px]">2</Badge>
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs gap-1.5 flex-1">
+                    <MessageSquare className="w-3 h-3" />
+                    Comments
+                    <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-[10px]">2</Badge>
+                  </Button>
+                  <Button variant="ghost" size="sm" className="h-7 text-xs gap-1.5 flex-1">
+                    <CheckCircle className="w-3 h-3" />
+                    Resolved
+                    <Badge variant="secondary" className="ml-1 h-4 px-1.5 text-[10px]">0</Badge>
+                  </Button>
+                </div>
+
+                {/* Notification Items */}
+                <div className="space-y-2">
+                  <div className="border rounded-lg p-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <AtSign className="w-4 h-4 text-blue-600" />
                       </div>
-                      <Badge className={`text-[10px] px-1.5 py-0 ${
-                        comment.status === 'pending' ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'
-                      }`}>{comment.status}</Badge>
-                    </div>
-                    <div className="text-[10px] text-blue-600 mb-1">{comment.field}</div>
-                    <p className="text-sm mb-2">{comment.comment}</p>
-                    <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-muted-foreground">{comment.timestamp}</span>
-                      {comment.status === 'pending' && (
-                        <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px]" onClick={() => handleResolveCellComment(comment.id)}>
-                          <Check className="w-3 h-3 mr-1" />Resolve
-                        </Button>
-                      )}
+                      <div className="flex-1">
+                        <p className="text-sm">
+                          <span className="font-medium">Michael Chen</span> tagged you in a comment on <span className="font-medium">Impact rating</span>
+                        </p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-xs text-muted-foreground">1 day ago</span>
+                          <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                            <Check className="w-3 h-3" />
+                            Resolve
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
                     </div>
                   </div>
-                ))}
+
+                  <div className="border rounded-lg p-3">
+                    <div className="flex items-start gap-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                        <AtSign className="w-4 h-4 text-blue-600" />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-sm">
+                          <span className="font-medium">Sarah Johnson</span> tagged you in a comment on <span className="font-medium">Control Effectiveness</span>
+                        </p>
+                        <div className="flex items-center gap-3 mt-2">
+                          <span className="text-xs text-muted-foreground">about 12 hours ago</span>
+                          <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
+                            <Check className="w-3 h-3" />
+                            Resolve
+                          </Button>
+                        </div>
+                      </div>
+                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    </div>
+                  </div>
+                </div>
               </div>
             </ScrollArea>
           )}
 
-          {/* Treatment Plans Tab */}
+          {/* Treatment Tab */}
           {rightPanelTab === 'treatment' && (
-            <ScrollArea className="flex-1 p-3">
-              <div className="space-y-3">
-                {treatmentPlans.map((plan) => (
-                  <div key={plan.id} className="border rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-xs text-blue-600">{plan.id}</span>
-                      <Badge className={`text-[10px] px-1.5 ${
-                        plan.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 
-                        plan.status === 'Planned' ? 'bg-amber-100 text-amber-700' : 
-                        'bg-slate-100 text-slate-700'
-                      }`}>{plan.status}</Badge>
-                    </div>
-                    <p className="text-sm mb-2">{plan.action}</p>
-                    <div className="text-xs text-muted-foreground mb-2">
-                      <div>Owner: {plan.owner}</div>
-                      <div>Due: {plan.dueDate}</div>
-                    </div>
-                    <div className="w-full bg-muted rounded-full h-1.5">
-                      <div 
-                        className="bg-primary h-1.5 rounded-full transition-all" 
-                        style={{ width: `${plan.progress}%` }}
-                      />
-                    </div>
-                    <div className="text-[10px] text-right text-muted-foreground mt-1">{plan.progress}%</div>
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-6">
+                {/* Header */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold">Risk Treatment Plan</h3>
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
+                      How the risk will be managed
+                    </Badge>
                   </div>
-                ))}
+                  <p className="text-sm text-muted-foreground">
+                    In this section, define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.
+                  </p>
+                </div>
+
+                {/* Form Fields */}
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Risk Treatment Approach</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select approach" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mitigate">Mitigate</SelectItem>
+                        <SelectItem value="accept">Accept</SelectItem>
+                        <SelectItem value="transfer">Transfer</SelectItem>
+                        <SelectItem value="avoid">Avoid</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The high-level strategy for handling this risk.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Risk Treatment Owner</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select owner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="compliance">Compliance Team</SelectItem>
+                        <SelectItem value="risk">Risk Management</SelectItem>
+                        <SelectItem value="operations">Operations</SelectItem>
+                        <SelectItem value="it">IT Department</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The person responsible for implementing the treatment plan.</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Treatment Methodology/Strategy</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select methodology" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="controls">Enhanced Controls</SelectItem>
+                        <SelectItem value="training">Staff Training</SelectItem>
+                        <SelectItem value="automation">Process Automation</SelectItem>
+                        <SelectItem value="monitoring">Continuous Monitoring</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The specific approach to implementing the treatment plan.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Assessment Date</label>
+                    <Button variant="outline" className="w-full h-9 justify-start text-left font-normal">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      April 10th, 2025
+                    </Button>
+                    <p className="text-xs text-muted-foreground">The date when this assessment was conducted.</p>
+                  </div>
+                </div>
+
+                <Button className="w-full gap-2 bg-slate-900 hover:bg-slate-800">
+                  Continue to Inherent Rating
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
               </div>
             </ScrollArea>
           )}
 
           {/* Metrics & Losses Tab */}
           {rightPanelTab === 'metrics' && (
-            <ScrollArea className="flex-1 p-3">
+            <ScrollArea className="flex-1 p-4">
               <div className="space-y-4">
+                {/* Header */}
                 <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-2">Key Risk Indicators</div>
-                  {metricsData.kris.map((kri, idx) => (
-                    <div key={idx} className="border rounded-lg p-3 mb-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="text-sm font-medium">{kri.name}</span>
-                        <TrendingUp className={`w-4 h-4 ${kri.trend === 'up' ? 'text-emerald-500' : kri.trend === 'down' ? 'text-red-500' : 'text-amber-500'}`} />
-                      </div>
-                      <div className="flex items-center justify-between text-xs">
-                        <span>Current: <strong>{kri.current}</strong></span>
-                        <span className="text-muted-foreground">Target: {kri.target}</span>
-                      </div>
-                    </div>
-                  ))}
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold">Metrics and Losses</h3>
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
+                      Risk Performance Indicators
+                    </Badge>
+                  </div>
+                  <p className="text-sm text-muted-foreground">
+                    Risk metrics and associated loss data help quantify the current risk exposure.
+                  </p>
                 </div>
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-2">Losses</div>
-                  {metricsData.losses.map((loss) => (
-                    <div key={loss.id} className="border rounded-lg p-3 mb-2">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-xs text-red-600">{loss.id}</span>
-                        <span className="text-xs text-muted-foreground">{loss.date}</span>
+
+                {/* Cards */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Outlier Metrics Card */}
+                  <div className="border-l-4 border-l-amber-500 border rounded-lg p-4">
+                    <div className="flex items-start gap-2 mb-3">
+                      <AlertCircle className="w-5 h-5 text-amber-500" />
+                      <div>
+                        <h4 className="font-semibold">Outlier Metrics</h4>
+                        <p className="text-xs text-muted-foreground">Metrics outside defined thresholds</p>
                       </div>
-                      <p className="text-sm mb-1">{loss.description}</p>
-                      <div className="text-sm font-semibold text-red-600">${loss.amount.toLocaleString()}</div>
                     </div>
-                  ))}
+                    <div className="flex items-baseline gap-2 mb-2">
+                      <span className="text-2xl font-bold">8</span>
+                      <span className="text-xs text-muted-foreground">of 12 metrics</span>
+                    </div>
+                    <div className="space-y-1 text-xs mb-3">
+                      <div className="flex items-center gap-1 text-amber-600">
+                        <TrendingUp className="w-3 h-3" />
+                        <span>5 Above Threshold</span>
+                      </div>
+                      <div className="flex items-center gap-1 text-blue-600">
+                        <TrendingDown className="w-3 h-3" />
+                        <span>3 Below Threshold</span>
+                      </div>
+                    </div>
+                    <div className="bg-amber-50 rounded-md p-2 text-xs text-amber-700">
+                      42% of metrics are currently exceeding their defined thresholds.
+                    </div>
+                  </div>
+
+                  {/* Loss Incurred Card */}
+                  <div className="border-l-4 border-l-red-500 border rounded-lg p-4">
+                    <div className="flex items-start gap-2 mb-3">
+                      <Target className="w-5 h-5 text-red-500" />
+                      <div>
+                        <h4 className="font-semibold">Loss Incurred</h4>
+                        <p className="text-xs text-muted-foreground">Due to Risk</p>
+                      </div>
+                    </div>
+                    <p className="text-xs text-muted-foreground mb-1">Total approved loss amount</p>
+                    <div className="text-2xl font-bold text-red-600 mb-3">
+                      $2,450,000
+                    </div>
+                    <div className="bg-red-50 rounded-md p-2 text-xs text-red-700">
+                      Losses have increased by 18% compared to the previous assessment period.
+                    </div>
+                  </div>
                 </div>
               </div>
             </ScrollArea>
@@ -1393,28 +1536,33 @@ const RiskAssessmentForm = () => {
 
           {/* Additional Details Tab */}
           {rightPanelTab === 'details' && (
-            <ScrollArea className="flex-1 p-3">
-              <div className="space-y-4">
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-2">Activity Log</div>
-                  {activityLog.map((activity) => (
-                    <div key={activity.id} className="flex gap-2 text-sm mb-3">
-                      <div className="w-6 h-6 rounded-full bg-slate-500 flex items-center justify-center text-white text-[10px] shrink-0">
-                        {activity.avatar}
-                      </div>
-                      <div>
-                        <span className="font-medium">{activity.user}</span>
-                        <span className="text-muted-foreground"> {activity.action}</span>
-                        <div className="text-[10px] text-muted-foreground">{activity.timestamp}</div>
-                      </div>
-                    </div>
-                  ))}
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-6">
+                {/* Header */}
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-4 h-4 text-muted-foreground" />
+                  <span className="text-sm font-medium">Additional Details</span>
                 </div>
+
+                {/* Comments Section */}
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Comments</label>
+                  <Textarea 
+                    placeholder="Add any additional comments or notes related to this risk assessment..."
+                    className="min-h-[120px] resize-none"
+                  />
+                </div>
+
                 <Separator />
-                <div>
-                  <div className="text-xs font-medium text-muted-foreground mb-2">Attachments</div>
-                  <div className="text-sm text-muted-foreground text-center py-4 border border-dashed rounded-lg">
-                    No attachments yet
+
+                {/* Attachments Section */}
+                <div className="space-y-3">
+                  <h4 className="text-sm font-medium">Attachments</h4>
+                  <p className="text-xs text-muted-foreground">Upload Files</p>
+                  <div className="border-2 border-dashed rounded-lg p-8 text-center hover:bg-muted/50 transition-colors cursor-pointer">
+                    <Upload className="w-8 h-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm font-medium">Drop files here or click to upload</p>
+                    <p className="text-xs text-muted-foreground">Upload any relevant documents</p>
                   </div>
                 </div>
               </div>
