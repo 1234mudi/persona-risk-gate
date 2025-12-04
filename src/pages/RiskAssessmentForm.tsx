@@ -437,7 +437,7 @@ const RiskAssessmentForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20 flex">
       {/* Main Content Area */}
-      <div className={`flex-1 transition-all duration-300 ${rightPanelOpen ? 'mr-80' : 'mr-0'}`}>
+      <div className="flex-1 pr-14">
         {/* Header */}
         <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
           <div className="px-4 py-3">
@@ -478,7 +478,6 @@ const RiskAssessmentForm = () => {
                   variant="outline" 
                   size="sm"
                   onClick={() => { setRightPanelOpen(true); setRightPanelTab('chat'); }}
-                  className={rightPanelOpen && rightPanelTab === 'chat' ? 'bg-blue-50 border-blue-200' : ''}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Chat
@@ -584,13 +583,6 @@ const RiskAssessmentForm = () => {
                 <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={handleSubmit}>
                   <Send className="w-4 h-4 mr-2" />
                   Submit
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="icon"
-                  onClick={() => setRightPanelOpen(!rightPanelOpen)}
-                >
-                  {rightPanelOpen ? <PanelRightClose className="w-4 h-4" /> : <PanelRightOpen className="w-4 h-4" />}
                 </Button>
                 <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
                   <X className="w-4 h-4" />
@@ -1138,8 +1130,71 @@ const RiskAssessmentForm = () => {
         </div>
       </div>
 
-      {/* Right Panel - Fixed Sidebar */}
-      <div className={`fixed top-0 right-0 h-full w-80 bg-background border-l border-border z-40 transition-transform duration-300 ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      {/* Right Icon Toolbar - Fixed on right edge */}
+      <div className="fixed top-0 right-0 h-full w-14 bg-background border-l border-border z-50 flex flex-col items-center py-4 gap-1">
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className={`w-10 h-10 rounded-lg ${rightPanelOpen && rightPanelTab === 'chat' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : ''}`}
+          onClick={() => { setRightPanelOpen(true); setRightPanelTab('chat'); }}
+          title="Pending Assessment"
+        >
+          <ClipboardCheck className="w-5 h-5" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className={`w-10 h-10 rounded-lg ${rightPanelOpen && rightPanelTab === 'comments' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : ''}`}
+          onClick={() => { setRightPanelOpen(true); setRightPanelTab('comments'); }}
+          title="Comments"
+        >
+          <MessageCircle className="w-5 h-5" />
+          {cellComments.filter(c => c.status === 'pending').length > 0 && (
+            <span className="absolute top-0 right-0 w-4 h-4 bg-amber-500 text-white text-[10px] rounded-full flex items-center justify-center">
+              {cellComments.filter(c => c.status === 'pending').length}
+            </span>
+          )}
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="w-10 h-10 rounded-lg"
+          onClick={() => setCollaborateOpen(true)}
+          title="Collaboration"
+        >
+          <Users className="w-5 h-5" />
+        </Button>
+        <Separator className="my-2 w-8" />
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className={`w-10 h-10 rounded-lg ${rightPanelOpen && rightPanelTab === 'activity' ? 'bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300' : ''}`}
+          onClick={() => { setRightPanelOpen(true); setRightPanelTab('activity'); }}
+          title="Activity Log"
+        >
+          <History className="w-5 h-5" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="w-10 h-10 rounded-lg"
+          title="Metrics & Losses"
+          onClick={() => setBottomTab('metrics-losses')}
+        >
+          <BarChart3 className="w-5 h-5" />
+        </Button>
+        <Button 
+          variant="ghost" 
+          size="icon"
+          className="w-10 h-10 rounded-lg"
+          title="Additional Details"
+        >
+          <FileText className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {/* Right Sliding Panel - Overlay */}
+      <div className={`fixed top-0 right-14 h-full w-80 bg-background border-l border-border z-40 transition-transform duration-300 shadow-xl ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
