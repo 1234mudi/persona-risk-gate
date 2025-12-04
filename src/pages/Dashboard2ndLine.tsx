@@ -562,7 +562,7 @@ const Dashboard2ndLine = () => {
                 <div className="flex items-center gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-blue-500 hover:bg-blue-600 text-white">
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
                         <Plus className="h-3.5 w-3.5 mr-1" />
                         Add New Risk
                       </Button>
@@ -573,18 +573,18 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-cyan-500 hover:bg-cyan-600 text-white">
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
                         <RefreshCw className="h-3.5 w-3.5 mr-1" />
-                        Reassess
+                        Update Existing Assessment
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Reassess selected risks</p>
+                      <p>Update an existing risk assessment</p>
                     </TooltipContent>
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-green-500 hover:bg-green-600 text-white">
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
                         <UsersIcon className="h-3.5 w-3.5 mr-1" />
                         Collaborate
                       </Button>
@@ -595,7 +595,7 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-purple-500 hover:bg-purple-600 text-white">
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
                         <UserPlus className="h-3.5 w-3.5 mr-1" />
                         Reassign
                       </Button>
@@ -606,7 +606,7 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-orange-500 hover:bg-orange-600 text-white">
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
                         <AlertTriangle className="h-3.5 w-3.5 mr-1" />
                         Review & Challenge
                       </Button>
@@ -763,10 +763,10 @@ const Dashboard2ndLine = () => {
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
@@ -809,6 +809,32 @@ const Dashboard2ndLine = () => {
                           {new Date(risk.dueDate) < new Date() && (
                             <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
                           )}
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="space-y-1">
+                            <div className="flex gap-1">
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.assess === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.assess === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.reviewChallenge === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.reviewChallenge === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.approve === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.approve === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                            </div>
+                            <div className="flex justify-between text-[10px] text-muted-foreground">
+                              <span>Assess</span>
+                              <span>Review/Challenge</span>
+                              <span>Approve</span>
+                            </div>
+                          </div>
                         </TableCell>
                         <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
@@ -889,32 +915,6 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="space-y-1">
-                            <div className="flex gap-1">
-                              <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress.assess === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress.assess === "in-progress" ? "bg-amber-500" :
-                                "bg-gray-300 dark:bg-gray-600"
-                              }`} />
-                              <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress.reviewChallenge === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress.reviewChallenge === "in-progress" ? "bg-amber-500" :
-                                "bg-gray-300 dark:bg-gray-600"
-                              }`} />
-                              <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress.approve === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress.approve === "in-progress" ? "bg-amber-500" :
-                                "bg-gray-300 dark:bg-gray-600"
-                              }`} />
-                            </div>
-                            <div className="flex justify-between text-[10px] text-muted-foreground">
-                              <span>Assess</span>
-                              <span>R&C</span>
-                              <span>Approve</span>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex flex-wrap gap-1">
                             {risk.assessors.map((assessor, idx) => (
                               <Tooltip key={idx}>
@@ -934,6 +934,9 @@ const Dashboard2ndLine = () => {
                                     <div className="flex items-center gap-2">
                                       <Mail className="w-4 h-4" />
                                       <span>{assessorEmails[assessor] || `${assessor.toLowerCase().replace(' ', '.')}@company.com`}</span>
+                                    </div>
+                                    <div className="text-xs text-muted-foreground">
+                                      Contributed to: {idx === 0 ? 'Assess, Review/Challenge' : idx === 1 ? 'Review/Challenge' : 'Assess'}
                                     </div>
                                     {risk.currentEditor === assessor && (
                                       <div className="flex items-center gap-2 text-amber-500 text-xs">
