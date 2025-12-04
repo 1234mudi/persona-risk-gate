@@ -56,8 +56,10 @@ const AssessmentCard = ({
       section: sectionKey,
       riskId: riskId,
       action: action,
+      tab: sectionKey,
     });
-    window.open(`${baseUrl}?${params.toString()}`, "_blank");
+    // Use hash fragment for direct section navigation
+    window.open(`${baseUrl}?${params.toString()}#${sectionKey}`, "_blank");
   };
 
   return (
