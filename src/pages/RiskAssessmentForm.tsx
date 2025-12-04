@@ -435,11 +435,11 @@ const RiskAssessmentForm = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20 flex">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20">
       {/* Main Content Area */}
-      <div className="flex-1 pr-10">
+      <div className="pr-10">
         {/* Header */}
-        <div className="sticky top-0 z-50 bg-background/95 backdrop-blur border-b border-border">
+        <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
           <div className="px-4 py-3">
             <div className="flex items-center justify-between">
               {/* Left - Back & Collaboration */}
@@ -1004,7 +1004,7 @@ const RiskAssessmentForm = () => {
       </div>
 
       {/* Right Vertical Tab Bar - Fixed on right edge */}
-      <div className="fixed top-0 right-0 h-full w-10 bg-muted/50 border-l border-border z-50 flex flex-col items-center pt-20">
+      <div className="fixed top-0 right-0 h-full w-10 bg-muted/50 border-l border-border z-[60] flex flex-col items-center pt-20">
         <button
           onClick={() => { setRightPanelOpen(!rightPanelOpen || rightPanelTab !== 'assessments'); setRightPanelTab('assessments'); }}
           className={`w-full py-6 flex items-center justify-center border-l-2 transition-colors ${rightPanelOpen && rightPanelTab === 'assessments' ? 'border-l-primary bg-background text-primary' : 'border-l-transparent hover:bg-muted'}`}
@@ -1038,7 +1038,7 @@ const RiskAssessmentForm = () => {
       </div>
 
       {/* Right Sliding Panel - Overlay */}
-      <div className={`fixed top-0 right-10 h-full w-80 bg-background border-l border-border z-40 transition-transform duration-300 shadow-xl ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+      <div className={`fixed top-0 right-10 h-full w-80 bg-background border-l border-border z-[55] transition-transform duration-300 shadow-xl ${rightPanelOpen ? 'translate-x-0' : 'translate-x-full'}`}>
         <div className="flex flex-col h-full">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
