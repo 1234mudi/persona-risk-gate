@@ -1,6 +1,6 @@
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import { format } from "date-fns";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
@@ -76,6 +76,7 @@ interface RiskData {
 
 const Dashboard2ndLine = () => {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const reportSectionRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
@@ -85,6 +86,20 @@ const Dashboard2ndLine = () => {
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ id: string; title: string } | null>(null);
+
+  // Check URL params to auto-open modal on navigation back
+  useEffect(() => {
+    const openOverview = searchParams.get("openOverview");
+    const riskId = searchParams.get("riskId");
+    const riskName = searchParams.get("riskName");
+    
+    if (openOverview === "true" && riskId && riskName) {
+      setSelectedRiskForOverview({ id: riskId, title: riskName });
+      setRiskOverviewModalOpen(true);
+      // Clear the params after opening
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams]);
 
   const handleRiskNameClick = (riskId: string, riskTitle: string) => {
     setSelectedRiskForOverview({ id: riskId, title: riskTitle });
