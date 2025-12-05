@@ -1065,34 +1065,34 @@ const RiskAssessmentForm = () => {
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
                           <td className="p-1.5"><Checkbox /></td>
                           <td className="p-1.5">
-                            <CellCommentPopover factorName={factor.name} field="Description">
-                              <div className="flex items-start gap-1.5">
+                            <div className="flex items-start gap-2">
+                              <CellCommentPopover factorName={factor.name} field="Description">
                                 <div className="flex-1">
                                   <div className="font-medium text-sm">{factor.name}</div>
                                   <div className="text-xs text-muted-foreground">{factor.description}</div>
                                 </div>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button className="mt-0.5 text-muted-foreground hover:text-foreground">
-                                        <HelpCircle className="w-3.5 h-3.5" />
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="right" className="max-w-xs p-3">
-                                      <p className="font-medium text-sm mb-1">{factor.name} Guidance</p>
-                                      <p className="text-xs text-muted-foreground mb-2">{factor.description}</p>
-                                      <div className="text-xs space-y-1">
-                                        <p><strong>1 - Very Low:</strong> Minimal impact expected</p>
-                                        <p><strong>2 - Low:</strong> Minor impact, easily managed</p>
-                                        <p><strong>3 - Medium:</strong> Moderate impact requiring attention</p>
-                                        <p><strong>4 - High:</strong> Significant impact on operations</p>
-                                        <p><strong>5 - Very High:</strong> Critical impact, immediate action needed</p>
-                                      </div>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                            </CellCommentPopover>
+                              </CellCommentPopover>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button className="mt-0.5 text-muted-foreground hover:text-foreground flex-shrink-0">
+                                      <HelpCircle className="w-3.5 h-3.5" />
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="right" className="max-w-xs p-3">
+                                    <p className="font-medium text-sm mb-1">{factor.name} Guidance</p>
+                                    <p className="text-xs text-muted-foreground mb-2">{factor.description}</p>
+                                    <div className="text-xs space-y-1">
+                                      <p><strong>1 - Very Low:</strong> Minimal impact expected</p>
+                                      <p><strong>2 - Low:</strong> Minor impact, easily managed</p>
+                                      <p><strong>3 - Medium:</strong> Moderate impact requiring attention</p>
+                                      <p><strong>4 - High:</strong> Significant impact on operations</p>
+                                      <p><strong>5 - Very High:</strong> Critical impact, immediate action needed</p>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
                           </td>
                           <td className="p-1.5">
                             <CollaborativeCell cellId={`${factorCellId}-rating`}>
@@ -1320,34 +1320,34 @@ const RiskAssessmentForm = () => {
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
                           <td className="p-1.5"><Checkbox /></td>
                           <td className="p-1.5">
-                            <CellCommentPopover factorName={factor.name} field="Description">
-                              <div className="flex items-start gap-1.5">
+                            <div className="flex items-start gap-2">
+                              <CellCommentPopover factorName={factor.name} field="Description">
                                 <div className="flex-1">
                                   <div className="font-medium text-sm">{factor.name}</div>
                                   <div className="text-xs text-muted-foreground">{factor.description}</div>
                                 </div>
-                                <TooltipProvider>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button className="mt-0.5 text-muted-foreground hover:text-foreground">
-                                        <HelpCircle className="w-3.5 h-3.5" />
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent side="right" className="max-w-xs p-3">
-                                      <p className="font-medium text-sm mb-1">{factor.name} Guidance</p>
-                                      <p className="text-xs text-muted-foreground mb-2">{factor.description}</p>
-                                      <div className="text-xs space-y-1">
-                                        <p><strong>1 - Very Low:</strong> Minimal residual impact</p>
-                                        <p><strong>2 - Low:</strong> Minor residual impact after controls</p>
-                                        <p><strong>3 - Medium:</strong> Moderate residual impact</p>
-                                        <p><strong>4 - High:</strong> Significant residual impact</p>
-                                        <p><strong>5 - Very High:</strong> Critical residual impact</p>
-                                      </div>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </TooltipProvider>
-                              </div>
-                            </CellCommentPopover>
+                              </CellCommentPopover>
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button className="mt-0.5 text-muted-foreground hover:text-foreground flex-shrink-0">
+                                      <HelpCircle className="w-3.5 h-3.5" />
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="right" className="max-w-xs p-3">
+                                    <p className="font-medium text-sm mb-1">{factor.name} Guidance</p>
+                                    <p className="text-xs text-muted-foreground mb-2">{factor.description}</p>
+                                    <div className="text-xs space-y-1">
+                                      <p><strong>1 - Very Low:</strong> Minimal residual impact</p>
+                                      <p><strong>2 - Low:</strong> Minor residual impact after controls</p>
+                                      <p><strong>3 - Medium:</strong> Moderate residual impact</p>
+                                      <p><strong>4 - High:</strong> Significant residual impact</p>
+                                      <p><strong>5 - Very High:</strong> Critical residual impact</p>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
                           </td>
                           <td className="p-1.5">
                             <CellCommentPopover factorName={factor.name} field="Rating">
