@@ -32,7 +32,7 @@ const Index = () => {
     }
   };
 
-  const personas = [
+  const firstColumnPersonas = [
     {
       icon: UserCheck,
       name: "Risk Owner",
@@ -51,6 +51,9 @@ const Index = () => {
       description: "Review, validate, and submit the team's completed Risk & Control Self- Assessment(RCSA) package, plus actively manage and track all assigned remediation action plans.",
       line: "first" as const,
     },
+  ];
+
+  const secondColumnPersonas = [
     {
       icon: BarChart3,
       name: "2nd Line Risk Analyst",
@@ -91,12 +94,12 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-2">
-        <div className="grid lg:grid-cols-2 gap-4 max-w-7xl mx-auto">
+      <main className="container mx-auto px-6 py-8">
+        <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto items-start">
           {/* Login Form Section */}
-          <div className="flex items-start justify-center">
-            <Card className="w-full max-w-md p-4 shadow-lg border-border/50">
-              <div className="space-y-3">
+          <div className="flex items-start justify-center lg:justify-end">
+            <Card className="w-full max-w-md p-6 shadow-lg border-border/50">
+              <div className="space-y-4">
                 <div className="space-y-0.5 text-center">
                   <h2 className="text-xl font-bold text-foreground">Welcome Back</h2>
                   <p className="text-xs text-muted-foreground">
@@ -104,7 +107,7 @@ const Index = () => {
                   </p>
                 </div>
 
-                <form onSubmit={handleLogin} className="space-y-2">
+                <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-1.5">
                     <Label htmlFor="email" className="text-sm">Email or Username</Label>
                     <Input
@@ -169,25 +172,42 @@ const Index = () => {
           </div>
 
           {/* Persona Cards Section */}
-          <div className="space-y-1.5">
-            <div className="space-y-0.5">
+          <div className="space-y-4">
+            <div className="space-y-1">
               <h2 className="text-xl font-bold text-foreground">Quick Access</h2>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-sm text-muted-foreground">
                 Select a persona for instant test environment access
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
-              {personas.map((persona, index) => (
-                <PersonaCard
-                  key={index}
-                  icon={persona.icon}
-                  name={persona.name}
-                  description={persona.description}
-                  line={persona.line}
-                  onSelect={() => handlePersonaLogin(persona.name, (persona as any).route)}
-                />
-              ))}
+            <div className="grid grid-cols-2 gap-4">
+              {/* Column 1 - First Line Roles */}
+              <div className="flex flex-col gap-3">
+                {firstColumnPersonas.map((persona, index) => (
+                  <PersonaCard
+                    key={index}
+                    icon={persona.icon}
+                    name={persona.name}
+                    description={persona.description}
+                    line={persona.line}
+                    onSelect={() => handlePersonaLogin(persona.name)}
+                  />
+                ))}
+              </div>
+              
+              {/* Column 2 - Second Line Roles */}
+              <div className="flex flex-col gap-3">
+                {secondColumnPersonas.map((persona, index) => (
+                  <PersonaCard
+                    key={index}
+                    icon={persona.icon}
+                    name={persona.name}
+                    description={persona.description}
+                    line={persona.line}
+                    onSelect={() => handlePersonaLogin(persona.name, persona.route)}
+                  />
+                ))}
+              </div>
             </div>
           </div>
         </div>
