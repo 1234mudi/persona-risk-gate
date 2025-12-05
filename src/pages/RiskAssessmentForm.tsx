@@ -631,7 +631,7 @@ const RiskAssessmentForm = () => {
       <div className="pr-12">
         {/* Header */}
         <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
-          <div className="px-4 py-3">
+          <div className="px-4 py-2">
             <div className="flex items-center justify-between">
               {/* Left - Back & Collaboration */}
               <div className="flex items-center gap-4">
@@ -644,13 +644,13 @@ const RiskAssessmentForm = () => {
                 <div className="flex items-center gap-3 px-3 py-1.5 bg-primary/90 rounded-full">
                   {/* User Avatars - Overlapping */}
                   <div className="flex -space-x-2">
-                    <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-primary flex items-center justify-center text-xs font-semibold text-white z-30">
+                  <div className="w-7 h-7 rounded-full bg-emerald-500 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-30">
                       SJ
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-blue-400 border-2 border-primary flex items-center justify-center text-xs font-semibold text-white z-20">
+                    <div className="w-7 h-7 rounded-full bg-blue-400 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-20">
                       MC
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-slate-300 border-2 border-primary flex items-center justify-center text-xs font-semibold text-slate-700 z-10">
+                    <div className="w-7 h-7 rounded-full bg-slate-300 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-slate-700 z-10">
                       ER
                     </div>
                   </div>
@@ -885,40 +885,40 @@ const RiskAssessmentForm = () => {
         </div>
 
         {/* Main Content */}
-        <div className="px-4 py-6">
+        <div className="px-4 py-3">
           {/* Risk Info Header */}
-          <div className="mb-6">
-            <div className="flex items-center gap-3 mb-2">
+          <div className="mb-3">
+            <div className="flex items-center gap-2 mb-1">
               <div className="w-6 h-6 rounded-full border-2 border-blue-500" />
               <h1 className="text-2xl font-bold">{riskName}</h1>
               <Badge className="bg-amber-100 text-amber-700">Pending Review</Badge>
               <span className="text-muted-foreground font-mono">{riskId}</span>
             </div>
-            <div className="flex items-center gap-4 text-sm text-muted-foreground mb-4">
+            <div className="flex items-center gap-3 text-sm text-muted-foreground mb-2">
               <span>Assessment ID: <span className="text-blue-600 font-medium">ASM-1043</span></span>
               <span>•</span>
               <span>Date: 2025-04-10</span>
             </div>
             
             {/* Score Cards */}
-            <div className="flex items-center gap-4 flex-wrap">
-              <Card className={`px-5 py-3 ${getRatingLabel(inherentScore).color} text-white`}>
-                <div className="text-xs opacity-90">Inherent Risk</div>
-                <div className="text-xl font-bold">{inherentScore}</div>
-                <div className="text-xs">{getRatingLabel(inherentScore).label}</div>
+            <div className="flex items-center gap-3 flex-wrap">
+              <Card className={`px-4 py-2 ${getRatingLabel(inherentScore).color} text-white`}>
+                <div className="text-[10px] opacity-90">Inherent Risk</div>
+                <div className="text-lg font-bold">{inherentScore}</div>
+                <div className="text-[10px]">{getRatingLabel(inherentScore).label}</div>
               </Card>
-              <Card className={`px-5 py-3 ${getRatingLabel(controlScore).color} text-white`}>
-                <div className="text-xs opacity-90">Control Effectiveness</div>
-                <div className="text-xl font-bold">{controlScore}</div>
-                <div className="text-xs">{getRatingLabel(controlScore).label}</div>
+              <Card className={`px-4 py-2 ${getRatingLabel(controlScore).color} text-white`}>
+                <div className="text-[10px] opacity-90">Control Effectiveness</div>
+                <div className="text-lg font-bold">{controlScore}</div>
+                <div className="text-[10px]">{getRatingLabel(controlScore).label}</div>
               </Card>
-              <Card className={`px-5 py-3 ${getRatingLabel(residualScore).color} text-white`}>
-                <div className="text-xs opacity-90">Residual Risk</div>
-                <div className="text-xl font-bold">{residualScore}</div>
-                <div className="text-xs">{getRatingLabel(residualScore).label}</div>
+              <Card className={`px-4 py-2 ${getRatingLabel(residualScore).color} text-white`}>
+                <div className="text-[10px] opacity-90">Residual Risk</div>
+                <div className="text-lg font-bold">{residualScore}</div>
+                <div className="text-[10px]">{getRatingLabel(residualScore).label}</div>
               </Card>
-              <Card className="px-5 py-3 bg-slate-100 dark:bg-slate-800">
-                <div className="text-xs text-muted-foreground">Risk Reduction</div>
+              <Card className="px-4 py-2 bg-slate-100 dark:bg-slate-800">
+                <div className="text-[10px] text-muted-foreground">Risk Reduction</div>
                 <div className="flex items-center gap-1">
                   <TrendingUp className="w-4 h-4 text-emerald-500" />
                   <span className="text-xl font-bold text-emerald-600">{riskReduction}</span>
@@ -929,7 +929,7 @@ const RiskAssessmentForm = () => {
           </div>
 
           {/* Tabs */}
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-3">
             <TabsList className="bg-transparent border-b border-border rounded-none w-full justify-start gap-0 p-0 h-auto flex-wrap">
               <TabsTrigger value="inherent-rating" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
                 <AlertTriangle className="w-4 h-4" />
@@ -956,9 +956,9 @@ const RiskAssessmentForm = () => {
             </TabsList>
 
             {/* Inherent Rating Tab */}
-            <TabsContent value="inherent-rating" className="space-y-4">
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
+            <TabsContent value="inherent-rating" className="space-y-3">
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-3">
                   <div>
                     <h2 className="text-lg font-semibold">Overall Inherent Risk Rating</h2>
                     <p className="text-sm text-muted-foreground">Calculated based on weighted impact factors</p>
@@ -1001,12 +1001,12 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-3 text-left"><Checkbox /></th>
-                        <th className="p-3 text-left text-sm font-medium">Factor & Description</th>
-                        <th className="p-3 text-left text-sm font-medium w-36">Rating</th>
-                        <th className="p-3 text-left text-sm font-medium">Comments</th>
-                        {showWeights && <th className="p-3 text-left text-sm font-medium w-28">Weightage (%)</th>}
-                        <th className="p-3 text-left text-sm font-medium w-20">Actions</th>
+                        <th className="w-10 p-2 text-left"><Checkbox /></th>
+                        <th className="p-2 text-left text-sm font-medium">Factor & Description</th>
+                        <th className="p-2 text-left text-sm font-medium w-36">Rating</th>
+                        <th className="p-2 text-left text-sm font-medium">Comments</th>
+                        {showWeights && <th className="p-2 text-left text-sm font-medium w-28">Weightage (%)</th>}
+                        <th className="p-2 text-left text-sm font-medium w-20">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1014,8 +1014,8 @@ const RiskAssessmentForm = () => {
                         const factorCellId = factor.name.toLowerCase().replace(/\s+/g, '-');
                         return (
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
-                          <td className="p-3"><Checkbox /></td>
-                          <td className="p-3">
+                          <td className="p-2"><Checkbox /></td>
+                          <td className="p-2">
                             <CellCommentPopover factorName={factor.name} field="Description">
                               <div>
                                 <div className="font-medium">{factor.name}</div>
@@ -1023,7 +1023,7 @@ const RiskAssessmentForm = () => {
                               </div>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-3">
+                          <td className="p-2">
                             <CollaborativeCell cellId={`${factorCellId}-rating`}>
                               <CellCommentPopover factorName={factor.name} field="Rating">
                                 <Select value={factor.rating.toString()} onValueChange={(v) => updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v))}>
@@ -1041,22 +1041,22 @@ const RiskAssessmentForm = () => {
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
-                          <td className="p-3">
+                          <td className="p-2">
                             <CollaborativeCell cellId={`${factorCellId}-comments`}>
                               <CellCommentPopover factorName={factor.name} field="Comments">
                                 <Textarea 
                                   value={factor.comments}
                                   onChange={(e) => updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value)}
-                                  className="min-h-[50px] resize-none text-sm"
+                                  className="min-h-[36px] resize-none text-sm"
                                 />
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
-                          {showWeights && <td className="p-3 text-center font-medium">{factor.weightage}</td>}
-                          <td className="p-3">
+                          {showWeights && <td className="p-2 text-center font-medium">{factor.weightage}</td>}
+                          <td className="p-2">
                             <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-blue-600"><Edit2 className="w-3.5 h-3.5" /></Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 text-red-600"><Trash2 className="w-3 h-3" /></Button>
                             </div>
                           </td>
                         </tr>
@@ -1076,9 +1076,9 @@ const RiskAssessmentForm = () => {
             </TabsContent>
 
             {/* Control Effectiveness Tab */}
-            <TabsContent value="control-effectiveness" className="space-y-4">
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
+            <TabsContent value="control-effectiveness" className="space-y-3">
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-3">
                   <div>
                     <h2 className="text-lg font-semibold">Control Effectiveness Assessment</h2>
                     <p className="text-sm text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
@@ -1098,16 +1098,16 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-3 text-left"><Checkbox /></th>
-                        <th className="p-3 text-left text-sm font-medium">Control ID</th>
-                        <th className="p-3 text-left text-sm font-medium">Control Name</th>
-                        <th className="p-3 text-left text-sm font-medium">Type</th>
-                        <th className="p-3 text-left text-sm font-medium">Owner</th>
-                        <th className="p-3 text-left text-sm font-medium w-24">Design</th>
-                        <th className="p-3 text-left text-sm font-medium w-24">Operating</th>
-                        <th className="p-3 text-left text-sm font-medium w-24">Testing</th>
-                        <th className="p-3 text-left text-sm font-medium w-16">Avg</th>
-                        <th className="p-3 text-left text-sm font-medium w-16">Actions</th>
+                        <th className="w-10 p-2 text-left"><Checkbox /></th>
+                        <th className="p-2 text-left text-sm font-medium">Control ID</th>
+                        <th className="p-2 text-left text-sm font-medium">Control Name</th>
+                        <th className="p-2 text-left text-sm font-medium">Type</th>
+                        <th className="p-2 text-left text-sm font-medium">Owner</th>
+                        <th className="p-2 text-left text-sm font-medium w-24">Design</th>
+                        <th className="p-2 text-left text-sm font-medium w-24">Operating</th>
+                        <th className="p-2 text-left text-sm font-medium w-24">Testing</th>
+                        <th className="p-2 text-left text-sm font-medium w-16">Avg</th>
+                        <th className="p-2 text-left text-sm font-medium w-16">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1116,20 +1116,20 @@ const RiskAssessmentForm = () => {
                         const controlCellId = control.id.toLowerCase();
                         return (
                           <tr key={control.id} className="border-t hover:bg-muted/30">
-                            <td className="p-3"><Checkbox /></td>
-                            <td className="p-3 font-mono text-sm text-blue-600">{control.id}</td>
-                            <td className="p-3">
+                            <td className="p-2"><Checkbox /></td>
+                            <td className="p-2 font-mono text-sm text-blue-600">{control.id}</td>
+                            <td className="p-2">
                               <CellCommentPopover factorName={control.id} field="Name">
                                 <span className="font-medium">{control.name}</span>
                               </CellCommentPopover>
                             </td>
-                            <td className="p-3">
+                            <td className="p-2">
                               <Badge variant="outline" className={control.type === "Preventive" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}>
                                 {control.type}
                               </Badge>
                             </td>
-                            <td className="p-3 text-sm">{control.owner}</td>
-                            <td className="p-3">
+                            <td className="p-2 text-sm">{control.owner}</td>
+                            <td className="p-2">
                               <CollaborativeCell cellId={`${controlCellId}-design`}>
                                 <CellCommentPopover factorName={control.id} field="Design">
                                   <Select value={control.designRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'designRating', parseInt(v))}>
@@ -1143,7 +1143,7 @@ const RiskAssessmentForm = () => {
                                 </CellCommentPopover>
                               </CollaborativeCell>
                             </td>
-                            <td className="p-3">
+                            <td className="p-2">
                               <CollaborativeCell cellId={`${controlCellId}-operating`}>
                                 <CellCommentPopover factorName={control.id} field="Operating">
                                   <Select value={control.operatingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'operatingRating', parseInt(v))}>
@@ -1157,7 +1157,7 @@ const RiskAssessmentForm = () => {
                                 </CellCommentPopover>
                               </CollaborativeCell>
                             </td>
-                            <td className="p-3">
+                            <td className="p-2">
                               <CollaborativeCell cellId={`${controlCellId}-testing`}>
                                 <CellCommentPopover factorName={control.id} field="Testing">
                                   <Select value={control.testingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'testingRating', parseInt(v))}>
@@ -1171,11 +1171,11 @@ const RiskAssessmentForm = () => {
                                 </CellCommentPopover>
                               </CollaborativeCell>
                             </td>
-                            <td className="p-3">
+                            <td className="p-2">
                               <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white`}>{avg}</Badge>
                             </td>
-                            <td className="p-3">
-                              <Button variant="ghost" size="icon" className="h-7 w-7"><MoreHorizontal className="w-4 h-4" /></Button>
+                            <td className="p-2">
+                              <Button variant="ghost" size="icon" className="h-6 w-6"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
                             </td>
                           </tr>
                         );
@@ -1195,9 +1195,9 @@ const RiskAssessmentForm = () => {
             </TabsContent>
 
             {/* Residual Rating Tab */}
-            <TabsContent value="residual-rating" className="space-y-4">
-              <Card className="p-6">
-                <div className="flex items-center justify-between mb-4">
+            <TabsContent value="residual-rating" className="space-y-3">
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-3">
                   <div>
                     <h2 className="text-lg font-semibold">Residual Risk Rating</h2>
                     <p className="text-sm text-muted-foreground">Risk rating after applying controls</p>
@@ -1212,19 +1212,19 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-3 text-left"><Checkbox /></th>
-                        <th className="p-3 text-left text-sm font-medium">Factor & Description</th>
-                        <th className="p-3 text-left text-sm font-medium w-36">Rating</th>
-                        <th className="p-3 text-left text-sm font-medium">Comments</th>
-                        {showWeights && <th className="p-3 text-left text-sm font-medium w-28">Weightage (%)</th>}
-                        <th className="p-3 text-left text-sm font-medium w-20">Actions</th>
+                        <th className="w-10 p-2 text-left"><Checkbox /></th>
+                        <th className="p-2 text-left text-sm font-medium">Factor & Description</th>
+                        <th className="p-2 text-left text-sm font-medium w-36">Rating</th>
+                        <th className="p-2 text-left text-sm font-medium">Comments</th>
+                        {showWeights && <th className="p-2 text-left text-sm font-medium w-28">Weightage (%)</th>}
+                        <th className="p-2 text-left text-sm font-medium w-20">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {residualFactors.map((factor) => (
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
-                          <td className="p-3"><Checkbox /></td>
-                          <td className="p-3">
+                          <td className="p-2"><Checkbox /></td>
+                          <td className="p-2">
                             <CellCommentPopover factorName={factor.name} field="Description">
                               <div>
                                 <div className="font-medium">{factor.name}</div>
@@ -1232,7 +1232,7 @@ const RiskAssessmentForm = () => {
                               </div>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-3">
+                          <td className="p-2">
                             <CellCommentPopover factorName={factor.name} field="Rating">
                               <Select value={factor.rating.toString()} onValueChange={(v) => updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v))}>
                                 <SelectTrigger className="w-full bg-background">
@@ -1248,20 +1248,20 @@ const RiskAssessmentForm = () => {
                               </Select>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-3">
+                          <td className="p-2">
                             <CellCommentPopover factorName={factor.name} field="Comments">
                               <Textarea 
                                 value={factor.comments}
                                 onChange={(e) => updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value)}
-                                className="min-h-[50px] resize-none text-sm"
+                                className="min-h-[36px] resize-none text-sm"
                               />
                             </CellCommentPopover>
                           </td>
-                          {showWeights && <td className="p-3 text-center font-medium">{factor.weightage}</td>}
-                          <td className="p-3">
+                          {showWeights && <td className="p-2 text-center font-medium">{factor.weightage}</td>}
+                          <td className="p-2">
                             <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-blue-600"><Edit2 className="w-3.5 h-3.5" /></Button>
-                              <Button variant="ghost" size="icon" className="h-7 w-7 text-red-600"><Trash2 className="w-3.5 h-3.5" /></Button>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 text-red-600"><Trash2 className="w-3 h-3" /></Button>
                             </div>
                           </td>
                         </tr>
