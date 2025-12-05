@@ -143,20 +143,20 @@ const AssessmentCard = ({
             </Button>
             <Button 
               size="sm"
-              className="text-[11px] h-7 px-2.5 bg-primary text-primary-foreground hover:bg-primary/90"
-              onClick={handleNavigate}
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span className="ml-1">Assess with AI</span>
-            </Button>
-            <Button 
-              size="sm"
               variant="outline"
               className="text-[11px] h-7 px-2.5"
               onClick={handleNavigate}
             >
               <FileText className="w-3.5 h-3.5" />
               <span className="ml-1">Assess Manually</span>
+            </Button>
+            <Button 
+              size="sm"
+              className="text-[11px] h-7 px-2.5 bg-primary text-primary-foreground hover:bg-primary/90 ml-auto"
+              onClick={handleNavigate}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="ml-1">Assess with AI</span>
             </Button>
           </div>
         </div>
