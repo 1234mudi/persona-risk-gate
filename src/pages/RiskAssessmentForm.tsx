@@ -151,6 +151,21 @@ const RiskAssessmentForm = () => {
   const [selectedCollaborators, setSelectedCollaborators] = useState<string[]>([]);
   const [activeCellComment, setActiveCellComment] = useState<{factorId: string; field: string} | null>(null);
   
+  // Real-time collaboration - simulated collaborator positions on fields
+  const [collaboratorPositions] = useState<{
+    cellId: string;
+    collaborator: { name: string; avatar: string; color: string };
+  }[]>([
+    { cellId: "financial-impact-rating", collaborator: { name: "Sarah Johnson", avatar: "SJ", color: "bg-emerald-500" } },
+    { cellId: "ctl-001-design", collaborator: { name: "Michael Chen", avatar: "MC", color: "bg-blue-500" } },
+    { cellId: "operational-impact-comments", collaborator: { name: "Emily Roberts", avatar: "ER", color: "bg-purple-500" } },
+  ]);
+  
+  // Track which sections have active editors
+  const [activeSections] = useState<{ section: string; color: string }[]>([
+    { section: "inherent-rating", color: "ring-emerald-500/30" },
+  ]);
+  
   // Chat messages
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([
     { id: "1", user: "Sarah Johnson", avatar: "SJ", message: "I've updated the financial impact rating based on the latest audit findings.", timestamp: "10:32 AM", type: "message" },
@@ -472,6 +487,41 @@ const RiskAssessmentForm = () => {
 
   const getFieldComments = (field: string) => {
     return cellComments.filter(c => c.field === field);
+  };
+
+  // Get collaborator editing a specific cell
+  const getCollaboratorOnCell = (cellId: string) => {
+    return collaboratorPositions.find(p => p.cellId === cellId)?.collaborator;
+  };
+
+  // Check if section has active editors
+  const isSectionActive = (section: string) => {
+    return activeSections.some(s => s.section === section);
+  };
+
+  // Collaborator Badge Component for cells
+  const CollaboratorBadge = ({ cellId }: { cellId: string }) => {
+    const collaborator = getCollaboratorOnCell(cellId);
+    if (!collaborator) return null;
+    
+    return (
+      <div className={`absolute -top-2 -left-2 z-50 flex items-center gap-1 ${collaborator.color} text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-full shadow-lg animate-pulse`}>
+        <span>{collaborator.avatar}</span>
+      </div>
+    );
+  };
+
+  // Cell wrapper with collaborator indicator
+  const CollaborativeCell = ({ cellId, children, className = "" }: { cellId: string; children: React.ReactNode; className?: string }) => {
+    const collaborator = getCollaboratorOnCell(cellId);
+    const isBeingEdited = !!collaborator;
+    
+    return (
+      <div className={`relative ${isBeingEdited ? `ring-2 ring-offset-1 rounded-md ${collaborator?.color.replace('bg-', 'ring-')}` : ''} ${className}`}>
+        <CollaboratorBadge cellId={cellId} />
+        {children}
+      </div>
+    );
   };
 
   const inherentScore = parseFloat(calculateInherentScore());
@@ -930,11 +980,20 @@ const RiskAssessmentForm = () => {
                 </div>
 
                 {/* Collaboration Notice */}
-                <div className="flex items-center gap-3 p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 mb-4">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-sm text-emerald-700 dark:text-emerald-300">
-                    Live collaboration active! Click on any cell to add review comments.
-                  </span>
+                <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 mb-4">
+                  <div className="flex items-center gap-3">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-sm text-emerald-700 dark:text-emerald-300">
+                      Live collaboration active! Watch for colored badges on cells showing who's editing in real time.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="flex -space-x-1.5">
+                      <div className="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[9px] font-semibold text-white">SJ</div>
+                      <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[9px] font-semibold text-white">MC</div>
+                      <div className="w-6 h-6 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[9px] font-semibold text-white">ER</div>
+                    </div>
+                  </div>
                 </div>
 
                 {/* Factors Table */}
@@ -951,7 +1010,9 @@ const RiskAssessmentForm = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {inherentFactors.map((factor) => (
+                      {inherentFactors.map((factor) => {
+                        const factorCellId = factor.name.toLowerCase().replace(/\s+/g, '-');
+                        return (
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
                           <td className="p-3"><Checkbox /></td>
                           <td className="p-3">
@@ -963,29 +1024,33 @@ const RiskAssessmentForm = () => {
                             </CellCommentPopover>
                           </td>
                           <td className="p-3">
-                            <CellCommentPopover factorName={factor.name} field="Rating">
-                              <Select value={factor.rating.toString()} onValueChange={(v) => updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v))}>
-                                <SelectTrigger className="w-full bg-background">
-                                  <SelectValue />
-                                </SelectTrigger>
-                                <SelectContent className="bg-background border shadow-lg z-50">
-                                  <SelectItem value="1">Very Low (1)</SelectItem>
-                                  <SelectItem value="2">Low (2)</SelectItem>
-                                  <SelectItem value="3">Medium (3)</SelectItem>
-                                  <SelectItem value="4">High (4)</SelectItem>
-                                  <SelectItem value="5">Very High (5)</SelectItem>
-                                </SelectContent>
-                              </Select>
-                            </CellCommentPopover>
+                            <CollaborativeCell cellId={`${factorCellId}-rating`}>
+                              <CellCommentPopover factorName={factor.name} field="Rating">
+                                <Select value={factor.rating.toString()} onValueChange={(v) => updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v))}>
+                                  <SelectTrigger className="w-full bg-background">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-background border shadow-lg z-50">
+                                    <SelectItem value="1">Very Low (1)</SelectItem>
+                                    <SelectItem value="2">Low (2)</SelectItem>
+                                    <SelectItem value="3">Medium (3)</SelectItem>
+                                    <SelectItem value="4">High (4)</SelectItem>
+                                    <SelectItem value="5">Very High (5)</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </CellCommentPopover>
+                            </CollaborativeCell>
                           </td>
                           <td className="p-3">
-                            <CellCommentPopover factorName={factor.name} field="Comments">
-                              <Textarea 
-                                value={factor.comments}
-                                onChange={(e) => updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value)}
-                                className="min-h-[50px] resize-none text-sm"
-                              />
-                            </CellCommentPopover>
+                            <CollaborativeCell cellId={`${factorCellId}-comments`}>
+                              <CellCommentPopover factorName={factor.name} field="Comments">
+                                <Textarea 
+                                  value={factor.comments}
+                                  onChange={(e) => updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value)}
+                                  className="min-h-[50px] resize-none text-sm"
+                                />
+                              </CellCommentPopover>
+                            </CollaborativeCell>
                           </td>
                           {showWeights && <td className="p-3 text-center font-medium">{factor.weightage}</td>}
                           <td className="p-3">
@@ -995,7 +1060,7 @@ const RiskAssessmentForm = () => {
                             </div>
                           </td>
                         </tr>
-                      ))}
+                      )})}
                     </tbody>
                   </table>
                 </div>
@@ -1048,6 +1113,7 @@ const RiskAssessmentForm = () => {
                     <tbody>
                       {controls.map((control) => {
                         const avg = ((control.designRating + control.operatingRating + control.testingRating) / 3).toFixed(1);
+                        const controlCellId = control.id.toLowerCase();
                         return (
                           <tr key={control.id} className="border-t hover:bg-muted/30">
                             <td className="p-3"><Checkbox /></td>
@@ -1064,40 +1130,46 @@ const RiskAssessmentForm = () => {
                             </td>
                             <td className="p-3 text-sm">{control.owner}</td>
                             <td className="p-3">
-                              <CellCommentPopover factorName={control.id} field="Design">
-                                <Select value={control.designRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'designRating', parseInt(v))}>
-                                  <SelectTrigger className="w-full bg-background h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-background border shadow-lg z-50">
-                                    {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                  </SelectContent>
-                                </Select>
-                              </CellCommentPopover>
+                              <CollaborativeCell cellId={`${controlCellId}-design`}>
+                                <CellCommentPopover factorName={control.id} field="Design">
+                                  <Select value={control.designRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'designRating', parseInt(v))}>
+                                    <SelectTrigger className="w-full bg-background h-8">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-background border shadow-lg z-50">
+                                      {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                    </SelectContent>
+                                  </Select>
+                                </CellCommentPopover>
+                              </CollaborativeCell>
                             </td>
                             <td className="p-3">
-                              <CellCommentPopover factorName={control.id} field="Operating">
-                                <Select value={control.operatingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'operatingRating', parseInt(v))}>
-                                  <SelectTrigger className="w-full bg-background h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-background border shadow-lg z-50">
-                                    {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                  </SelectContent>
-                                </Select>
-                              </CellCommentPopover>
+                              <CollaborativeCell cellId={`${controlCellId}-operating`}>
+                                <CellCommentPopover factorName={control.id} field="Operating">
+                                  <Select value={control.operatingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'operatingRating', parseInt(v))}>
+                                    <SelectTrigger className="w-full bg-background h-8">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-background border shadow-lg z-50">
+                                      {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                    </SelectContent>
+                                  </Select>
+                                </CellCommentPopover>
+                              </CollaborativeCell>
                             </td>
                             <td className="p-3">
-                              <CellCommentPopover factorName={control.id} field="Testing">
-                                <Select value={control.testingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'testingRating', parseInt(v))}>
-                                  <SelectTrigger className="w-full bg-background h-8">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-background border shadow-lg z-50">
-                                    {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                  </SelectContent>
-                                </Select>
-                              </CellCommentPopover>
+                              <CollaborativeCell cellId={`${controlCellId}-testing`}>
+                                <CellCommentPopover factorName={control.id} field="Testing">
+                                  <Select value={control.testingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'testingRating', parseInt(v))}>
+                                    <SelectTrigger className="w-full bg-background h-8">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-background border shadow-lg z-50">
+                                      {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                    </SelectContent>
+                                  </Select>
+                                </CellCommentPopover>
+                              </CollaborativeCell>
                             </td>
                             <td className="p-3">
                               <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white`}>{avg}</Badge>
