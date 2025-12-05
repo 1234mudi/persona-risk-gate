@@ -224,7 +224,7 @@ export const RiskAssessmentOverviewModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-[85vw] max-h-[70vh] p-0 overflow-hidden flex flex-col">
+      <DialogContent className="max-w-2xl w-[85vw] p-0 overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0">
           <div className="flex items-center justify-between">
