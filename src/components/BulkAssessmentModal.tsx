@@ -18,6 +18,12 @@ interface RiskData {
     reviewChallenge: "not-started" | "in-progress" | "completed";
     approve: "not-started" | "in-progress" | "completed";
   };
+  sectionCompletion?: {
+    inherentRating: number;
+    controlEffectiveness: number;
+    residualRating: number;
+    riskTreatment: number;
+  };
   inherentRisk: { level: string; color: string };
   residualRisk: { level: string; color: string };
 }
@@ -169,12 +175,18 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                 {selectedRisks.map(risk => (
                   <div 
                     key={risk.id} 
-                    className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors"
+                    className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
+                    onClick={() => {
+                      // Open the To-Do popup in a new tab by navigating to the dashboard with query params
+                      const url = `/dashboard-1st-line?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
+                      window.open(url, '_blank');
+                    }}
+                    title="Click to open risk assessment in new tab"
                   >
                     <Badge variant="outline" className="text-xs font-mono mb-2 border-primary/50 text-primary">
                       {risk.id}
                     </Badge>
-                    <p className="text-sm font-medium leading-tight mb-1">{risk.title}</p>
+                    <p className="text-sm font-medium leading-tight mb-1 group-hover:text-primary transition-colors">{risk.title}</p>
                     <p className="text-xs text-muted-foreground">{risk.category}</p>
                   </div>
                 ))}
