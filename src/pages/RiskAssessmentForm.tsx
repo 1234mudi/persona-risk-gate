@@ -151,7 +151,7 @@ const RiskAssessmentForm = () => {
   const [showWeights, setShowWeights] = useState(true);
   const [isAiLoading, setIsAiLoading] = useState(false);
   const [rightPanelOpen, setRightPanelOpen] = useState(false);
-  const [rightPanelTab, setRightPanelTab] = useState<'assessments' | 'review' | 'treatment' | 'metrics' | 'details'>('assessments');
+  const [rightPanelTab, setRightPanelTab] = useState<'assessments' | 'review' | 'issues' | 'metrics' | 'details'>('assessments');
   const [collaborateOpen, setCollaborateOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
@@ -1003,9 +1003,9 @@ const RiskAssessmentForm = () => {
               <TabsTrigger value="heat-map" className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
                 Heat Map
               </TabsTrigger>
-              <TabsTrigger value="issues" className="rounded-none border-b-2 border-transparent data-[state=active]:border-red-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
-                Issues
-                <Badge className="bg-red-100 text-red-700 ml-1 text-xs">5</Badge>
+              <TabsTrigger value="treatment" className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
+                <Clipboard className="w-4 h-4" />
+                Treatment
               </TabsTrigger>
             </TabsList>
 
@@ -1630,27 +1630,78 @@ const RiskAssessmentForm = () => {
               </div>
             </TabsContent>
 
-            {/* Issues Tab */}
-            <TabsContent value="issues">
+            {/* Treatment Tab */}
+            <TabsContent value="treatment">
               <Card className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Related Issues</h2>
-                <div className="space-y-2">
-                  {[
-                    { id: "ISS-1001", title: "KYC documentation gaps", severity: "High", status: "Open" },
-                    { id: "ISS-1002", title: "Delayed verification", severity: "Medium", status: "In Progress" },
-                    { id: "ISS-1003", title: "Missing audit trail", severity: "High", status: "Open" },
-                  ].map((issue) => (
-                    <div key={issue.id} className="p-3 border rounded-lg flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <span className="font-mono text-sm text-blue-600">{issue.id}</span>
-                        <span>{issue.title}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Badge className={issue.severity === "High" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}>{issue.severity}</Badge>
-                        <Badge variant="outline">{issue.status}</Badge>
-                      </div>
-                    </div>
-                  ))}
+                <div className="flex items-center justify-between mb-4">
+                  <h2 className="text-lg font-semibold">Risk Treatment Plan</h2>
+                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
+                    How the risk will be managed
+                  </Badge>
+                </div>
+                <p className="text-sm text-muted-foreground mb-6">
+                  In this section, define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.
+                </p>
+
+                <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Risk Treatment Approach</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select approach" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mitigate">Mitigate</SelectItem>
+                        <SelectItem value="accept">Accept</SelectItem>
+                        <SelectItem value="transfer">Transfer</SelectItem>
+                        <SelectItem value="avoid">Avoid</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The high-level strategy for handling this risk.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Risk Treatment Owner</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select owner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="compliance">Compliance Team</SelectItem>
+                        <SelectItem value="risk">Risk Management</SelectItem>
+                        <SelectItem value="operations">Operations</SelectItem>
+                        <SelectItem value="it">IT Department</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The person responsible for implementing the treatment plan.</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 mb-6">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Treatment Methodology/Strategy</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select methodology" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="controls">Enhanced Controls</SelectItem>
+                        <SelectItem value="training">Staff Training</SelectItem>
+                        <SelectItem value="automation">Process Automation</SelectItem>
+                        <SelectItem value="monitoring">Continuous Monitoring</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The specific approach to implementing the treatment plan.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Assessment Date</label>
+                    <Button variant="outline" className="w-full h-9 justify-start text-left font-normal">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      April 10th, 2025
+                    </Button>
+                    <p className="text-xs text-muted-foreground">The date when this assessment was conducted.</p>
+                  </div>
                 </div>
               </Card>
             </TabsContent>
@@ -1664,7 +1715,7 @@ const RiskAssessmentForm = () => {
         {[
           { id: 'assessments', label: 'Previous Assessments', icon: History },
           { id: 'review', label: 'Review & Challenge', icon: MessageSquare },
-          { id: 'treatment', label: 'Treatment', icon: Clipboard },
+          { id: 'issues', label: 'Issues', icon: AlertTriangle },
           { id: 'metrics', label: 'Metrics & Losses', icon: BarChart3 },
           { id: 'details', label: 'Additional Details', icon: FileText },
         ].map((tab) => {
@@ -1871,7 +1922,7 @@ const RiskAssessmentForm = () => {
             <h3 className="font-semibold text-sm">
               {rightPanelTab === 'assessments' && getHistoryTitle()}
               {rightPanelTab === 'review' && 'Review & Challenge'}
-              {rightPanelTab === 'treatment' && 'Treatment Plans'}
+              {rightPanelTab === 'issues' && 'Related Issues'}
               {rightPanelTab === 'metrics' && 'Metrics & Losses'}
               {rightPanelTab === 'details' && 'Additional Details'}
             </h3>
@@ -2084,89 +2135,42 @@ const RiskAssessmentForm = () => {
             </ScrollArea>
           )}
 
-          {/* Treatment Tab */}
-          {rightPanelTab === 'treatment' && (
+          {/* Issues Tab */}
+          {rightPanelTab === 'issues' && (
             <ScrollArea className="flex-1 overflow-hidden">
-              <div className="space-y-6 p-4 pr-3">
-                {/* Header */}
+              <div className="space-y-4 p-4 pr-3">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold">Risk Treatment Plan</h3>
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
-                      How the risk will be managed
-                    </Badge>
+                    <h3 className="text-lg font-semibold">Related Issues</h3>
+                    <Badge className="bg-red-100 text-red-700">5 Open</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    In this section, define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.
+                    Issues and findings related to this risk assessment.
                   </p>
                 </div>
 
-                {/* Form Fields */}
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Risk Treatment Approach</label>
-                    <Select>
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Select approach" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="mitigate">Mitigate</SelectItem>
-                        <SelectItem value="accept">Accept</SelectItem>
-                        <SelectItem value="transfer">Transfer</SelectItem>
-                        <SelectItem value="avoid">Avoid</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">The high-level strategy for handling this risk.</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Risk Treatment Owner</label>
-                    <Select>
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Select owner" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="compliance">Compliance Team</SelectItem>
-                        <SelectItem value="risk">Risk Management</SelectItem>
-                        <SelectItem value="operations">Operations</SelectItem>
-                        <SelectItem value="it">IT Department</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">The person responsible for implementing the treatment plan.</p>
-                  </div>
+                <div className="space-y-2">
+                  {[
+                    { id: "ISS-1001", title: "KYC documentation gaps", severity: "High", status: "Open" },
+                    { id: "ISS-1002", title: "Delayed verification", severity: "Medium", status: "In Progress" },
+                    { id: "ISS-1003", title: "Missing audit trail", severity: "High", status: "Open" },
+                    { id: "ISS-1004", title: "Incomplete risk register", severity: "Low", status: "Open" },
+                    { id: "ISS-1005", title: "Control gap identified", severity: "High", status: "Open" },
+                  ].map((issue) => (
+                    <div key={issue.id} className="p-3 border rounded-lg">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                        <Badge className={
+                          issue.severity === "High" ? "bg-red-100 text-red-700" : 
+                          issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
+                          "bg-slate-100 text-slate-700"
+                        }>{issue.severity}</Badge>
+                      </div>
+                      <p className="text-sm font-medium">{issue.title}</p>
+                      <Badge variant="outline" className="mt-2 text-xs">{issue.status}</Badge>
+                    </div>
+                  ))}
                 </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Treatment Methodology/Strategy</label>
-                    <Select>
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Select methodology" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="controls">Enhanced Controls</SelectItem>
-                        <SelectItem value="training">Staff Training</SelectItem>
-                        <SelectItem value="automation">Process Automation</SelectItem>
-                        <SelectItem value="monitoring">Continuous Monitoring</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">The specific approach to implementing the treatment plan.</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Assessment Date</label>
-                    <Button variant="outline" className="w-full h-9 justify-start text-left font-normal">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      April 10th, 2025
-                    </Button>
-                    <p className="text-xs text-muted-foreground">The date when this assessment was conducted.</p>
-                  </div>
-                </div>
-
-                <Button className="w-full gap-2 bg-slate-900 hover:bg-slate-800">
-                  Continue to Inherent Rating
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
               </div>
             </ScrollArea>
           )}
