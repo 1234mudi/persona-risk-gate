@@ -46,8 +46,17 @@ import {
   Bell,
   AtSign,
   Upload,
-  Calendar
+  Calendar,
+  Maximize2,
+  Minimize2,
+  HelpCircle
 } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -151,6 +160,7 @@ const RiskAssessmentForm = () => {
   const [fullEditAccess, setFullEditAccess] = useState(true);
   const [selectedCollaborators, setSelectedCollaborators] = useState<string[]>([]);
   const [activeCellComment, setActiveCellComment] = useState<{factorId: string; field: string} | null>(null);
+  const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
   
   // Real-time collaboration - simulated collaborator positions on fields
   const [collaboratorPositions] = useState<{
@@ -1003,7 +1013,6 @@ const RiskAssessmentForm = () => {
                         <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
                         <th className="p-1.5 text-left text-xs font-medium">Comments</th>
                         {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
-                        <th className="p-1.5 text-left text-xs font-medium w-16">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1014,9 +1023,31 @@ const RiskAssessmentForm = () => {
                           <td className="p-1.5"><Checkbox /></td>
                           <td className="p-1.5">
                             <CellCommentPopover factorName={factor.name} field="Description">
-                              <div>
-                                <div className="font-medium text-sm">{factor.name}</div>
-                                <div className="text-xs text-muted-foreground">{factor.description}</div>
+                              <div className="flex items-start gap-1.5">
+                                <div className="flex-1">
+                                  <div className="font-medium text-sm">{factor.name}</div>
+                                  <div className="text-xs text-muted-foreground">{factor.description}</div>
+                                </div>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button className="mt-0.5 text-muted-foreground hover:text-foreground">
+                                        <HelpCircle className="w-3.5 h-3.5" />
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right" className="max-w-xs p-3">
+                                      <p className="font-medium text-sm mb-1">{factor.name} Guidance</p>
+                                      <p className="text-xs text-muted-foreground mb-2">{factor.description}</p>
+                                      <div className="text-xs space-y-1">
+                                        <p><strong>1 - Very Low:</strong> Minimal impact expected</p>
+                                        <p><strong>2 - Low:</strong> Minor impact, easily managed</p>
+                                        <p><strong>3 - Medium:</strong> Moderate impact requiring attention</p>
+                                        <p><strong>4 - High:</strong> Significant impact on operations</p>
+                                        <p><strong>5 - Very High:</strong> Critical impact, immediate action needed</p>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </div>
                             </CellCommentPopover>
                           </td>
@@ -1028,6 +1059,7 @@ const RiskAssessmentForm = () => {
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent className="bg-background border shadow-lg z-50">
+                                    <SelectItem value="0">Not Applicable (N/A)</SelectItem>
                                     <SelectItem value="1">Very Low (1)</SelectItem>
                                     <SelectItem value="2">Low (2)</SelectItem>
                                     <SelectItem value="3">Medium (3)</SelectItem>
@@ -1050,12 +1082,6 @@ const RiskAssessmentForm = () => {
                             </CollaborativeCell>
                           </td>
                           {showWeights && <td className="p-1.5 text-center text-sm font-medium">{factor.weightage}</td>}
-                          <td className="p-1.5">
-                            <div className="flex items-center gap-0.5">
-                              <Button variant="ghost" size="icon" className="h-5 w-5 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
-                              <Button variant="ghost" size="icon" className="h-5 w-5 text-red-600"><Trash2 className="w-3 h-3" /></Button>
-                            </div>
-                          </td>
                         </tr>
                       )})}
                     </tbody>
@@ -1244,7 +1270,6 @@ const RiskAssessmentForm = () => {
                         <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
                         <th className="p-1.5 text-left text-xs font-medium">Comments</th>
                         {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
-                        <th className="p-1.5 text-left text-xs font-medium w-16">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1253,9 +1278,31 @@ const RiskAssessmentForm = () => {
                           <td className="p-1.5"><Checkbox /></td>
                           <td className="p-1.5">
                             <CellCommentPopover factorName={factor.name} field="Description">
-                              <div>
-                                <div className="font-medium text-sm">{factor.name}</div>
-                                <div className="text-xs text-muted-foreground">{factor.description}</div>
+                              <div className="flex items-start gap-1.5">
+                                <div className="flex-1">
+                                  <div className="font-medium text-sm">{factor.name}</div>
+                                  <div className="text-xs text-muted-foreground">{factor.description}</div>
+                                </div>
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button className="mt-0.5 text-muted-foreground hover:text-foreground">
+                                        <HelpCircle className="w-3.5 h-3.5" />
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent side="right" className="max-w-xs p-3">
+                                      <p className="font-medium text-sm mb-1">{factor.name} Guidance</p>
+                                      <p className="text-xs text-muted-foreground mb-2">{factor.description}</p>
+                                      <div className="text-xs space-y-1">
+                                        <p><strong>1 - Very Low:</strong> Minimal residual impact</p>
+                                        <p><strong>2 - Low:</strong> Minor residual impact after controls</p>
+                                        <p><strong>3 - Medium:</strong> Moderate residual impact</p>
+                                        <p><strong>4 - High:</strong> Significant residual impact</p>
+                                        <p><strong>5 - Very High:</strong> Critical residual impact</p>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
                               </div>
                             </CellCommentPopover>
                           </td>
@@ -1266,6 +1313,7 @@ const RiskAssessmentForm = () => {
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-background border shadow-lg z-50">
+                                  <SelectItem value="0">Not Applicable (N/A)</SelectItem>
                                   <SelectItem value="1">Very Low (1)</SelectItem>
                                   <SelectItem value="2">Low (2)</SelectItem>
                                   <SelectItem value="3">Medium (3)</SelectItem>
@@ -1285,12 +1333,6 @@ const RiskAssessmentForm = () => {
                             </CellCommentPopover>
                           </td>
                           {showWeights && <td className="p-1.5 text-center text-sm font-medium">{factor.weightage}</td>}
-                          <td className="p-1.5">
-                            <div className="flex items-center gap-0.5">
-                              <Button variant="ghost" size="icon" className="h-5 w-5 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
-                              <Button variant="ghost" size="icon" className="h-5 w-5 text-red-600"><Trash2 className="w-3 h-3" /></Button>
-                            </div>
-                          </td>
                         </tr>
                       ))}
                     </tbody>
@@ -1621,9 +1663,165 @@ const RiskAssessmentForm = () => {
         })}
       </div>
 
+      {/* Expanded Panel Dialog for Previous Assessments */}
+      <Dialog open={expandedPanel === 'assessments'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>{getHistoryTitle()}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            {/* Date Selection Badges */}
+            <div className="flex flex-wrap gap-2">
+              {getHistoryData().map((item, idx) => (
+                <Badge
+                  key={item.date}
+                  variant={selectedHistoryDate === idx ? "default" : "outline"}
+                  className={`cursor-pointer transition-all ${
+                    selectedHistoryDate === idx 
+                      ? "bg-slate-900 text-white hover:bg-slate-800" 
+                      : "bg-background hover:bg-muted"
+                  }`}
+                  onClick={() => setSelectedHistoryDate(idx)}
+                >
+                  {item.date}
+                </Badge>
+              ))}
+            </div>
+            {/* Score */}
+            <div className="flex items-center justify-between">
+              <Badge 
+                variant="outline" 
+                className={`text-sm px-3 py-1 ${getHistoryRatingBadge(getHistoryData()[selectedHistoryDate]?.score || 0).color}`}
+              >
+                Score: {getHistoryData()[selectedHistoryDate]?.score} ({getHistoryRatingBadge(getHistoryData()[selectedHistoryDate]?.score || 0).label})
+              </Badge>
+              <Button variant="outline" size="sm" className="h-8 text-xs gap-1.5">
+                <Copy className="w-3.5 h-3.5" />
+                Copy to current
+              </Button>
+            </div>
+            {/* Data Table - Expanded */}
+            <div className="border rounded-lg overflow-hidden">
+              {activeTab === "control-effectiveness" ? (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted/50 border-b">
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Control</th>
+                      <th className="text-center px-4 py-3 font-medium text-muted-foreground">Design</th>
+                      <th className="text-center px-4 py-3 font-medium text-muted-foreground">Operating</th>
+                      <th className="text-center px-4 py-3 font-medium text-muted-foreground">Testing</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(getHistoryData()[selectedHistoryDate] as any)?.controls?.map((control: any, idx: number) => (
+                      <tr key={idx} className="border-b last:border-b-0">
+                        <td className="px-4 py-3 text-foreground">{control.name}</td>
+                        <td className="px-4 py-3 text-center">
+                          <Badge variant="outline" className={getHistoryRatingBadge(control.design).color}>{control.design}</Badge>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <Badge variant="outline" className={getHistoryRatingBadge(control.operating).color}>{control.operating}</Badge>
+                        </td>
+                        <td className="px-4 py-3 text-center">
+                          <Badge variant="outline" className={getHistoryRatingBadge(control.testing).color}>{control.testing}</Badge>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              ) : (
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted/50 border-b">
+                      <th className="text-left px-4 py-3 font-medium text-muted-foreground">Factor</th>
+                      <th className="text-center px-4 py-3 font-medium text-muted-foreground">Rating</th>
+                      <th className="text-right px-4 py-3 font-medium text-muted-foreground">Weight (%)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(getHistoryData()[selectedHistoryDate] as any)?.factors?.map((factor: any, idx: number) => (
+                      <tr key={idx} className="border-b last:border-b-0">
+                        <td className="px-4 py-3 text-foreground">{factor.name}</td>
+                        <td className="px-4 py-3 text-center">
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(factor.rating).color}`}>
+                            {getHistoryRatingBadge(factor.rating).label} ({factor.rating})
+                          </Badge>
+                        </td>
+                        <td className="px-4 py-3 text-right text-muted-foreground">{factor.weight}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Metrics & Losses */}
+      <Dialog open={expandedPanel === 'metrics'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>Metrics and Losses</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">
+              Risk metrics and associated loss data help quantify the current risk exposure.
+            </p>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Outlier Metrics Card */}
+              <div className="border-l-4 border-l-amber-500 border rounded-lg p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertCircle className="w-6 h-6 text-amber-500" />
+                  <div>
+                    <h4 className="font-semibold text-lg">Outlier Metrics</h4>
+                    <p className="text-sm text-muted-foreground">Metrics outside defined thresholds</p>
+                  </div>
+                </div>
+                <div className="flex items-baseline gap-2 mb-3">
+                  <span className="text-3xl font-bold">8</span>
+                  <span className="text-sm text-muted-foreground">of 12 metrics</span>
+                </div>
+                <div className="space-y-2 text-sm mb-4">
+                  <div className="flex items-center gap-2 text-amber-600">
+                    <TrendingUp className="w-4 h-4" />
+                    <span>5 Above Threshold</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-blue-600">
+                    <TrendingDown className="w-4 h-4" />
+                    <span>3 Below Threshold</span>
+                  </div>
+                </div>
+                <div className="bg-amber-50 rounded-md p-3 text-sm text-amber-700">
+                  42% of metrics are currently exceeding their defined thresholds.
+                </div>
+              </div>
+
+              {/* Loss Incurred Card */}
+              <div className="border-l-4 border-l-red-500 border rounded-lg p-6">
+                <div className="flex items-start gap-3 mb-4">
+                  <Target className="w-6 h-6 text-red-500" />
+                  <div>
+                    <h4 className="font-semibold text-lg">Loss Incurred</h4>
+                    <p className="text-sm text-muted-foreground">Due to Risk</p>
+                  </div>
+                </div>
+                <p className="text-sm text-muted-foreground mb-2">Total approved loss amount</p>
+                <div className="text-3xl font-bold text-red-600 mb-4">
+                  $2,450,000
+                </div>
+                <div className="bg-red-50 rounded-md p-3 text-sm text-red-700">
+                  Losses have increased by 18% compared to the previous assessment period.
+                </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       {/* Right Sliding Panel */}
       {rightPanelOpen && (
-        <div className="fixed top-0 right-[52px] h-full w-[400px] bg-background border-l border-border z-[55] shadow-xl overflow-hidden">
+        <div className="fixed top-0 right-[52px] h-full w-[550px] bg-background border-l border-border z-[55] shadow-xl overflow-hidden">
         <div className="flex flex-col h-full w-full overflow-hidden">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
@@ -1634,9 +1832,22 @@ const RiskAssessmentForm = () => {
               {rightPanelTab === 'metrics' && 'Metrics & Losses'}
               {rightPanelTab === 'details' && 'Additional Details'}
             </h3>
-            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setRightPanelOpen(false)}>
-              <X className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center gap-1">
+              {(rightPanelTab === 'assessments' || rightPanelTab === 'metrics') && (
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8" 
+                  onClick={() => setExpandedPanel(rightPanelTab)}
+                  title="Expand to full view"
+                >
+                  <Maximize2 className="w-4 h-4" />
+                </Button>
+              )}
+              <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setRightPanelOpen(false)}>
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
           </div>
 
           {/* Previous Assessments Tab */}
