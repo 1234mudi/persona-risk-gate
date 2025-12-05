@@ -261,7 +261,7 @@ export const RiskAssessmentOverviewModal = ({
         <div className="px-6 py-4 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-foreground">Risk Assessment Review Workflow</h2>
+              <h2 className="text-lg font-semibold text-foreground">To-Do: Risk Assessment Overview</h2>
               <p className="text-sm text-muted-foreground mt-0.5">
                 <span className="font-medium text-foreground">{risk.id}</span> · {risk.title}
               </p>
