@@ -146,6 +146,7 @@ const RiskAssessmentForm = () => {
   const section = searchParams.get("section") || "inherent-rating";
   const riskId = searchParams.get("riskId") || "RISK-2025-001";
   const riskName = searchParams.get("riskName") || "KYC Risk Assessment Inadequacy";
+  const aiAssessed = searchParams.get("aiAssessed");
   
   const [activeTab, setActiveTab] = useState(section);
   const [bottomTab, setBottomTab] = useState("previous-assessments");
@@ -166,6 +167,7 @@ const RiskAssessmentForm = () => {
   // AI field tracking - tracks which fields have been AI-filled and which have been manually edited
   const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
   const [editedFields, setEditedFields] = useState<Set<string>>(new Set());
+  const [aiAssessedProcessed, setAiAssessedProcessed] = useState(false);
   
   // Real-time collaboration - simulated collaborator positions on fields
   const [collaboratorPositions] = useState<{
@@ -398,6 +400,34 @@ const RiskAssessmentForm = () => {
       setActiveTab(section);
     }
   }, [section]);
+
+  // Process AI assessment from popup navigation
+  useEffect(() => {
+    if (aiAssessed && !aiAssessedProcessed) {
+      const newAiFields = new Set(aiFilledFields);
+      
+      if (aiAssessed === "inherent-rating") {
+        inherentFactors.forEach(factor => {
+          newAiFields.add(`inherent-${factor.id}-rating`);
+          newAiFields.add(`inherent-${factor.id}-comments`);
+        });
+      } else if (aiAssessed === "control-effectiveness") {
+        controls.forEach(control => {
+          newAiFields.add(`control-${control.id}-design`);
+          newAiFields.add(`control-${control.id}-operating`);
+          newAiFields.add(`control-${control.id}-testing`);
+        });
+      } else if (aiAssessed === "residual-rating") {
+        residualFactors.forEach(factor => {
+          newAiFields.add(`residual-${factor.id}-rating`);
+          newAiFields.add(`residual-${factor.id}-comments`);
+        });
+      }
+      
+      setAiFilledFields(newAiFields);
+      setAiAssessedProcessed(true);
+    }
+  }, [aiAssessed, aiAssessedProcessed, inherentFactors, controls, residualFactors]);
 
   // Calculate scores
   const calculateInherentScore = () => {
