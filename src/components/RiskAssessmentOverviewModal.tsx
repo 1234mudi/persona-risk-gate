@@ -40,7 +40,7 @@ interface AssessmentCardProps {
   completion: number;
   descriptor: string;
   icon: React.ReactNode;
-  accentColor: string;
+  
   primaryCta: { label: string; icon: React.ReactNode };
   secondaryCta: { label: string; icon: React.ReactNode };
   stepNumber: number;
@@ -52,7 +52,7 @@ const AssessmentCard = ({
   completion,
   descriptor,
   icon,
-  accentColor,
+  
   primaryCta,
   secondaryCta,
   sectionKey,
@@ -90,11 +90,11 @@ const AssessmentCard = ({
     <div className="flex">
       {/* Timeline indicator */}
       <div className="flex flex-col items-center mr-4">
-        <div className={`flex items-center justify-center w-10 h-10 rounded-full ${accentColor} text-white font-bold text-sm`}>
+        <div className="flex items-center justify-center w-10 h-10 rounded-full bg-muted border border-border text-muted-foreground font-bold text-sm">
           {stepNumber}
         </div>
         {!isLast && (
-          <div className={`w-0.5 flex-1 mt-2 ${completion === 100 ? 'bg-emerald-500' : 'bg-border'}`} />
+          <div className="w-0.5 flex-1 mt-2 bg-border" />
         )}
       </div>
 
@@ -140,7 +140,7 @@ const AssessmentCard = ({
               </Button>
               <Button 
                 size="sm"
-                className={`text-xs h-8 ${accentColor} text-white hover:opacity-90`}
+                className="text-xs h-8 bg-muted text-foreground hover:bg-muted/80"
                 onClick={handleNavigate}
               >
                 {secondaryCta.icon}
@@ -175,8 +175,7 @@ export const RiskAssessmentOverviewModal = ({
       riskName: risk.title,
       completion: risk.sectionCompletion.inherentRating,
       descriptor: "Review risk scoring without controls",
-      icon: <AlertTriangle className="w-5 h-5 text-orange-600" />,
-      accentColor: "bg-orange-500",
+      icon: <AlertTriangle className="w-5 h-5 text-muted-foreground" />,
       sectionKey: "inherent-rating",
       primaryCta: {
         label: "Compare with Previous Cycle",
@@ -193,8 +192,7 @@ export const RiskAssessmentOverviewModal = ({
       riskName: risk.title,
       completion: risk.sectionCompletion.controlEffectiveness,
       descriptor: "Evaluate design & operating effectiveness",
-      icon: <Shield className="w-5 h-5 text-blue-600" />,
-      accentColor: "bg-blue-500",
+      icon: <Shield className="w-5 h-5 text-muted-foreground" />,
       sectionKey: "control-effectiveness",
       primaryCta: {
         label: "View Latest Control Test Results",
@@ -211,8 +209,7 @@ export const RiskAssessmentOverviewModal = ({
       riskName: risk.title,
       completion: risk.sectionCompletion.residualRating,
       descriptor: "Validate post-control risk scoring",
-      icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
-      accentColor: "bg-emerald-500",
+      icon: <CheckCircle className="w-5 h-5 text-muted-foreground" />,
       sectionKey: "residual-rating",
       primaryCta: {
         label: "View Auto-Calculated Score",
@@ -229,8 +226,7 @@ export const RiskAssessmentOverviewModal = ({
       riskName: risk.title,
       completion: risk.sectionCompletion.riskTreatment,
       descriptor: "Review mitigation plans & status",
-      icon: <FileText className="w-5 h-5 text-purple-600" />,
-      accentColor: "bg-purple-500",
+      icon: <FileText className="w-5 h-5 text-muted-foreground" />,
       sectionKey: "risk-treatment",
       primaryCta: {
         label: "Review Treatment Plan",
