@@ -1593,7 +1593,7 @@ const RiskAssessmentForm = () => {
 
       {/* Right Sliding Panel */}
       {rightPanelOpen && (
-        <div className="fixed top-0 right-[52px] h-full w-80 bg-background border-l border-border z-[55] shadow-xl overflow-hidden">
+        <div className="fixed top-0 right-[52px] h-full w-[400px] bg-background border-l border-border z-[55] shadow-xl overflow-hidden">
         <div className="flex flex-col h-full w-full overflow-hidden">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
