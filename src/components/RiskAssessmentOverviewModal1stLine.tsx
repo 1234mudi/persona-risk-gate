@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   AlertTriangle, 
   Shield, 
@@ -14,8 +16,11 @@ import {
   ArrowRight,
   Target,
   Circle,
-  CheckCircle2
+  CheckCircle2,
+  Loader2,
+  Save
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface RiskAssessmentOverviewModal1stLineProps {
   open: boolean;
@@ -171,12 +176,58 @@ export const RiskAssessmentOverviewModal1stLine = ({
   risk,
 }: RiskAssessmentOverviewModal1stLineProps) => {
   const navigate = useNavigate();
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [aiSummary, setAiSummary] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   if (!risk) return null;
 
   const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
     onOpenChange(false);
     navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
+  };
+
+  const handleOpenSummaryModal = () => {
+    setSummaryModalOpen(true);
+    generateAISummary();
+  };
+
+  const generateAISummary = () => {
+    setIsGenerating(true);
+    // Simulate AI generating summary based on previous cycle and current risk data
+    setTimeout(() => {
+      const generatedSummary = `Risk Assessment Summary for ${risk.id} - ${risk.title}
+
+Based on analysis of previous cycle data and current risk details:
+
+**Inherent Risk Assessment:**
+The inherent risk level remains elevated due to the nature of operations and external market conditions. Historical data indicates consistent exposure patterns with minor fluctuations.
+
+**Control Environment:**
+Current controls demonstrate moderate effectiveness. Recommend reviewing automation opportunities to enhance control reliability and reduce manual intervention points.
+
+**Residual Risk Position:**
+After applying existing controls, residual risk falls within acceptable tolerance levels. Continuous monitoring is advised to maintain this position.
+
+**Treatment Recommendations:**
+1. Strengthen preventive controls in high-impact areas
+2. Implement additional monitoring for emerging risk indicators
+3. Schedule quarterly reviews to assess control adequacy
+
+**Overall Assessment:**
+This risk is currently being managed within established parameters. No immediate escalation required, but proactive measures should be considered for the upcoming cycle.`;
+      
+      setAiSummary(generatedSummary);
+      setIsGenerating(false);
+    }, 1500);
+  };
+
+  const handleSaveSummary = () => {
+    toast({
+      title: "Summary Saved",
+      description: "Your AI assessment summary has been saved successfully.",
+    });
+    setSummaryModalOpen(false);
   };
 
   const cards = [
@@ -279,6 +330,15 @@ export const RiskAssessmentOverviewModal1stLine = ({
               </div>
               <Button 
                 size="sm"
+                variant="outline"
+                onClick={handleOpenSummaryModal}
+                className="h-8 text-xs gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span>AI Assessment Summary</span>
+              </Button>
+              <Button 
+                size="sm"
                 onClick={() => handleNavigateToSection('inherent-rating', risk.id, risk.title)}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 h-8 text-xs"
               >
@@ -303,6 +363,54 @@ export const RiskAssessmentOverviewModal1stLine = ({
             ))}
           </div>
         </div>
+
+        {/* AI Summary Modal */}
+        <Dialog open={summaryModalOpen} onOpenChange={setSummaryModalOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-base">
+                <Sparkles className="w-4 h-4 text-primary" />
+                AI Assessment Summary
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">
+                AI-generated summary based on previous cycle data and current risk details. Edit as needed.
+              </p>
+              {isGenerating ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <span className="ml-2 text-sm text-muted-foreground">Generating summary...</span>
+                </div>
+              ) : (
+                <Textarea
+                  value={aiSummary}
+                  onChange={(e) => setAiSummary(e.target.value)}
+                  className="min-h-[280px] text-sm leading-relaxed"
+                  placeholder="AI summary will appear here..."
+                />
+              )}
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSummaryModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSaveSummary}
+                  disabled={isGenerating || !aiSummary}
+                  className="gap-1.5"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  Save Summary
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
