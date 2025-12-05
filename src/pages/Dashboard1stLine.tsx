@@ -56,6 +56,11 @@ interface RiskData {
   owner: string;
   assessors: string[];
   currentEditor?: string;
+  orgLevel: {
+    level1: string;
+    level2: string;
+    level3: string;
+  };
   assessmentProgress: {
     assess: "not-started" | "in-progress" | "completed";
     reviewChallenge: "not-started" | "in-progress" | "completed";
@@ -89,6 +94,7 @@ const Dashboard1stLine = () => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-1L-001", "R-1L-002", "R-1L-003"]));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
+  const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
@@ -179,7 +185,18 @@ const Dashboard1stLine = () => {
 
   const visibleRisks = useMemo(() => {
     const visible: RiskData[] = [];
-    const filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    let filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    
+    // Apply org level filter
+    if (orgLevelFilter !== "all") {
+      filtered = filtered.filter(risk => {
+        if (orgLevelFilter === "level1") return risk.orgLevel.level1 !== "";
+        if (orgLevelFilter === "level2") return risk.orgLevel.level2 !== "";
+        if (orgLevelFilter === "level3") return risk.orgLevel.level3 !== "";
+        return true;
+      });
+    }
+    
     filtered.forEach(risk => {
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
@@ -193,7 +210,7 @@ const Dashboard1stLine = () => {
       }
     });
     return visible;
-  }, [riskData, activeTab, expandedRows]);
+  }, [riskData, activeTab, expandedRows, orgLevelFilter]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -366,7 +383,21 @@ const Dashboard1stLine = () => {
     },
   ];
 
-  const filteredRiskData = riskData.filter(risk => risk.tabCategory === activeTab);
+  const filteredRiskData = useMemo(() => {
+    let filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    
+    // Apply org level filter
+    if (orgLevelFilter !== "all") {
+      filtered = filtered.filter(risk => {
+        if (orgLevelFilter === "level1") return risk.orgLevel.level1 !== "";
+        if (orgLevelFilter === "level2") return risk.orgLevel.level2 !== "";
+        if (orgLevelFilter === "level3") return risk.orgLevel.level3 !== "";
+        return true;
+      });
+    }
+    
+    return filtered;
+  }, [riskData, activeTab, orgLevelFilter]);
 
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
@@ -821,7 +852,44 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
-                      <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
+                      <TableHead className="min-w-[220px] py-2 border-r border-b border-border">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-1.5 hover:text-first-line transition-colors">
+                              Risk Title
+                              <ChevronDown className="w-4 h-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" className="bg-popover border border-border shadow-lg z-50">
+                            <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Org Level</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("all")}
+                              className={orgLevelFilter === "all" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              All Levels
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("level1")}
+                              className={orgLevelFilter === "level1" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              Org Level 1 (Operational)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("level2")}
+                              className={orgLevelFilter === "level2" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              Org Level 2 (Retail Banking)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("level3")}
+                              className={orgLevelFilter === "level3" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              Org Level 3 (ATM)
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
@@ -1132,6 +1200,7 @@ const initialRiskData1stLine: RiskData[] = [
     owner: "Credit Team Lead",
     assessors: ["Sarah Johnson", "Mike Davis"],
     currentEditor: "Sarah Johnson",
+    orgLevel: { level1: "Operational", level2: "Retail Banking", level3: "ATM" },
     assessmentProgress: {
       assess: "in-progress",
       reviewChallenge: "not-started",
@@ -1165,6 +1234,7 @@ const initialRiskData1stLine: RiskData[] = [
     owner: "Onboarding Team",
     assessors: ["Emma White", "Chris Anderson"],
     currentEditor: "Emma White",
+    orgLevel: { level1: "Operational", level2: "Retail Banking", level3: "" },
     assessmentProgress: {
       assess: "in-progress",
       reviewChallenge: "not-started",
@@ -1197,6 +1267,7 @@ const initialRiskData1stLine: RiskData[] = [
     category: "Operational",
     owner: "Operations Manager",
     assessors: ["Daniel Kim"],
+    orgLevel: { level1: "Operational", level2: "", level3: "" },
     assessmentProgress: {
       assess: "completed",
       reviewChallenge: "not-started",
@@ -1229,6 +1300,7 @@ const initialRiskData1stLine: RiskData[] = [
     category: "Operational",
     owner: "Data Quality Lead",
     assessors: ["Sophia Taylor", "George Harris"],
+    orgLevel: { level1: "Operational", level2: "Retail Banking", level3: "ATM" },
     assessmentProgress: {
       assess: "not-started",
       reviewChallenge: "not-started",
@@ -1262,6 +1334,7 @@ const initialRiskData1stLine: RiskData[] = [
     owner: "Branch Manager",
     assessors: ["John Smith"],
     currentEditor: "John Smith",
+    orgLevel: { level1: "", level2: "Retail Banking", level3: "ATM" },
     assessmentProgress: {
       assess: "in-progress",
       reviewChallenge: "not-started",
@@ -1294,6 +1367,7 @@ const initialRiskData1stLine: RiskData[] = [
     category: "Compliance",
     owner: "Customer Service Lead",
     assessors: ["Lisa Martinez", "Tom Wilson"],
+    orgLevel: { level1: "Operational", level2: "", level3: "ATM" },
     assessmentProgress: {
       assess: "completed",
       reviewChallenge: "in-progress",
@@ -1326,6 +1400,7 @@ const initialRiskData1stLine: RiskData[] = [
     category: "Compliance",
     owner: "Loan Processing Team",
     assessors: ["Robert Chen", "Nina Patel"],
+    orgLevel: { level1: "", level2: "Retail Banking", level3: "" },
     assessmentProgress: {
       assess: "completed",
       reviewChallenge: "completed",
@@ -1359,6 +1434,7 @@ const initialRiskData1stLine: RiskData[] = [
     owner: "IT Security Lead",
     assessors: ["Alex Turner", "Maria Garcia"],
     currentEditor: "Maria Garcia",
+    orgLevel: { level1: "Operational", level2: "Retail Banking", level3: "ATM" },
     assessmentProgress: {
       assess: "in-progress",
       reviewChallenge: "not-started",
@@ -1391,6 +1467,7 @@ const initialRiskData1stLine: RiskData[] = [
     category: "Financial",
     owner: "Accounts Payable Lead",
     assessors: ["Olivia Brown"],
+    orgLevel: { level1: "", level2: "", level3: "ATM" },
     assessmentProgress: {
       assess: "completed",
       reviewChallenge: "completed",
@@ -1423,6 +1500,7 @@ const initialRiskData1stLine: RiskData[] = [
     category: "Compliance",
     owner: "Regulatory Reporting Team",
     assessors: ["David Lee"],
+    orgLevel: { level1: "Operational", level2: "Retail Banking", level3: "" },
     assessmentProgress: {
       assess: "completed",
       reviewChallenge: "completed",
