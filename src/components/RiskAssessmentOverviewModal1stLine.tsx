@@ -49,6 +49,8 @@ interface AssessmentCardProps {
   secondaryCta: { label: string; icon: React.ReactNode };
   stepNumber: number;
   isLast: boolean;
+  onAIAssess: () => void;
+  isAIAssessing: boolean;
 }
 
 const AssessmentCard = ({
@@ -65,6 +67,8 @@ const AssessmentCard = ({
   onNavigate,
   riskId,
   riskName,
+  onAIAssess,
+  isAIAssessing,
 }: AssessmentCardProps & { sectionKey: string; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
   const handleNavigate = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -158,10 +162,19 @@ const AssessmentCard = ({
             <Button 
               size="sm"
               className="text-[11px] h-7 px-2.5 bg-primary text-primary-foreground hover:bg-primary/90 ml-auto"
-              onClick={handleNavigate}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onAIAssess();
+              }}
+              disabled={isAIAssessing || completion === 100}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span className="ml-1">Assess with AI</span>
+              {isAIAssessing ? (
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="w-3.5 h-3.5" />
+              )}
+              <span className="ml-1">{isAIAssessing ? "Assessing..." : "Assess with AI"}</span>
             </Button>
           </div>
         </div>
@@ -179,12 +192,51 @@ export const RiskAssessmentOverviewModal1stLine = ({
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
   const [aiSummary, setAiSummary] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [sectionCompletion, setSectionCompletion] = useState<{
+    inherentRating: number;
+    controlEffectiveness: number;
+    residualRating: number;
+    riskTreatment: number;
+  } | null>(null);
+  const [assessingSection, setAssessingSection] = useState<string | null>(null);
+
+  // Initialize section completion from risk prop
+  const currentCompletion = sectionCompletion || risk?.sectionCompletion;
 
   if (!risk) return null;
 
   const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
     onOpenChange(false);
     navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
+  };
+
+  const handleAIAssess = (sectionKey: string) => {
+    setAssessingSection(sectionKey);
+    
+    // Simulate AI assessment with a brief delay
+    setTimeout(() => {
+      const keyMap: Record<string, keyof typeof risk.sectionCompletion> = {
+        'inherent-rating': 'inherentRating',
+        'control-effectiveness': 'controlEffectiveness',
+        'residual-rating': 'residualRating',
+        'risk-treatment': 'riskTreatment',
+      };
+      
+      const completionKey = keyMap[sectionKey];
+      if (completionKey) {
+        setSectionCompletion(prev => ({
+          ...(prev || risk.sectionCompletion),
+          [completionKey]: 100,
+        }));
+        
+        toast({
+          title: "AI Assessment Complete",
+          description: `All fields in ${sectionKey.replace('-', ' ')} have been auto-populated.`,
+        });
+      }
+      
+      setAssessingSection(null);
+    }, 1200);
   };
 
   const handleOpenSummaryModal = () => {
@@ -235,7 +287,7 @@ This risk is currently being managed within established parameters. No immediate
       title: "Inherent Rating",
       riskId: risk.id,
       riskName: risk.title,
-      completion: risk.sectionCompletion.inherentRating,
+      completion: currentCompletion?.inherentRating ?? 0,
       descriptor: "Risk without controls",
       icon: <AlertTriangle className="w-4 h-4 text-muted-foreground" />,
       sectionKey: "inherent-rating",
@@ -252,7 +304,7 @@ This risk is currently being managed within established parameters. No immediate
       title: "Control Effectiveness",
       riskId: risk.id,
       riskName: risk.title,
-      completion: risk.sectionCompletion.controlEffectiveness,
+      completion: currentCompletion?.controlEffectiveness ?? 0,
       descriptor: "Evaluate control strength",
       icon: <Shield className="w-4 h-4 text-muted-foreground" />,
       sectionKey: "control-effectiveness",
@@ -269,7 +321,7 @@ This risk is currently being managed within established parameters. No immediate
       title: "Residual Rating",
       riskId: risk.id,
       riskName: risk.title,
-      completion: risk.sectionCompletion.residualRating,
+      completion: currentCompletion?.residualRating ?? 0,
       descriptor: "Post-control risk level",
       icon: <CheckCircle className="w-4 h-4 text-muted-foreground" />,
       sectionKey: "residual-rating",
@@ -286,7 +338,7 @@ This risk is currently being managed within established parameters. No immediate
       title: "Risk Treatment",
       riskId: risk.id,
       riskName: risk.title,
-      completion: risk.sectionCompletion.riskTreatment,
+      completion: currentCompletion?.riskTreatment ?? 0,
       descriptor: "Mitigation & action plans",
       icon: <Target className="w-4 h-4 text-muted-foreground" />,
       sectionKey: "risk-treatment",
@@ -358,7 +410,9 @@ This risk is currently being managed within established parameters. No immediate
                 {...card} 
                 stepNumber={index + 1}
                 isLast={index === cards.length - 1}
-                onNavigate={handleNavigateToSection} 
+                onNavigate={handleNavigateToSection}
+                onAIAssess={() => handleAIAssess(card.sectionKey)}
+                isAIAssessing={assessingSection === card.sectionKey}
               />
             ))}
           </div>
