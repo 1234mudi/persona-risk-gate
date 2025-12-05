@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import { Textarea } from "@/components/ui/textarea";
 import { 
   AlertTriangle, 
   Shield, 
@@ -16,8 +18,12 @@ import {
   ArrowRight,
   Circle,
   CheckCircle2,
-  MessageSquare
+  MessageSquare,
+  Sparkles,
+  Loader2,
+  Save
 } from "lucide-react";
+import { toast } from "@/hooks/use-toast";
 
 interface RiskAssessmentOverviewModalProps {
   open: boolean;
@@ -178,8 +184,53 @@ export const RiskAssessmentOverviewModal = ({
   risk,
 }: RiskAssessmentOverviewModalProps) => {
   const navigate = useNavigate();
+  const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [aiSummary, setAiSummary] = useState("");
+  const [isGenerating, setIsGenerating] = useState(false);
 
   if (!risk) return null;
+
+  const handleOpenSummaryModal = () => {
+    setSummaryModalOpen(true);
+    generateAISummary();
+  };
+
+  const generateAISummary = () => {
+    setIsGenerating(true);
+    setTimeout(() => {
+      const generatedSummary = `Risk Assessment Summary for ${risk.id} - ${risk.title}
+
+Based on analysis of previous cycle data and current risk details:
+
+**Inherent Risk Assessment:**
+The inherent risk level remains elevated due to the nature of operations and external market conditions. Historical data indicates consistent exposure patterns with minor fluctuations.
+
+**Control Environment:**
+Current controls demonstrate moderate effectiveness. Recommend reviewing automation opportunities to enhance control reliability and reduce manual intervention points.
+
+**Residual Risk Position:**
+After applying existing controls, residual risk falls within acceptable tolerance levels. Continuous monitoring is advised to maintain this position.
+
+**Treatment Recommendations:**
+1. Strengthen preventive controls in high-impact areas
+2. Implement additional monitoring for emerging risk indicators
+3. Schedule quarterly reviews to assess control adequacy
+
+**Overall Assessment:**
+This risk is currently being managed within established parameters. No immediate escalation required, but proactive measures should be considered for the upcoming cycle.`;
+      
+      setAiSummary(generatedSummary);
+      setIsGenerating(false);
+    }, 1500);
+  };
+
+  const handleSaveSummary = () => {
+    toast({
+      title: "Summary Saved",
+      description: "Your AI assessment summary has been saved successfully.",
+    });
+    setSummaryModalOpen(false);
+  };
 
   const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
     onOpenChange(false);
@@ -251,7 +302,7 @@ export const RiskAssessmentOverviewModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl w-[85vw] p-0 overflow-hidden flex flex-col">
+      <DialogContent className="max-w-5xl w-[70vw] p-0 overflow-hidden flex flex-col">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0">
           <div className="flex items-center justify-between">
@@ -273,6 +324,15 @@ export const RiskAssessmentOverviewModal = ({
                   <p className="text-[10px] text-muted-foreground">Overall</p>
                 </div>
               </div>
+              <Button 
+                size="sm"
+                variant="outline"
+                onClick={handleOpenSummaryModal}
+                className="h-8 text-xs gap-1.5"
+              >
+                <Sparkles className="w-3.5 h-3.5 text-primary" />
+                <span>AI Assessment Summary</span>
+              </Button>
               <Button 
                 size="sm"
                 onClick={() => handleNavigateToSection('inherent-rating', risk.id, risk.title)}
@@ -299,6 +359,54 @@ export const RiskAssessmentOverviewModal = ({
             ))}
           </div>
         </div>
+
+        {/* AI Summary Modal */}
+        <Dialog open={summaryModalOpen} onOpenChange={setSummaryModalOpen}>
+          <DialogContent className="max-w-lg">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-base">
+                <Sparkles className="w-4 h-4 text-primary" />
+                AI Assessment Summary
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              <p className="text-xs text-muted-foreground">
+                AI-generated summary based on previous cycle data and current risk details. Edit as needed.
+              </p>
+              {isGenerating ? (
+                <div className="flex items-center justify-center py-12">
+                  <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  <span className="ml-2 text-sm text-muted-foreground">Generating summary...</span>
+                </div>
+              ) : (
+                <Textarea
+                  value={aiSummary}
+                  onChange={(e) => setAiSummary(e.target.value)}
+                  className="min-h-[280px] text-sm leading-relaxed"
+                  placeholder="AI summary will appear here..."
+                />
+              )}
+              <div className="flex justify-end gap-2 pt-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSummaryModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSaveSummary}
+                  disabled={isGenerating || !aiSummary}
+                  className="gap-1.5"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  Save Summary
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </DialogContent>
     </Dialog>
   );
