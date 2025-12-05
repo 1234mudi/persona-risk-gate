@@ -109,10 +109,11 @@ const AssessmentCard = ({
               </div>
               <div>
                 <h3 
-                  className="text-base font-semibold text-foreground hover:text-primary cursor-pointer transition-colors"
+                  className="group text-base font-semibold text-primary hover:text-primary/80 cursor-pointer transition-colors flex items-center gap-1.5 underline underline-offset-2 decoration-primary/40 hover:decoration-primary"
                   onClick={handleNavigate}
                 >
                   {title}
+                  <ArrowRight className="w-3.5 h-3.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </h3>
                 <p className="text-xs text-muted-foreground">{descriptor}</p>
               </div>
