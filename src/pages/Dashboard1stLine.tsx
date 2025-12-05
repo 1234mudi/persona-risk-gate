@@ -94,6 +94,7 @@ const Dashboard1stLine = () => {
   const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-1L-001", "R-1L-002", "R-1L-003"]));
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
+  const [assessorFilter, setAssessorFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
@@ -383,6 +384,13 @@ const Dashboard1stLine = () => {
     },
   ];
 
+  // Get unique assessors for the filter dropdown (only from assess tab)
+  const uniqueAssessors = useMemo(() => {
+    const assessRisks = riskData.filter(risk => risk.tabCategory === "assess");
+    const allAssessors = assessRisks.flatMap(risk => risk.assessors);
+    return [...new Set(allAssessors)].sort();
+  }, [riskData]);
+
   const filteredRiskData = useMemo(() => {
     let filtered = riskData.filter(risk => risk.tabCategory === activeTab);
     
@@ -396,8 +404,13 @@ const Dashboard1stLine = () => {
       });
     }
     
+    // Apply assessor filter (only on assess tab)
+    if (activeTab === "assess" && assessorFilter !== "all") {
+      filtered = filtered.filter(risk => risk.assessors.includes(assessorFilter));
+    }
+    
     return filtered;
-  }, [riskData, activeTab, orgLevelFilter]);
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter]);
 
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
@@ -789,6 +802,22 @@ const Dashboard1stLine = () => {
                   <SelectItem value="completed">Completed</SelectItem>
                 </SelectContent>
               </Select>
+
+              {activeTab === "assess" && (
+                <Select value={assessorFilter} onValueChange={setAssessorFilter}>
+                  <SelectTrigger className="w-48 h-8">
+                    <SelectValue placeholder="All Assessors" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                    <SelectItem value="all">All Assessors</SelectItem>
+                    {uniqueAssessors.map((assessor) => (
+                      <SelectItem key={assessor} value={assessor}>
+                        {assessor}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
 
               <div className="relative flex-1 min-w-[200px]">
                 <Input placeholder="Search risks..." className="pl-10 h-8" />
