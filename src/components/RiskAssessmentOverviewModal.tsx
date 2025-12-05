@@ -15,7 +15,8 @@ import {
   ThumbsUp,
   ArrowRight,
   Circle,
-  CheckCircle2
+  CheckCircle2,
+  MessageSquare
 } from "lucide-react";
 
 interface RiskAssessmentOverviewModalProps {
@@ -45,6 +46,8 @@ interface AssessmentCardProps {
   secondaryCta: { label: string; icon: React.ReactNode };
   stepNumber: number;
   isLast: boolean;
+  reviewCommentsAddressed?: number;
+  totalReviewComments?: number;
 }
 
 const AssessmentCard = ({
@@ -61,6 +64,8 @@ const AssessmentCard = ({
   onNavigate,
   riskId,
   riskName,
+  reviewCommentsAddressed = 0,
+  totalReviewComments = 0,
 }: AssessmentCardProps & { sectionKey: string; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
   const handleNavigate = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -145,6 +150,22 @@ const AssessmentCard = ({
               </Button>
             </div>
           </div>
+
+          {/* Review Comments Progress */}
+          {totalReviewComments > 0 && (
+            <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/30">
+              <MessageSquare className="w-3 h-3 text-muted-foreground shrink-0" />
+              <span className="text-[10px] text-muted-foreground">
+                <span className="font-medium text-foreground">{reviewCommentsAddressed}</span> out of <span className="font-medium text-foreground">{totalReviewComments}</span> review comments addressed
+              </span>
+              <div className="flex-1 max-w-[60px]">
+                <Progress 
+                  value={(reviewCommentsAddressed / totalReviewComments) * 100} 
+                  className="h-1"
+                />
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </div>
@@ -182,6 +203,8 @@ export const RiskAssessmentOverviewModal = ({
         label: "Review & Challenge",
         icon: <Eye className="w-3.5 h-3.5" />,
       },
+      reviewCommentsAddressed: 3,
+      totalReviewComments: 5,
     },
     {
       title: "Control Effectiveness Review",
@@ -199,6 +222,8 @@ export const RiskAssessmentOverviewModal = ({
         label: "Review & Challenge",
         icon: <Eye className="w-3.5 h-3.5" />,
       },
+      reviewCommentsAddressed: 2,
+      totalReviewComments: 8,
     },
     {
       title: "Residual Rating Validation",
@@ -216,6 +241,8 @@ export const RiskAssessmentOverviewModal = ({
         label: "Approve or Challenge",
         icon: <ThumbsUp className="w-3.5 h-3.5" />,
       },
+      reviewCommentsAddressed: 1,
+      totalReviewComments: 4,
     },
   ];
 
