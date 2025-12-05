@@ -108,7 +108,12 @@ const AssessmentCard = ({
                 {icon}
               </div>
               <div>
-                <h3 className="text-base font-semibold text-foreground">{title}</h3>
+                <h3 
+                  className="text-base font-semibold text-foreground hover:text-primary cursor-pointer transition-colors"
+                  onClick={handleNavigate}
+                >
+                  {title}
+                </h3>
                 <p className="text-xs text-muted-foreground">{descriptor}</p>
               </div>
             </div>
@@ -261,7 +266,7 @@ export const RiskAssessmentOverviewModal = ({
                 onClick={() => handleNavigateToSection('inherent-rating', risk.id, risk.title)}
                 className="bg-primary text-primary-foreground hover:bg-primary/90"
               >
-                <span>Continue Review</span>
+                <span>Continue</span>
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
             </div>
