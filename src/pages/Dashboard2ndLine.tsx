@@ -1293,6 +1293,7 @@ const Dashboard2ndLine = () => {
         onOpenChange={setBulkAssessmentOpen}
         selectedRisks={getSelectedRiskData()}
         onComplete={clearSelection}
+        userType="2nd-line"
       />
 
       {/* Risk Assessment Overview Modal */}

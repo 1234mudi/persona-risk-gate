@@ -33,6 +33,7 @@ interface BulkAssessmentModalProps {
   onOpenChange: (open: boolean) => void;
   selectedRisks: RiskData[];
   onComplete: () => void;
+  userType?: "1st-line" | "2nd-line" | "risk-owner";
 }
 
 // Mock controls data
@@ -43,7 +44,7 @@ const mockControls = [
   { id: "CTRL-004", name: "Audit Trail Monitoring", type: "Detective", owner: "Compliance" },
 ];
 
-export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onComplete }: BulkAssessmentModalProps) => {
+export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onComplete, userType = "1st-line" }: BulkAssessmentModalProps) => {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   
   // Inherent Risk ratings
@@ -177,8 +178,13 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                     key={risk.id} 
                     className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
                     onClick={() => {
-                      // Open the To-Do popup in a new tab by navigating to the dashboard with query params
-                      const url = `/dashboard/1st-line-analyst?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
+                      // Open the To-Do popup in a new tab by navigating to the correct dashboard based on user type
+                      const dashboardPath = userType === "2nd-line" 
+                        ? "/dashboard/2nd-line-analyst" 
+                        : userType === "risk-owner" 
+                          ? "/dashboard/risk-owner" 
+                          : "/dashboard/1st-line-analyst";
+                      const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
                       window.open(url, '_blank');
                     }}
                     title="Click to open risk assessment in new tab"
