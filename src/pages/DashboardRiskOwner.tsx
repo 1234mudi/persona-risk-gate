@@ -1135,6 +1135,7 @@ const DashboardRiskOwner = () => {
           clearSelection();
           toast.success("Bulk assessment completed successfully");
         }}
+        userType="risk-owner"
       />
 
       <RiskAssessmentOverviewModal

@@ -1140,6 +1140,7 @@ const Dashboard1stLine = () => {
           clearSelection();
           toast.success("Bulk assessment completed successfully");
         }}
+        userType="1st-line"
       />
 
       <RiskAssessmentOverviewModal1stLine
