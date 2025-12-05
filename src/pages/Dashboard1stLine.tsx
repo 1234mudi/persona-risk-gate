@@ -1,0 +1,1451 @@
+import { useState, useRef, useMemo, useEffect } from "react";
+import { format } from "date-fns";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText } from "lucide-react";
+import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
+import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+
+interface RiskData {
+  id: string;
+  title: string;
+  dueDate: string;
+  riskLevel: string;
+  parentRisk?: string;
+  businessUnit: string;
+  category: string;
+  owner: string;
+  assessors: string[];
+  currentEditor?: string;
+  assessmentProgress: {
+    assess: "not-started" | "in-progress" | "completed";
+    reviewChallenge: "not-started" | "in-progress" | "completed";
+    approve: "not-started" | "in-progress" | "completed";
+  };
+  sectionCompletion: {
+    inherentRating: number;
+    controlEffectiveness: number;
+    residualRating: number;
+    riskTreatment: number;
+  };
+  inherentRisk: { level: string; color: string };
+  inherentTrend: { value: string; up: boolean };
+  relatedControls: { id: string; name: string; type: string; nature: string };
+  controlEffectiveness: { label: string; color: string };
+  testResults: { label: string; sublabel: string };
+  residualRisk: { level: string; color: string };
+  residualTrend: { value: string; up: boolean };
+  status: string;
+  lastAssessed: string;
+  previousAssessments: number;
+  tabCategory: "own" | "assess" | "approve";
+}
+
+const Dashboard1stLine = () => {
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const reportSectionRef = useRef<HTMLDivElement>(null);
+  const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
+  const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-1L-001", "R-1L-002", "R-1L-003"]));
+  const [showScrollTop, setShowScrollTop] = useState(false);
+  const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
+  const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
+  const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
+  const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
+    id: string; 
+    title: string;
+    sectionCompletion: {
+      inherentRating: number;
+      controlEffectiveness: number;
+      residualRating: number;
+      riskTreatment: number;
+    };
+  } | null>(null);
+
+  useEffect(() => {
+    const openOverview = searchParams.get("openOverview");
+    const riskId = searchParams.get("riskId");
+    const riskName = searchParams.get("riskName");
+    
+    if (openOverview === "true" && riskId && riskName) {
+      const foundRisk = riskData.find(r => r.id === riskId);
+      setSelectedRiskForOverview({ 
+        id: riskId, 
+        title: riskName,
+        sectionCompletion: foundRisk?.sectionCompletion || {
+          inherentRating: 0,
+          controlEffectiveness: 0,
+          residualRating: 0,
+          riskTreatment: 0
+        }
+      });
+      setRiskOverviewModalOpen(true);
+      setSearchParams({});
+    }
+  }, [searchParams, setSearchParams]);
+
+  const handleRiskNameClick = (risk: RiskData) => {
+    setSelectedRiskForOverview({ 
+      id: risk.id, 
+      title: risk.title,
+      sectionCompletion: risk.sectionCompletion
+    });
+    setRiskOverviewModalOpen(true);
+  };
+
+  const assessorEmails: Record<string, string> = {
+    "John Smith": "john.smith@company.com",
+    "Sarah Johnson": "sarah.johnson@company.com",
+    "Mike Davis": "mike.davis@company.com",
+    "James Brown": "james.brown@company.com",
+    "Lisa Martinez": "lisa.martinez@company.com",
+    "Tom Wilson": "tom.wilson@company.com",
+    "Alex Turner": "alex.turner@company.com",
+    "Maria Garcia": "maria.garcia@company.com",
+    "Robert Chen": "robert.chen@company.com",
+    "Nina Patel": "nina.patel@company.com",
+    "David Lee": "david.lee@company.com",
+    "Emma White": "emma.white@company.com",
+    "Chris Anderson": "chris.anderson@company.com",
+    "Sophia Taylor": "sophia.taylor@company.com",
+    "Daniel Kim": "daniel.kim@company.com",
+    "Olivia Brown": "olivia.brown@company.com",
+    "George Harris": "george.harris@company.com",
+  };
+
+  const [editDialog, setEditDialog] = useState<{
+    open: boolean;
+    type: "inherent" | "controls" | "effectiveness" | "residual" | "trend" | null;
+    riskId: string | null;
+    currentValue: string;
+  }>({
+    open: false,
+    type: null,
+    riskId: null,
+    currentValue: "",
+  });
+
+  const [actionDialog, setActionDialog] = useState<{
+    open: boolean;
+    type: "reassign" | "collaborate" | "reassess" | null;
+    riskId: string | null;
+  }>({
+    open: false,
+    type: null,
+    riskId: null,
+  });
+
+  const [riskData, setRiskData] = useState<RiskData[]>(initialRiskData1stLine);
+
+  const visibleRisks = useMemo(() => {
+    const visible: RiskData[] = [];
+    const filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    filtered.forEach(risk => {
+      if (risk.riskLevel === "Level 1") {
+        visible.push(risk);
+        if (expandedRows.has(risk.id)) {
+          const level2Risks = filtered.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+          level2Risks.forEach(l2 => {
+            const level3Risks = filtered.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
+            visible.push(...level3Risks);
+          });
+        }
+      }
+    });
+    return visible;
+  }, [riskData, activeTab, expandedRows]);
+
+  const toggleRiskSelection = (riskId: string) => {
+    setSelectedRisks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(riskId)) {
+        newSet.delete(riskId);
+      } else {
+        newSet.add(riskId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedRisks.size === visibleRisks.length) {
+      setSelectedRisks(new Set());
+    } else {
+      setSelectedRisks(new Set(visibleRisks.map(r => r.id)));
+    }
+  };
+
+  const clearSelection = () => {
+    setSelectedRisks(new Set());
+  };
+
+  const getSelectedRiskData = () => {
+    return riskData.filter(r => selectedRisks.has(r.id));
+  };
+
+  const toggleRow = (riskId: string) => {
+    setExpandedRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(riskId)) {
+        newSet.delete(riskId);
+      } else {
+        newSet.add(riskId);
+      }
+      return newSet;
+    });
+  };
+
+  const handleEdit = (type: typeof editDialog.type, riskId: string, currentValue: string) => {
+    setEditDialog({ open: true, type, riskId, currentValue });
+  };
+
+  const handleSaveEdit = () => {
+    toast.success("Changes saved successfully");
+    setEditDialog({ open: false, type: null, riskId: null, currentValue: "" });
+  };
+
+  const handleAction = (type: typeof actionDialog.type, riskId: string) => {
+    setActionDialog({ open: true, type, riskId });
+  };
+
+  const handleUpdateClosedAssessment = (riskId: string) => {
+    toast.success(`Opening closed assessment update for ${riskId}`);
+  };
+
+  const handleActionSubmit = () => {
+    const actionName = actionDialog.type === "reassign" ? "Reassignment" : 
+                       actionDialog.type === "collaborate" ? "Collaboration request" : 
+                       "Reassessment";
+    toast.success(`${actionName} completed successfully`);
+    setActionDialog({ open: false, type: null, riskId: null });
+  };
+
+  const handleLogout = () => {
+    navigate("/");
+  };
+
+  const handleQuickLinkClick = (tab: "own" | "assess" | "approve") => {
+    setActiveTab(tab);
+    setHighlightedTab(tab);
+    
+    setTimeout(() => {
+      reportSectionRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 100);
+    
+    setTimeout(() => {
+      setHighlightedTab(null);
+    }, 1500);
+  };
+
+  const handleSubmitForReview = () => {
+    if (selectedRisks.size === 0) {
+      toast.error("Please select at least one risk to submit for review");
+      return;
+    }
+    toast.success(`${selectedRisks.size} assessment(s) submitted for 2nd Line review`);
+    clearSelection();
+  };
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const scrollToBottom = () => {
+    window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+  };
+
+  useState(() => {
+    const handleScroll = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  });
+
+  // 1st Line specific metrics
+  const metrics = [
+    {
+      title: "My Assessments Due",
+      value: 18,
+      trend: "+3 since last week",
+      trendUp: false,
+      icon: Clock,
+      segments: [
+        { label: "Overdue", value: 3, sublabel: "3 Overdue", color: "bg-red-600" },
+        { label: "Due Today", value: 5, sublabel: "5 Due Today", color: "bg-amber-500" },
+        { label: "Upcoming", value: 10, sublabel: "10 Upcoming", color: "bg-green-600" },
+      ],
+      description: "Complete overdue assessments first to maintain compliance.",
+      tooltip: "Shows your assigned risk assessments by due date status. Focus on overdue and due today items to meet assessment deadlines.",
+    },
+    {
+      title: "Inherent Risk Ratings",
+      value: 42,
+      trend: "+8 completed this month",
+      trendUp: true,
+      icon: AlertTriangle,
+      segments: [
+        { label: "Critical", value: 5, sublabel: "5 Critical", color: "bg-red-600" },
+        { label: "High", value: 12, sublabel: "12 High", color: "bg-amber-500" },
+        { label: "Medium", value: 25, sublabel: "25 Medium", color: "bg-green-600" },
+      ],
+      description: "Review Critical and High ratings for control adequacy.",
+      tooltip: "Distribution of inherent risk ratings across your assigned risks. Higher ratings require stronger controls to mitigate.",
+    },
+    {
+      title: "Control Evidence Status",
+      value: 76,
+      isPercentage: true,
+      trend: "+12% since last month",
+      trendUp: true,
+      icon: FileCheck,
+      segments: [
+        { label: "Documented (76%)", value: 38, sublabel: "38 Documented", color: "bg-green-600" },
+        { label: "Pending (16%)", value: 8, sublabel: "8 Pending", color: "bg-amber-500" },
+        { label: "Missing (8%)", value: 4, sublabel: "4 Missing", color: "bg-red-600" },
+      ],
+      description: "Upload missing control evidence to complete assessments.",
+      tooltip: "Tracks control documentation progress. Missing evidence blocks assessment completion and may delay approvals.",
+    },
+    {
+      title: "Action Plans",
+      value: 15,
+      trend: "+2 new this week",
+      trendUp: false,
+      icon: CheckSquare,
+      segments: [
+        { label: "Open", value: 6, sublabel: "6 Open", color: "bg-red-600" },
+        { label: "In Progress", value: 5, sublabel: "5 In Progress", color: "bg-amber-500" },
+        { label: "Completed", value: 4, sublabel: "4 Completed", color: "bg-green-600" },
+      ],
+      description: "Focus on open action plans to reduce risk exposure.",
+      tooltip: "Remediation action plans assigned to you. Open items indicate control gaps requiring attention.",
+    },
+  ];
+
+  const filteredRiskData = riskData.filter(risk => risk.tabCategory === activeTab);
+
+  const getVisibleRisks = () => {
+    const visible: RiskData[] = [];
+    filteredRiskData.forEach(risk => {
+      if (risk.riskLevel === "Level 1") {
+        visible.push(risk);
+        if (expandedRows.has(risk.id)) {
+          const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+          level2Risks.forEach(l2 => {
+            const level3Risks = filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
+            visible.push(...level3Risks);
+          });
+        }
+      }
+    });
+    return visible;
+  };
+
+  const getLevel2Children = (level1Risk: RiskData): RiskData[] => {
+    return filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === level1Risk.title);
+  };
+
+  const hasChildren = (risk: RiskData) => {
+    if (risk.riskLevel === "Level 1") {
+      const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+      return level2Risks.some(l2 => 
+        filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title)
+      );
+    }
+    return false;
+  };
+
+  const getRiskLevelColor = (level: string) => {
+    switch(level) {
+      case "Level 1": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400";
+      case "Level 2": return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400";
+      case "Level 3": return "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400";
+      default: return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch(status) {
+      case "Sent for Assessment": return "bg-cyan-500 text-white";
+      case "In Progress": return "bg-amber-500 text-white";
+      case "Pending Approval": return "bg-purple-500 text-white";
+      case "Review & Challenge": return "bg-orange-500 text-white";
+      case "Completed": return "bg-green-500 text-white";
+      case "Complete": return "bg-green-500 text-white";
+      case "Closed": return "bg-slate-500 text-white";
+      case "Overdue": return "bg-red-500 text-white";
+      case "Pending Review": return "bg-indigo-500 text-white";
+      default: return "bg-blue-500 text-white";
+    }
+  };
+
+  const getCategoryColor = (category: string) => {
+    switch(category) {
+      case "Operational": return "bg-indigo-50 dark:bg-indigo-950/30";
+      case "Technology": return "bg-cyan-50 dark:bg-cyan-950/30";
+      case "Compliance": return "bg-purple-50 dark:bg-purple-950/30";
+      case "Financial": return "bg-green-50 dark:bg-green-950/30";
+      default: return "bg-muted/30";
+    }
+  };
+
+  const getRiskBadgeColor = (color: string) => {
+    switch (color) {
+      case "red":
+        return "bg-destructive/20 text-destructive border-destructive/30";
+      case "yellow":
+        return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/20 dark:text-yellow-400";
+      case "green":
+        return "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/20 dark:text-green-400";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  };
+
+  const getEffectivenessBadge = (label: string, color: string) => {
+    const colorClass = color === "green" 
+      ? "bg-green-500 text-white" 
+      : "bg-yellow-500 text-white";
+    return <Badge className={`${colorClass} rounded-full`}>{label}</Badge>;
+  };
+
+  return (
+    <TooltipProvider>
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
+      {/* Header */}
+      <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-first-line to-emerald-600 flex items-center justify-center">
+                <ClipboardCheck className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-semibold text-foreground">
+                  1st Line Risk Analyst Dashboard
+                </h1>
+                <p className="text-sm text-muted-foreground">Risk and Control Self Assessment</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-3">
+              <ThemeToggle />
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm">
+                    <User className="w-4 h-4 mr-2" />
+                    1st Line Analyst
+                    <ChevronDown className="w-4 h-4 ml-2" />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>Current Persona</DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem onClick={handleLogout}>
+                    <LogOut className="w-4 h-4 mr-2" />
+                    Switch Persona / Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-6 py-8">
+        {/* Scorecards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+          {/* Quick Links Card */}
+          <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-card dark:to-card">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-semibold flex items-center gap-2">
+                <Link className="w-5 h-5 text-first-line" />
+                Quick Links
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left">
+                <ClipboardCheck className="w-4 h-4" />
+                View My Pending Assessments
+              </button>
+              <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left">
+                <FileCheck className="w-4 h-4" />
+                View Control Evidence Tasks
+              </button>
+              <a href="#" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
+                <AlertCircle className="w-4 h-4" />
+                View My Action Plans
+              </a>
+              <a href="#" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
+                <Send className="w-4 h-4" />
+                Submit for Review
+              </a>
+            </CardContent>
+          </Card>
+
+          {metrics.map((metric, index) => (
+            <Tooltip key={index}>
+              <TooltipTrigger asChild>
+                <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
+                  <CardContent className="p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
+                      <div className="w-10 h-10 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center flex-shrink-0">
+                        <metric.icon className="w-5 h-5 text-first-line" />
+                      </div>
+                    </div>
+                
+                <div className="space-y-2">
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-3xl font-bold text-foreground">
+                      {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
+                    </span>
+                  </div>
+                  
+                  <div className="flex items-center gap-2">
+                    {metric.trendUp ? (
+                      <TrendingUp className="w-4 h-4 text-green-600" />
+                    ) : (
+                      <TrendingDown className="w-4 h-4 text-red-600" />
+                    )}
+                    <span className={`text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                      {metric.trend}
+                    </span>
+                  </div>
+                  
+                  {/* Status Bar */}
+                  <div className="space-y-2">
+                    <div className="flex h-6 rounded-lg overflow-hidden">
+                      {metric.segments.map((segment, idx) => {
+                        const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
+                        const percentage = (segment.value / total) * 100;
+                        return (
+                          <div
+                            key={idx}
+                            className={segment.color}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        );
+                      })}
+                    </div>
+                    
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-x-2 gap-y-1">
+                      {metric.segments.map((segment, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5">
+                          <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
+                          <span className="text-xs font-medium text-muted-foreground">
+                            {segment.sublabel || segment.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  
+                  <p className="text-xs text-muted-foreground leading-snug pt-2">
+                    {metric.description}
+                  </p>
+                </div>
+                
+                {/* AI Generated Icon */}
+                <div className="absolute bottom-3 right-3">
+                  <div className="w-8 h-8 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-first-line" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </TooltipTrigger>
+          <TooltipContent side="bottom" className="max-w-xs text-sm">
+            <p>{metric.tooltip}</p>
+          </TooltipContent>
+        </Tooltip>
+          ))}
+        </div>
+
+        {/* Active Risk Profile Section */}
+        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
+          <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
+              <TooltipProvider>
+                <div className="flex items-center gap-2">
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                        <Plus className="h-3.5 w-3.5 mr-1" />
+                        Add New Risk
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Create a new risk entry</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                        <UsersIcon className="h-3.5 w-3.5 mr-1" />
+                        Collaborate
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Invite collaborators to work on risks</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                        <UserPlus className="h-3.5 w-3.5 mr-1" />
+                        Reassign
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Reassign risks to another owner</p>
+                    </TooltipContent>
+                  </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        className="h-7 bg-first-line hover:bg-first-line/90 text-white"
+                        onClick={handleSubmitForReview}
+                      >
+                        <Send className="h-3.5 w-3.5 mr-1" />
+                        Submit for Review
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Submit selected assessments to 2nd Line for review</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </div>
+              </TooltipProvider>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            {/* Modern Segmented Tabs */}
+            <div className="mb-3">
+              <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50">
+                <button
+                  onClick={() => setActiveTab("own")}
+                  className={`px-4 py-1.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                    activeTab === "own"
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
+                >
+                  Risks I Own
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                    activeTab === "own" ? "bg-white/20" : "bg-muted"
+                  }`}>
+                    {riskData.filter(r => r.tabCategory === "own").length}
+                  </span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("assess")}
+                  className={`px-4 py-1.5 font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                    activeTab === "assess"
+                      ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
+                >
+                  Risks to Assess
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                    activeTab === "assess" ? "bg-white/20" : "bg-muted"
+                  }`}>
+                    {riskData.filter(r => r.tabCategory === "assess").length}
+                  </span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("approve")}
+                  className={`px-4 py-1.5 rounded-r-md font-medium text-sm transition-all ${
+                    activeTab === "approve"
+                      ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md"
+                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                  } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-indigo-400 ring-offset-2" : ""}`}
+                >
+                  Pending Review
+                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
+                    activeTab === "approve" ? "bg-white/20" : "bg-muted"
+                  }`}>
+                    {riskData.filter(r => r.tabCategory === "approve").length}
+                  </span>
+                </button>
+              </div>
+            </div>
+
+            {/* Info Banner */}
+            <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-lg p-2.5 mb-3">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-emerald-800 dark:text-emerald-200">
+                  {activeTab === "own" && "These are risks within your business area that you are responsible for managing day-to-day. Ensure controls are documented and effective."}
+                  {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
+                  {activeTab === "approve" && "These assessments have been submitted and are awaiting review by the 2nd Line team. Monitor status for any feedback or challenges."}
+                </p>
+              </div>
+            </div>
+
+            {/* Filters and Actions */}
+            <div className="flex flex-wrap items-center gap-3 mb-4">
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
+                  Assessment Context
+                </Label>
+                <Select defaultValue="retail">
+                  <SelectTrigger id="assessment-context" className="w-48 h-8 bg-first-line text-white border-first-line">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="retail">Retail Banking</SelectItem>
+                    <SelectItem value="corporate">Corporate Banking</SelectItem>
+                    <SelectItem value="investment">Investment Banking</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <Select defaultValue="all">
+                <SelectTrigger className="w-40 h-8">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="relative flex-1 min-w-[200px]">
+                <Input placeholder="Search risks..." className="pl-10 h-8" />
+                <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              </div>
+            </div>
+
+            {/* Bulk Action Toolbar */}
+            {selectedRisks.size > 0 && (
+              <div className="mb-4 p-3 bg-first-line/5 border border-first-line/20 rounded-lg shadow-sm animate-in slide-in-from-top-2 duration-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <Badge variant="secondary" className="font-medium">
+                      {selectedRisks.size} risk{selectedRisks.size !== 1 ? 's' : ''} selected
+                    </Badge>
+                    <button 
+                      onClick={clearSelection}
+                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                    >
+                      <X className="w-3 h-3" />
+                      Clear selection
+                    </button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button 
+                      size="sm" 
+                      className="h-8 bg-gradient-to-r from-first-line to-emerald-600 text-white shadow-md hover:shadow-lg transition-all"
+                      onClick={() => setBulkAssessmentOpen(true)}
+                    >
+                      <Sparkles className="w-4 h-4 mr-1.5" />
+                      Perform Assessment
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      className="h-8 bg-indigo-500 hover:bg-indigo-600 text-white"
+                      onClick={handleSubmitForReview}
+                    >
+                      <Send className="w-4 h-4 mr-1.5" />
+                      Submit for Review
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Table */}
+            <div className="border rounded-lg overflow-hidden">
+              <div className="overflow-x-auto">
+                <Table className="border-collapse">
+                  <TableHeader className="bg-muted/50 sticky top-0">
+                    <TableRow>
+                      <TableHead className="w-12 py-2 border-r border-b border-border">
+                        <div className="flex items-center justify-center">
+                          <Checkbox 
+                            checked={visibleRisks.length > 0 && selectedRisks.size === visibleRisks.length}
+                            onCheckedChange={toggleSelectAll}
+                          />
+                        </div>
+                      </TableHead>
+                      <TableHead className="min-w-[50px] py-2 border-r border-b border-border"></TableHead>
+                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
+                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
+                      <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
+                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
+                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Related Controls</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Residual Risk</TableHead>
+                      <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {getVisibleRisks().map((risk, index) => {
+                      const isLevel1 = risk.riskLevel === "Level 1";
+                      const isLevel3 = risk.riskLevel === "Level 3";
+                      const isExpanded = expandedRows.has(risk.id);
+                      const canExpand = hasChildren(risk);
+                      
+                      return (
+                      <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
+                        isLevel1 ? 'bg-emerald-50/30 dark:bg-emerald-950/10' : 
+                        'bg-orange-50/10 dark:bg-orange-950/10'
+                      }`}>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex items-center justify-center">
+                            <Checkbox 
+                              checked={selectedRisks.has(risk.id)}
+                              onCheckedChange={() => toggleRiskSelection(risk.id)}
+                            />
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    className="p-1.5 rounded-md bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 transition-colors"
+                                    onClick={() => handleUpdateClosedAssessment(risk.id)}
+                                  >
+                                    <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Update this closed assessment</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className={`text-sm font-medium ${
+                            new Date(risk.dueDate) < new Date() 
+                              ? 'text-destructive' 
+                              : 'text-foreground'
+                          }`}>
+                            {format(new Date(risk.dueDate), 'MMM dd, yyyy')}
+                          </div>
+                          {new Date(risk.dueDate) < new Date() && (
+                            <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="space-y-1">
+                            <div className="flex gap-1">
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.assess === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.assess === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.reviewChallenge === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.reviewChallenge === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                              <div className={`h-2 flex-1 rounded-sm ${
+                                risk.assessmentProgress.approve === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress.approve === "in-progress" ? "bg-amber-500" :
+                                "bg-gray-300 dark:bg-gray-600"
+                              }`} />
+                            </div>
+                            <div className="flex justify-between text-[10px] text-muted-foreground">
+                              <span>Assess</span>
+                              <span>Review</span>
+                              <span>Approve</span>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex items-center gap-2">
+                            {isLevel1 && canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-0.5 hover:bg-muted rounded"
+                              >
+                                <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                              </button>
+                            )}
+                            <span className="font-mono text-sm font-medium text-first-line">{risk.id}</span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <button 
+                            onClick={() => handleRiskNameClick(risk)}
+                            className="text-sm font-medium text-foreground hover:text-first-line hover:underline cursor-pointer text-left transition-colors"
+                          >
+                            {risk.title}
+                          </button>
+                          <div className="text-xs text-muted-foreground">{risk.businessUnit}</div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
+                            {risk.riskLevel}
+                          </Badge>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex items-center gap-1">
+                            <div className="flex -space-x-2">
+                              {risk.assessors.slice(0, 2).map((assessor, idx) => (
+                                <TooltipProvider key={idx}>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <div className="relative">
+                                        <div className={`w-7 h-7 rounded-full border-2 border-background flex items-center justify-center text-xs font-medium text-white ${
+                                          idx === 0 ? 'bg-first-line' : 'bg-emerald-500'
+                                        }`}>
+                                          {assessor.split(' ').map(n => n[0]).join('')}
+                                        </div>
+                                        {risk.currentEditor === assessor && (
+                                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
+                                        )}
+                                      </div>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <div className="text-sm">
+                                        <p className="font-medium">{assessor}</p>
+                                        <p className="text-xs text-muted-foreground">{assessorEmails[assessor]}</p>
+                                        {risk.currentEditor === assessor && (
+                                          <p className="text-xs text-green-500 mt-1">Currently editing</p>
+                                        )}
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              ))}
+                            </div>
+                            {risk.assessors.length > 2 && (
+                              <span className="text-xs text-muted-foreground">+{risk.assessors.length - 2}</span>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="text-sm">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
+                          <div className="text-xs text-muted-foreground">{risk.previousAssessments} previous</div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className={`${getRiskBadgeColor(risk.inherentRisk.color)}`}>
+                              {risk.inherentRisk.level}
+                            </Badge>
+                            <span className={`text-xs flex items-center gap-0.5 ${risk.inherentTrend.up ? 'text-red-600' : 'text-green-600'}`}>
+                              {risk.inherentTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                              {risk.inherentTrend.value}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="text-xs">
+                            <div className="font-medium text-first-line">{risk.relatedControls.id}</div>
+                            <div className="text-muted-foreground truncate max-w-[150px]">{risk.relatedControls.name}</div>
+                            <div className="flex gap-1 mt-1">
+                              <Badge variant="secondary" className="text-[10px] px-1 py-0">{risk.relatedControls.type}</Badge>
+                              <Badge variant="secondary" className="text-[10px] px-1 py-0">{risk.relatedControls.nature}</Badge>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          {getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color)}
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="space-y-1">
+                            <Badge className="bg-green-500 text-white text-xs">{risk.testResults.label}</Badge>
+                            {risk.testResults.sublabel && (
+                              <div className="text-xs text-muted-foreground">{risk.testResults.sublabel}</div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="outline" className={`${getRiskBadgeColor(risk.residualRisk.color)}`}>
+                              {risk.residualRisk.level}
+                            </Badge>
+                            <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-red-600' : 'text-green-600'}`}>
+                              {risk.residualTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                              {risk.residualTrend.value}
+                            </span>
+                          </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-b border-border">
+                          <Badge className={getStatusColor(risk.status)}>{risk.status}</Badge>
+                        </TableCell>
+                      </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </main>
+
+      {/* Modals */}
+      <BulkAssessmentModal
+        open={bulkAssessmentOpen}
+        onOpenChange={setBulkAssessmentOpen}
+        selectedRisks={getSelectedRiskData()}
+        onComplete={() => {
+          clearSelection();
+          toast.success("Bulk assessment completed successfully");
+        }}
+      />
+
+      <RiskAssessmentOverviewModal
+        open={riskOverviewModalOpen}
+        onOpenChange={setRiskOverviewModalOpen}
+        risk={selectedRiskForOverview}
+      />
+
+      {/* Edit Dialog */}
+      <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ open: false, type: null, riskId: null, currentValue: "" })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Edit {editDialog.type}</DialogTitle>
+            <DialogDescription>
+              Update the {editDialog.type} for risk {editDialog.riskId}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label>New Value</Label>
+            <Input 
+              value={editDialog.currentValue} 
+              onChange={(e) => setEditDialog(prev => ({ ...prev, currentValue: e.target.value }))}
+              className="mt-2"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEditDialog({ open: false, type: null, riskId: null, currentValue: "" })}>
+              Cancel
+            </Button>
+            <Button onClick={handleSaveEdit}>Save Changes</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Action Dialog */}
+      <Dialog open={actionDialog.open} onOpenChange={(open) => !open && setActionDialog({ open: false, type: null, riskId: null })}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {actionDialog.type === "reassign" && "Reassign Risk"}
+              {actionDialog.type === "collaborate" && "Add Collaborator"}
+              {actionDialog.type === "reassess" && "Request Reassessment"}
+            </DialogTitle>
+            <DialogDescription>
+              {actionDialog.type === "reassign" && "Select a new owner for this risk assessment"}
+              {actionDialog.type === "collaborate" && "Invite someone to collaborate on this assessment"}
+              {actionDialog.type === "reassess" && "Request a reassessment of this risk"}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4 space-y-4">
+            <div>
+              <Label>Select User</Label>
+              <Select>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Choose a user..." />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="john">John Smith</SelectItem>
+                  <SelectItem value="sarah">Sarah Johnson</SelectItem>
+                  <SelectItem value="mike">Mike Davis</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setActionDialog({ open: false, type: null, riskId: null })}>
+              Cancel
+            </Button>
+            <Button onClick={handleActionSubmit}>Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </div>
+    </TooltipProvider>
+  );
+};
+
+// 1st Line specific risk data
+const initialRiskData1stLine: RiskData[] = [
+  {
+    id: "R-1L-001",
+    title: "Credit Assessment Process",
+    dueDate: "2025-12-15",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Operational",
+    owner: "Credit Team Lead",
+    assessors: ["Sarah Johnson", "Mike Davis"],
+    currentEditor: "Sarah Johnson",
+    assessmentProgress: {
+      assess: "in-progress",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 75,
+      controlEffectiveness: 50,
+      residualRating: 25,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "High", color: "red" },
+    inherentTrend: { value: "12%", up: true },
+    relatedControls: { id: "Control-101", name: "Credit Scoring Model", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "Medium", color: "yellow" },
+    residualTrend: { value: "8%", up: false },
+    status: "In Progress",
+    lastAssessed: "2025-10-15",
+    previousAssessments: 5,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-1L-002",
+    title: "Customer Onboarding KYC",
+    dueDate: "2025-12-10",
+    riskLevel: "Level 1",
+    businessUnit: "Retail Banking",
+    category: "Compliance",
+    owner: "Onboarding Team",
+    assessors: ["Emma White", "Chris Anderson"],
+    currentEditor: "Emma White",
+    assessmentProgress: {
+      assess: "in-progress",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 67,
+      residualRating: 33,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Critical", color: "red" },
+    inherentTrend: { value: "18%", up: true },
+    relatedControls: { id: "Control-102", name: "KYC Verification System", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "High", color: "red" },
+    residualTrend: { value: "14%", up: true },
+    status: "In Progress",
+    lastAssessed: "2025-10-18",
+    previousAssessments: 8,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-1L-003",
+    title: "Transaction Processing Errors",
+    dueDate: "2025-12-08",
+    riskLevel: "Level 1",
+    businessUnit: "Operations",
+    category: "Operational",
+    owner: "Operations Manager",
+    assessors: ["Daniel Kim"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 75,
+    },
+    inherentRisk: { level: "Medium", color: "yellow" },
+    inherentTrend: { value: "6%", up: false },
+    relatedControls: { id: "Control-103", name: "Transaction Validation", type: "Automated", nature: "Detective" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "" },
+    residualRisk: { level: "Low", color: "green" },
+    residualTrend: { value: "3%", up: false },
+    status: "Pending Review",
+    lastAssessed: "2025-11-01",
+    previousAssessments: 12,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-1L-004",
+    title: "Data Entry Quality",
+    dueDate: "2025-12-20",
+    riskLevel: "Level 1",
+    businessUnit: "Back Office",
+    category: "Operational",
+    owner: "Data Quality Lead",
+    assessors: ["Sophia Taylor", "George Harris"],
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Medium", color: "yellow" },
+    inherentTrend: { value: "5%", up: false },
+    relatedControls: { id: "Control-104", name: "Data Validation Rules", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "Low", color: "green" },
+    residualTrend: { value: "2%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-09-15",
+    previousAssessments: 4,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-1L-005",
+    title: "Branch Cash Handling",
+    dueDate: "2025-11-28",
+    riskLevel: "Level 1",
+    businessUnit: "Branch Operations",
+    category: "Operational",
+    owner: "Branch Manager",
+    assessors: ["John Smith"],
+    currentEditor: "John Smith",
+    assessmentProgress: {
+      assess: "in-progress",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 50,
+      controlEffectiveness: 25,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "High", color: "red" },
+    inherentTrend: { value: "10%", up: true },
+    relatedControls: { id: "Control-105", name: "Cash Reconciliation", type: "Manual", nature: "Detective" },
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "" },
+    residualRisk: { level: "Medium", color: "yellow" },
+    residualTrend: { value: "7%", up: false },
+    status: "In Progress",
+    lastAssessed: "2025-10-20",
+    previousAssessments: 6,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-1L-006",
+    title: "Customer Complaint Handling",
+    dueDate: "2025-12-05",
+    riskLevel: "Level 1",
+    businessUnit: "Customer Service",
+    category: "Compliance",
+    owner: "Customer Service Lead",
+    assessors: ["Lisa Martinez", "Tom Wilson"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "in-progress",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 83,
+      riskTreatment: 50,
+    },
+    inherentRisk: { level: "Medium", color: "yellow" },
+    inherentTrend: { value: "4%", up: false },
+    relatedControls: { id: "Control-106", name: "Complaint Tracking System", type: "Automated", nature: "Detective" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Low", color: "green" },
+    residualTrend: { value: "2%", up: false },
+    status: "Pending Review",
+    lastAssessed: "2025-10-28",
+    previousAssessments: 9,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-1L-007",
+    title: "Loan Documentation",
+    dueDate: "2025-12-18",
+    riskLevel: "Level 1",
+    businessUnit: "Lending",
+    category: "Compliance",
+    owner: "Loan Processing Team",
+    assessors: ["Robert Chen", "Nina Patel"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "completed",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 100,
+    },
+    inherentRisk: { level: "High", color: "red" },
+    inherentTrend: { value: "8%", up: false },
+    relatedControls: { id: "Control-107", name: "Document Checklist System", type: "Manual", nature: "Preventive" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Medium", color: "yellow" },
+    residualTrend: { value: "5%", up: false },
+    status: "Completed",
+    lastAssessed: "2025-11-05",
+    previousAssessments: 11,
+    tabCategory: "own",
+  },
+  {
+    id: "R-1L-008",
+    title: "Employee Access Management",
+    dueDate: "2025-12-12",
+    riskLevel: "Level 1",
+    businessUnit: "IT Operations",
+    category: "Technology",
+    owner: "IT Security Lead",
+    assessors: ["Alex Turner", "Maria Garcia"],
+    currentEditor: "Maria Garcia",
+    assessmentProgress: {
+      assess: "in-progress",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 83,
+      controlEffectiveness: 58,
+      residualRating: 17,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Critical", color: "red" },
+    inherentTrend: { value: "15%", up: true },
+    relatedControls: { id: "Control-108", name: "Access Control System", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Design Effective", color: "yellow" },
+    testResults: { label: "Design Effective", sublabel: "" },
+    residualRisk: { level: "High", color: "red" },
+    residualTrend: { value: "12%", up: true },
+    status: "In Progress",
+    lastAssessed: "2025-10-22",
+    previousAssessments: 7,
+    tabCategory: "assess",
+  },
+  {
+    id: "R-1L-009",
+    title: "Vendor Invoice Processing",
+    dueDate: "2025-12-25",
+    riskLevel: "Level 1",
+    businessUnit: "Finance",
+    category: "Financial",
+    owner: "Accounts Payable Lead",
+    assessors: ["Olivia Brown"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "in-progress",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 92,
+      riskTreatment: 67,
+    },
+    inherentRisk: { level: "Medium", color: "yellow" },
+    inherentTrend: { value: "3%", up: false },
+    relatedControls: { id: "Control-109", name: "Invoice Matching System", type: "Automated", nature: "Preventive" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Low", color: "green" },
+    residualTrend: { value: "1%", up: false },
+    status: "Pending Review",
+    lastAssessed: "2025-11-02",
+    previousAssessments: 8,
+    tabCategory: "approve",
+  },
+  {
+    id: "R-1L-010",
+    title: "Regulatory Reporting Accuracy",
+    dueDate: "2025-11-30",
+    riskLevel: "Level 1",
+    businessUnit: "Compliance",
+    category: "Compliance",
+    owner: "Regulatory Reporting Team",
+    assessors: ["David Lee"],
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "completed",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 100,
+    },
+    inherentRisk: { level: "Critical", color: "red" },
+    inherentTrend: { value: "20%", up: false },
+    relatedControls: { id: "Control-110", name: "Report Validation Framework", type: "Manual", nature: "Detective" },
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Medium", color: "yellow" },
+    residualTrend: { value: "9%", up: false },
+    status: "Completed",
+    lastAssessed: "2025-10-30",
+    previousAssessments: 14,
+    tabCategory: "own",
+  },
+];
+
+export default Dashboard1stLine;
