@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { 
@@ -13,7 +12,9 @@ import {
   ClipboardList,
   Eye,
   Send,
-  ThumbsUp
+  ThumbsUp,
+  ChevronRight,
+  ArrowRight
 } from "lucide-react";
 
 interface RiskAssessmentOverviewModalProps {
@@ -37,12 +38,12 @@ interface AssessmentCardProps {
   bgGradient: string;
   primaryCta: { label: string; icon: React.ReactNode };
   secondaryCta: { label: string; icon: React.ReactNode };
+  stepNumber: number;
+  isLast: boolean;
 }
 
 const AssessmentCard = ({
   title,
-  riskId,
-  riskName,
   completion,
   factorsAssessed,
   descriptor,
@@ -52,80 +53,92 @@ const AssessmentCard = ({
   primaryCta,
   secondaryCta,
   sectionKey,
-  tabIndex,
+  stepNumber,
+  isLast,
   onNavigate,
-}: AssessmentCardProps & { sectionKey: string; tabIndex: number; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
+  riskId,
+  riskName,
+}: AssessmentCardProps & { sectionKey: string; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
   const handleNavigate = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     onNavigate(sectionKey, riskId, riskName);
   };
 
+  const getStatusColor = () => {
+    if (completion === 100) return "text-emerald-500";
+    if (completion > 0) return "text-amber-500";
+    return "text-muted-foreground";
+  };
+
+  const getStatusLabel = () => {
+    if (completion === 100) return "Complete";
+    if (completion > 0) return "In Progress";
+    return "Not Started";
+  };
+
   return (
-    <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-all duration-300 ${bgGradient}`}>
-      {/* Accent bar */}
-      <div className={`absolute top-0 left-0 right-0 h-1 ${accentColor}`} />
-      
-      <CardHeader className="pb-3 pt-5">
-        <div className="flex items-start justify-between">
-          <div className="flex items-center gap-3">
-            <div className={`p-2.5 rounded-xl ${accentColor} bg-opacity-20`}>
+    <div className="flex items-center">
+      <div className={`relative flex-1 rounded-xl border border-border/50 ${bgGradient} p-4 hover:shadow-lg transition-all duration-300 group`}>
+        {/* Step indicator */}
+        <div className={`absolute -top-3 left-4 ${accentColor} text-white text-xs font-bold px-2.5 py-0.5 rounded-full`}>
+          Step {stepNumber}
+        </div>
+        
+        {/* Header with icon and completion */}
+        <div className="flex items-start justify-between mt-2 mb-3">
+          <div className="flex items-center gap-2.5">
+            <div className={`p-2 rounded-lg ${accentColor} bg-opacity-20`}>
               {icon}
             </div>
             <div>
-              <h3 className="text-lg font-semibold text-foreground">{title}</h3>
-              <p className="text-xs text-muted-foreground">{descriptor}</p>
+              <h3 className="text-sm font-semibold text-foreground leading-tight">{title}</h3>
+              <p className="text-xs text-muted-foreground mt-0.5">{descriptor}</p>
             </div>
           </div>
-          <div className="text-right">
-            <span className="text-2xl font-bold text-foreground">{completion}%</span>
-            <p className="text-xs text-muted-foreground">Complete</p>
-          </div>
-        </div>
-      </CardHeader>
-      
-      <CardContent className="space-y-4">
-        {/* Risk Info */}
-        <div className="bg-background/60 rounded-lg p-3 space-y-1">
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Risk ID:</span>
-            <span className="text-xs font-semibold text-foreground">{riskId}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-muted-foreground">Risk Name:</span>
-            <span className="text-xs font-semibold text-foreground truncate">{riskName}</span>
-          </div>
         </div>
         
-        {/* Progress */}
-        <div className="space-y-2">
+        {/* Progress section */}
+        <div className="space-y-1.5 mb-3">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">Review Progress</span>
-            <span className="text-xs font-medium text-foreground">{factorsAssessed}</span>
+            <span className={`text-xs font-medium ${getStatusColor()}`}>{getStatusLabel()}</span>
+            <span className="text-xs text-muted-foreground">{factorsAssessed}</span>
           </div>
-          <Progress value={completion} className="h-2" />
+          <Progress value={completion} className="h-1.5" />
+          <div className="text-right">
+            <span className="text-lg font-bold text-foreground">{completion}%</span>
+          </div>
         </div>
         
-        {/* CTAs */}
-        <div className="space-y-2 pt-2">
+        {/* CTAs - Horizontal layout */}
+        <div className="flex gap-2">
           <Button 
             variant="outline" 
-            className="w-full justify-start gap-2 h-10 text-sm bg-background/80 hover:bg-background border-border/50"
+            size="sm"
+            className="flex-1 text-xs h-8 bg-background/80 hover:bg-background border-border/50"
             onClick={handleNavigate}
           >
             {primaryCta.icon}
-            {primaryCta.label}
+            <span className="ml-1.5 truncate">{primaryCta.label}</span>
           </Button>
           <Button 
-            className={`w-full justify-start gap-2 h-10 text-sm ${accentColor} text-white hover:opacity-90`}
+            size="sm"
+            className={`flex-1 text-xs h-8 ${accentColor} text-white hover:opacity-90`}
             onClick={handleNavigate}
           >
             {secondaryCta.icon}
-            {secondaryCta.label}
+            <span className="ml-1.5 truncate">{secondaryCta.label}</span>
           </Button>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+      
+      {/* Connector arrow */}
+      {!isLast && (
+        <div className="hidden xl:flex items-center justify-center w-8 text-muted-foreground/50">
+          <ChevronRight className="w-5 h-5" />
+        </div>
+      )}
+    </div>
   );
 };
 
@@ -151,102 +164,126 @@ export const RiskAssessmentOverviewModal = ({
       completion: 40,
       factorsAssessed: "6 of 15 reviewed",
       descriptor: "Review risk scoring without controls",
-      icon: <AlertTriangle className="w-5 h-5 text-orange-600" />,
+      icon: <AlertTriangle className="w-4 h-4 text-orange-600" />,
       accentColor: "bg-orange-500",
       bgGradient: "bg-gradient-to-br from-orange-50 to-amber-50/50 dark:from-orange-950/30 dark:to-amber-950/20",
       sectionKey: "inherent-rating",
-      tabIndex: 1,
       primaryCta: {
-        label: "Compare with Previous Cycle",
-        icon: <GitCompare className="w-4 h-4" />,
+        label: "Compare Cycle",
+        icon: <GitCompare className="w-3.5 h-3.5" />,
       },
       secondaryCta: {
-        label: "Review & Challenge",
-        icon: <Eye className="w-4 h-4" />,
+        label: "Review",
+        icon: <Eye className="w-3.5 h-3.5" />,
       },
     },
     {
-      title: "Control Effectiveness Review",
+      title: "Control Effectiveness",
       riskId: risk.id,
       riskName: risk.title,
       completion: 67,
       factorsAssessed: "8 of 12 reviewed",
       descriptor: "Evaluate design & operating effectiveness",
-      icon: <Shield className="w-5 h-5 text-blue-600" />,
+      icon: <Shield className="w-4 h-4 text-blue-600" />,
       accentColor: "bg-blue-500",
       bgGradient: "bg-gradient-to-br from-blue-50 to-cyan-50/50 dark:from-blue-950/30 dark:to-cyan-950/20",
       sectionKey: "control-effectiveness",
-      tabIndex: 2,
       primaryCta: {
-        label: "View Latest Control Test Results",
-        icon: <ClipboardList className="w-4 h-4" />,
+        label: "Test Results",
+        icon: <ClipboardList className="w-3.5 h-3.5" />,
       },
       secondaryCta: {
-        label: "Review & Challenge",
-        icon: <Eye className="w-4 h-4" />,
+        label: "Review",
+        icon: <Eye className="w-3.5 h-3.5" />,
       },
     },
     {
-      title: "Residual Rating Validation",
+      title: "Residual Rating",
       riskId: risk.id,
       riskName: risk.title,
       completion: 0,
       factorsAssessed: "0 of 15 validated",
       descriptor: "Validate post-control risk scoring",
-      icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
+      icon: <CheckCircle className="w-4 h-4 text-emerald-600" />,
       accentColor: "bg-emerald-500",
       bgGradient: "bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-950/30 dark:to-green-950/20",
       sectionKey: "residual-rating",
-      tabIndex: 3,
       primaryCta: {
-        label: "View Auto-Calculated Score",
-        icon: <Calculator className="w-4 h-4" />,
+        label: "Auto Score",
+        icon: <Calculator className="w-3.5 h-3.5" />,
       },
       secondaryCta: {
-        label: "Approve or Challenge",
-        icon: <ThumbsUp className="w-4 h-4" />,
+        label: "Approve",
+        icon: <ThumbsUp className="w-3.5 h-3.5" />,
       },
     },
     {
-      title: "Risk Treatment Oversight",
+      title: "Risk Treatment",
       riskId: risk.id,
       riskName: risk.title,
       completion: 17,
       factorsAssessed: "1 of 6 reviewed",
       descriptor: "Review mitigation plans & status",
-      icon: <FileText className="w-5 h-5 text-purple-600" />,
+      icon: <FileText className="w-4 h-4 text-purple-600" />,
       accentColor: "bg-purple-500",
       bgGradient: "bg-gradient-to-br from-purple-50 to-violet-50/50 dark:from-purple-950/30 dark:to-violet-950/20",
       sectionKey: "risk-treatment",
-      tabIndex: 4,
       primaryCta: {
-        label: "Review Treatment Plan",
-        icon: <FileText className="w-4 h-4" />,
+        label: "Treatment Plan",
+        icon: <FileText className="w-3.5 h-3.5" />,
       },
       secondaryCta: {
-        label: "Approve / Send Back",
-        icon: <Send className="w-4 h-4" />,
+        label: "Approve",
+        icon: <Send className="w-3.5 h-3.5" />,
       },
     },
   ];
 
+  const totalCompletion = Math.round(cards.reduce((sum, card) => sum + card.completion, 0) / cards.length);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-[95vw] max-h-[95vh] w-[95vw] h-[95vh] p-0 overflow-hidden">
-        <div className="flex flex-col h-full">
+      <DialogContent className="max-w-[95vw] w-[95vw] p-0 overflow-hidden">
+        <div className="flex flex-col">
           {/* Header */}
           <div className="px-6 py-4 border-b border-border bg-gradient-to-r from-muted/50 to-background">
-            <h2 className="text-xl font-semibold text-foreground">To-Do: Risk Assessment Overview</h2>
-            <p className="text-sm text-muted-foreground mt-1">
-              Complete each section to finalize the risk assessment for <span className="font-medium text-foreground">{risk.title}</span>
-            </p>
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-foreground">Risk Assessment Review Workflow</h2>
+                <p className="text-sm text-muted-foreground mt-0.5">
+                  <span className="font-medium text-foreground">{risk.id}</span> · {risk.title}
+                </p>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground">Overall Progress</p>
+                  <div className="flex items-center gap-2">
+                    <Progress value={totalCompletion} className="w-24 h-2" />
+                    <span className="text-sm font-semibold text-foreground">{totalCompletion}%</span>
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => handleNavigateToSection('inherent-rating', risk.id, risk.title)}
+                  className="bg-primary text-primary-foreground hover:bg-primary/90"
+                >
+                  <span>Continue Review</span>
+                  <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </div>
+            </div>
           </div>
           
-          {/* Content */}
-          <div className="flex-1 overflow-auto p-6 bg-gradient-to-b from-background to-muted/20">
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 h-full">
+          {/* Content - Horizontal layout */}
+          <div className="p-6 bg-gradient-to-b from-background to-muted/20">
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4 xl:gap-0">
               {cards.map((card, index) => (
-                <AssessmentCard key={index} {...card} onNavigate={handleNavigateToSection} />
+                <AssessmentCard 
+                  key={index} 
+                  {...card} 
+                  stepNumber={index + 1}
+                  isLast={index === cards.length - 1}
+                  onNavigate={handleNavigateToSection} 
+                />
               ))}
             </div>
           </div>
