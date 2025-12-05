@@ -217,23 +217,6 @@ export const RiskAssessmentOverviewModal = ({
         icon: <ThumbsUp className="w-3.5 h-3.5" />,
       },
     },
-    {
-      title: "Risk Treatment Oversight",
-      riskId: risk.id,
-      riskName: risk.title,
-      completion: risk.sectionCompletion.riskTreatment,
-      descriptor: "Review mitigation plans & status",
-      icon: <FileText className="w-5 h-5 text-muted-foreground" />,
-      sectionKey: "risk-treatment",
-      primaryCta: {
-        label: "Review Treatment Plan",
-        icon: <FileText className="w-3.5 h-3.5" />,
-      },
-      secondaryCta: {
-        label: "Approve / Send Back",
-        icon: <Send className="w-3.5 h-3.5" />,
-      },
-    },
   ];
 
   const totalCompletion = Math.round(cards.reduce((sum, card) => sum + card.completion, 0) / cards.length);
