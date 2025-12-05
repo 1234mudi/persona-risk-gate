@@ -981,18 +981,18 @@ const RiskAssessmentForm = () => {
                 </div>
 
                 {/* Collaboration Notice */}
-                <div className="flex items-center justify-between p-3 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 mb-4">
-                  <div className="flex items-center gap-3">
+                <div className="flex items-center justify-between p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 mb-3">
+                  <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-sm text-emerald-700 dark:text-emerald-300">
+                    <span className="text-xs text-emerald-700 dark:text-emerald-300">
                       Live collaboration active! Watch for colored badges on cells showing who's editing in real time.
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="flex -space-x-1.5">
-                      <div className="w-6 h-6 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[9px] font-semibold text-white">SJ</div>
-                      <div className="w-6 h-6 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[9px] font-semibold text-white">MC</div>
-                      <div className="w-6 h-6 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[9px] font-semibold text-white">ER</div>
+                      <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">SJ</div>
+                      <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">MC</div>
+                      <div className="w-5 h-5 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">ER</div>
                     </div>
                   </div>
                 </div>
@@ -1002,12 +1002,12 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-2 text-left"><Checkbox /></th>
-                        <th className="p-2 text-left text-sm font-medium">Factor & Description</th>
-                        <th className="p-2 text-left text-sm font-medium w-36">Rating</th>
-                        <th className="p-2 text-left text-sm font-medium">Comments</th>
-                        {showWeights && <th className="p-2 text-left text-sm font-medium w-28">Weightage (%)</th>}
-                        <th className="p-2 text-left text-sm font-medium w-20">Actions</th>
+                        <th className="w-10 p-1.5 text-left"><Checkbox /></th>
+                        <th className="p-1.5 text-left text-xs font-medium">Factor & Description</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
+                        <th className="p-1.5 text-left text-xs font-medium">Comments</th>
+                        {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
+                        <th className="p-1.5 text-left text-xs font-medium w-16">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1015,20 +1015,20 @@ const RiskAssessmentForm = () => {
                         const factorCellId = factor.name.toLowerCase().replace(/\s+/g, '-');
                         return (
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
-                          <td className="p-2"><Checkbox /></td>
-                          <td className="p-2">
+                          <td className="p-1.5"><Checkbox /></td>
+                          <td className="p-1.5">
                             <CellCommentPopover factorName={factor.name} field="Description">
                               <div>
-                                <div className="font-medium">{factor.name}</div>
-                                <div className="text-sm text-muted-foreground">{factor.description}</div>
+                                <div className="font-medium text-sm">{factor.name}</div>
+                                <div className="text-xs text-muted-foreground">{factor.description}</div>
                               </div>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-2">
+                          <td className="p-1.5">
                             <CollaborativeCell cellId={`${factorCellId}-rating`}>
                               <CellCommentPopover factorName={factor.name} field="Rating">
                                 <Select value={factor.rating.toString()} onValueChange={(v) => updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v))}>
-                                  <SelectTrigger className="w-full bg-background">
+                                  <SelectTrigger className="w-full bg-background h-7 text-xs">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent className="bg-background border shadow-lg z-50">
@@ -1042,22 +1042,22 @@ const RiskAssessmentForm = () => {
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
-                          <td className="p-2">
+                          <td className="p-1.5">
                             <CollaborativeCell cellId={`${factorCellId}-comments`}>
                               <CellCommentPopover factorName={factor.name} field="Comments">
                                 <Textarea 
                                   value={factor.comments}
                                   onChange={(e) => updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value)}
-                                  className="min-h-[36px] resize-none text-sm"
+                                  className="min-h-[28px] resize-none text-xs"
                                 />
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
-                          {showWeights && <td className="p-2 text-center font-medium">{factor.weightage}</td>}
-                          <td className="p-2">
-                            <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-red-600"><Trash2 className="w-3 h-3" /></Button>
+                          {showWeights && <td className="p-1.5 text-center text-sm font-medium">{factor.weightage}</td>}
+                          <td className="p-1.5">
+                            <div className="flex items-center gap-0.5">
+                              <Button variant="ghost" size="icon" className="h-5 w-5 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
+                              <Button variant="ghost" size="icon" className="h-5 w-5 text-red-600"><Trash2 className="w-3 h-3" /></Button>
                             </div>
                           </td>
                         </tr>
@@ -1078,19 +1078,36 @@ const RiskAssessmentForm = () => {
 
             {/* Control Effectiveness Tab */}
             <TabsContent value="control-effectiveness" className="space-y-3">
-              <Card className="p-4">
-                <div className="flex items-center justify-between mb-3">
+              <Card className="p-3">
+                <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h2 className="text-lg font-semibold">Control Effectiveness Assessment</h2>
-                    <p className="text-sm text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
+                    <h2 className="text-base font-semibold">Control Effectiveness Assessment</h2>
+                    <p className="text-xs text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-2" onClick={handleAiAutofill} disabled={isAiLoading}>
-                      <Sparkles className="w-4 h-4" />{isAiLoading ? "Analyzing..." : "AI Autofill All"}
+                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-2 h-8 text-sm" onClick={handleAiAutofill} disabled={isAiLoading}>
+                      <Sparkles className="w-3.5 h-3.5" />{isAiLoading ? "Analyzing..." : "AI Autofill All"}
                     </Button>
-                    <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(controlScore).color} text-white`}>
-                      <div className="text-xs opacity-90">Score: {controlScore}</div>
-                      <div className="font-semibold text-sm">{getRatingLabel(controlScore).label}</div>
+                    <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(controlScore).color} text-white`}>
+                      <div className="text-[10px] opacity-90">Score: {controlScore}</div>
+                      <div className="font-semibold text-xs">{getRatingLabel(controlScore).label}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Collaboration Notice */}
+                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="text-xs text-blue-700 dark:text-blue-300">
+                      Results displayed are from the latest control test performed on this control, with detailed responses to questions and samples.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="flex -space-x-1.5">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">SJ</div>
+                      <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">MC</div>
+                      <div className="w-5 h-5 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">ER</div>
                     </div>
                   </div>
                 </div>
@@ -1099,15 +1116,15 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-2 text-left"><Checkbox /></th>
-                        <th className="p-2 text-left text-sm font-medium">Control ID</th>
-                        <th className="p-2 text-left text-sm font-medium">Control Name</th>
-                        <th className="p-2 text-left text-sm font-medium">Type</th>
-                        <th className="p-2 text-left text-sm font-medium">Owner</th>
-                        <th className="p-2 text-left text-sm font-medium w-24">Design</th>
-                        <th className="p-2 text-left text-sm font-medium w-24">Operating</th>
-                        <th className="p-2 text-left text-sm font-medium w-24">Testing</th>
-                        <th className="p-2 text-left text-sm font-medium w-16">Avg</th>
+                        <th className="w-10 p-1.5 text-left"><Checkbox /></th>
+                        <th className="p-1.5 text-left text-xs font-medium">Control ID</th>
+                        <th className="p-1.5 text-left text-xs font-medium">Control Name</th>
+                        <th className="p-1.5 text-left text-xs font-medium">Type</th>
+                        <th className="p-1.5 text-left text-xs font-medium">Owner</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-20">Design</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-20">Operating</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-20">Testing</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-14">Avg</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1116,24 +1133,24 @@ const RiskAssessmentForm = () => {
                         const controlCellId = control.id.toLowerCase();
                         return (
                           <tr key={control.id} className="border-t hover:bg-muted/30">
-                            <td className="p-2"><Checkbox /></td>
-                            <td className="p-2 font-mono text-sm text-blue-600">{control.id}</td>
-                            <td className="p-2">
+                            <td className="p-1.5"><Checkbox /></td>
+                            <td className="p-1.5 font-mono text-xs text-blue-600">{control.id}</td>
+                            <td className="p-1.5">
                               <CellCommentPopover factorName={control.id} field="Name">
-                                <span className="font-medium">{control.name}</span>
+                                <span className="font-medium text-sm">{control.name}</span>
                               </CellCommentPopover>
                             </td>
-                            <td className="p-2">
-                              <Badge variant="outline" className={control.type === "Preventive" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}>
+                            <td className="p-1.5">
+                              <Badge variant="outline" className={`text-xs ${control.type === "Preventive" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}`}>
                                 {control.type}
                               </Badge>
                             </td>
-                            <td className="p-2 text-sm">{control.owner}</td>
-                            <td className="p-2">
+                            <td className="p-1.5 text-xs">{control.owner}</td>
+                            <td className="p-1.5">
                               <CollaborativeCell cellId={`${controlCellId}-design`}>
                                 <CellCommentPopover factorName={control.id} field="Design">
                                   <Select value={control.designRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'designRating', parseInt(v))}>
-                                    <SelectTrigger className="w-full bg-background h-8">
+                                    <SelectTrigger className="w-full bg-background h-7 text-xs">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="bg-background border shadow-lg z-50">
@@ -1143,11 +1160,11 @@ const RiskAssessmentForm = () => {
                                 </CellCommentPopover>
                               </CollaborativeCell>
                             </td>
-                            <td className="p-2">
+                            <td className="p-1.5">
                               <CollaborativeCell cellId={`${controlCellId}-operating`}>
                                 <CellCommentPopover factorName={control.id} field="Operating">
                                   <Select value={control.operatingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'operatingRating', parseInt(v))}>
-                                    <SelectTrigger className="w-full bg-background h-8">
+                                    <SelectTrigger className="w-full bg-background h-7 text-xs">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="bg-background border shadow-lg z-50">
@@ -1157,11 +1174,11 @@ const RiskAssessmentForm = () => {
                                 </CellCommentPopover>
                               </CollaborativeCell>
                             </td>
-                            <td className="p-2">
+                            <td className="p-1.5">
                               <CollaborativeCell cellId={`${controlCellId}-testing`}>
                                 <CellCommentPopover factorName={control.id} field="Testing">
                                   <Select value={control.testingRating.toString()} onValueChange={(v) => updateControlRating(control.id, 'testingRating', parseInt(v))}>
-                                    <SelectTrigger className="w-full bg-background h-8">
+                                    <SelectTrigger className="w-full bg-background h-7 text-xs">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="bg-background border shadow-lg z-50">
@@ -1171,8 +1188,8 @@ const RiskAssessmentForm = () => {
                                 </CellCommentPopover>
                               </CollaborativeCell>
                             </td>
-                            <td className="p-2">
-                              <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white`}>{avg}</Badge>
+                            <td className="p-1.5">
+                              <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white text-xs`}>{avg}</Badge>
                             </td>
                           </tr>
                         );
@@ -1180,7 +1197,7 @@ const RiskAssessmentForm = () => {
                     </tbody>
                   </table>
                 </div>
-                <Button variant="outline" className="mt-4 gap-2"><Plus className="w-4 h-4" />Add Control</Button>
+                <Button variant="outline" className="mt-3 gap-2 h-8 text-sm"><Plus className="w-3.5 h-3.5" />Add Control</Button>
               </Card>
 
               <div className="flex items-center justify-between">
@@ -1193,15 +1210,32 @@ const RiskAssessmentForm = () => {
 
             {/* Residual Rating Tab */}
             <TabsContent value="residual-rating" className="space-y-3">
-              <Card className="p-4">
-                <div className="flex items-center justify-between mb-3">
+              <Card className="p-3">
+                <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h2 className="text-lg font-semibold">Residual Risk Rating</h2>
-                    <p className="text-sm text-muted-foreground">Risk rating after applying controls</p>
+                    <h2 className="text-base font-semibold">Residual Risk Rating</h2>
+                    <p className="text-xs text-muted-foreground">Risk rating after applying controls</p>
                   </div>
-                  <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(residualScore).color} text-white`}>
-                    <div className="text-xs opacity-90">Score: {residualScore}</div>
-                    <div className="font-semibold text-sm">{getRatingLabel(residualScore).label}</div>
+                  <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(residualScore).color} text-white`}>
+                    <div className="text-[10px] opacity-90">Score: {residualScore}</div>
+                    <div className="font-semibold text-xs">{getRatingLabel(residualScore).label}</div>
+                  </div>
+                </div>
+
+                {/* Collaboration Notice */}
+                <div className="flex items-center justify-between p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 mb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-xs text-emerald-700 dark:text-emerald-300">
+                      Live collaboration active! Watch for colored badges on cells showing who's editing in real time.
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="flex -space-x-1.5">
+                      <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">SJ</div>
+                      <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">MC</div>
+                      <div className="w-5 h-5 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">ER</div>
+                    </div>
                   </div>
                 </div>
 
@@ -1209,30 +1243,30 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-2 text-left"><Checkbox /></th>
-                        <th className="p-2 text-left text-sm font-medium">Factor & Description</th>
-                        <th className="p-2 text-left text-sm font-medium w-36">Rating</th>
-                        <th className="p-2 text-left text-sm font-medium">Comments</th>
-                        {showWeights && <th className="p-2 text-left text-sm font-medium w-28">Weightage (%)</th>}
-                        <th className="p-2 text-left text-sm font-medium w-20">Actions</th>
+                        <th className="w-10 p-1.5 text-left"><Checkbox /></th>
+                        <th className="p-1.5 text-left text-xs font-medium">Factor & Description</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
+                        <th className="p-1.5 text-left text-xs font-medium">Comments</th>
+                        {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
+                        <th className="p-1.5 text-left text-xs font-medium w-16">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {residualFactors.map((factor) => (
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
-                          <td className="p-2"><Checkbox /></td>
-                          <td className="p-2">
+                          <td className="p-1.5"><Checkbox /></td>
+                          <td className="p-1.5">
                             <CellCommentPopover factorName={factor.name} field="Description">
                               <div>
-                                <div className="font-medium">{factor.name}</div>
-                                <div className="text-sm text-muted-foreground">{factor.description}</div>
+                                <div className="font-medium text-sm">{factor.name}</div>
+                                <div className="text-xs text-muted-foreground">{factor.description}</div>
                               </div>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-2">
+                          <td className="p-1.5">
                             <CellCommentPopover factorName={factor.name} field="Rating">
                               <Select value={factor.rating.toString()} onValueChange={(v) => updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v))}>
-                                <SelectTrigger className="w-full bg-background">
+                                <SelectTrigger className="w-full bg-background h-7 text-xs">
                                   <SelectValue />
                                 </SelectTrigger>
                                 <SelectContent className="bg-background border shadow-lg z-50">
@@ -1245,20 +1279,20 @@ const RiskAssessmentForm = () => {
                               </Select>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-2">
+                          <td className="p-1.5">
                             <CellCommentPopover factorName={factor.name} field="Comments">
                               <Textarea 
                                 value={factor.comments}
                                 onChange={(e) => updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value)}
-                                className="min-h-[36px] resize-none text-sm"
+                                className="min-h-[28px] resize-none text-xs"
                               />
                             </CellCommentPopover>
                           </td>
-                          {showWeights && <td className="p-2 text-center font-medium">{factor.weightage}</td>}
-                          <td className="p-2">
-                            <div className="flex items-center gap-1">
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 text-red-600"><Trash2 className="w-3 h-3" /></Button>
+                          {showWeights && <td className="p-1.5 text-center text-sm font-medium">{factor.weightage}</td>}
+                          <td className="p-1.5">
+                            <div className="flex items-center gap-0.5">
+                              <Button variant="ghost" size="icon" className="h-5 w-5 text-blue-600"><Edit2 className="w-3 h-3" /></Button>
+                              <Button variant="ghost" size="icon" className="h-5 w-5 text-red-600"><Trash2 className="w-3 h-3" /></Button>
                             </div>
                           </td>
                         </tr>
