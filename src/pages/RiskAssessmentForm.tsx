@@ -488,15 +488,41 @@ const RiskAssessmentForm = () => {
         return updated;
       });
       
+      // Clear the manually edited sections for this risk when AI is run
+      const storedEdits = JSON.parse(localStorage.getItem('manuallyEditedSections') || '{}');
+      if (storedEdits[riskId]) {
+        delete storedEdits[riskId][activeTab];
+        localStorage.setItem('manuallyEditedSections', JSON.stringify(storedEdits));
+      }
+      
       setIsAiLoading(false);
       toast.success("AI suggestions applied successfully!");
     }, 2000);
   };
   
-  // Helper to mark a field as manually edited
+  // Helper to mark a field as manually edited and persist to localStorage
   const markFieldAsEdited = (fieldKey: string) => {
     if (aiFilledFields.has(fieldKey)) {
       setEditedFields(prev => new Set(prev).add(fieldKey));
+      
+      // Determine which section this field belongs to and persist to localStorage
+      let sectionKey = '';
+      if (fieldKey.startsWith('inherent-')) {
+        sectionKey = 'inherent-rating';
+      } else if (fieldKey.startsWith('control-')) {
+        sectionKey = 'control-effectiveness';
+      } else if (fieldKey.startsWith('residual-')) {
+        sectionKey = 'residual-rating';
+      }
+      
+      if (sectionKey) {
+        const storedEdits = JSON.parse(localStorage.getItem('manuallyEditedSections') || '{}');
+        if (!storedEdits[riskId]) {
+          storedEdits[riskId] = {};
+        }
+        storedEdits[riskId][sectionKey] = true;
+        localStorage.setItem('manuallyEditedSections', JSON.stringify(storedEdits));
+      }
     }
   };
   

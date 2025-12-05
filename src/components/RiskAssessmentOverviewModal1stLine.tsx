@@ -1,9 +1,15 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { 
   AlertTriangle, 
   Shield, 
@@ -18,7 +24,8 @@ import {
   Circle,
   CheckCircle2,
   Loader2,
-  Save
+  Save,
+  Info
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -51,6 +58,7 @@ interface AssessmentCardProps {
   isLast: boolean;
   onAIAssess: () => void;
   isAIAssessing: boolean;
+  hasManualEdits: boolean;
 }
 
 const AssessmentCard = ({
@@ -69,6 +77,7 @@ const AssessmentCard = ({
   riskName,
   onAIAssess,
   isAIAssessing,
+  hasManualEdits,
 }: AssessmentCardProps & { sectionKey: string; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
   const handleNavigate = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -159,23 +168,45 @@ const AssessmentCard = ({
               <FileText className="w-3.5 h-3.5" />
               <span className="ml-1">Assess Manually</span>
             </Button>
-            <Button 
-              size="sm"
-              className="text-[11px] h-7 px-2.5 bg-primary text-primary-foreground hover:bg-primary/90 ml-auto"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                onAIAssess();
-              }}
-              disabled={isAIAssessing || completion === 100}
-            >
-              {isAIAssessing ? (
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-              ) : (
-                <Sparkles className="w-3.5 h-3.5" />
-              )}
-              <span className="ml-1">{isAIAssessing ? "Assessing..." : "Assess with AI"}</span>
-            </Button>
+            {hasManualEdits ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="ml-auto">
+                      <Button 
+                        size="sm"
+                        className="text-[11px] h-7 px-2.5 bg-muted text-muted-foreground cursor-not-allowed"
+                        disabled
+                      >
+                        <Info className="w-3.5 h-3.5" />
+                        <span className="ml-1">AI Disabled</span>
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent side="top" className="max-w-[250px] text-xs">
+                    <p>AI assessment is disabled because this section contains manually updated values. Re-running AI would overwrite your changes.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <Button 
+                size="sm"
+                className="text-[11px] h-7 px-2.5 bg-primary text-primary-foreground hover:bg-primary/90 ml-auto"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onAIAssess();
+                }}
+                disabled={isAIAssessing || completion === 100}
+              >
+                {isAIAssessing ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5" />
+                )}
+                <span className="ml-1">{isAIAssessing ? "Assessing..." : "Assess with AI"}</span>
+              </Button>
+            )}
           </div>
         </div>
       </div>
@@ -199,6 +230,15 @@ export const RiskAssessmentOverviewModal1stLine = ({
     riskTreatment: number;
   } | null>(null);
   const [assessingSection, setAssessingSection] = useState<string | null>(null);
+  const [manuallyEditedSections, setManuallyEditedSections] = useState<Record<string, boolean>>({});
+
+  // Load manually edited sections from localStorage when modal opens or risk changes
+  useEffect(() => {
+    if (open && risk) {
+      const storedEdits = JSON.parse(localStorage.getItem('manuallyEditedSections') || '{}');
+      setManuallyEditedSections(storedEdits[risk.id] || {});
+    }
+  }, [open, risk]);
 
   // Initialize section completion from risk prop
   const currentCompletion = sectionCompletion || risk?.sectionCompletion;
@@ -417,6 +457,7 @@ This risk is currently being managed within established parameters. No immediate
                 onNavigate={handleNavigateToSection}
                 onAIAssess={() => handleAIAssess(card.sectionKey)}
                 isAIAssessing={assessingSection === card.sectionKey}
+                hasManualEdits={manuallyEditedSections[card.sectionKey] || false}
               />
             ))}
           </div>
