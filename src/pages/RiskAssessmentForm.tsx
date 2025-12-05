@@ -585,10 +585,38 @@ const RiskAssessmentForm = () => {
             <div className="flex items-center justify-between">
               {/* Left - Back & Collaboration */}
               <div className="flex items-center gap-4">
-              <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/2nd-line-analyst?openOverview=true&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`)}>
+                <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/2nd-line-analyst?openOverview=true&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`)}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
+                
+                {/* Collaborative Status Indicators */}
+                <div className="flex items-center gap-3 px-3 py-1.5 bg-primary/90 rounded-full">
+                  {/* User Avatars - Overlapping */}
+                  <div className="flex -space-x-2">
+                    <div className="w-8 h-8 rounded-full bg-emerald-500 border-2 border-primary flex items-center justify-center text-xs font-semibold text-white z-30">
+                      SJ
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-blue-400 border-2 border-primary flex items-center justify-center text-xs font-semibold text-white z-20">
+                      MC
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-slate-300 border-2 border-primary flex items-center justify-center text-xs font-semibold text-slate-700 z-10">
+                      ER
+                    </div>
+                  </div>
+                  
+                  {/* Editing Status */}
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-background/20 rounded-full border border-emerald-400/50">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-xs font-medium text-emerald-400">1 editing</span>
+                  </div>
+                  
+                  {/* Viewing Status */}
+                  <div className="flex items-center gap-1.5 px-3 py-1 bg-background/20 rounded-full border border-slate-400/50">
+                    <Eye className="w-3 h-3 text-slate-300" />
+                    <span className="text-xs font-medium text-slate-300">2 viewing</span>
+                  </div>
+                </div>
               </div>
               
               {/* Right - Actions */}
