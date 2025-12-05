@@ -1593,8 +1593,8 @@ const RiskAssessmentForm = () => {
 
       {/* Right Sliding Panel */}
       {rightPanelOpen && (
-        <div className="fixed top-0 right-[52px] h-full w-80 bg-background border-l border-border z-[55] shadow-xl">
-        <div className="flex flex-col h-full">
+        <div className="fixed top-0 right-[52px] h-full w-80 bg-background border-l border-border z-[55] shadow-xl overflow-hidden">
+        <div className="flex flex-col h-full w-full overflow-hidden">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
             <h3 className="font-semibold text-sm">
@@ -1611,8 +1611,8 @@ const RiskAssessmentForm = () => {
 
           {/* Previous Assessments Tab */}
           {rightPanelTab === 'assessments' && (
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+            <ScrollArea className="flex-1 overflow-hidden">
+              <div className="space-y-4 p-4 pr-3">
                 {/* Section Title */}
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-muted-foreground" />
@@ -1720,8 +1720,8 @@ const RiskAssessmentForm = () => {
 
           {/* Review & Challenge Tab */}
           {rightPanelTab === 'review' && (
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+            <ScrollArea className="flex-1 overflow-hidden">
+              <div className="space-y-4 p-4 pr-3">
                 {/* Section Header */}
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
@@ -1802,8 +1802,8 @@ const RiskAssessmentForm = () => {
 
           {/* Treatment Tab */}
           {rightPanelTab === 'treatment' && (
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-6">
+            <ScrollArea className="flex-1 overflow-hidden">
+              <div className="space-y-6 p-4 pr-3">
                 {/* Header */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -1889,8 +1889,8 @@ const RiskAssessmentForm = () => {
 
           {/* Metrics & Losses Tab */}
           {rightPanelTab === 'metrics' && (
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-4">
+            <ScrollArea className="flex-1 overflow-hidden">
+              <div className="space-y-4 p-4 pr-3">
                 {/* Header */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
@@ -1958,8 +1958,8 @@ const RiskAssessmentForm = () => {
 
           {/* Additional Details Tab */}
           {rightPanelTab === 'details' && (
-            <ScrollArea className="flex-1 p-4">
-              <div className="space-y-6">
+            <ScrollArea className="flex-1 overflow-hidden">
+              <div className="space-y-6 p-4 pr-3">
                 {/* Header */}
                 <div className="flex items-center gap-2">
                   <MessageSquare className="w-4 h-4 text-muted-foreground" />
