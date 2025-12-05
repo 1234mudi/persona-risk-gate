@@ -127,24 +127,15 @@ const AssessmentCard = ({
               <span className="text-sm font-semibold text-foreground w-12">{completion}%</span>
             </div>
 
-            {/* CTAs */}
+            {/* CTA */}
             <div className="flex gap-2 ml-auto">
-              <Button 
-                variant="outline" 
-                size="sm"
-                className="text-xs h-8"
-                onClick={handleNavigate}
-              >
-                {primaryCta.icon}
-                <span className="ml-1.5">{primaryCta.label}</span>
-              </Button>
               <Button 
                 size="sm"
                 className="text-xs h-8 bg-muted text-foreground hover:bg-muted/80"
                 onClick={handleNavigate}
               >
                 {secondaryCta.icon}
-                <span className="ml-1.5">{secondaryCta.label}</span>
+                <span className="ml-1.5">Continue</span>
               </Button>
             </div>
           </div>
