@@ -233,6 +233,10 @@ export const RiskAssessmentOverviewModal1stLine = ({
           title: "AI Assessment Complete",
           description: `All fields in ${sectionKey.replace('-', ' ')} have been auto-populated.`,
         });
+        
+        // Navigate to the form with aiAssessed param so the form knows to show AI indicators
+        onOpenChange(false);
+        navigate(`/risk-assessment?section=${sectionKey}&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}&aiAssessed=${sectionKey}`);
       }
       
       setAssessingSection(null);
