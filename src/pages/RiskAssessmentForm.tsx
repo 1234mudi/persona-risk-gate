@@ -629,7 +629,7 @@ const RiskAssessmentForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20">
       {/* Main Content Area */}
-      <div className="pr-12">
+      <div className="pr-14">
         {/* Header */}
         <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
           <div className="px-4 py-2">
@@ -1549,7 +1549,7 @@ const RiskAssessmentForm = () => {
       </div>
 
       {/* Right Vertical Tab Bar - Fixed on right edge */}
-      <div className="fixed top-0 right-0 h-full w-12 bg-background border-l border-border z-[60] flex flex-col pt-20">
+      <div className="fixed top-0 right-0 h-full w-14 bg-muted/50 border-l border-border z-[60] flex flex-col pt-20 shadow-sm">
         {[
           { id: 'assessments', label: 'Previous Assessments', icon: History },
           { id: 'review', label: 'Review & Challenge', icon: MessageSquare },
@@ -1558,6 +1558,7 @@ const RiskAssessmentForm = () => {
           { id: 'details', label: 'Additional Details', icon: FileText },
         ].map((tab) => {
           const Icon = tab.icon;
+          const isActive = rightPanelOpen && rightPanelTab === tab.id;
           return (
             <button
               key={tab.id}
@@ -1570,14 +1571,16 @@ const RiskAssessmentForm = () => {
                   setSelectedHistoryDate(0);
                 }
               }}
-              className={`py-3 flex flex-col items-center justify-center gap-1 border-l-2 transition-colors ${
-                rightPanelOpen && rightPanelTab === tab.id 
-                  ? 'border-l-primary bg-primary/10 text-primary' 
-                  : 'border-l-transparent hover:bg-muted text-muted-foreground'
+              className={`py-4 px-1 flex flex-col items-center justify-center gap-2 border-l-3 transition-all duration-200 group ${
+                isActive
+                  ? 'border-l-primary bg-background text-primary shadow-sm' 
+                  : 'border-l-transparent hover:bg-background/80 text-muted-foreground hover:text-foreground'
               }`}
             >
-              <Icon className="w-4 h-4" />
-              <span className="text-[9px] font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180">{tab.label}</span>
+              <div className={`p-1.5 rounded-md transition-colors ${isActive ? 'bg-primary/10' : 'group-hover:bg-muted'}`}>
+                <Icon className="w-4 h-4" />
+              </div>
+              <span className="text-[10px] font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180 tracking-wide">{tab.label}</span>
             </button>
           );
         })}
@@ -1585,7 +1588,7 @@ const RiskAssessmentForm = () => {
 
       {/* Right Sliding Panel */}
       {rightPanelOpen && (
-        <div className="fixed top-0 right-12 h-full w-80 bg-background border-l border-border z-[55] shadow-xl">
+        <div className="fixed top-0 right-14 h-full w-80 bg-background border-l border-border z-[55] shadow-xl">
         <div className="flex flex-col h-full">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
