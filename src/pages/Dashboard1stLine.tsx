@@ -3,7 +3,7 @@ import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
-import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
+import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -1142,7 +1142,7 @@ const Dashboard1stLine = () => {
         }}
       />
 
-      <RiskAssessmentOverviewModal
+      <RiskAssessmentOverviewModal1stLine
         open={riskOverviewModalOpen}
         onOpenChange={setRiskOverviewModalOpen}
         risk={selectedRiskForOverview}
