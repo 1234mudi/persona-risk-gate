@@ -965,10 +965,6 @@ const RiskAssessmentForm = () => {
                     <p className="text-sm text-muted-foreground">Calculated based on weighted impact factors</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button variant="outline" size="sm" onClick={() => setShowWeights(!showWeights)}>
-                      {showWeights ? <EyeOff className="w-4 h-4 mr-1" /> : <Eye className="w-4 h-4 mr-1" />}
-                      {showWeights ? "Hide" : "Show"} Weights
-                    </Button>
                     <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-2" onClick={handleAiAutofill} disabled={isAiLoading}>
                       <Sparkles className="w-4 h-4" />
                       {isAiLoading ? "Analyzing..." : "AI Autofill All"}
