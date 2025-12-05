@@ -600,17 +600,7 @@ const Dashboard2ndLine = () => {
                       <p>Create a new risk entry</p>
                     </TooltipContent>
                   </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <RefreshCw className="h-3.5 w-3.5 mr-1" />
-                        Update Existing Assessment
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Update an existing risk assessment</p>
-                    </TooltipContent>
-                  </Tooltip>
+                  {/* Update Existing Assessment button hidden */}
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
@@ -791,6 +781,7 @@ const Dashboard2ndLine = () => {
                           />
                         </div>
                       </TableHead>
+                      <TableHead className="min-w-[50px] py-2 border-r border-b border-border"></TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
@@ -803,8 +794,7 @@ const Dashboard2ndLine = () => {
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[160px] py-2 border-r border-b border-border">Status</TableHead>
-                      <TableHead className="min-w-[180px] py-2 border-b border-border">Actions</TableHead>
+                      <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -827,6 +817,25 @@ const Dashboard2ndLine = () => {
                               onCheckedChange={() => toggleRiskSelection(risk.id)}
                             />
                           </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    className="p-1.5 rounded-md bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 transition-colors"
+                                    onClick={() => handleUpdateClosedAssessment(risk.id)}
+                                  >
+                                    <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Update this closed assessment</p>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className={`text-sm font-medium ${
@@ -947,29 +956,35 @@ const Dashboard2ndLine = () => {
                                 <TooltipTrigger asChild>
                                   <Badge 
                                     variant="outline" 
-                                    className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 flex items-center gap-1 cursor-pointer"
+                                    className="text-xs bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800 cursor-pointer"
                                   >
                                     {assessor}
-                                    {risk.currentEditor === assessor && (
-                                      <Lock className="w-3 h-3 text-amber-500" />
-                                    )}
                                   </Badge>
                                 </TooltipTrigger>
-                                <TooltipContent>
-                                  <div className="space-y-1">
-                                    <div className="flex items-center gap-2">
-                                      <Mail className="w-4 h-4" />
+                                <TooltipContent className="max-w-xs">
+                                  <div className="space-y-2">
+                                    <div className="font-medium text-sm">{assessor}</div>
+                                    <div className="flex items-center gap-2 text-xs">
+                                      <Mail className="w-3 h-3" />
                                       <span>{assessorEmails[assessor] || `${assessor.toLowerCase().replace(' ', '.')}@company.com`}</span>
                                     </div>
-                                    <div className="text-xs text-muted-foreground">
-                                      Contributed to: {idx === 0 ? 'Assess, Review/Challenge' : idx === 1 ? 'Review/Challenge' : 'Assess'}
-                                    </div>
-                                    {risk.currentEditor === assessor && (
-                                      <div className="flex items-center gap-2 text-amber-500 text-xs">
-                                        <Lock className="w-3 h-3" />
-                                        <span>The assessment is currently being edited by this user</span>
+                                    <div className="pt-1 border-t border-border">
+                                      <div className="text-xs font-medium text-muted-foreground mb-1">Sections Updated:</div>
+                                      <div className="flex flex-wrap gap-1">
+                                        {idx === 0 && (
+                                          <>
+                                            <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300">Assess</Badge>
+                                            <Badge variant="outline" className="text-xs bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300">Review & Challenge</Badge>
+                                          </>
+                                        )}
+                                        {idx === 1 && (
+                                          <Badge variant="outline" className="text-xs bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300">Review & Challenge</Badge>
+                                        )}
+                                        {idx === 2 && (
+                                          <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300">Assess</Badge>
+                                        )}
                                       </div>
-                                    )}
+                                    </div>
                                   </div>
                                 </TooltipContent>
                               </Tooltip>
@@ -1062,7 +1077,11 @@ const Dashboard2ndLine = () => {
                               <Badge className="bg-green-500 text-white rounded-full px-2.5 py-1 text-xs">
                                 {risk.testResults.label}
                               </Badge>
-...
+                              {risk.testResults.sublabel && (
+                                <Badge className="bg-blue-500 text-white rounded-full px-2.5 py-1 text-xs">
+                                  {risk.testResults.sublabel}
+                                </Badge>
+                              )}
                             </div>
                             <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
                               View Previous
@@ -1106,23 +1125,10 @@ const Dashboard2ndLine = () => {
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-b border-border">
                           <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
                             {risk.status}
                           </Badge>
-                        </TableCell>
-                        <TableCell className="py-2 border-b border-border">
-                          {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              className="h-7 text-xs bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-700 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 dark:border-amber-700 dark:text-amber-400"
-                              onClick={() => handleUpdateClosedAssessment(risk.id)}
-                            >
-                              <RefreshCw className="w-3 h-3 mr-1" />
-                              Update Closed Assessment
-                            </Button>
-                          )}
                         </TableCell>
                       </TableRow>
                     );
@@ -1317,7 +1323,7 @@ const initialRiskData: RiskData[] = [
     inherentTrend: { value: "12%", up: false },
     relatedControls: { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective" },
     controlEffectiveness: { label: "Operating Effective", color: "green" },
-    testResults: { label: "Operating Effective", sublabel: "" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
     residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "14%", up: true },
     status: "Sent for Assessment",
@@ -1400,7 +1406,7 @@ const initialRiskData: RiskData[] = [
     inherentTrend: { value: "15%", up: true },
     relatedControls: { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive" },
     controlEffectiveness: { label: "Design Effective", color: "green" },
-    testResults: { label: "Design Effective", sublabel: "" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
     residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "12%", up: false },
     status: "Pending Approval",
