@@ -8,10 +8,12 @@ import {
   Shield, 
   CheckCircle, 
   FileText, 
-  Sparkles, 
-  RotateCcw, 
+  GitCompare, 
   Calculator,
-  ClipboardList
+  ClipboardList,
+  Eye,
+  Send,
+  ThumbsUp
 } from "lucide-react";
 
 interface RiskAssessmentOverviewModalProps {
@@ -98,7 +100,7 @@ const AssessmentCard = ({
         {/* Progress */}
         <div className="space-y-2">
           <div className="flex justify-between items-center">
-            <span className="text-xs text-muted-foreground">Factors Assessed</span>
+            <span className="text-xs text-muted-foreground">Review Progress</span>
             <span className="text-xs font-medium text-foreground">{factorsAssessed}</span>
           </div>
           <Progress value={completion} className="h-2" />
@@ -143,87 +145,87 @@ export const RiskAssessmentOverviewModal = ({
 
   const cards = [
     {
-      title: "Inherent Rating",
+      title: "Inherent Rating Review",
       riskId: risk.id,
       riskName: risk.title,
-      completion: 32,
-      factorsAssessed: "1 of 15",
-      descriptor: "Risk without controls",
+      completion: 40,
+      factorsAssessed: "6 of 15 reviewed",
+      descriptor: "Review risk scoring without controls",
       icon: <AlertTriangle className="w-5 h-5 text-orange-600" />,
       accentColor: "bg-orange-500",
       bgGradient: "bg-gradient-to-br from-orange-50 to-amber-50/50 dark:from-orange-950/30 dark:to-amber-950/20",
       sectionKey: "inherent-rating",
       tabIndex: 1,
       primaryCta: {
-        label: "Reload from previous cycle",
-        icon: <RotateCcw className="w-4 h-4" />,
+        label: "Compare with Previous Cycle",
+        icon: <GitCompare className="w-4 h-4" />,
       },
       secondaryCta: {
-        label: "Assess with AI / Manually",
-        icon: <Sparkles className="w-4 h-4" />,
+        label: "Review & Challenge",
+        icon: <Eye className="w-4 h-4" />,
       },
     },
     {
-      title: "Control Effectiveness",
+      title: "Control Effectiveness Review",
       riskId: risk.id,
       riskName: risk.title,
       completion: 67,
-      factorsAssessed: "8 of 12",
-      descriptor: "Control design & operating effectiveness",
+      factorsAssessed: "8 of 12 reviewed",
+      descriptor: "Evaluate design & operating effectiveness",
       icon: <Shield className="w-5 h-5 text-blue-600" />,
       accentColor: "bg-blue-500",
       bgGradient: "bg-gradient-to-br from-blue-50 to-cyan-50/50 dark:from-blue-950/30 dark:to-cyan-950/20",
       sectionKey: "control-effectiveness",
       tabIndex: 2,
       primaryCta: {
-        label: "Use most recent test results",
+        label: "View Latest Control Test Results",
         icon: <ClipboardList className="w-4 h-4" />,
       },
       secondaryCta: {
-        label: "Assess with AI / Manually",
-        icon: <Sparkles className="w-4 h-4" />,
+        label: "Review & Challenge",
+        icon: <Eye className="w-4 h-4" />,
       },
     },
     {
-      title: "Residual Rating",
+      title: "Residual Rating Validation",
       riskId: risk.id,
       riskName: risk.title,
       completion: 0,
-      factorsAssessed: "0 of 15",
-      descriptor: "Risk after applying controls",
+      factorsAssessed: "0 of 15 validated",
+      descriptor: "Validate post-control risk scoring",
       icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
       accentColor: "bg-emerald-500",
       bgGradient: "bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-emerald-950/30 dark:to-green-950/20",
       sectionKey: "residual-rating",
       tabIndex: 3,
       primaryCta: {
-        label: "Auto-calculated",
+        label: "View Auto-Calculated Score",
         icon: <Calculator className="w-4 h-4" />,
       },
       secondaryCta: {
-        label: "Assess with AI / Manually",
-        icon: <Sparkles className="w-4 h-4" />,
+        label: "Approve or Challenge",
+        icon: <ThumbsUp className="w-4 h-4" />,
       },
     },
     {
-      title: "Risk Treatment",
+      title: "Risk Treatment Oversight",
       riskId: risk.id,
       riskName: risk.title,
-      completion: 15,
-      factorsAssessed: "1 of 6",
-      descriptor: "Mitigation & action plans",
+      completion: 17,
+      factorsAssessed: "1 of 6 reviewed",
+      descriptor: "Review mitigation plans & status",
       icon: <FileText className="w-5 h-5 text-purple-600" />,
       accentColor: "bg-purple-500",
       bgGradient: "bg-gradient-to-br from-purple-50 to-violet-50/50 dark:from-purple-950/30 dark:to-violet-950/20",
       sectionKey: "risk-treatment",
       tabIndex: 4,
       primaryCta: {
-        label: "Define Treatment Plan",
+        label: "Review Treatment Plan",
         icon: <FileText className="w-4 h-4" />,
       },
       secondaryCta: {
-        label: "Assess with AI / Manually",
-        icon: <Sparkles className="w-4 h-4" />,
+        label: "Approve / Send Back",
+        icon: <Send className="w-4 h-4" />,
       },
     },
   ];
