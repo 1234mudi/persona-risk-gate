@@ -1108,7 +1108,6 @@ const RiskAssessmentForm = () => {
                         <th className="p-2 text-left text-sm font-medium w-24">Operating</th>
                         <th className="p-2 text-left text-sm font-medium w-24">Testing</th>
                         <th className="p-2 text-left text-sm font-medium w-16">Avg</th>
-                        <th className="p-2 text-left text-sm font-medium w-16">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1174,9 +1173,6 @@ const RiskAssessmentForm = () => {
                             </td>
                             <td className="p-2">
                               <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white`}>{avg}</Badge>
-                            </td>
-                            <td className="p-2">
-                              <Button variant="ghost" size="icon" className="h-6 w-6"><MoreHorizontal className="w-3.5 h-3.5" /></Button>
                             </td>
                           </tr>
                         );
