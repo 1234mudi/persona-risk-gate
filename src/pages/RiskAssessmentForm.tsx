@@ -1280,34 +1280,155 @@ const RiskAssessmentForm = () => {
             </TabsContent>
 
             {/* Heat Map Tab */}
-            <TabsContent value="heat-map">
-              <Card className="p-6">
-                <h2 className="text-lg font-semibold mb-4">Risk Heat Map</h2>
-                <div className="flex gap-8">
+            <TabsContent value="heat-map" className="space-y-3">
+              <Card className="p-4">
+                <div className="flex items-center justify-between mb-4">
                   <div>
-                    <div className="grid grid-cols-5 gap-1" style={{ width: '200px' }}>
-                      {[5,4,3,2,1].map((impact) => [1,2,3,4,5].map((likelihood) => {
-                        const score = impact * likelihood;
-                        let bgColor = "bg-emerald-200";
-                        if (score > 15) bgColor = "bg-red-500";
-                        else if (score > 10) bgColor = "bg-orange-400";
-                        else if (score > 5) bgColor = "bg-yellow-300";
-                        return (
-                          <div key={`${impact}-${likelihood}`} className={`aspect-square ${bgColor} rounded flex items-center justify-center text-xs font-medium`}>
-                            {score}
-                          </div>
-                        );
-                      }))}
+                    <h2 className="text-lg font-semibold">Risk Heat Map</h2>
+                    <p className="text-sm text-muted-foreground">Visual representation of inherent vs residual risk positioning</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-200">
+                      Inherent: {inherentScore}
+                    </Badge>
+                    <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">
+                      Residual: {residualScore}
+                    </Badge>
+                  </div>
+                </div>
+
+                <div className="flex gap-8">
+                  {/* Heat Map Grid */}
+                  <div className="flex">
+                    {/* Y-Axis Label */}
+                    <div className="flex flex-col items-center justify-center mr-2">
+                      <span className="text-xs font-medium text-muted-foreground [writing-mode:vertical-rl] rotate-180">Impact</span>
+                    </div>
+                    
+                    {/* Y-Axis Numbers */}
+                    <div className="flex flex-col justify-around mr-1 text-xs text-muted-foreground font-medium py-1">
+                      {[5, 4, 3, 2, 1].map((n) => (
+                        <div key={n} className="h-10 flex items-center">{n}</div>
+                      ))}
+                    </div>
+
+                    <div className="flex flex-col">
+                      {/* Grid */}
+                      <div className="grid grid-cols-5 gap-1">
+                        {[5, 4, 3, 2, 1].map((impact) =>
+                          [1, 2, 3, 4, 5].map((likelihood) => {
+                            const score = impact * likelihood;
+                            let bgColor = "bg-emerald-200 dark:bg-emerald-900/50";
+                            let textColor = "text-emerald-800 dark:text-emerald-200";
+                            if (score > 15) {
+                              bgColor = "bg-red-500 dark:bg-red-600";
+                              textColor = "text-white";
+                            } else if (score > 10) {
+                              bgColor = "bg-orange-400 dark:bg-orange-500";
+                              textColor = "text-white";
+                            } else if (score > 5) {
+                              bgColor = "bg-yellow-300 dark:bg-yellow-500/70";
+                              textColor = "text-yellow-900 dark:text-yellow-100";
+                            }
+                            
+                            // Check if this cell represents current risk position
+                            const inherentPos = Math.round(inherentScore);
+                            const residualPos = Math.round(residualScore);
+                            const isInherent = impact === inherentPos && likelihood === 3;
+                            const isResidual = impact === residualPos && likelihood === 2;
+                            
+                            return (
+                              <div
+                                key={`${impact}-${likelihood}`}
+                                className={`w-10 h-10 ${bgColor} rounded flex items-center justify-center text-xs font-semibold ${textColor} relative transition-transform hover:scale-105 cursor-default`}
+                              >
+                                {score}
+                                {isInherent && (
+                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] text-white font-bold">I</div>
+                                )}
+                                {isResidual && (
+                                  <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] text-white font-bold">R</div>
+                                )}
+                              </div>
+                            );
+                          })
+                        )}
+                      </div>
+                      
+                      {/* X-Axis Numbers */}
+                      <div className="flex justify-around mt-1 text-xs text-muted-foreground font-medium px-1">
+                        {[1, 2, 3, 4, 5].map((n) => (
+                          <div key={n} className="w-10 text-center">{n}</div>
+                        ))}
+                      </div>
+                      
+                      {/* X-Axis Label */}
+                      <div className="text-center mt-2">
+                        <span className="text-xs font-medium text-muted-foreground">Likelihood</span>
+                      </div>
                     </div>
                   </div>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2"><div className="w-4 h-4 bg-red-500 rounded" />Critical (16-25)</div>
-                    <div className="flex items-center gap-2"><div className="w-4 h-4 bg-orange-400 rounded" />High (11-15)</div>
-                    <div className="flex items-center gap-2"><div className="w-4 h-4 bg-yellow-300 rounded" />Medium (6-10)</div>
-                    <div className="flex items-center gap-2"><div className="w-4 h-4 bg-emerald-200 rounded" />Low (1-5)</div>
+
+                  {/* Legend */}
+                  <div className="space-y-3">
+                    <h4 className="text-sm font-medium">Risk Levels</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-red-500 rounded" />
+                        <span>Critical (16-25)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-orange-400 rounded" />
+                        <span>High (11-15)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-yellow-300 rounded" />
+                        <span>Medium (6-10)</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-emerald-200 rounded" />
+                        <span>Low (1-5)</span>
+                      </div>
+                    </div>
+                    
+                    <Separator className="my-3" />
+                    
+                    <h4 className="text-sm font-medium">Current Position</h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">I</div>
+                        <span>Inherent Risk ({inherentScore})</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <div className="w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">R</div>
+                        <span>Residual Risk ({residualScore})</span>
+                      </div>
+                    </div>
+
+                    <Separator className="my-3" />
+
+                    <div className="p-3 bg-muted/50 rounded-lg">
+                      <div className="text-sm font-medium mb-1">Risk Reduction</div>
+                      <div className="flex items-center gap-2">
+                        <TrendingDown className="w-4 h-4 text-emerald-500" />
+                        <span className="text-lg font-bold text-emerald-600">{riskReduction} points</span>
+                      </div>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {parseFloat(riskReduction) > 1 ? "Good control effectiveness" : "Controls need improvement"}
+                      </p>
+                    </div>
                   </div>
                 </div>
               </Card>
+
+              <div className="flex items-center justify-between">
+                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("residual-rating")}>
+                  <ChevronLeft className="w-4 h-4" />Previous
+                </Button>
+                <Button className="gap-2 bg-slate-600 hover:bg-slate-700" onClick={() => setActiveTab("issues")}>
+                  View Issues<ChevronRight className="w-4 h-4" />
+                </Button>
+              </div>
             </TabsContent>
 
             {/* Issues Tab */}
