@@ -220,6 +220,10 @@ const Dashboard2ndLine = () => {
     setActionDialog({ open: true, type, riskId });
   };
 
+  const handleUpdateClosedAssessment = (riskId: string) => {
+    toast.success(`Opening closed assessment update for ${riskId}`);
+  };
+
   const handleActionSubmit = () => {
     const actionName = actionDialog.type === "reassign" ? "Reassignment" : 
                        actionDialog.type === "collaborate" ? "Collaboration request" : 
@@ -380,6 +384,8 @@ const Dashboard2ndLine = () => {
       case "Pending Approval": return "bg-purple-500 text-white";
       case "Review & Challenge": return "bg-orange-500 text-white";
       case "Completed": return "bg-green-500 text-white";
+      case "Complete": return "bg-green-500 text-white";
+      case "Closed": return "bg-slate-500 text-white";
       case "Overdue": return "bg-red-500 text-white";
       default: return "bg-blue-500 text-white";
     }
@@ -797,7 +803,8 @@ const Dashboard2ndLine = () => {
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
+                      <TableHead className="min-w-[160px] py-2 border-r border-b border-border">Status</TableHead>
+                      <TableHead className="min-w-[180px] py-2 border-b border-border">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1099,10 +1106,23 @@ const Dashboard2ndLine = () => {
                             </button>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2 border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border">
                           <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
                             {risk.status}
                           </Badge>
+                        </TableCell>
+                        <TableCell className="py-2 border-b border-border">
+                          {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="h-7 text-xs bg-amber-50 hover:bg-amber-100 border-amber-300 text-amber-700 dark:bg-amber-900/20 dark:hover:bg-amber-900/30 dark:border-amber-700 dark:text-amber-400"
+                              onClick={() => handleUpdateClosedAssessment(risk.id)}
+                            >
+                              <RefreshCw className="w-3 h-3 mr-1" />
+                              Update Closed Assessment
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
@@ -1255,14 +1275,14 @@ const initialRiskData: RiskData[] = [
   {
     id: "R-001",
     title: "Operational Process Failure",
-    dueDate: "2025-12-15",
+    dueDate: "2025-11-20",
     riskLevel: "Level 1",
     businessUnit: "Retail Banking",
     category: "Operational",
     owner: "Michael Chen (Operations)",
     assessors: ["Sarah Johnson", "David Kim"],
     assessmentProgress: {
-      assess: "not-started",
+      assess: "completed",
       reviewChallenge: "not-started",
       approve: "not-started",
     },
@@ -1273,7 +1293,7 @@ const initialRiskData: RiskData[] = [
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
     residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "7%", up: true },
-    status: "Sent for Assessment",
+    status: "Overdue",
     lastAssessed: "2025-10-20",
     previousAssessments: 5,
     tabCategory: "assess",
@@ -1317,9 +1337,9 @@ const initialRiskData: RiskData[] = [
     assessors: ["James Brown", "Lisa Martinez", "Tom Wilson"],
     currentEditor: "James Brown",
     assessmentProgress: {
-      assess: "in-progress",
-      reviewChallenge: "not-started",
-      approve: "not-started",
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "completed",
     },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "8%", up: true },
@@ -1328,7 +1348,7 @@ const initialRiskData: RiskData[] = [
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
     residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "5%", up: false },
-    status: "In Progress",
+    status: "Completed",
     lastAssessed: "2025-10-15",
     previousAssessments: 8,
     tabCategory: "assess",
