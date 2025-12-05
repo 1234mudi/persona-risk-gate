@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, 
+  ArrowRight,
   MessageSquare, 
   FileText, 
   Users, 
@@ -1280,143 +1281,230 @@ const RiskAssessmentForm = () => {
             </TabsContent>
 
             {/* Heat Map Tab */}
-            <TabsContent value="heat-map" className="space-y-3">
-              <Card className="p-4">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
+            <TabsContent value="heat-map" className="space-y-4">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+                {/* Heat Map Chart */}
+                <Card className="p-4 lg:col-span-2">
+                  <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold">Risk Heat Map</h2>
-                    <p className="text-sm text-muted-foreground">Visual representation of inherent vs residual risk positioning</p>
+                    <Info className="w-4 h-4 text-muted-foreground" />
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="bg-orange-100 text-orange-700 border-orange-200">
+                  
+                  {/* Score Badges */}
+                  <div className="flex items-center gap-2 mb-4">
+                    <Badge className="bg-slate-700 text-white hover:bg-slate-700">
                       Inherent: {inherentScore}
                     </Badge>
-                    <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">
+                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
+                    <Badge className="bg-emerald-500 text-white hover:bg-emerald-500">
                       Residual: {residualScore}
                     </Badge>
+                    <div className="ml-auto flex items-center gap-2">
+                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
+                      <span className="text-sm text-muted-foreground">Appetite Threshold: 2.0</span>
+                    </div>
                   </div>
-                </div>
-
-                <div className="flex gap-8">
-                  {/* Heat Map Grid */}
-                  <div className="flex">
-                    {/* Y-Axis Label */}
-                    <div className="flex flex-col items-center justify-center mr-2">
-                      <span className="text-xs font-medium text-muted-foreground [writing-mode:vertical-rl] rotate-180">Impact</span>
+                  
+                  {/* Heat Map Scatter Plot */}
+                  <div className="relative bg-gradient-to-tr from-emerald-50 via-yellow-50/50 via-60% to-red-100 dark:from-emerald-950/30 dark:via-yellow-950/20 dark:to-red-950/30 rounded-lg p-4 border">
+                    {/* Risk Appetite Threshold Label */}
+                    <div className="absolute top-2 left-1/2 -translate-x-1/2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                      Risk Appetite Threshold
                     </div>
                     
-                    {/* Y-Axis Numbers */}
-                    <div className="flex flex-col justify-around mr-1 text-xs text-muted-foreground font-medium py-1">
-                      {[5, 4, 3, 2, 1].map((n) => (
-                        <div key={n} className="h-10 flex items-center">{n}</div>
-                      ))}
-                    </div>
-
-                    <div className="flex flex-col">
-                      {/* Grid */}
-                      <div className="grid grid-cols-5 gap-1">
-                        {[5, 4, 3, 2, 1].map((impact) =>
-                          [1, 2, 3, 4, 5].map((likelihood) => {
-                            const score = impact * likelihood;
-                            let bgColor = "bg-emerald-200 dark:bg-emerald-900/50";
-                            let textColor = "text-emerald-800 dark:text-emerald-200";
-                            if (score > 15) {
-                              bgColor = "bg-red-500 dark:bg-red-600";
-                              textColor = "text-white";
-                            } else if (score > 10) {
-                              bgColor = "bg-orange-400 dark:bg-orange-500";
-                              textColor = "text-white";
-                            } else if (score > 5) {
-                              bgColor = "bg-yellow-300 dark:bg-yellow-500/70";
-                              textColor = "text-yellow-900 dark:text-yellow-100";
-                            }
-                            
-                            // Check if this cell represents current risk position
-                            const inherentPos = Math.round(inherentScore);
-                            const residualPos = Math.round(residualScore);
-                            const isInherent = impact === inherentPos && likelihood === 3;
-                            const isResidual = impact === residualPos && likelihood === 2;
-                            
-                            return (
-                              <div
-                                key={`${impact}-${likelihood}`}
-                                className={`w-10 h-10 ${bgColor} rounded flex items-center justify-center text-xs font-semibold ${textColor} relative transition-transform hover:scale-105 cursor-default`}
-                              >
-                                {score}
-                                {isInherent && (
-                                  <div className="absolute -top-1 -right-1 w-4 h-4 bg-orange-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] text-white font-bold">I</div>
-                                )}
-                                {isResidual && (
-                                  <div className="absolute -bottom-1 -left-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white flex items-center justify-center text-[8px] text-white font-bold">R</div>
-                                )}
-                              </div>
-                            );
-                          })
-                        )}
+                    {/* Chart Area */}
+                    <div className="relative" style={{ height: '280px' }}>
+                      {/* Y-Axis */}
+                      <div className="absolute left-0 top-0 bottom-8 w-8 flex flex-col justify-between items-end pr-2 text-xs text-muted-foreground">
+                        <span>5</span>
+                        <span>4</span>
+                        <span>3</span>
+                        <span>2</span>
+                        <span>1</span>
+                        <span>0</span>
                       </div>
                       
-                      {/* X-Axis Numbers */}
-                      <div className="flex justify-around mt-1 text-xs text-muted-foreground font-medium px-1">
-                        {[1, 2, 3, 4, 5].map((n) => (
-                          <div key={n} className="w-10 text-center">{n}</div>
-                        ))}
+                      {/* Y-Axis Label */}
+                      <div className="absolute -left-2 top-1/2 -translate-y-1/2 -rotate-90 text-xs font-medium text-muted-foreground whitespace-nowrap">
+                        Residual Risk
+                      </div>
+                      
+                      {/* Plot Area */}
+                      <div className="absolute left-10 right-4 top-4 bottom-8 border-l-2 border-b-2 border-slate-300 dark:border-slate-600">
+                        {/* Horizontal Threshold Line */}
+                        <div 
+                          className="absolute left-0 right-0 border-t-2 border-dashed border-emerald-500"
+                          style={{ bottom: `${(2/5) * 100}%` }}
+                        />
+                        
+                        {/* Vertical Threshold Line */}
+                        <div 
+                          className="absolute top-0 bottom-0 border-l-2 border-dashed border-emerald-500"
+                          style={{ left: `${(2/5) * 100}%` }}
+                        />
+                        
+                        {/* Previous Assessment Point (gray) */}
+                        <div 
+                          className="absolute w-6 h-6 rounded-full bg-slate-400 border-2 border-white shadow-md transform -translate-x-1/2 -translate-y-1/2"
+                          style={{ 
+                            left: `${(3.5/5) * 100}%`, 
+                            bottom: `${(3/5) * 100}%`,
+                            top: 'auto'
+                          }}
+                        />
+                        
+                        {/* Dotted line connecting previous to current */}
+                        <svg className="absolute inset-0 w-full h-full overflow-visible" style={{ pointerEvents: 'none' }}>
+                          <line 
+                            x1={`${(3.5/5) * 100}%`} 
+                            y1={`${100 - (3/5) * 100}%`}
+                            x2={`${(inherentScore/5) * 100}%`} 
+                            y2={`${100 - (residualScore/5) * 100}%`}
+                            stroke="#94a3b8" 
+                            strokeWidth="2" 
+                            strokeDasharray="4 4"
+                          />
+                        </svg>
+                        
+                        {/* Current Assessment Point (blue) */}
+                        <div 
+                          className="absolute w-8 h-8 rounded-full bg-blue-500 border-4 border-blue-200 shadow-lg transform -translate-x-1/2 -translate-y-1/2 z-10"
+                          style={{ 
+                            left: `${(inherentScore/5) * 100}%`, 
+                            bottom: `${(residualScore/5) * 100}%`,
+                            top: 'auto'
+                          }}
+                        />
+                      </div>
+                      
+                      {/* X-Axis */}
+                      <div className="absolute left-10 right-4 bottom-0 flex justify-between text-xs text-muted-foreground">
+                        <span>0</span>
+                        <span>1</span>
+                        <span>2</span>
+                        <span>3</span>
+                        <span>4</span>
+                        <span>5</span>
                       </div>
                       
                       {/* X-Axis Label */}
-                      <div className="text-center mt-2">
-                        <span className="text-xs font-medium text-muted-foreground">Likelihood</span>
+                      <div className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-xs font-medium text-muted-foreground">
+                        Inherent Risk
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Risk Zone Legend */}
+                  <div className="grid grid-cols-2 gap-3 mt-4">
+                    <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
+                      <div className="font-medium text-sm">Very Low Risk Zone</div>
+                      <div className="text-xs text-muted-foreground">Score: 0-2</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-lime-50 dark:bg-lime-950/30 border border-lime-200 dark:border-lime-800">
+                      <div className="font-medium text-sm">Low Risk Zone</div>
+                      <div className="text-xs text-muted-foreground">Score: 2-3</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
+                      <div className="font-medium text-sm">Medium Risk Zone</div>
+                      <div className="text-xs text-muted-foreground">Score: 3-4</div>
+                    </div>
+                    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800">
+                      <div className="font-medium text-sm">High Risk Zone</div>
+                      <div className="text-xs text-muted-foreground">Score: 4-5</div>
+                    </div>
+                  </div>
+                </Card>
 
-                  {/* Legend */}
-                  <div className="space-y-3">
-                    <h4 className="text-sm font-medium">Risk Levels</h4>
-                    <div className="space-y-2 text-sm">
+                {/* Risk Appetite Card */}
+                <Card className="p-4">
+                  <h3 className="text-lg font-semibold mb-4">Risk Appetite</h3>
+                  <div className="p-4 rounded-lg border bg-muted/30">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-red-500 rounded" />
-                        <span>Critical (16-25)</span>
+                        <span className="font-medium">Risk Appetite</span>
+                        <Info className="w-3.5 h-3.5 text-muted-foreground" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-orange-400 rounded" />
-                        <span>High (11-15)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-yellow-300 rounded" />
-                        <span>Medium (6-10)</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-emerald-200 rounded" />
-                        <span>Low (1-5)</span>
+                      <div className="text-right text-sm">
+                        <div className="text-muted-foreground">Threshold:</div>
+                        <div className="font-mono font-bold">2.0</div>
                       </div>
                     </div>
                     
-                    <Separator className="my-3" />
+                    <Badge className="bg-emerald-500 text-white hover:bg-emerald-500 mb-3">Low</Badge>
                     
-                    <h4 className="text-sm font-medium">Current Position</h4>
-                    <div className="space-y-2 text-sm">
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">I</div>
-                        <span>Inherent Risk ({inherentScore})</span>
+                    <p className="text-sm text-muted-foreground mb-4">
+                      The organization has a low appetite for compliance risks. Residual risk rating above 2.0 is considered outside appetite.
+                    </p>
+                    
+                    <div className="flex items-center justify-between pt-3 border-t">
+                      <div className="text-sm">
+                        <span className="text-muted-foreground">Current:</span>
+                        <span className="font-mono font-bold ml-2">{residualScore}</span>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-4 h-4 bg-emerald-500 rounded-full flex items-center justify-center text-[8px] text-white font-bold">R</div>
-                        <span>Residual Risk ({residualScore})</span>
-                      </div>
+                      <Badge 
+                        className={residualScore <= 2 
+                          ? "bg-emerald-100 text-emerald-700 hover:bg-emerald-100" 
+                          : "bg-red-100 text-red-700 hover:bg-red-100"
+                        }
+                      >
+                        <CheckCircle className="w-3 h-3 mr-1" />
+                        {residualScore <= 2 ? "Within Appetite" : "Outside Appetite"}
+                      </Badge>
                     </div>
+                  </div>
+                </Card>
+              </div>
 
-                    <Separator className="my-3" />
-
-                    <div className="p-3 bg-muted/50 rounded-lg">
-                      <div className="text-sm font-medium mb-1">Risk Reduction</div>
-                      <div className="flex items-center gap-2">
-                        <TrendingDown className="w-4 h-4 text-emerald-500" />
-                        <span className="text-lg font-bold text-emerald-600">{riskReduction} points</span>
-                      </div>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {parseFloat(riskReduction) > 1 ? "Good control effectiveness" : "Controls need improvement"}
-                      </p>
-                    </div>
+              {/* Heat Map Interpretation */}
+              <Card className="p-4">
+                <h3 className="text-lg font-semibold mb-3">Heat Map Interpretation</h3>
+                <p className="text-sm text-muted-foreground mb-4">
+                  The Risk Heat Map visualizes the relationship between inherent risk (x-axis) and residual risk (y-axis). The movement from inherent to residual risk shows the effect of controls on reducing the overall risk.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-lg border bg-muted/20">
+                    <h4 className="font-medium mb-3">Reading the Heat Map</h4>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        The blue circle shows your current risk assessment position
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        The dotted orange lines show your risk appetite threshold
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        The colored zones represent different risk levels (Very Low to High)
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        The gray circle (if present) shows your previous assessment
+                      </li>
+                    </ul>
+                  </div>
+                  
+                  <div className="p-4 rounded-lg border bg-muted/20">
+                    <h4 className="font-medium mb-3">Interpretation</h4>
+                    <ul className="space-y-2 text-sm text-muted-foreground">
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        Risks in the red zone (top-right) require immediate attention
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        Risks above the appetite threshold may need additional controls
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        Effective controls move risks from top-right to bottom-left
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <div className="w-1.5 h-1.5 rounded-full bg-foreground mt-1.5 shrink-0" />
+                        The larger the vertical drop, the more effective your controls
+                      </li>
+                    </ul>
                   </div>
                 </div>
               </Card>
