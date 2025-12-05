@@ -122,27 +122,42 @@ const AssessmentCard = ({
             </div>
           </div>
 
-          {/* Progress and CTAs row */}
-          <div className="flex items-center gap-4">
-            {/* Progress */}
-            <div className="flex items-center gap-2 min-w-[160px]">
-              <div className="flex-1">
-                <Progress value={completion} className="h-1.5" />
-              </div>
-              <span className="text-xs font-semibold text-foreground w-10">{completion}%</span>
+          {/* Progress row */}
+          <div className="flex items-center gap-2 mb-2">
+            <div className="flex-1">
+              <Progress value={completion} className="h-1.5" />
             </div>
+            <span className="text-xs font-semibold text-foreground w-10">{completion}%</span>
+          </div>
 
-            {/* CTA */}
-            <div className="flex gap-2 ml-auto">
-              <Button 
-                size="sm"
-                className="text-[11px] h-7 px-2.5 bg-muted text-foreground hover:bg-muted/80"
-                onClick={handleNavigate}
-              >
-                {secondaryCta.icon}
-                <span className="ml-1">Continue</span>
-              </Button>
-            </div>
+          {/* Action buttons row */}
+          <div className="flex flex-wrap gap-2">
+            <Button 
+              size="sm"
+              variant="outline"
+              className="text-[11px] h-7 px-2.5"
+              onClick={handleNavigate}
+            >
+              {primaryCta.icon}
+              <span className="ml-1">{primaryCta.label}</span>
+            </Button>
+            <Button 
+              size="sm"
+              className="text-[11px] h-7 px-2.5 bg-primary text-primary-foreground hover:bg-primary/90"
+              onClick={handleNavigate}
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              <span className="ml-1">Assess with AI</span>
+            </Button>
+            <Button 
+              size="sm"
+              variant="outline"
+              className="text-[11px] h-7 px-2.5"
+              onClick={handleNavigate}
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span className="ml-1">Assess Manually</span>
+            </Button>
           </div>
         </div>
       </div>
