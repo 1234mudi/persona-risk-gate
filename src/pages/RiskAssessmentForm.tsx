@@ -1549,7 +1549,7 @@ const RiskAssessmentForm = () => {
       </div>
 
       {/* Right Vertical Tab Bar - Fixed on right edge */}
-      <div className="fixed top-0 right-0 h-full w-16 bg-card border-l-2 border-border z-[60] flex flex-col pt-16 shadow-lg">
+      <div className="fixed top-0 right-0 h-full w-16 bg-card border-l-2 border-border z-[60] flex flex-col pt-14 shadow-lg overflow-y-auto">
         {[
           { id: 'assessments', label: 'Previous Assessments', icon: History },
           { id: 'review', label: 'Review & Challenge', icon: MessageSquare },
@@ -1571,7 +1571,7 @@ const RiskAssessmentForm = () => {
                   setSelectedHistoryDate(0);
                 }
               }}
-              className={`relative py-5 px-2 flex flex-col items-center justify-center gap-3 transition-all duration-200 group border-b border-border/50 ${
+              className={`relative py-3 px-2 flex flex-col items-center justify-center gap-2 transition-all duration-200 group border-b border-border/50 flex-shrink-0 ${
                 isActive
                   ? 'bg-primary/5 text-primary' 
                   : 'hover:bg-muted/80 text-muted-foreground hover:text-foreground'
@@ -1579,20 +1579,20 @@ const RiskAssessmentForm = () => {
             >
               {/* Active indicator */}
               {isActive && (
-                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-12 bg-primary rounded-r-full" />
+                <div className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-10 bg-primary rounded-r-full" />
               )}
               
               {/* Icon with border */}
-              <div className={`p-2 rounded-lg border-2 transition-all ${
+              <div className={`p-1.5 rounded-md border transition-all ${
                 isActive 
                   ? 'border-primary bg-primary/10' 
                   : 'border-border bg-background group-hover:border-muted-foreground/50'
               }`}>
-                <Icon className="w-5 h-5" />
+                <Icon className="w-4 h-4" />
               </div>
               
               {/* Vertical text */}
-              <span className={`text-[11px] font-semibold whitespace-nowrap [writing-mode:vertical-rl] rotate-180 tracking-wider ${
+              <span className={`text-[10px] font-medium whitespace-nowrap [writing-mode:vertical-rl] rotate-180 tracking-wide ${
                 isActive ? 'text-primary' : ''
               }`}>
                 {tab.label}
