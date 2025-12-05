@@ -178,7 +178,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                     className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
                     onClick={() => {
                       // Open the To-Do popup in a new tab by navigating to the dashboard with query params
-                      const url = `/dashboard-1st-line?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
+                      const url = `/dashboard/1st-line-analyst?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
                       window.open(url, '_blank');
                     }}
                     title="Click to open risk assessment in new tab"
