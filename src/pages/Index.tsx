@@ -44,6 +44,7 @@ const Index = () => {
       name: "1st Line Risk Analyst",
       description: "Executes the Risk & Control Self- Assessment(RCSA) process, involves rating inherent risk, documenting control evidence, and identifying control weaknesses or gaps.",
       line: "first" as const,
+      route: "/dashboard/1st-line-analyst",
     },
     {
       icon: Users,
@@ -194,7 +195,7 @@ const Index = () => {
                     name={persona.name}
                     description={persona.description}
                     line={persona.line}
-                    onSelect={() => handlePersonaLogin(persona.name)}
+                    onSelect={() => handlePersonaLogin(persona.name, persona.route)}
                   />
                 ))}
               </div>
