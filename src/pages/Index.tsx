@@ -38,6 +38,7 @@ const Index = () => {
       name: "Risk Owner",
       description: "Approves the Risk & Control Self- Assessment(RCSA) results and oversee the status of critical risk remediation actions within the assigned business area.",
       line: "first" as const,
+      route: "/dashboard/risk-owner",
     },
     {
       icon: ClipboardCheck,
