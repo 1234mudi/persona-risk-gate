@@ -41,7 +41,6 @@ interface AssessmentCardProps {
   descriptor: string;
   icon: React.ReactNode;
   accentColor: string;
-  borderColor: string;
   primaryCta: { label: string; icon: React.ReactNode };
   secondaryCta: { label: string; icon: React.ReactNode };
   stepNumber: number;
@@ -54,7 +53,6 @@ const AssessmentCard = ({
   descriptor,
   icon,
   accentColor,
-  borderColor,
   primaryCta,
   secondaryCta,
   sectionKey,
@@ -101,7 +99,7 @@ const AssessmentCard = ({
       </div>
 
       {/* Card content */}
-      <div className={`flex-1 mb-4 rounded-xl border-l-4 ${borderColor} bg-card shadow-sm hover:shadow-md transition-all duration-200`}>
+      <div className="flex-1 mb-4 rounded-xl border border-border/50 bg-card shadow-sm hover:shadow-md transition-all duration-200">
         <div className="p-4">
           {/* Header row */}
           <div className="flex items-start justify-between mb-3">
@@ -179,7 +177,6 @@ export const RiskAssessmentOverviewModal = ({
       descriptor: "Review risk scoring without controls",
       icon: <AlertTriangle className="w-5 h-5 text-orange-600" />,
       accentColor: "bg-orange-500",
-      borderColor: "border-orange-500",
       sectionKey: "inherent-rating",
       primaryCta: {
         label: "Compare with Previous Cycle",
@@ -198,7 +195,6 @@ export const RiskAssessmentOverviewModal = ({
       descriptor: "Evaluate design & operating effectiveness",
       icon: <Shield className="w-5 h-5 text-blue-600" />,
       accentColor: "bg-blue-500",
-      borderColor: "border-blue-500",
       sectionKey: "control-effectiveness",
       primaryCta: {
         label: "View Latest Control Test Results",
@@ -217,7 +213,6 @@ export const RiskAssessmentOverviewModal = ({
       descriptor: "Validate post-control risk scoring",
       icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
       accentColor: "bg-emerald-500",
-      borderColor: "border-emerald-500",
       sectionKey: "residual-rating",
       primaryCta: {
         label: "View Auto-Calculated Score",
@@ -236,7 +231,6 @@ export const RiskAssessmentOverviewModal = ({
       descriptor: "Review mitigation plans & status",
       icon: <FileText className="w-5 h-5 text-purple-600" />,
       accentColor: "bg-purple-500",
-      borderColor: "border-purple-500",
       sectionKey: "risk-treatment",
       primaryCta: {
         label: "Review Treatment Plan",
