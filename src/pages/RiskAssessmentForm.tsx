@@ -1186,9 +1186,9 @@ const RiskAssessmentForm = () => {
                         <th className="p-1.5 text-left text-xs font-medium">Control Name</th>
                         <th className="p-1.5 text-left text-xs font-medium">Type</th>
                         <th className="p-1.5 text-left text-xs font-medium">Owner</th>
-                        <th className="p-1.5 text-left text-xs font-medium w-20">Design</th>
-                        <th className="p-1.5 text-left text-xs font-medium w-20">Operating</th>
-                        <th className="p-1.5 text-left text-xs font-medium w-20">Testing</th>
+<th className="p-1.5 text-left text-xs font-medium w-28">Design Effectiveness</th>
+                              <th className="p-1.5 text-left text-xs font-medium w-28">Operating Effectiveness</th>
+                              <th className="p-1.5 text-left text-xs font-medium w-28">Overall Effectiveness</th>
                         <th className="p-1.5 text-left text-xs font-medium w-14">Avg</th>
                       </tr>
                     </thead>
