@@ -61,6 +61,12 @@ interface RiskData {
     reviewChallenge: "not-started" | "in-progress" | "completed";
     approve: "not-started" | "in-progress" | "completed";
   };
+  sectionCompletion: {
+    inherentRating: number;
+    controlEffectiveness: number;
+    residualRating: number;
+    riskTreatment: number;
+  };
   inherentRisk: { level: string; color: string };
   inherentTrend: { value: string; up: boolean };
   relatedControls: { id: string; name: string; type: string; nature: string };
@@ -88,10 +94,11 @@ const Dashboard2ndLine = () => {
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
     title: string;
-    assessmentProgress: {
-      assess: "not-started" | "in-progress" | "completed";
-      reviewChallenge: "not-started" | "in-progress" | "completed";
-      approve: "not-started" | "in-progress" | "completed";
+    sectionCompletion: {
+      inherentRating: number;
+      controlEffectiveness: number;
+      residualRating: number;
+      riskTreatment: number;
     };
   } | null>(null);
 
@@ -102,15 +109,16 @@ const Dashboard2ndLine = () => {
     const riskName = searchParams.get("riskName");
     
     if (openOverview === "true" && riskId && riskName) {
-      // Find the risk data to get assessmentProgress, fallback to defaults
+      // Find the risk data to get sectionCompletion, fallback to defaults
       const foundRisk = riskData.find(r => r.id === riskId);
       setSelectedRiskForOverview({ 
         id: riskId, 
         title: riskName,
-        assessmentProgress: foundRisk?.assessmentProgress || {
-          assess: "not-started",
-          reviewChallenge: "not-started",
-          approve: "not-started"
+        sectionCompletion: foundRisk?.sectionCompletion || {
+          inherentRating: 0,
+          controlEffectiveness: 0,
+          residualRating: 0,
+          riskTreatment: 0
         }
       });
       setRiskOverviewModalOpen(true);
@@ -123,7 +131,7 @@ const Dashboard2ndLine = () => {
     setSelectedRiskForOverview({ 
       id: risk.id, 
       title: risk.title,
-      assessmentProgress: risk.assessmentProgress
+      sectionCompletion: risk.sectionCompletion
     });
     setRiskOverviewModalOpen(true);
   };
@@ -1314,6 +1322,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "not-started",
       approve: "not-started",
     },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 25,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "13%", up: false },
     relatedControls: { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective" },
@@ -1340,6 +1354,12 @@ const initialRiskData: RiskData[] = [
       assess: "not-started",
       reviewChallenge: "not-started",
       approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
     },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "12%", up: false },
@@ -1369,6 +1389,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "completed",
       approve: "completed",
     },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 100,
+    },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "8%", up: true },
     relatedControls: { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive" },
@@ -1395,6 +1421,12 @@ const initialRiskData: RiskData[] = [
       assess: "completed",
       reviewChallenge: "completed",
       approve: "in-progress",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 75,
+      riskTreatment: 50,
     },
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "20%", up: true },
@@ -1424,6 +1456,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "completed",
       approve: "in-progress",
     },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 83,
+      residualRating: 67,
+      riskTreatment: 33,
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "15%", up: true },
     relatedControls: { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive" },
@@ -1449,6 +1487,12 @@ const initialRiskData: RiskData[] = [
       assess: "completed",
       reviewChallenge: "completed",
       approve: "completed",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 100,
     },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "10%", up: false },
@@ -1478,6 +1522,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "not-started",
       approve: "not-started",
     },
+    sectionCompletion: {
+      inherentRating: 50,
+      controlEffectiveness: 17,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "22%", up: true },
     relatedControls: { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective" },
@@ -1505,6 +1555,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "not-started",
       approve: "not-started",
     },
+    sectionCompletion: {
+      inherentRating: 75,
+      controlEffectiveness: 33,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "9%", up: false },
     relatedControls: { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive" },
@@ -1531,6 +1587,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "not-started",
       approve: "not-started",
     },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "16%", up: true },
     relatedControls: { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive" },
@@ -1556,6 +1618,12 @@ const initialRiskData: RiskData[] = [
       assess: "completed",
       reviewChallenge: "completed",
       approve: "completed",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 100,
     },
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "25%", up: true },
@@ -1584,6 +1652,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "in-progress",
       approve: "not-started",
     },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 67,
+      residualRating: 25,
+      riskTreatment: 0,
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "18%", up: true },
     relatedControls: { id: "Control-032", name: "Credit Scoring Model", type: "Automated", nature: "Preventive" },
@@ -1610,6 +1684,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "completed",
       approve: "in-progress",
     },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 83,
+      riskTreatment: 50,
+    },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "14%", up: false },
     relatedControls: { id: "Control-035", name: "Cash Flow Monitoring", type: "Manual", nature: "Detective" },
@@ -1635,6 +1715,12 @@ const initialRiskData: RiskData[] = [
       assess: "completed",
       reviewChallenge: "in-progress",
       approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 58,
+      residualRating: 17,
+      riskTreatment: 0,
     },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "11%", up: true },
@@ -1663,6 +1749,12 @@ const initialRiskData: RiskData[] = [
       reviewChallenge: "completed",
       approve: "in-progress",
     },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 92,
+      residualRating: 75,
+      riskTreatment: 42,
+    },
     inherentRisk: { level: "Critical", color: "red" },
     inherentTrend: { value: "23%", up: true },
     relatedControls: { id: "Control-040", name: "AI Fraud Detection", type: "Automated", nature: "Detective" },
@@ -1688,6 +1780,12 @@ const initialRiskData: RiskData[] = [
       assess: "completed",
       reviewChallenge: "completed",
       approve: "completed",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 100,
     },
     inherentRisk: { level: "High", color: "red" },
     inherentTrend: { value: "17%", up: false },
@@ -1715,6 +1813,12 @@ const initialRiskData: RiskData[] = [
       assess: "completed",
       reviewChallenge: "completed",
       approve: "in-progress",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 67,
+      riskTreatment: 33,
     },
     inherentRisk: { level: "Medium", color: "yellow" },
     inherentTrend: { value: "9%", up: false },
