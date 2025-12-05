@@ -1927,17 +1927,15 @@ const RiskAssessmentForm = () => {
               {rightPanelTab === 'details' && 'Additional Details'}
             </h3>
             <div className="flex items-center gap-1">
-              {(rightPanelTab === 'assessments' || rightPanelTab === 'metrics') && (
-                <Button 
-                  variant="ghost" 
-                  size="icon" 
-                  className="h-8 w-8" 
-                  onClick={() => setExpandedPanel(rightPanelTab)}
-                  title="Expand to full view"
-                >
-                  <Maximize2 className="w-4 h-4" />
-                </Button>
-              )}
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8" 
+                onClick={() => setExpandedPanel(rightPanelTab)}
+                title="Expand to full view"
+              >
+                <Maximize2 className="w-4 h-4" />
+              </Button>
               <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setRightPanelOpen(false)}>
                 <X className="w-4 h-4" />
               </Button>
