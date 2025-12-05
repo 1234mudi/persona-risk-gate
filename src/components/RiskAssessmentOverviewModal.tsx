@@ -21,7 +21,8 @@ import {
   MessageSquare,
   Sparkles,
   Loader2,
-  Save
+  Save,
+  Target
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -294,6 +295,25 @@ This risk is currently being managed within established parameters. No immediate
       },
       reviewCommentsAddressed: 1,
       totalReviewComments: 4,
+    },
+    {
+      title: "Risk Treatment Review",
+      riskId: risk.id,
+      riskName: risk.title,
+      completion: risk.sectionCompletion.riskTreatment,
+      descriptor: "Review mitigation strategies & action plans",
+      icon: <Target className="w-4 h-4 text-muted-foreground" />,
+      sectionKey: "risk-treatment",
+      primaryCta: {
+        label: "View Treatment Plans",
+        icon: <FileText className="w-3.5 h-3.5" />,
+      },
+      secondaryCta: {
+        label: "Approve or Challenge",
+        icon: <ThumbsUp className="w-3.5 h-3.5" />,
+      },
+      reviewCommentsAddressed: 0,
+      totalReviewComments: 2,
     },
   ];
 
