@@ -7,6 +7,7 @@ import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import Dashboard1stLine from "./pages/Dashboard1stLine";
 import Dashboard2ndLine from "./pages/Dashboard2ndLine";
+import DashboardRiskOwner from "./pages/DashboardRiskOwner";
 import RiskAssessmentForm from "./pages/RiskAssessmentForm";
 import NotFound from "./pages/NotFound";
 
@@ -23,6 +24,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/dashboard/1st-line-analyst" element={<Dashboard1stLine />} />
             <Route path="/dashboard/2nd-line-analyst" element={<Dashboard2ndLine />} />
+            <Route path="/dashboard/risk-owner" element={<DashboardRiskOwner />} />
             <Route path="/risk-assessment" element={<RiskAssessmentForm />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
