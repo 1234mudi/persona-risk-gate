@@ -85,7 +85,15 @@ const Dashboard2ndLine = () => {
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
-  const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ id: string; title: string } | null>(null);
+  const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
+    id: string; 
+    title: string;
+    assessmentProgress: {
+      assess: "not-started" | "in-progress" | "completed";
+      reviewChallenge: "not-started" | "in-progress" | "completed";
+      approve: "not-started" | "in-progress" | "completed";
+    };
+  } | null>(null);
 
   // Check URL params to auto-open modal on navigation back
   useEffect(() => {
@@ -94,15 +102,29 @@ const Dashboard2ndLine = () => {
     const riskName = searchParams.get("riskName");
     
     if (openOverview === "true" && riskId && riskName) {
-      setSelectedRiskForOverview({ id: riskId, title: riskName });
+      // Find the risk data to get assessmentProgress, fallback to defaults
+      const foundRisk = riskData.find(r => r.id === riskId);
+      setSelectedRiskForOverview({ 
+        id: riskId, 
+        title: riskName,
+        assessmentProgress: foundRisk?.assessmentProgress || {
+          assess: "not-started",
+          reviewChallenge: "not-started",
+          approve: "not-started"
+        }
+      });
       setRiskOverviewModalOpen(true);
       // Clear the params after opening
       setSearchParams({});
     }
   }, [searchParams, setSearchParams]);
 
-  const handleRiskNameClick = (riskId: string, riskTitle: string) => {
-    setSelectedRiskForOverview({ id: riskId, title: riskTitle });
+  const handleRiskNameClick = (risk: RiskData) => {
+    setSelectedRiskForOverview({ 
+      id: risk.id, 
+      title: risk.title,
+      assessmentProgress: risk.assessmentProgress
+    });
     setRiskOverviewModalOpen(true);
   };
 
@@ -899,7 +921,7 @@ const Dashboard2ndLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <button 
-                                      onClick={() => handleRiskNameClick(risk.id, risk.title)}
+                                      onClick={() => handleRiskNameClick(risk)}
                                       className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
                                     >
                                       {risk.title}
@@ -921,7 +943,7 @@ const Dashboard2ndLine = () => {
                                   <Tooltip>
                                     <TooltipTrigger asChild>
                                       <button 
-                                        onClick={() => handleRiskNameClick(l2Risk.id, l2Risk.title)}
+                                        onClick={() => handleRiskNameClick(l2Risk)}
                                         className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
                                       >
                                         └ {l2Risk.title}
