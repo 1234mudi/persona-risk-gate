@@ -24,10 +24,11 @@ interface RiskAssessmentOverviewModalProps {
   risk: {
     id: string;
     title: string;
-    assessmentProgress: {
-      assess: "not-started" | "in-progress" | "completed";
-      reviewChallenge: "not-started" | "in-progress" | "completed";
-      approve: "not-started" | "in-progress" | "completed";
+    sectionCompletion: {
+      inherentRating: number;
+      controlEffectiveness: number;
+      residualRating: number;
+      riskTreatment: number;
     };
   } | null;
 }
@@ -169,19 +170,12 @@ export const RiskAssessmentOverviewModal = ({
     navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
   };
 
-  // Helper function to calculate completion percentage from status
-  const getCompletionPercentage = (status: "not-started" | "in-progress" | "completed") => {
-    if (status === "completed") return 100;
-    if (status === "in-progress") return 50;
-    return 0;
-  };
-
   const cards = [
     {
       title: "Inherent Rating Review",
       riskId: risk.id,
       riskName: risk.title,
-      completion: getCompletionPercentage(risk.assessmentProgress.assess),
+      completion: risk.sectionCompletion.inherentRating,
       descriptor: "Review risk scoring without controls",
       icon: <AlertTriangle className="w-5 h-5 text-orange-600" />,
       accentColor: "bg-orange-500",
@@ -200,7 +194,7 @@ export const RiskAssessmentOverviewModal = ({
       title: "Control Effectiveness Review",
       riskId: risk.id,
       riskName: risk.title,
-      completion: getCompletionPercentage(risk.assessmentProgress.reviewChallenge),
+      completion: risk.sectionCompletion.controlEffectiveness,
       descriptor: "Evaluate design & operating effectiveness",
       icon: <Shield className="w-5 h-5 text-blue-600" />,
       accentColor: "bg-blue-500",
@@ -219,7 +213,7 @@ export const RiskAssessmentOverviewModal = ({
       title: "Residual Rating Validation",
       riskId: risk.id,
       riskName: risk.title,
-      completion: getCompletionPercentage(risk.assessmentProgress.approve),
+      completion: risk.sectionCompletion.residualRating,
       descriptor: "Validate post-control risk scoring",
       icon: <CheckCircle className="w-5 h-5 text-emerald-600" />,
       accentColor: "bg-emerald-500",
@@ -238,7 +232,7 @@ export const RiskAssessmentOverviewModal = ({
       title: "Risk Treatment Oversight",
       riskId: risk.id,
       riskName: risk.title,
-      completion: getCompletionPercentage(risk.assessmentProgress.approve),
+      completion: risk.sectionCompletion.riskTreatment,
       descriptor: "Review mitigation plans & status",
       icon: <FileText className="w-5 h-5 text-purple-600" />,
       accentColor: "bg-purple-500",
