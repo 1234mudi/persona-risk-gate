@@ -53,7 +53,8 @@ import {
   Minimize2,
   HelpCircle,
   Paperclip,
-  XCircle
+  XCircle,
+  RefreshCw
 } from "lucide-react";
 import {
   Tooltip,
@@ -159,6 +160,8 @@ const RiskAssessmentForm = () => {
   const riskId = searchParams.get("riskId") || "RISK-2025-001";
   const riskName = searchParams.get("riskName") || "KYC Risk Assessment Inadequacy";
   const aiAssessed = searchParams.get("aiAssessed");
+  const mode = searchParams.get("mode"); // 'update-version' for new version creation
+  const isUpdateVersionMode = mode === "update-version";
   
   const [activeTab, setActiveTab] = useState(section);
   const [bottomTab, setBottomTab] = useState("previous-assessments");
@@ -180,6 +183,13 @@ const RiskAssessmentForm = () => {
   const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
   const [editedFields, setEditedFields] = useState<Set<string>>(new Set());
   const [aiAssessedProcessed, setAiAssessedProcessed] = useState(false);
+  
+  // Update version mode - track initial values and changed fields
+  const [updateVersionChangedFields, setUpdateVersionChangedFields] = useState<Set<string>>(new Set());
+  const [initialValuesStored, setInitialValuesStored] = useState(false);
+  const [initialInherentFactors, setInitialInherentFactors] = useState<Factor[]>([]);
+  const [initialControls, setInitialControls] = useState<Control[]>([]);
+  const [initialResidualFactors, setInitialResidualFactors] = useState<Factor[]>([]);
   
   // Real-time collaboration - simulated collaborator positions on fields
   const [collaboratorPositions] = useState<{
@@ -490,6 +500,16 @@ const RiskAssessmentForm = () => {
     }
   }, [section]);
 
+  // Store initial values when in update-version mode
+  useEffect(() => {
+    if (isUpdateVersionMode && !initialValuesStored) {
+      setInitialInherentFactors(JSON.parse(JSON.stringify(inherentFactors)));
+      setInitialControls(JSON.parse(JSON.stringify(controls)));
+      setInitialResidualFactors(JSON.parse(JSON.stringify(residualFactors)));
+      setInitialValuesStored(true);
+    }
+  }, [isUpdateVersionMode, initialValuesStored, inherentFactors, controls, residualFactors]);
+
   // Process AI assessment from popup navigation
   useEffect(() => {
     if (aiAssessed && !aiAssessedProcessed) {
@@ -618,6 +638,41 @@ const RiskAssessmentForm = () => {
   // Helper to check field status
   const isFieldAIFilled = (fieldKey: string) => aiFilledFields.has(fieldKey);
   const isFieldEdited = (fieldKey: string) => editedFields.has(fieldKey);
+  
+  // Update version mode helpers - track when fields change from their initial values
+  const markFieldAsUpdatedVersion = (fieldKey: string) => {
+    if (isUpdateVersionMode) {
+      setUpdateVersionChangedFields(prev => new Set(prev).add(fieldKey));
+    }
+  };
+  
+  const isFieldChangedInUpdateVersion = (fieldKey: string) => {
+    return isUpdateVersionMode && updateVersionChangedFields.has(fieldKey);
+  };
+  
+  // Get original value for tooltip display in update-version mode
+  const getOriginalValue = (type: 'inherent' | 'control' | 'residual', id: string, field: string): string | number | null => {
+    if (!isUpdateVersionMode || !initialValuesStored) return null;
+    
+    if (type === 'inherent') {
+      const factor = initialInherentFactors.find(f => f.id === id);
+      if (!factor) return null;
+      if (field === 'rating') return factor.rating;
+      if (field === 'comments') return factor.comments;
+    } else if (type === 'control') {
+      const control = initialControls.find(c => c.id === id);
+      if (!control) return null;
+      if (field === 'designRating') return control.designRating;
+      if (field === 'operatingRating') return control.operatingRating;
+      if (field === 'testingRating') return control.testingRating;
+    } else if (type === 'residual') {
+      const factor = initialResidualFactors.find(f => f.id === id);
+      if (!factor) return null;
+      if (field === 'rating') return factor.rating;
+      if (field === 'comments') return factor.comments;
+    }
+    return null;
+  };
 
   const handleSendChat = () => {
     if (!chatMessage.trim()) return;
@@ -1180,16 +1235,19 @@ const RiskAssessmentForm = () => {
     toast.success("Assessment submitted for review");
   };
 
-  const updateFactorRating = (factors: Factor[], setFactors: React.Dispatch<React.SetStateAction<Factor[]>>, id: string, rating: number) => {
+  const updateFactorRating = (factors: Factor[], setFactors: React.Dispatch<React.SetStateAction<Factor[]>>, id: string, rating: number, factorType: 'inherent' | 'residual') => {
     setFactors(factors.map(f => f.id === id ? { ...f, rating } : f));
+    markFieldAsUpdatedVersion(`${factorType}-${id}-rating`);
   };
 
-  const updateFactorComment = (factors: Factor[], setFactors: React.Dispatch<React.SetStateAction<Factor[]>>, id: string, comments: string) => {
+  const updateFactorComment = (factors: Factor[], setFactors: React.Dispatch<React.SetStateAction<Factor[]>>, id: string, comments: string, factorType: 'inherent' | 'residual') => {
     setFactors(factors.map(f => f.id === id ? { ...f, comments } : f));
+    markFieldAsUpdatedVersion(`${factorType}-${id}-comments`);
   };
 
   const updateControlRating = (id: string, field: 'designRating' | 'operatingRating' | 'testingRating', value: number) => {
     setControls(controls.map(c => c.id === id ? { ...c, [field]: value } : c));
+    markFieldAsUpdatedVersion(`control-${id}-${field}`);
   };
 
   const getFieldComments = (field: string) => {
@@ -1228,6 +1286,40 @@ const RiskAssessmentForm = () => {
         <CollaboratorBadge cellId={cellId} />
         {children}
       </div>
+    );
+  };
+
+  // Update Version Field Indicator - wraps fields that have been changed in update-version mode
+  const UpdateVersionIndicator = ({ fieldKey, children, originalValue }: { fieldKey: string; children: React.ReactNode; originalValue?: string | number | null }) => {
+    const isChanged = isFieldChangedInUpdateVersion(fieldKey);
+    
+    if (!isUpdateVersionMode) {
+      return <>{children}</>;
+    }
+    
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className={`relative ${isChanged ? 'ring-2 ring-blue-500 ring-offset-1 rounded-md' : ''}`}>
+            {isChanged && (
+              <div className="absolute -top-2 -right-2 z-10">
+                <Badge className="bg-blue-500 text-white text-[9px] px-1.5 py-0 h-4">
+                  Updated
+                </Badge>
+              </div>
+            )}
+            {children}
+          </div>
+        </TooltipTrigger>
+        {isChanged && originalValue !== null && originalValue !== undefined && (
+          <TooltipContent side="top" className="max-w-xs">
+            <p className="text-xs">
+              <span className="text-muted-foreground">Previous value: </span>
+              <span className="font-medium">{String(originalValue)}</span>
+            </p>
+          </TooltipContent>
+        )}
+      </Tooltip>
     );
   };
 
@@ -1336,6 +1428,38 @@ const RiskAssessmentForm = () => {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20">
       {/* Main Content Area */}
       <div className="pr-[52px]">
+        {/* Update Version Banner */}
+        {isUpdateVersionMode && (
+          <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800">
+            <div className="px-4 py-3 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-100 dark:bg-amber-900/50 rounded-lg">
+                  <RefreshCw className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-amber-800 dark:text-amber-200">
+                      New Assessment Version
+                    </span>
+                    <Badge className="bg-amber-500 text-white text-[10px] px-2">
+                      Version 2
+                    </Badge>
+                  </div>
+                  <p className="text-xs text-amber-600 dark:text-amber-400">
+                    Assessment ID: {riskId} • Fields from previous version have been pre-filled. Updated fields will be highlighted in blue.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-300">
+                <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/50 rounded">
+                  <span className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span>= Updated field</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+        
         {/* Header */}
         <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
           <div className="px-4 py-2">
@@ -1803,49 +1927,59 @@ const RiskAssessmentForm = () => {
                           <td className="p-1.5">
                             <CollaborativeCell cellId={`${factorCellId}-rating`}>
                               <CellCommentPopover factorName={factor.name} field="Rating">
-                                <AIFieldIndicator 
-                                  isAIFilled={isFieldAIFilled(`inherent-${factor.id}-rating`)} 
-                                  isEdited={isFieldEdited(`inherent-${factor.id}-rating`)}
+                                <UpdateVersionIndicator 
+                                  fieldKey={`inherent-${factor.id}-rating`}
+                                  originalValue={getOriginalValue('inherent', factor.id, 'rating')}
                                 >
-                                  <Select 
-                                    value={factor.rating.toString()} 
-                                    onValueChange={(v) => {
-                                      markFieldAsEdited(`inherent-${factor.id}-rating`);
-                                      updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v));
-                                    }}
+                                  <AIFieldIndicator 
+                                    isAIFilled={isFieldAIFilled(`inherent-${factor.id}-rating`)} 
+                                    isEdited={isFieldEdited(`inherent-${factor.id}-rating`)}
                                   >
-                                    <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-background border shadow-lg z-50">
-                                      <SelectItem value="0">Not Applicable (N/A)</SelectItem>
-                                      <SelectItem value="1">Very Low (1)</SelectItem>
-                                      <SelectItem value="2">Low (2)</SelectItem>
-                                      <SelectItem value="3">Medium (3)</SelectItem>
-                                      <SelectItem value="4">High (4)</SelectItem>
-                                      <SelectItem value="5">Very High (5)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </AIFieldIndicator>
+                                    <Select 
+                                      value={factor.rating.toString()} 
+                                      onValueChange={(v) => {
+                                        markFieldAsEdited(`inherent-${factor.id}-rating`);
+                                        updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v), 'inherent');
+                                      }}
+                                    >
+                                      <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-background border shadow-lg z-50">
+                                        <SelectItem value="0">Not Applicable (N/A)</SelectItem>
+                                        <SelectItem value="1">Very Low (1)</SelectItem>
+                                        <SelectItem value="2">Low (2)</SelectItem>
+                                        <SelectItem value="3">Medium (3)</SelectItem>
+                                        <SelectItem value="4">High (4)</SelectItem>
+                                        <SelectItem value="5">Very High (5)</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </AIFieldIndicator>
+                                </UpdateVersionIndicator>
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
                           <td className="p-1.5">
                             <CollaborativeCell cellId={`${factorCellId}-comments`}>
                               <CellCommentPopover factorName={factor.name} field="Comments">
-                                <AIFieldIndicator 
-                                  isAIFilled={isFieldAIFilled(`inherent-${factor.id}-comments`)} 
-                                  isEdited={isFieldEdited(`inherent-${factor.id}-comments`)}
+                                <UpdateVersionIndicator 
+                                  fieldKey={`inherent-${factor.id}-comments`}
+                                  originalValue={getOriginalValue('inherent', factor.id, 'comments')}
                                 >
-                                  <Textarea 
-                                    value={factor.comments}
-                                    onChange={(e) => {
-                                      markFieldAsEdited(`inherent-${factor.id}-comments`);
-                                      updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value);
-                                    }}
-                                    className="min-h-[28px] resize-none text-xs"
-                                  />
-                                </AIFieldIndicator>
+                                  <AIFieldIndicator
+                                    isAIFilled={isFieldAIFilled(`inherent-${factor.id}-comments`)} 
+                                    isEdited={isFieldEdited(`inherent-${factor.id}-comments`)}
+                                  >
+                                    <Textarea 
+                                      value={factor.comments}
+                                      onChange={(e) => {
+                                        markFieldAsEdited(`inherent-${factor.id}-comments`);
+                                        updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value, 'inherent');
+                                      }}
+                                      className="min-h-[28px] resize-none text-xs"
+                                    />
+                                  </AIFieldIndicator>
+                                </UpdateVersionIndicator>
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
@@ -2184,7 +2318,7 @@ const RiskAssessmentForm = () => {
                                   value={factor.rating.toString()} 
                                   onValueChange={(v) => {
                                     markFieldAsEdited(`residual-${factor.id}-rating`);
-                                    updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v));
+                                    updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v), 'residual');
                                   }}
                                 >
                                   <SelectTrigger className="w-full bg-background h-7 text-xs">
@@ -2212,7 +2346,7 @@ const RiskAssessmentForm = () => {
                                   value={factor.comments}
                                   onChange={(e) => {
                                     markFieldAsEdited(`residual-${factor.id}-comments`);
-                                    updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value);
+                                    updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value, 'residual');
                                   }}
                                   className="min-h-[28px] resize-none text-xs"
                                 />
