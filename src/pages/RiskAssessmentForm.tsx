@@ -22,6 +22,7 @@ import {
   Shield,
   ChevronRight,
   ChevronLeft,
+  ChevronDown,
   Download,
   Share2,
   History,
@@ -49,7 +50,9 @@ import {
   Calendar,
   Maximize2,
   Minimize2,
-  HelpCircle
+  HelpCircle,
+  Paperclip,
+  XCircle
 } from "lucide-react";
 import {
   Tooltip,
@@ -99,14 +102,22 @@ interface Factor {
   cellComments?: CellComment[];
 }
 
+interface ControlEvidence {
+  name: string;
+  type: string;
+  date: string;
+}
+
 interface Control {
   id: string;
   name: string;
+  description: string;
   type: string;
   owner: string;
   designRating: number;
   operatingRating: number;
   testingRating: number;
+  evidences: ControlEvidence[];
   cellComments?: CellComment[];
 }
 
@@ -382,10 +393,103 @@ const RiskAssessmentForm = () => {
   
   // Controls
   const [controls, setControls] = useState<Control[]>([
-    { id: "CTL-001", name: "KYC Verification Process", type: "Preventive", owner: "Compliance Team", designRating: 3, operatingRating: 2, testingRating: 3, cellComments: [] },
-    { id: "CTL-002", name: "Customer Due Diligence", type: "Detective", owner: "Risk Management", designRating: 4, operatingRating: 3, testingRating: 3, cellComments: [] },
-    { id: "CTL-003", name: "Periodic Review Process", type: "Preventive", owner: "Operations", designRating: 3, operatingRating: 3, testingRating: 2, cellComments: [] },
+    { 
+      id: "CTL-001", 
+      name: "KYC Verification Process", 
+      description: "Verification of customer identity documents and background checks performed during onboarding. Includes document validation, sanction screening, and PEP checks to ensure regulatory compliance.",
+      type: "Preventive", 
+      owner: "Compliance Team", 
+      designRating: 3, 
+      operatingRating: 2, 
+      testingRating: 3, 
+      evidences: [
+        { name: "Process Flow Diagram", type: "Document", date: "2024-10-15" },
+        { name: "Last Audit Report", type: "Report", date: "2024-09-20" },
+        { name: "Testing Documentation", type: "Evidence", date: "2024-11-01" },
+      ],
+      cellComments: [] 
+    },
+    { 
+      id: "CTL-002", 
+      name: "Customer Due Diligence", 
+      description: "Enhanced due diligence procedures for high-risk customers including source of funds verification, ongoing monitoring, and periodic risk reassessment based on customer behavior patterns.",
+      type: "Detective", 
+      owner: "Risk Management", 
+      designRating: 4, 
+      operatingRating: 3, 
+      testingRating: 3, 
+      evidences: [
+        { name: "CDD Checklist Template", type: "Template", date: "2024-08-10" },
+        { name: "Training Completion Records", type: "Record", date: "2024-10-25" },
+      ],
+      cellComments: [] 
+    },
+    { 
+      id: "CTL-003", 
+      name: "Periodic Review Process", 
+      description: "Scheduled review of customer information and risk profiles to identify changes in risk level. Includes annual refresh of KYC documentation and transaction pattern analysis.",
+      type: "Preventive", 
+      owner: "Operations", 
+      designRating: 3, 
+      operatingRating: 3, 
+      testingRating: 2, 
+      evidences: [
+        { name: "Review Schedule 2024", type: "Schedule", date: "2024-01-05" },
+        { name: "Exception Report Q3", type: "Report", date: "2024-10-01" },
+        { name: "Management Sign-off", type: "Approval", date: "2024-10-30" },
+        { name: "Sample Testing Results", type: "Evidence", date: "2024-11-10" },
+      ],
+      cellComments: [] 
+    },
   ]);
+
+  // Expanded controls state for collapsible rows
+  const [expandedControls, setExpandedControls] = useState<Set<string>>(new Set());
+
+  const toggleControlExpanded = (controlId: string) => {
+    setExpandedControls(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(controlId)) {
+        newSet.delete(controlId);
+      } else {
+        newSet.add(controlId);
+      }
+      return newSet;
+    });
+  };
+
+  // Issues data - categorized
+  const [assessmentIssues] = useState([
+    { id: "ISS-2025-001", title: "Control testing failure identified", description: "KYC verification control failed 3 out of 10 sample tests", severity: "High", status: "Open", dateIdentified: "2025-01-15", owner: "Compliance Team" },
+    { id: "ISS-2025-002", title: "Documentation gap in verification process", description: "Missing audit trail for 15% of customer verifications", severity: "Medium", status: "Open", dateIdentified: "2025-01-18", owner: "Operations" },
+  ]);
+
+  const [activeRelatedIssues] = useState([
+    { id: "ISS-2024-015", title: "KYC documentation gaps", description: "Incomplete customer documentation in legacy system records", severity: "High", status: "In Progress", dateIdentified: "2024-08-22", owner: "IT Department" },
+    { id: "ISS-2024-022", title: "Delayed verification process", description: "Average verification time exceeds SLA by 40%", severity: "Medium", status: "Open", dateIdentified: "2024-09-10", owner: "Operations" },
+    { id: "ISS-2024-028", title: "Missing audit trail records", description: "Transaction monitoring gaps identified during internal audit", severity: "High", status: "Open", dateIdentified: "2024-10-05", owner: "Compliance Team" },
+  ]);
+
+  const [closedRelatedIssues] = useState([
+    { id: "ISS-2024-005", title: "Incomplete customer records", description: "Address verification missing for batch of onboarded customers", severity: "Medium", status: "Closed", dateIdentified: "2024-06-15", closedDate: "2024-09-15", owner: "Data Management" },
+    { id: "ISS-2024-011", title: "System access control weakness", description: "Excessive user privileges in KYC system", severity: "High", status: "Closed", dateIdentified: "2024-07-20", closedDate: "2024-11-20", owner: "IT Security" },
+    { id: "ISS-2023-089", title: "Training gap identified", description: "New staff missing AML certification", severity: "Low", status: "Closed", dateIdentified: "2023-11-10", closedDate: "2024-01-10", owner: "HR & Training" },
+  ]);
+
+  // Issues accordion state
+  const [expandedIssueSections, setExpandedIssueSections] = useState<Set<string>>(new Set(['assessment']));
+
+  const toggleIssueSection = (section: string) => {
+    setExpandedIssueSections(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(section)) {
+        newSet.delete(section);
+      } else {
+        newSet.add(section);
+      }
+      return newSet;
+    });
+  };
   
   // Residual Risk Factors
   const [residualFactors, setResidualFactors] = useState<Factor[]>([
@@ -1316,100 +1420,145 @@ const RiskAssessmentForm = () => {
                       {controls.map((control) => {
                         const avg = ((control.designRating + control.operatingRating + control.testingRating) / 3).toFixed(1);
                         const controlCellId = control.id.toLowerCase();
+                        const isExpanded = expandedControls.has(control.id);
                         return (
-                          <tr key={control.id} className="border-t hover:bg-muted/30">
-                            <td className="p-1.5"><Checkbox /></td>
-                            <td className="p-1.5 font-mono text-xs text-blue-600">{control.id}</td>
-                            <td className="p-1.5">
-                              <CellCommentPopover factorName={control.id} field="Name">
-                                <span className="font-medium text-sm">{control.name}</span>
-                              </CellCommentPopover>
-                            </td>
-                            <td className="p-1.5">
-                              <Badge variant="outline" className={`text-xs ${control.type === "Preventive" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}`}>
-                                {control.type}
-                              </Badge>
-                            </td>
-                            <td className="p-1.5 text-xs">{control.owner}</td>
-                            <td className="p-1.5">
-                              <CollaborativeCell cellId={`${controlCellId}-design`}>
-                                <CellCommentPopover factorName={control.id} field="Design">
-                                  <AIFieldIndicator 
-                                    isAIFilled={isFieldAIFilled(`control-${control.id}-design`)} 
-                                    isEdited={isFieldEdited(`control-${control.id}-design`)}
-                                  >
-                                    <Select 
-                                      value={control.designRating.toString()} 
-                                      onValueChange={(v) => {
-                                        markFieldAsEdited(`control-${control.id}-design`);
-                                        updateControlRating(control.id, 'designRating', parseInt(v));
-                                      }}
+                          <>
+                            <tr key={control.id} className="border-t hover:bg-muted/30">
+                              <td className="p-1.5"><Checkbox /></td>
+                              <td className="p-1.5 font-mono text-xs text-blue-600">{control.id}</td>
+                              <td className="p-1.5">
+                                <button 
+                                  className="flex items-center gap-2 text-left hover:text-blue-600 transition-colors group w-full"
+                                  onClick={() => toggleControlExpanded(control.id)}
+                                >
+                                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`} />
+                                  <CellCommentPopover factorName={control.id} field="Name">
+                                    <span className="font-medium text-sm group-hover:text-blue-600">{control.name}</span>
+                                  </CellCommentPopover>
+                                </button>
+                              </td>
+                              <td className="p-1.5">
+                                <Badge variant="outline" className={`text-xs ${control.type === "Preventive" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}`}>
+                                  {control.type}
+                                </Badge>
+                              </td>
+                              <td className="p-1.5 text-xs">{control.owner}</td>
+                              <td className="p-1.5">
+                                <CollaborativeCell cellId={`${controlCellId}-design`}>
+                                  <CellCommentPopover factorName={control.id} field="Design">
+                                    <AIFieldIndicator 
+                                      isAIFilled={isFieldAIFilled(`control-${control.id}-design`)} 
+                                      isEdited={isFieldEdited(`control-${control.id}-design`)}
                                     >
-                                      <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent className="bg-background border shadow-lg z-50">
-                                        {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                      </SelectContent>
-                                    </Select>
-                                  </AIFieldIndicator>
-                                </CellCommentPopover>
-                              </CollaborativeCell>
-                            </td>
-                            <td className="p-1.5">
-                              <CollaborativeCell cellId={`${controlCellId}-operating`}>
-                                <CellCommentPopover factorName={control.id} field="Operating">
-                                  <AIFieldIndicator 
-                                    isAIFilled={isFieldAIFilled(`control-${control.id}-operating`)} 
-                                    isEdited={isFieldEdited(`control-${control.id}-operating`)}
-                                  >
-                                    <Select 
-                                      value={control.operatingRating.toString()} 
-                                      onValueChange={(v) => {
-                                        markFieldAsEdited(`control-${control.id}-operating`);
-                                        updateControlRating(control.id, 'operatingRating', parseInt(v));
-                                      }}
+                                      <Select 
+                                        value={control.designRating.toString()} 
+                                        onValueChange={(v) => {
+                                          markFieldAsEdited(`control-${control.id}-design`);
+                                          updateControlRating(control.id, 'designRating', parseInt(v));
+                                        }}
+                                      >
+                                        <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-background border shadow-lg z-50">
+                                          {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                        </SelectContent>
+                                      </Select>
+                                    </AIFieldIndicator>
+                                  </CellCommentPopover>
+                                </CollaborativeCell>
+                              </td>
+                              <td className="p-1.5">
+                                <CollaborativeCell cellId={`${controlCellId}-operating`}>
+                                  <CellCommentPopover factorName={control.id} field="Operating">
+                                    <AIFieldIndicator 
+                                      isAIFilled={isFieldAIFilled(`control-${control.id}-operating`)} 
+                                      isEdited={isFieldEdited(`control-${control.id}-operating`)}
                                     >
-                                      <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent className="bg-background border shadow-lg z-50">
-                                        {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                      </SelectContent>
-                                    </Select>
-                                  </AIFieldIndicator>
-                                </CellCommentPopover>
-                              </CollaborativeCell>
-                            </td>
-                            <td className="p-1.5">
-                              <CollaborativeCell cellId={`${controlCellId}-testing`}>
-                                <CellCommentPopover factorName={control.id} field="Testing">
-                                  <AIFieldIndicator 
-                                    isAIFilled={isFieldAIFilled(`control-${control.id}-testing`)} 
-                                    isEdited={isFieldEdited(`control-${control.id}-testing`)}
-                                  >
-                                    <Select 
-                                      value={control.testingRating.toString()} 
-                                      onValueChange={(v) => {
-                                        markFieldAsEdited(`control-${control.id}-testing`);
-                                        updateControlRating(control.id, 'testingRating', parseInt(v));
-                                      }}
+                                      <Select 
+                                        value={control.operatingRating.toString()} 
+                                        onValueChange={(v) => {
+                                          markFieldAsEdited(`control-${control.id}-operating`);
+                                          updateControlRating(control.id, 'operatingRating', parseInt(v));
+                                        }}
+                                      >
+                                        <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-background border shadow-lg z-50">
+                                          {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                        </SelectContent>
+                                      </Select>
+                                    </AIFieldIndicator>
+                                  </CellCommentPopover>
+                                </CollaborativeCell>
+                              </td>
+                              <td className="p-1.5">
+                                <CollaborativeCell cellId={`${controlCellId}-testing`}>
+                                  <CellCommentPopover factorName={control.id} field="Testing">
+                                    <AIFieldIndicator 
+                                      isAIFilled={isFieldAIFilled(`control-${control.id}-testing`)} 
+                                      isEdited={isFieldEdited(`control-${control.id}-testing`)}
                                     >
-                                      <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent className="bg-background border shadow-lg z-50">
-                                        {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                      </SelectContent>
-                                    </Select>
-                                  </AIFieldIndicator>
-                                </CellCommentPopover>
-                              </CollaborativeCell>
-                            </td>
-                            <td className="p-1.5">
-                              <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white text-xs`}>{avg}</Badge>
-                            </td>
-                          </tr>
+                                      <Select 
+                                        value={control.testingRating.toString()} 
+                                        onValueChange={(v) => {
+                                          markFieldAsEdited(`control-${control.id}-testing`);
+                                          updateControlRating(control.id, 'testingRating', parseInt(v));
+                                        }}
+                                      >
+                                        <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-background border shadow-lg z-50">
+                                          {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                        </SelectContent>
+                                      </Select>
+                                    </AIFieldIndicator>
+                                  </CellCommentPopover>
+                                </CollaborativeCell>
+                              </td>
+                              <td className="p-1.5">
+                                <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white text-xs`}>{avg}</Badge>
+                              </td>
+                            </tr>
+                            {/* Expandable row for control details */}
+                            {isExpanded && (
+                              <tr key={`${control.id}-expanded`} className="bg-slate-50 dark:bg-slate-900/50">
+                                <td colSpan={9} className="p-0">
+                                  <div className="p-4 border-l-4 border-blue-500 ml-4 mr-4 my-2 bg-background rounded-r-lg shadow-sm animate-fade-in">
+                                    {/* Description */}
+                                    <div className="mb-4">
+                                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Description</h4>
+                                      <p className="text-sm text-foreground leading-relaxed">{control.description}</p>
+                                    </div>
+                                    
+                                    {/* Supporting Evidences */}
+                                    <div>
+                                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
+                                        <Paperclip className="w-3.5 h-3.5" />
+                                        Supporting Evidences ({control.evidences.length})
+                                      </h4>
+                                      <div className="flex flex-wrap gap-2">
+                                        {control.evidences.map((evidence, idx) => (
+                                          <div 
+                                            key={idx} 
+                                            className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border hover:border-blue-300 transition-colors cursor-pointer group"
+                                          >
+                                            <FileText className="w-4 h-4 text-blue-500" />
+                                            <div className="flex flex-col">
+                                              <span className="text-sm font-medium group-hover:text-blue-600">{evidence.name}</span>
+                                              <span className="text-xs text-muted-foreground">{evidence.type} • {evidence.date}</span>
+                                            </div>
+                                          </div>
+                                        ))}
+                                      </div>
+                                    </div>
+                                  </div>
+                                </td>
+                              </tr>
+                            )}
+                          </>
                         );
                       })}
                     </tbody>
@@ -2312,34 +2461,124 @@ const RiskAssessmentForm = () => {
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-lg font-semibold">Related Issues</h3>
-                    <Badge className="bg-red-100 text-red-700">5 Open</Badge>
+                    <Badge className="bg-red-100 text-red-700">{assessmentIssues.length + activeRelatedIssues.length} Open</Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
                     Issues and findings related to this risk assessment.
                   </p>
                 </div>
 
-                <div className="space-y-2">
-                  {[
-                    { id: "ISS-1001", title: "KYC documentation gaps", severity: "High", status: "Open" },
-                    { id: "ISS-1002", title: "Delayed verification", severity: "Medium", status: "In Progress" },
-                    { id: "ISS-1003", title: "Missing audit trail", severity: "High", status: "Open" },
-                    { id: "ISS-1004", title: "Incomplete risk register", severity: "Low", status: "Open" },
-                    { id: "ISS-1005", title: "Control gap identified", severity: "High", status: "Open" },
-                  ].map((issue) => (
-                    <div key={issue.id} className="p-3 border rounded-lg">
-                      <div className="flex items-center justify-between mb-1">
-                        <span className="font-mono text-sm text-blue-600">{issue.id}</span>
-                        <Badge className={
-                          issue.severity === "High" ? "bg-red-100 text-red-700" : 
-                          issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
-                          "bg-slate-100 text-slate-700"
-                        }>{issue.severity}</Badge>
-                      </div>
-                      <p className="text-sm font-medium">{issue.title}</p>
-                      <Badge variant="outline" className="mt-2 text-xs">{issue.status}</Badge>
+                {/* Issues from This Assessment */}
+                <div className="border rounded-lg overflow-hidden">
+                  <button 
+                    className="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors"
+                    onClick={() => toggleIssueSection('assessment')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronDown className={`w-4 h-4 text-blue-600 transition-transform duration-200 ${expandedIssueSections.has('assessment') ? 'rotate-0' : '-rotate-90'}`} />
+                      <AlertCircle className="w-4 h-4 text-blue-600" />
+                      <span className="font-medium text-sm text-blue-800 dark:text-blue-200">Issues identified from this assessment</span>
                     </div>
-                  ))}
+                    <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
+                  </button>
+                  {expandedIssueSections.has('assessment') && (
+                    <div className="p-3 space-y-2 bg-background animate-fade-in">
+                      {assessmentIssues.map((issue) => (
+                        <div key={issue.id} className="p-3 border-l-4 border-l-blue-500 border rounded-lg bg-muted/30">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                            <Badge className={
+                              issue.severity === "High" ? "bg-red-100 text-red-700" : 
+                              issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
+                              "bg-slate-100 text-slate-700"
+                            }>{issue.severity}</Badge>
+                          </div>
+                          <p className="text-sm font-medium">{issue.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs">{issue.status}</Badge>
+                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
+                            <span className="text-xs text-muted-foreground">• {issue.dateIdentified}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Other Active Issues Related to the Risk */}
+                <div className="border rounded-lg overflow-hidden">
+                  <button 
+                    className="w-full flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
+                    onClick={() => toggleIssueSection('active')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronDown className={`w-4 h-4 text-amber-600 transition-transform duration-200 ${expandedIssueSections.has('active') ? 'rotate-0' : '-rotate-90'}`} />
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      <span className="font-medium text-sm text-amber-800 dark:text-amber-200">Other Active Issues related to the Risk</span>
+                    </div>
+                    <Badge className="bg-amber-600 text-white">{activeRelatedIssues.length}</Badge>
+                  </button>
+                  {expandedIssueSections.has('active') && (
+                    <div className="p-3 space-y-2 bg-background animate-fade-in">
+                      {activeRelatedIssues.map((issue) => (
+                        <div key={issue.id} className="p-3 border-l-4 border-l-amber-500 border rounded-lg bg-muted/30">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                            <Badge className={
+                              issue.severity === "High" ? "bg-red-100 text-red-700" : 
+                              issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
+                              "bg-slate-100 text-slate-700"
+                            }>{issue.severity}</Badge>
+                          </div>
+                          <p className="text-sm font-medium">{issue.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs">{issue.status}</Badge>
+                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
+                            <span className="text-xs text-muted-foreground">• {issue.dateIdentified}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Closed Issues Related to the Risk */}
+                <div className="border rounded-lg overflow-hidden">
+                  <button 
+                    className="w-full flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                    onClick={() => toggleIssueSection('closed')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronDown className={`w-4 h-4 text-slate-600 transition-transform duration-200 ${expandedIssueSections.has('closed') ? 'rotate-0' : '-rotate-90'}`} />
+                      <XCircle className="w-4 h-4 text-slate-500" />
+                      <span className="font-medium text-sm text-slate-700 dark:text-slate-300">Closed Issues related to the Risk</span>
+                    </div>
+                    <Badge variant="secondary" className="bg-slate-300 text-slate-700 dark:bg-slate-600 dark:text-slate-200">{closedRelatedIssues.length}</Badge>
+                  </button>
+                  {expandedIssueSections.has('closed') && (
+                    <div className="p-3 space-y-2 bg-background animate-fade-in">
+                      {closedRelatedIssues.map((issue) => (
+                        <div key={issue.id} className="p-3 border-l-4 border-l-slate-400 border rounded-lg bg-muted/20 opacity-80">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-slate-500">{issue.id}</span>
+                            <Badge variant="outline" className="text-xs text-slate-500 border-slate-300">{issue.severity}</Badge>
+                          </div>
+                          <p className="text-sm font-medium text-muted-foreground">{issue.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200">
+                              <Check className="w-3 h-3 mr-1" />
+                              Closed
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">• {issue.closedDate}</span>
+                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
             </ScrollArea>
