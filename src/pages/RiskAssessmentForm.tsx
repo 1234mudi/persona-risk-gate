@@ -1227,6 +1227,16 @@ const RiskAssessmentForm = () => {
                       <Sparkles className="w-4 h-4" />
                       {isAiLoading ? "Analyzing..." : "AI Autofill All"}
                     </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('inherent-rating')}>
+                            <Maximize2 className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Expand to full screen</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(inherentScore).color} text-white`}>
                       <div className="text-xs opacity-90">Score: {inherentScore}</div>
                       <div className="font-semibold text-sm">{getRatingLabel(inherentScore).label}</div>
@@ -1377,6 +1387,16 @@ const RiskAssessmentForm = () => {
                     <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-2 h-8 text-sm" onClick={handleAiAutofill} disabled={isAiLoading}>
                       <Sparkles className="w-3.5 h-3.5" />{isAiLoading ? "Analyzing..." : "AI Autofill All"}
                     </Button>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('control-effectiveness')}>
+                            <Maximize2 className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Expand to full screen</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                     <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(controlScore).color} text-white`}>
                       <div className="text-[10px] opacity-90">Score: {controlScore}</div>
                       <div className="font-semibold text-xs">{getRatingLabel(controlScore).label}</div>
@@ -1583,9 +1603,21 @@ const RiskAssessmentForm = () => {
                     <h2 className="text-base font-semibold">Residual Risk Rating</h2>
                     <p className="text-xs text-muted-foreground">Risk rating after applying controls</p>
                   </div>
-                  <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(residualScore).color} text-white`}>
-                    <div className="text-[10px] opacity-90">Score: {residualScore}</div>
-                    <div className="font-semibold text-xs">{getRatingLabel(residualScore).label}</div>
+                  <div className="flex items-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('residual-rating')}>
+                            <Maximize2 className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Expand to full screen</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(residualScore).color} text-white`}>
+                      <div className="text-[10px] opacity-90">Score: {residualScore}</div>
+                      <div className="font-semibold text-xs">{getRatingLabel(residualScore).label}</div>
+                    </div>
                   </div>
                 </div>
 
@@ -1719,7 +1751,19 @@ const RiskAssessmentForm = () => {
                 <Card className="p-4 lg:col-span-2">
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold">Risk Heat Map</h2>
-                    <Info className="w-4 h-4 text-muted-foreground" />
+                    <div className="flex items-center gap-2">
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('heat-map')}>
+                              <Maximize2 className="w-4 h-4" />
+                            </Button>
+                          </TooltipTrigger>
+                          <TooltipContent>Expand to full screen</TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                      <Info className="w-4 h-4 text-muted-foreground" />
+                    </div>
                   </div>
                   
                   {/* Score Badges */}
@@ -1956,9 +2000,21 @@ const RiskAssessmentForm = () => {
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-lg font-semibold">Risk Treatment Plan</h2>
-                  <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
-                    How the risk will be managed
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('treatment')}>
+                            <Maximize2 className="w-4 h-4" />
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>Expand to full screen</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
+                      How the risk will be managed
+                    </Badge>
+                  </div>
                 </div>
                 <p className="text-sm text-muted-foreground mb-6">
                   In this section, define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.
@@ -2228,6 +2284,418 @@ const RiskAssessmentForm = () => {
                 <div className="bg-red-50 rounded-md p-3 text-sm text-red-700">
                   Losses have increased by 18% compared to the previous assessment period.
                 </div>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Inherent Rating */}
+      <Dialog open={expandedPanel === 'inherent-rating'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-orange-500" />
+              Inherent Risk Rating
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">Calculated based on weighted impact factors</p>
+              <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(inherentScore).color} text-white`}>
+                <div className="text-xs opacity-90">Score: {inherentScore}</div>
+                <div className="font-semibold text-sm">{getRatingLabel(inherentScore).label}</div>
+              </div>
+            </div>
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="p-3 text-left text-sm font-medium">Factor & Description</th>
+                    <th className="p-3 text-left text-sm font-medium w-40">Rating</th>
+                    <th className="p-3 text-left text-sm font-medium">Comments</th>
+                    <th className="p-3 text-left text-sm font-medium w-28">Weightage (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {inherentFactors.map((factor) => (
+                    <tr key={factor.id} className="border-t">
+                      <td className="p-3">
+                        <div className="font-medium">{factor.name}</div>
+                        <div className="text-sm text-muted-foreground">{factor.description}</div>
+                      </td>
+                      <td className="p-3">
+                        <Badge className={`${getRatingLabel(factor.rating).color} text-white`}>
+                          {factor.rating} - {getRatingLabel(factor.rating).label}
+                        </Badge>
+                      </td>
+                      <td className="p-3 text-sm">{factor.comments}</td>
+                      <td className="p-3 text-center font-medium">{factor.weightage}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Control Effectiveness */}
+      <Dialog open={expandedPanel === 'control-effectiveness'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Shield className="w-5 h-5 text-blue-500" />
+              Control Effectiveness Assessment
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
+              <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(controlScore).color} text-white`}>
+                <div className="text-xs opacity-90">Score: {controlScore}</div>
+                <div className="font-semibold text-sm">{getRatingLabel(controlScore).label}</div>
+              </div>
+            </div>
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="p-3 text-left text-sm font-medium">Control ID</th>
+                    <th className="p-3 text-left text-sm font-medium">Control Name</th>
+                    <th className="p-3 text-left text-sm font-medium">Type</th>
+                    <th className="p-3 text-left text-sm font-medium">Owner</th>
+                    <th className="p-3 text-center text-sm font-medium">Design</th>
+                    <th className="p-3 text-center text-sm font-medium">Operating</th>
+                    <th className="p-3 text-center text-sm font-medium">Testing</th>
+                    <th className="p-3 text-center text-sm font-medium">Avg</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {controls.map((control) => {
+                    const avg = ((control.designRating + control.operatingRating + control.testingRating) / 3).toFixed(1);
+                    return (
+                      <tr key={control.id} className="border-t">
+                        <td className="p-3 font-mono text-sm text-blue-600">{control.id}</td>
+                        <td className="p-3">
+                          <div className="font-medium">{control.name}</div>
+                          <div className="text-sm text-muted-foreground">{control.description}</div>
+                        </td>
+                        <td className="p-3"><Badge variant="outline">{control.type}</Badge></td>
+                        <td className="p-3 text-sm">{control.owner}</td>
+                        <td className="p-3 text-center">
+                          <Badge className={`${getRatingLabel(control.designRating).color} text-white`}>{control.designRating}</Badge>
+                        </td>
+                        <td className="p-3 text-center">
+                          <Badge className={`${getRatingLabel(control.operatingRating).color} text-white`}>{control.operatingRating}</Badge>
+                        </td>
+                        <td className="p-3 text-center">
+                          <Badge className={`${getRatingLabel(control.testingRating).color} text-white`}>{control.testingRating}</Badge>
+                        </td>
+                        <td className="p-3 text-center">
+                          <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white`}>{avg}</Badge>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Residual Rating */}
+      <Dialog open={expandedPanel === 'residual-rating'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CheckCircle className="w-5 h-5 text-emerald-500" />
+              Residual Risk Rating
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">Risk rating after applying controls</p>
+              <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(residualScore).color} text-white`}>
+                <div className="text-xs opacity-90">Score: {residualScore}</div>
+                <div className="font-semibold text-sm">{getRatingLabel(residualScore).label}</div>
+              </div>
+            </div>
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="p-3 text-left text-sm font-medium">Factor & Description</th>
+                    <th className="p-3 text-left text-sm font-medium w-40">Rating</th>
+                    <th className="p-3 text-left text-sm font-medium">Comments</th>
+                    <th className="p-3 text-left text-sm font-medium w-28">Weightage (%)</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {residualFactors.map((factor) => (
+                    <tr key={factor.id} className="border-t">
+                      <td className="p-3">
+                        <div className="font-medium">{factor.name}</div>
+                        <div className="text-sm text-muted-foreground">{factor.description}</div>
+                      </td>
+                      <td className="p-3">
+                        <Badge className={`${getRatingLabel(factor.rating).color} text-white`}>
+                          {factor.rating} - {getRatingLabel(factor.rating).label}
+                        </Badge>
+                      </td>
+                      <td className="p-3 text-sm">{factor.comments}</td>
+                      <td className="p-3 text-center font-medium">{factor.weightage}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Heat Map */}
+      <Dialog open={expandedPanel === 'heat-map'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle>Risk Heat Map - Full View</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <Badge className="bg-slate-700 text-white hover:bg-slate-700">Inherent: {inherentScore}</Badge>
+              <ArrowRight className="w-4 h-4 text-muted-foreground" />
+              <Badge className="bg-emerald-500 text-white hover:bg-emerald-500">Residual: {residualScore}</Badge>
+            </div>
+            <div className="relative bg-gradient-to-tr from-emerald-50 via-yellow-50/50 via-60% to-red-100 dark:from-emerald-950/30 dark:via-yellow-950/20 dark:to-red-950/30 rounded-lg p-6 border" style={{ height: '400px' }}>
+              <div className="absolute left-0 top-0 bottom-10 w-10 flex flex-col justify-between items-end pr-3 text-sm text-muted-foreground">
+                <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span><span>0</span>
+              </div>
+              <div className="absolute -left-2 top-1/2 -translate-y-1/2 -rotate-90 text-sm font-medium text-muted-foreground whitespace-nowrap">Residual Risk</div>
+              <div className="absolute left-12 right-6 top-6 bottom-10 border-l-2 border-b-2 border-slate-300 dark:border-slate-600">
+                <div className="absolute left-0 right-0 border-t-2 border-dashed border-emerald-500" style={{ bottom: `${(2/5) * 100}%` }} />
+                <div className="absolute top-0 bottom-0 border-l-2 border-dashed border-emerald-500" style={{ left: `${(2/5) * 100}%` }} />
+                <div 
+                  className="absolute w-8 h-8 rounded-full bg-blue-600 border-3 border-white shadow-lg transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-center"
+                  style={{ left: `${(inherentScore/5) * 100}%`, bottom: `${(residualScore/5) * 100}%`, top: 'auto' }}
+                >
+                  <span className="text-white text-xs font-bold">R</span>
+                </div>
+              </div>
+              <div className="absolute bottom-0 left-12 right-6 flex justify-between text-sm text-muted-foreground">
+                <span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span>
+              </div>
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-sm font-medium text-muted-foreground">Inherent Risk</div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Treatment */}
+      <Dialog open={expandedPanel === 'treatment'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clipboard className="w-5 h-5 text-purple-500" />
+              Risk Treatment Plan
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-muted-foreground">Define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.</p>
+            <div className="border rounded-lg overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-muted/50">
+                  <tr>
+                    <th className="p-3 text-left text-sm font-medium">Action ID</th>
+                    <th className="p-3 text-left text-sm font-medium">Action</th>
+                    <th className="p-3 text-left text-sm font-medium">Owner</th>
+                    <th className="p-3 text-left text-sm font-medium">Due Date</th>
+                    <th className="p-3 text-left text-sm font-medium">Status</th>
+                    <th className="p-3 text-left text-sm font-medium">Progress</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {treatmentPlans.map((plan) => (
+                    <tr key={plan.id} className="border-t">
+                      <td className="p-3 font-mono text-sm text-blue-600">{plan.id}</td>
+                      <td className="p-3">{plan.action}</td>
+                      <td className="p-3 text-sm">{plan.owner}</td>
+                      <td className="p-3 text-sm">{plan.dueDate}</td>
+                      <td className="p-3">
+                        <Badge variant="outline" className={
+                          plan.status === "In Progress" ? "bg-blue-50 text-blue-700 border-blue-200" :
+                          plan.status === "Planned" ? "bg-amber-50 text-amber-700 border-amber-200" :
+                          "bg-slate-50 text-slate-700 border-slate-200"
+                        }>{plan.status}</Badge>
+                      </td>
+                      <td className="p-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-24 h-2 bg-muted rounded-full overflow-hidden">
+                            <div className="h-full bg-blue-500 rounded-full" style={{ width: `${plan.progress}%` }} />
+                          </div>
+                          <span className="text-sm text-muted-foreground">{plan.progress}%</span>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Issues */}
+      <Dialog open={expandedPanel === 'issues'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertTriangle className="w-5 h-5 text-amber-500" />
+              Related Issues
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            {/* Issues from Assessment */}
+            <div>
+              <h3 className="font-medium mb-3 flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 text-blue-600" />
+                Issues identified from this assessment
+                <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
+              </h3>
+              <div className="space-y-2">
+                {assessmentIssues.map((issue) => (
+                  <div key={issue.id} className="p-4 border-l-4 border-l-blue-500 border rounded-lg bg-blue-50/50 dark:bg-blue-950/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                      <Badge className={issue.severity === "High" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}>{issue.severity}</Badge>
+                    </div>
+                    <p className="font-medium">{issue.title}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Active Related Issues */}
+            <div>
+              <h3 className="font-medium mb-3 flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600" />
+                Other Active Issues related to the Risk
+                <Badge className="bg-amber-600 text-white">{activeRelatedIssues.length}</Badge>
+              </h3>
+              <div className="space-y-2">
+                {activeRelatedIssues.map((issue) => (
+                  <div key={issue.id} className="p-4 border-l-4 border-l-amber-500 border rounded-lg bg-amber-50/50 dark:bg-amber-950/20">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                      <Badge className={issue.severity === "High" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}>{issue.severity}</Badge>
+                    </div>
+                    <p className="font-medium">{issue.title}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+            {/* Closed Issues */}
+            <div>
+              <h3 className="font-medium mb-3 flex items-center gap-2">
+                <XCircle className="w-4 h-4 text-slate-500" />
+                Closed Issues related to the Risk
+                <Badge variant="secondary">{closedRelatedIssues.length}</Badge>
+              </h3>
+              <div className="space-y-2">
+                {closedRelatedIssues.map((issue) => (
+                  <div key={issue.id} className="p-4 border-l-4 border-l-slate-400 border rounded-lg bg-slate-50/50 dark:bg-slate-950/20 opacity-80">
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-mono text-sm text-slate-500">{issue.id}</span>
+                      <Badge variant="outline" className="text-slate-500">{issue.severity}</Badge>
+                    </div>
+                    <p className="font-medium text-muted-foreground">{issue.title}</p>
+                    <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Review & Challenge */}
+      <Dialog open={expandedPanel === 'review'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <MessageSquare className="w-5 h-5 text-purple-500" />
+              Review & Challenge
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              {/* Chat Messages */}
+              <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-3">Discussion Thread</h4>
+                <ScrollArea className="h-[300px]">
+                  <div className="space-y-3">
+                    {chatMessages.map((msg) => (
+                      <div key={msg.id} className={`p-3 rounded-lg ${msg.type === 'system' ? 'bg-muted/50 text-center' : 'bg-muted/30'}`}>
+                        {msg.type !== 'system' && (
+                          <div className="flex items-center gap-2 mb-1">
+                            <div className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center text-white text-xs">{msg.avatar}</div>
+                            <span className="font-medium text-sm">{msg.user}</span>
+                            <span className="text-xs text-muted-foreground ml-auto">{msg.timestamp}</span>
+                          </div>
+                        )}
+                        <p className="text-sm">{msg.message}</p>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+              {/* Activity Log */}
+              <div className="border rounded-lg p-4">
+                <h4 className="font-medium mb-3">Activity Log</h4>
+                <ScrollArea className="h-[300px]">
+                  <div className="space-y-3">
+                    {activityLog.map((activity) => (
+                      <div key={activity.id} className="flex items-start gap-3 text-sm">
+                        <div className="w-6 h-6 rounded-full bg-slate-200 flex items-center justify-center text-xs">{activity.avatar}</div>
+                        <div className="flex-1">
+                          <p><span className="font-medium">{activity.user}</span> {activity.action}</p>
+                          <p className="text-xs text-muted-foreground">{activity.timestamp}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </ScrollArea>
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Expanded Panel Dialog for Additional Details */}
+      <Dialog open={expandedPanel === 'details'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
+        <DialogContent className="max-w-3xl max-h-[90vh] overflow-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <FileText className="w-5 h-5 text-slate-500" />
+              Additional Details
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="space-y-2">
+              <label className="text-sm font-medium">Comments</label>
+              <Textarea 
+                placeholder="Add any additional comments or notes related to this risk assessment..."
+                className="min-h-[150px] resize-none"
+              />
+            </div>
+            <Separator />
+            <div className="space-y-3">
+              <h4 className="text-sm font-medium">Attachments</h4>
+              <div className="border-2 border-dashed rounded-lg p-10 text-center hover:bg-muted/50 transition-colors cursor-pointer">
+                <Upload className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                <p className="font-medium">Drop files here or click to upload</p>
+                <p className="text-sm text-muted-foreground">Upload any relevant documents</p>
               </div>
             </div>
           </div>
