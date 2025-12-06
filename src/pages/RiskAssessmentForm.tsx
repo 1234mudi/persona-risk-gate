@@ -305,24 +305,24 @@ const RiskAssessmentForm = () => {
       date: "2024-03-15", 
       score: 2.0, 
       factors: [
-        { name: "Residual Impact", rating: 2, weight: 50 },
-        { name: "Residual Likelihood", rating: 2, weight: 50 },
+        { name: "Impact", rating: 2, weight: 50 },
+        { name: "Likelihood", rating: 2, weight: 50 },
       ]
     },
     { 
       date: "2023-12-10", 
       score: 3.0, 
       factors: [
-        { name: "Residual Impact", rating: 3, weight: 50 },
-        { name: "Residual Likelihood", rating: 3, weight: 50 },
+        { name: "Impact", rating: 3, weight: 50 },
+        { name: "Likelihood", rating: 3, weight: 50 },
       ]
     },
     { 
       date: "2023-09-05", 
       score: 3.5, 
       factors: [
-        { name: "Residual Impact", rating: 3, weight: 50 },
-        { name: "Residual Likelihood", rating: 4, weight: 50 },
+        { name: "Impact", rating: 3, weight: 50 },
+        { name: "Likelihood", rating: 4, weight: 50 },
       ]
     },
   ];
@@ -479,8 +479,8 @@ const RiskAssessmentForm = () => {
   
   // Residual Risk Factors - Impact and Likelihood after controls
   const [residualFactors, setResidualFactors] = useState<Factor[]>([
-    { id: "1", name: "Residual Impact", description: "Potential severity after applying controls (1=Very Low, 2=Low, 3=Medium, 4=High, 5=Extreme)", rating: 2, comments: "Controls have significantly reduced potential impact severity", weightage: 50, cellComments: [] },
-    { id: "2", name: "Residual Likelihood", description: "Probability after controls are applied (1=Rare, 2=Unlikely, 3=Moderate, 4=Likely, 5=Almost Certain)", rating: 2, comments: "Control effectiveness has reduced occurrence probability", weightage: 50, cellComments: [] },
+    { id: "1", name: "Impact", description: "Potential severity after applying controls (1=Very Low, 2=Low, 3=Medium, 4=High, 5=Extreme)", rating: 2, comments: "Controls have significantly reduced potential impact severity", weightage: 50, cellComments: [] },
+    { id: "2", name: "Likelihood", description: "Probability after controls are applied (1=Rare, 2=Unlikely, 3=Moderate, 4=Likely, 5=Almost Certain)", rating: 2, comments: "Control effectiveness has reduced occurrence probability", weightage: 50, cellComments: [] },
   ]);
 
   useEffect(() => {
@@ -1779,15 +1779,15 @@ const RiskAssessmentForm = () => {
                         </div>
                         
                         {/* 5x5 Grid */}
-                        <div className="flex-1">
+                        <div className="flex-1 relative">
                           <div className="grid grid-cols-5 gap-0.5">
                             {/* Row 5 (Likelihood = 5 - Almost Certain) */}
                             {[1,2,3,4,5].map(impact => {
                               const cellColor = impact <= 2 ? 'bg-amber-400' : impact <= 3 ? 'bg-orange-500' : 'bg-red-500';
                               const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
                               const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
-                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
-                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Likelihood')?.rating || 0;
                               const isInherent = inherentImpact === impact && inherentLikelihood === 5;
                               const isResidual = residualImpact === impact && residualLikelihood === 5;
                               return (
@@ -1802,8 +1802,8 @@ const RiskAssessmentForm = () => {
                               const cellColor = impact <= 1 ? 'bg-lime-400' : impact <= 2 ? 'bg-amber-400' : impact <= 4 ? 'bg-orange-500' : 'bg-red-500';
                               const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
                               const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
-                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
-                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Likelihood')?.rating || 0;
                               const isInherent = inherentImpact === impact && inherentLikelihood === 4;
                               const isResidual = residualImpact === impact && residualLikelihood === 4;
                               return (
@@ -1818,8 +1818,8 @@ const RiskAssessmentForm = () => {
                               const cellColor = impact <= 2 ? 'bg-lime-400' : impact <= 3 ? 'bg-amber-400' : 'bg-orange-500';
                               const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
                               const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
-                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
-                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Likelihood')?.rating || 0;
                               const isInherent = inherentImpact === impact && inherentLikelihood === 3;
                               const isResidual = residualImpact === impact && residualLikelihood === 3;
                               return (
@@ -1834,8 +1834,8 @@ const RiskAssessmentForm = () => {
                               const cellColor = impact <= 3 ? 'bg-emerald-400' : impact <= 4 ? 'bg-lime-400' : 'bg-amber-400';
                               const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
                               const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
-                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
-                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Likelihood')?.rating || 0;
                               const isInherent = inherentImpact === impact && inherentLikelihood === 2;
                               const isResidual = residualImpact === impact && residualLikelihood === 2;
                               return (
@@ -1850,8 +1850,8 @@ const RiskAssessmentForm = () => {
                               const cellColor = impact <= 4 ? 'bg-emerald-400' : 'bg-lime-400';
                               const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
                               const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
-                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
-                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Likelihood')?.rating || 0;
                               const isInherent = inherentImpact === impact && inherentLikelihood === 1;
                               const isResidual = residualImpact === impact && residualLikelihood === 1;
                               return (
@@ -1862,6 +1862,58 @@ const RiskAssessmentForm = () => {
                               );
                             })}
                           </div>
+                          {/* Risk Appetite Threshold Line (Orange Dotted) */}
+                          <svg className="absolute inset-0 w-full h-full pointer-events-none" preserveAspectRatio="none">
+                            <line 
+                              x1="0%" y1="40%" 
+                              x2="20%" y2="40%" 
+                              stroke="#f97316" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2"
+                            />
+                            <line 
+                              x1="20%" y1="40%" 
+                              x2="20%" y2="60%" 
+                              stroke="#f97316" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2"
+                            />
+                            <line 
+                              x1="20%" y1="60%" 
+                              x2="40%" y2="60%" 
+                              stroke="#f97316" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2"
+                            />
+                            <line 
+                              x1="40%" y1="60%" 
+                              x2="40%" y2="80%" 
+                              stroke="#f97316" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2"
+                            />
+                            <line 
+                              x1="40%" y1="80%" 
+                              x2="60%" y2="80%" 
+                              stroke="#f97316" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2"
+                            />
+                            <line 
+                              x1="60%" y1="80%" 
+                              x2="60%" y2="100%" 
+                              stroke="#f97316" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2"
+                            />
+                            <line 
+                              x1="60%" y1="100%" 
+                              x2="100%" y2="100%" 
+                              stroke="#f97316" 
+                              strokeWidth="2" 
+                              strokeDasharray="4 2"
+                            />
+                          </svg>
                           
                           {/* X-Axis Values */}
                           <div className="grid grid-cols-5 gap-0.5 mt-1">
@@ -1890,6 +1942,12 @@ const RiskAssessmentForm = () => {
                     <div className="flex items-center gap-1">
                       <div className="w-3 h-3 rounded-full bg-blue-500 border border-white" />
                       <span className="text-muted-foreground">Residual</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <svg className="w-4 h-3">
+                        <line x1="0" y1="6" x2="16" y2="6" stroke="#f97316" strokeWidth="2" strokeDasharray="4 2" />
+                      </svg>
+                      <span className="text-muted-foreground">Risk Appetite</span>
                     </div>
                     <div className="flex items-center gap-1 ml-auto">
                       <div className="w-3 h-3 rounded-sm bg-emerald-400" />
