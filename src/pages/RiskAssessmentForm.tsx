@@ -2136,11 +2136,31 @@ const RiskAssessmentForm = () => {
 
       {/* Expanded Panel Dialog for Previous Assessments */}
       <Dialog open={expandedPanel === 'assessments'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle>{getHistoryTitle()}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <History className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">{getHistoryTitle()}</DialogTitle>
+                  <p className="text-slate-200 text-sm">Full screen view • Historical assessment data</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-white hover:bg-white/20" 
+                onClick={() => setExpandedPanel(null)}
+              >
+                <Minimize2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             {/* Date Selection Badges */}
             <div className="flex flex-wrap gap-2">
               {getHistoryData().map((item, idx) => (
@@ -2225,17 +2245,38 @@ const RiskAssessmentForm = () => {
                 </table>
               )}
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Metrics & Losses */}
       <Dialog open={expandedPanel === 'metrics'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle>Metrics and Losses</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <BarChart3 className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Metrics and Losses</DialogTitle>
+                  <p className="text-amber-100 text-sm">Full screen view • Risk metrics and loss data</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-white hover:bg-white/20" 
+                onClick={() => setExpandedPanel(null)}
+              >
+                <Minimize2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             <p className="text-sm text-muted-foreground">
               Risk metrics and associated loss data help quantify the current risk exposure.
             </p>
@@ -2286,20 +2327,44 @@ const RiskAssessmentForm = () => {
                 </div>
               </div>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Inherent Rating */}
       <Dialog open={expandedPanel === 'inherent-rating'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-orange-500" />
-              Inherent Risk Rating
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Inherent Risk Rating</DialogTitle>
+                  <p className="text-orange-100 text-sm">Full screen view • Calculated based on weighted impact factors</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(inherentScore).color} text-white border border-white/30`}>
+                  <div className="text-xs opacity-90">Score: {inherentScore}</div>
+                  <div className="font-semibold text-sm">{getRatingLabel(inherentScore).label}</div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-white hover:bg-white/20" 
+                  onClick={() => setExpandedPanel(null)}
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">Calculated based on weighted impact factors</p>
               <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(inherentScore).color} text-white`}>
@@ -2336,20 +2401,44 @@ const RiskAssessmentForm = () => {
                 </tbody>
               </table>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Control Effectiveness */}
       <Dialog open={expandedPanel === 'control-effectiveness'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Shield className="w-5 h-5 text-blue-500" />
-              Control Effectiveness Assessment
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-blue-500 to-indigo-600 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <Shield className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Control Effectiveness Assessment</DialogTitle>
+                  <p className="text-blue-100 text-sm">Full screen view • Design, operating effectiveness, and testing results</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(controlScore).color} text-white border border-white/30`}>
+                  <div className="text-xs opacity-90">Score: {controlScore}</div>
+                  <div className="font-semibold text-sm">{getRatingLabel(controlScore).label}</div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-white hover:bg-white/20" 
+                  onClick={() => setExpandedPanel(null)}
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
               <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(controlScore).color} text-white`}>
@@ -2401,20 +2490,44 @@ const RiskAssessmentForm = () => {
                 </tbody>
               </table>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Residual Rating */}
       <Dialog open={expandedPanel === 'residual-rating'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-emerald-500" />
-              Residual Risk Rating
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-emerald-500 to-teal-600 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <CheckCircle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Residual Risk Rating</DialogTitle>
+                  <p className="text-emerald-100 text-sm">Full screen view • Risk rating after applying controls</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(residualScore).color} text-white border border-white/30`}>
+                  <div className="text-xs opacity-90">Score: {residualScore}</div>
+                  <div className="font-semibold text-sm">{getRatingLabel(residualScore).label}</div>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-white hover:bg-white/20" 
+                  onClick={() => setExpandedPanel(null)}
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">Risk rating after applying controls</p>
               <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(residualScore).color} text-white`}>
@@ -2451,22 +2564,45 @@ const RiskAssessmentForm = () => {
                 </tbody>
               </table>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Heat Map */}
       <Dialog open={expandedPanel === 'heat-map'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle>Risk Heat Map - Full View</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex items-center gap-2">
-              <Badge className="bg-slate-700 text-white hover:bg-slate-700">Inherent: {inherentScore}</Badge>
-              <ArrowRight className="w-4 h-4 text-muted-foreground" />
-              <Badge className="bg-emerald-500 text-white hover:bg-emerald-500">Residual: {residualScore}</Badge>
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-violet-500 to-purple-600 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <Target className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Risk Heat Map</DialogTitle>
+                  <p className="text-violet-100 text-sm">Full screen view • Visual risk positioning</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
+                  <Badge className="bg-slate-700 text-white hover:bg-slate-700 border border-white/30">Inherent: {inherentScore}</Badge>
+                  <ArrowRight className="w-4 h-4 text-white/70" />
+                  <Badge className="bg-emerald-500 text-white hover:bg-emerald-500 border border-white/30">Residual: {residualScore}</Badge>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-white hover:bg-white/20" 
+                  onClick={() => setExpandedPanel(null)}
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </Button>
+              </div>
             </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             <div className="relative bg-gradient-to-tr from-emerald-50 via-yellow-50/50 via-60% to-red-100 dark:from-emerald-950/30 dark:via-yellow-950/20 dark:to-red-950/30 rounded-lg p-6 border" style={{ height: '400px' }}>
               <div className="absolute left-0 top-0 bottom-10 w-10 flex flex-col justify-between items-end pr-3 text-sm text-muted-foreground">
                 <span>5</span><span>4</span><span>3</span><span>2</span><span>1</span><span>0</span>
@@ -2487,20 +2623,38 @@ const RiskAssessmentForm = () => {
               </div>
               <div className="absolute bottom-0 left-1/2 -translate-x-1/2 text-sm font-medium text-muted-foreground">Inherent Risk</div>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Treatment */}
       <Dialog open={expandedPanel === 'treatment'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Clipboard className="w-5 h-5 text-purple-500" />
-              Risk Treatment Plan
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <Clipboard className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Risk Treatment Plan</DialogTitle>
+                  <p className="text-purple-100 text-sm">Full screen view • Treatment actions and methodology</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-white hover:bg-white/20" 
+                onClick={() => setExpandedPanel(null)}
+              >
+                <Minimize2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             <p className="text-sm text-muted-foreground">Define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.</p>
             <div className="border rounded-lg overflow-hidden">
               <table className="w-full">
@@ -2541,20 +2695,43 @@ const RiskAssessmentForm = () => {
                 </tbody>
               </table>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Issues */}
       <Dialog open={expandedPanel === 'issues'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-amber-500" />
-              Related Issues
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-amber-500 to-red-500 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <AlertTriangle className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Related Issues</DialogTitle>
+                  <p className="text-amber-100 text-sm">Full screen view • Issues and findings</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                <Badge className="bg-white/20 text-white border border-white/30">
+                  {assessmentIssues.length + activeRelatedIssues.length} Open
+                </Badge>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-8 w-8 text-white hover:bg-white/20" 
+                  onClick={() => setExpandedPanel(null)}
+                >
+                  <Minimize2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-6">
             {/* Issues from Assessment */}
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
@@ -2615,20 +2792,38 @@ const RiskAssessmentForm = () => {
                 ))}
               </div>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Review & Challenge */}
       <Dialog open={expandedPanel === 'review'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <MessageSquare className="w-5 h-5 text-purple-500" />
-              Review & Challenge
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
+        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Review & Challenge</DialogTitle>
+                  <p className="text-indigo-100 text-sm">Full screen view • Discussion and activity</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-white hover:bg-white/20" 
+                onClick={() => setExpandedPanel(null)}
+              >
+                <Minimize2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               {/* Chat Messages */}
               <div className="border rounded-lg p-4">
@@ -2668,20 +2863,38 @@ const RiskAssessmentForm = () => {
                 </ScrollArea>
               </div>
             </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
 
       {/* Expanded Panel Dialog for Additional Details */}
       <Dialog open={expandedPanel === 'details'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-3xl max-h-[90vh] overflow-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <FileText className="w-5 h-5 text-slate-500" />
-              Additional Details
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6">
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0 gap-0">
+          {/* Colored Header Bar */}
+          <div className="bg-gradient-to-r from-slate-600 to-slate-700 px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
+                  <FileText className="w-5 h-5 text-white" />
+                </div>
+                <div>
+                  <DialogTitle className="text-white text-lg">Additional Details</DialogTitle>
+                  <p className="text-slate-200 text-sm">Full screen view • Comments and attachments</p>
+                </div>
+              </div>
+              <Button 
+                variant="ghost" 
+                size="icon" 
+                className="h-8 w-8 text-white hover:bg-white/20" 
+                onClick={() => setExpandedPanel(null)}
+              >
+                <Minimize2 className="w-4 h-4" />
+              </Button>
+            </div>
+          </div>
+          <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
+            <div className="space-y-6">
             <div className="space-y-2">
               <label className="text-sm font-medium">Comments</label>
               <Textarea 
@@ -2697,6 +2910,7 @@ const RiskAssessmentForm = () => {
                 <p className="font-medium">Drop files here or click to upload</p>
                 <p className="text-sm text-muted-foreground">Upload any relevant documents</p>
               </div>
+            </div>
             </div>
           </div>
         </DialogContent>
@@ -2720,7 +2934,10 @@ const RiskAssessmentForm = () => {
                 variant="ghost" 
                 size="icon" 
                 className="h-8 w-8" 
-                onClick={() => setExpandedPanel(rightPanelTab)}
+                onClick={() => {
+                  setExpandedPanel(rightPanelTab);
+                  setRightPanelOpen(false);
+                }}
                 title="Expand to full view"
               >
                 <Maximize2 className="w-4 h-4" />
