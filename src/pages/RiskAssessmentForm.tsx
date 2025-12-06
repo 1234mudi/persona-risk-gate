@@ -246,32 +246,26 @@ const RiskAssessmentForm = () => {
   const inherentHistory = [
     { 
       date: "2024-03-15", 
-      score: 3.7, 
+      score: 3.5, 
       factors: [
-        { name: "Financial Impact", rating: 3, weight: 30 },
-        { name: "Reputational Impact", rating: 4, weight: 25 },
-        { name: "Operational Impact", rating: 3, weight: 20 },
-        { name: "Regulatory Impact", rating: 4, weight: 25 },
+        { name: "Impact", rating: 3, weight: 50 },
+        { name: "Likelihood", rating: 4, weight: 50 },
       ]
     },
     { 
       date: "2023-12-10", 
-      score: 3.9, 
+      score: 4.0, 
       factors: [
-        { name: "Financial Impact", rating: 4, weight: 30 },
-        { name: "Reputational Impact", rating: 4, weight: 25 },
-        { name: "Operational Impact", rating: 3, weight: 20 },
-        { name: "Regulatory Impact", rating: 4, weight: 25 },
+        { name: "Impact", rating: 4, weight: 50 },
+        { name: "Likelihood", rating: 4, weight: 50 },
       ]
     },
     { 
       date: "2023-09-05", 
-      score: 3.5, 
+      score: 3.0, 
       factors: [
-        { name: "Financial Impact", rating: 3, weight: 30 },
-        { name: "Reputational Impact", rating: 3, weight: 25 },
-        { name: "Operational Impact", rating: 4, weight: 20 },
-        { name: "Regulatory Impact", rating: 3, weight: 25 },
+        { name: "Impact", rating: 3, weight: 50 },
+        { name: "Likelihood", rating: 3, weight: 50 },
       ]
     },
   ];
@@ -281,27 +275,27 @@ const RiskAssessmentForm = () => {
       date: "2024-03-15", 
       score: 2.8, 
       controls: [
-        { name: "KYC Verification Process", design: 3, operating: 2, testing: 3 },
-        { name: "Customer Due Diligence", design: 4, operating: 3, testing: 3 },
-        { name: "Periodic Review Process", design: 3, operating: 3, testing: 2 },
+        { name: "KYC Verification Process", design: 3, operating: 2, overall: 3 },
+        { name: "Customer Due Diligence", design: 4, operating: 3, overall: 3 },
+        { name: "Periodic Review Process", design: 3, operating: 3, overall: 2 },
       ]
     },
     { 
       date: "2023-12-10", 
       score: 2.5, 
       controls: [
-        { name: "KYC Verification Process", design: 2, operating: 2, testing: 3 },
-        { name: "Customer Due Diligence", design: 3, operating: 3, testing: 2 },
-        { name: "Periodic Review Process", design: 2, operating: 3, testing: 2 },
+        { name: "KYC Verification Process", design: 2, operating: 2, overall: 3 },
+        { name: "Customer Due Diligence", design: 3, operating: 3, overall: 2 },
+        { name: "Periodic Review Process", design: 2, operating: 3, overall: 2 },
       ]
     },
     { 
       date: "2023-09-05", 
       score: 3.0, 
       controls: [
-        { name: "KYC Verification Process", design: 3, operating: 3, testing: 3 },
-        { name: "Customer Due Diligence", design: 3, operating: 3, testing: 3 },
-        { name: "Periodic Review Process", design: 3, operating: 3, testing: 3 },
+        { name: "KYC Verification Process", design: 3, operating: 3, overall: 3 },
+        { name: "Customer Due Diligence", design: 3, operating: 3, overall: 3 },
+        { name: "Periodic Review Process", design: 3, operating: 3, overall: 3 },
       ]
     },
   ];
@@ -309,32 +303,26 @@ const RiskAssessmentForm = () => {
   const residualHistory = [
     { 
       date: "2024-03-15", 
-      score: 2.4, 
+      score: 2.0, 
       factors: [
-        { name: "Post-Control Financial", rating: 2, weight: 30 },
-        { name: "Post-Control Reputational", rating: 3, weight: 25 },
-        { name: "Post-Control Operational", rating: 2, weight: 20 },
-        { name: "Post-Control Regulatory", rating: 3, weight: 25 },
+        { name: "Residual Impact", rating: 2, weight: 50 },
+        { name: "Residual Likelihood", rating: 2, weight: 50 },
       ]
     },
     { 
       date: "2023-12-10", 
-      score: 3.2, 
+      score: 3.0, 
       factors: [
-        { name: "Post-Control Financial", rating: 3, weight: 30 },
-        { name: "Post-Control Reputational", rating: 3, weight: 25 },
-        { name: "Post-Control Operational", rating: 3, weight: 20 },
-        { name: "Post-Control Regulatory", rating: 4, weight: 25 },
+        { name: "Residual Impact", rating: 3, weight: 50 },
+        { name: "Residual Likelihood", rating: 3, weight: 50 },
       ]
     },
     { 
       date: "2023-09-05", 
       score: 3.5, 
       factors: [
-        { name: "Post-Control Financial", rating: 3, weight: 30 },
-        { name: "Post-Control Reputational", rating: 4, weight: 25 },
-        { name: "Post-Control Operational", rating: 3, weight: 20 },
-        { name: "Post-Control Regulatory", rating: 4, weight: 25 },
+        { name: "Residual Impact", rating: 3, weight: 50 },
+        { name: "Residual Likelihood", rating: 4, weight: 50 },
       ]
     },
   ];
@@ -383,12 +371,10 @@ const RiskAssessmentForm = () => {
     ]
   });
   
-  // Inherent Risk Factors
+  // Inherent Risk Factors - Impact and Likelihood based
   const [inherentFactors, setInherentFactors] = useState<Factor[]>([
-    { id: "1", name: "Financial Impact", description: "Impact on financial performance", rating: 3, comments: "Significant financial impact due to penalties and remediation costs", weightage: 30, cellComments: [] },
-    { id: "2", name: "Reputational Impact", description: "Impact on brand and reputation", rating: 4, comments: "Major reputational damage if regulatory issues become public", weightage: 25, cellComments: [] },
-    { id: "3", name: "Operational Impact", description: "Impact on day-to-day operations", rating: 3, comments: "Operational disruptions due to compliance remediation activities", weightage: 20, cellComments: [] },
-    { id: "4", name: "Regulatory Impact", description: "Impact related to regulatory oversight", rating: 4, comments: "High regulatory scrutiny and potential for enforcement actions", weightage: 25, cellComments: [] },
+    { id: "1", name: "Impact", description: "Potential severity of consequences if the risk materializes (1=Very Low, 2=Low, 3=Medium, 4=High, 5=Extreme)", rating: 4, comments: "High impact expected due to significant financial penalties and regulatory scrutiny", weightage: 50, cellComments: [] },
+    { id: "2", name: "Likelihood", description: "Probability of the risk occurring (1=Rare, 2=Unlikely, 3=Moderate, 4=Likely, 5=Almost Certain)", rating: 3, comments: "Moderate likelihood based on current control gaps and industry trends", weightage: 50, cellComments: [] },
   ]);
   
   // Controls
@@ -491,12 +477,10 @@ const RiskAssessmentForm = () => {
     });
   };
   
-  // Residual Risk Factors
+  // Residual Risk Factors - Impact and Likelihood after controls
   const [residualFactors, setResidualFactors] = useState<Factor[]>([
-    { id: "1", name: "Post-Control Financial Impact", description: "Financial impact after controls", rating: 2, comments: "Reduced financial exposure with controls in place", weightage: 30, cellComments: [] },
-    { id: "2", name: "Post-Control Reputational Impact", description: "Reputational impact after controls", rating: 2, comments: "Better managed reputational risk", weightage: 25, cellComments: [] },
-    { id: "3", name: "Post-Control Operational Impact", description: "Operational impact after controls", rating: 2, comments: "Streamlined operations with controls", weightage: 20, cellComments: [] },
-    { id: "4", name: "Post-Control Regulatory Impact", description: "Regulatory impact after controls", rating: 2, comments: "Improved compliance posture", weightage: 25, cellComments: [] },
+    { id: "1", name: "Residual Impact", description: "Potential severity after applying controls (1=Very Low, 2=Low, 3=Medium, 4=High, 5=Extreme)", rating: 2, comments: "Controls have significantly reduced potential impact severity", weightage: 50, cellComments: [] },
+    { id: "2", name: "Residual Likelihood", description: "Probability after controls are applied (1=Rare, 2=Unlikely, 3=Moderate, 4=Likely, 5=Almost Certain)", rating: 2, comments: "Control effectiveness has reduced occurrence probability", weightage: 50, cellComments: [] },
   ]);
 
   useEffect(() => {
@@ -1747,146 +1731,181 @@ const RiskAssessmentForm = () => {
             {/* Heat Map Tab */}
             <TabsContent value="heat-map" className="space-y-4">
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-                {/* Heat Map Chart */}
-                <Card className="p-4 lg:col-span-2">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold">Risk Heat Map</h2>
+                {/* Heat Map Chart - Compact 5x5 Grid */}
+                <Card className="p-3 lg:col-span-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <h2 className="text-base font-semibold">Risk Heat Map</h2>
                     <div className="flex items-center gap-2">
                       <TooltipProvider>
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('heat-map')}>
-                              <Maximize2 className="w-4 h-4" />
+                            <Button variant="ghost" size="icon" className="h-7 w-7" onClick={() => setExpandedPanel('heat-map')}>
+                              <Maximize2 className="w-3.5 h-3.5" />
                             </Button>
                           </TooltipTrigger>
                           <TooltipContent>Expand to full screen</TooltipContent>
                         </Tooltip>
                       </TooltipProvider>
-                      <Info className="w-4 h-4 text-muted-foreground" />
                     </div>
                   </div>
                   
-                  {/* Score Badges */}
-                  <div className="flex items-center gap-2 mb-4">
-                    <Badge className="bg-slate-700 text-white hover:bg-slate-700">
+                  {/* Score Badges - Compact */}
+                  <div className="flex items-center gap-2 mb-2 text-xs">
+                    <Badge className="bg-slate-700 text-white hover:bg-slate-700 text-[10px] px-1.5 py-0.5">
                       Inherent: {inherentScore}
                     </Badge>
-                    <ArrowRight className="w-4 h-4 text-muted-foreground" />
-                    <Badge className="bg-emerald-500 text-white hover:bg-emerald-500">
+                    <ArrowRight className="w-3 h-3 text-muted-foreground" />
+                    <Badge className="bg-emerald-500 text-white hover:bg-emerald-500 text-[10px] px-1.5 py-0.5">
                       Residual: {residualScore}
                     </Badge>
-                    <div className="ml-auto flex items-center gap-2">
-                      <div className="w-3 h-3 rounded-full bg-emerald-500" />
-                      <span className="text-sm text-muted-foreground">Appetite Threshold: 2.0</span>
-                    </div>
                   </div>
                   
-                  {/* Heat Map Scatter Plot */}
-                  <div className="relative bg-gradient-to-tr from-emerald-50 via-yellow-50/50 via-60% to-red-100 dark:from-emerald-950/30 dark:via-yellow-950/20 dark:to-red-950/30 rounded-lg p-4 border">
-                    {/* Risk Appetite Threshold Label */}
-                    <div className="absolute top-2 left-1/2 -translate-x-1/2 text-xs text-emerald-600 dark:text-emerald-400 font-medium">
-                      Risk Appetite Threshold
+                  {/* 5x5 Heat Map Grid */}
+                  <div className="flex gap-2">
+                    {/* Y-Axis Label */}
+                    <div className="flex flex-col justify-center items-center w-6">
+                      <span className="text-[10px] font-medium text-muted-foreground [writing-mode:vertical-rl] rotate-180">Likelihood</span>
                     </div>
                     
-                    {/* Chart Area */}
-                    <div className="relative" style={{ height: '280px' }}>
-                      {/* Y-Axis */}
-                      <div className="absolute left-0 top-0 bottom-8 w-8 flex flex-col justify-between items-end pr-2 text-xs text-muted-foreground">
-                        <span>5</span>
-                        <span>4</span>
-                        <span>3</span>
-                        <span>2</span>
-                        <span>1</span>
-                        <span>0</span>
-                      </div>
-                      
-                      {/* Y-Axis Label */}
-                      <div className="absolute -left-2 top-1/2 -translate-y-1/2 -rotate-90 text-xs font-medium text-muted-foreground whitespace-nowrap">
-                        Residual Risk
-                      </div>
-                      
-                      {/* Plot Area */}
-                      <div className="absolute left-10 right-4 top-4 bottom-8 border-l-2 border-b-2 border-slate-300 dark:border-slate-600">
-                        {/* Horizontal Threshold Line */}
-                        <div 
-                          className="absolute left-0 right-0 border-t-2 border-dashed border-emerald-500"
-                          style={{ bottom: `${(2/5) * 100}%` }}
-                        />
+                    <div className="flex-1">
+                      {/* Y-Axis Values + Grid */}
+                      <div className="flex gap-1">
+                        <div className="flex flex-col justify-around w-16 text-[9px] text-muted-foreground pr-1">
+                          <span className="text-right leading-tight">5 - Almost Certain</span>
+                          <span className="text-right leading-tight">4 - Likely</span>
+                          <span className="text-right leading-tight">3 - Moderate</span>
+                          <span className="text-right leading-tight">2 - Unlikely</span>
+                          <span className="text-right leading-tight">1 - Rare</span>
+                        </div>
                         
-                        {/* Vertical Threshold Line */}
-                        <div 
-                          className="absolute top-0 bottom-0 border-l-2 border-dashed border-emerald-500"
-                          style={{ left: `${(2/5) * 100}%` }}
-                        />
-                        
-                        {/* Previous Assessment Point (gray) */}
-                        <div 
-                          className="absolute w-6 h-6 rounded-full bg-slate-400 border-2 border-white shadow-md transform -translate-x-1/2 -translate-y-1/2"
-                          style={{ 
-                            left: `${(3.5/5) * 100}%`, 
-                            bottom: `${(3/5) * 100}%`,
-                            top: 'auto'
-                          }}
-                        />
-                        
-                        {/* Dotted line connecting previous to current */}
-                        <svg className="absolute inset-0 w-full h-full overflow-visible" style={{ pointerEvents: 'none' }}>
-                          <line 
-                            x1={`${(3.5/5) * 100}%`} 
-                            y1={`${100 - (3/5) * 100}%`}
-                            x2={`${(inherentScore/5) * 100}%`} 
-                            y2={`${100 - (residualScore/5) * 100}%`}
-                            stroke="#94a3b8" 
-                            strokeWidth="2" 
-                            strokeDasharray="4 4"
-                          />
-                        </svg>
-                        
-                        {/* Current Assessment Point (blue) */}
-                        <div 
-                          className="absolute w-8 h-8 rounded-full bg-blue-500 border-4 border-blue-200 shadow-lg transform -translate-x-1/2 -translate-y-1/2 z-10"
-                          style={{ 
-                            left: `${(inherentScore/5) * 100}%`, 
-                            bottom: `${(residualScore/5) * 100}%`,
-                            top: 'auto'
-                          }}
-                        />
-                      </div>
-                      
-                      {/* X-Axis */}
-                      <div className="absolute left-10 right-4 bottom-0 flex justify-between text-xs text-muted-foreground">
-                        <span>0</span>
-                        <span>1</span>
-                        <span>2</span>
-                        <span>3</span>
-                        <span>4</span>
-                        <span>5</span>
-                      </div>
-                      
-                      {/* X-Axis Label */}
-                      <div className="absolute bottom-[-20px] left-1/2 -translate-x-1/2 text-xs font-medium text-muted-foreground">
-                        Inherent Risk
+                        {/* 5x5 Grid */}
+                        <div className="flex-1">
+                          <div className="grid grid-cols-5 gap-0.5">
+                            {/* Row 5 (Likelihood = 5 - Almost Certain) */}
+                            {[1,2,3,4,5].map(impact => {
+                              const cellColor = impact <= 2 ? 'bg-amber-400' : impact <= 3 ? 'bg-orange-500' : 'bg-red-500';
+                              const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const isInherent = inherentImpact === impact && inherentLikelihood === 5;
+                              const isResidual = residualImpact === impact && residualLikelihood === 5;
+                              return (
+                                <div key={`5-${impact}`} className={`h-8 ${cellColor} rounded-sm flex items-center justify-center relative`}>
+                                  {isInherent && <div className="w-4 h-4 rounded-full bg-slate-800 border-2 border-white shadow-md z-10" />}
+                                  {isResidual && <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-md z-10" />}
+                                </div>
+                              );
+                            })}
+                            {/* Row 4 (Likelihood = 4 - Likely) */}
+                            {[1,2,3,4,5].map(impact => {
+                              const cellColor = impact <= 1 ? 'bg-lime-400' : impact <= 2 ? 'bg-amber-400' : impact <= 4 ? 'bg-orange-500' : 'bg-red-500';
+                              const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const isInherent = inherentImpact === impact && inherentLikelihood === 4;
+                              const isResidual = residualImpact === impact && residualLikelihood === 4;
+                              return (
+                                <div key={`4-${impact}`} className={`h-8 ${cellColor} rounded-sm flex items-center justify-center relative`}>
+                                  {isInherent && <div className="w-4 h-4 rounded-full bg-slate-800 border-2 border-white shadow-md z-10" />}
+                                  {isResidual && <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-md z-10" />}
+                                </div>
+                              );
+                            })}
+                            {/* Row 3 (Likelihood = 3 - Moderate) */}
+                            {[1,2,3,4,5].map(impact => {
+                              const cellColor = impact <= 2 ? 'bg-lime-400' : impact <= 3 ? 'bg-amber-400' : 'bg-orange-500';
+                              const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const isInherent = inherentImpact === impact && inherentLikelihood === 3;
+                              const isResidual = residualImpact === impact && residualLikelihood === 3;
+                              return (
+                                <div key={`3-${impact}`} className={`h-8 ${cellColor} rounded-sm flex items-center justify-center relative`}>
+                                  {isInherent && <div className="w-4 h-4 rounded-full bg-slate-800 border-2 border-white shadow-md z-10" />}
+                                  {isResidual && <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-md z-10" />}
+                                </div>
+                              );
+                            })}
+                            {/* Row 2 (Likelihood = 2 - Unlikely) */}
+                            {[1,2,3,4,5].map(impact => {
+                              const cellColor = impact <= 3 ? 'bg-emerald-400' : impact <= 4 ? 'bg-lime-400' : 'bg-amber-400';
+                              const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const isInherent = inherentImpact === impact && inherentLikelihood === 2;
+                              const isResidual = residualImpact === impact && residualLikelihood === 2;
+                              return (
+                                <div key={`2-${impact}`} className={`h-8 ${cellColor} rounded-sm flex items-center justify-center relative`}>
+                                  {isInherent && <div className="w-4 h-4 rounded-full bg-slate-800 border-2 border-white shadow-md z-10" />}
+                                  {isResidual && <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-md z-10" />}
+                                </div>
+                              );
+                            })}
+                            {/* Row 1 (Likelihood = 1 - Rare) */}
+                            {[1,2,3,4,5].map(impact => {
+                              const cellColor = impact <= 4 ? 'bg-emerald-400' : 'bg-lime-400';
+                              const inherentImpact = inherentFactors.find(f => f.name === 'Impact')?.rating || 0;
+                              const inherentLikelihood = inherentFactors.find(f => f.name === 'Likelihood')?.rating || 0;
+                              const residualImpact = residualFactors.find(f => f.name === 'Residual Impact')?.rating || 0;
+                              const residualLikelihood = residualFactors.find(f => f.name === 'Residual Likelihood')?.rating || 0;
+                              const isInherent = inherentImpact === impact && inherentLikelihood === 1;
+                              const isResidual = residualImpact === impact && residualLikelihood === 1;
+                              return (
+                                <div key={`1-${impact}`} className={`h-8 ${cellColor} rounded-sm flex items-center justify-center relative`}>
+                                  {isInherent && <div className="w-4 h-4 rounded-full bg-slate-800 border-2 border-white shadow-md z-10" />}
+                                  {isResidual && <div className="w-4 h-4 rounded-full bg-blue-500 border-2 border-white shadow-md z-10" />}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          
+                          {/* X-Axis Values */}
+                          <div className="grid grid-cols-5 gap-0.5 mt-1">
+                            <span className="text-[9px] text-muted-foreground text-center">1<br/>Very Low</span>
+                            <span className="text-[9px] text-muted-foreground text-center">2<br/>Low</span>
+                            <span className="text-[9px] text-muted-foreground text-center">3<br/>Medium</span>
+                            <span className="text-[9px] text-muted-foreground text-center">4<br/>High</span>
+                            <span className="text-[9px] text-muted-foreground text-center">5<br/>Extreme</span>
+                          </div>
+                          
+                          {/* X-Axis Label */}
+                          <div className="text-center mt-1">
+                            <span className="text-[10px] font-medium text-muted-foreground">Impact</span>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
                   
-                  {/* Risk Zone Legend */}
-                  <div className="grid grid-cols-2 gap-3 mt-4">
-                    <div className="p-3 rounded-lg bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800">
-                      <div className="font-medium text-sm">Very Low Risk Zone</div>
-                      <div className="text-xs text-muted-foreground">Score: 0-2</div>
+                  {/* Compact Legend */}
+                  <div className="flex items-center gap-3 mt-2 pt-2 border-t text-[10px]">
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-slate-800 border border-white" />
+                      <span className="text-muted-foreground">Inherent</span>
                     </div>
-                    <div className="p-3 rounded-lg bg-lime-50 dark:bg-lime-950/30 border border-lime-200 dark:border-lime-800">
-                      <div className="font-medium text-sm">Low Risk Zone</div>
-                      <div className="text-xs text-muted-foreground">Score: 2-3</div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-full bg-blue-500 border border-white" />
+                      <span className="text-muted-foreground">Residual</span>
                     </div>
-                    <div className="p-3 rounded-lg bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800">
-                      <div className="font-medium text-sm">Medium Risk Zone</div>
-                      <div className="text-xs text-muted-foreground">Score: 3-4</div>
+                    <div className="flex items-center gap-1 ml-auto">
+                      <div className="w-3 h-3 rounded-sm bg-emerald-400" />
+                      <span>Low</span>
                     </div>
-                    <div className="p-3 rounded-lg bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800">
-                      <div className="font-medium text-sm">High Risk Zone</div>
-                      <div className="text-xs text-muted-foreground">Score: 4-5</div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-sm bg-amber-400" />
+                      <span>Medium</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-sm bg-orange-500" />
+                      <span>High</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 rounded-sm bg-red-500" />
+                      <span>Critical</span>
                     </div>
                   </div>
                 </Card>
@@ -2198,9 +2217,9 @@ const RiskAssessmentForm = () => {
                   <thead>
                     <tr className="bg-muted/50 border-b">
                       <th className="text-left px-4 py-3 font-medium text-muted-foreground">Control</th>
-                      <th className="text-center px-4 py-3 font-medium text-muted-foreground">Design</th>
-                      <th className="text-center px-4 py-3 font-medium text-muted-foreground">Operating</th>
-                      <th className="text-center px-4 py-3 font-medium text-muted-foreground">Testing</th>
+                      <th className="text-center px-4 py-3 font-medium text-muted-foreground w-28">Design</th>
+                      <th className="text-center px-4 py-3 font-medium text-muted-foreground w-28">Operating</th>
+                      <th className="text-center px-4 py-3 font-medium text-muted-foreground w-28">Overall</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -2214,7 +2233,7 @@ const RiskAssessmentForm = () => {
                           <Badge variant="outline" className={getHistoryRatingBadge(control.operating).color}>{control.operating}</Badge>
                         </td>
                         <td className="px-4 py-3 text-center">
-                          <Badge variant="outline" className={getHistoryRatingBadge(control.testing).color}>{control.testing}</Badge>
+                          <Badge variant="outline" className={getHistoryRatingBadge(control.overall).color}>{control.overall}</Badge>
                         </td>
                       </tr>
                     ))}
