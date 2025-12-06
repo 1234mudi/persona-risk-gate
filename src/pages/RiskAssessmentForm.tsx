@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import pptxgen from "pptxgenjs";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { 
   ArrowLeft, 
@@ -724,8 +725,72 @@ const RiskAssessmentForm = () => {
     return riskName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
   };
 
+  // Generate Heat Map HTML visualization
+  const generateHeatMapHTML = (inherentImpact: number, inherentLikelihood: number, residualImpact: number, residualLikelihood: number) => {
+    const getCellColor = (row: number, col: number) => {
+      // row is impact (1-5 from bottom), col is likelihood (1-5 from left)
+      const riskScore = row * col;
+      if (riskScore >= 15) return '#ef4444'; // High - Red
+      if (riskScore >= 8) return '#f59e0b'; // Medium - Amber
+      if (riskScore >= 4) return '#eab308'; // Low-Medium - Yellow
+      return '#22c55e'; // Low - Green
+    };
+
+    let heatMapHTML = `
+      <div style="margin: 20px 0;">
+        <table style="border-collapse: collapse; width: 350px;">
+          <tr>
+            <td style="width: 30px; border: none; vertical-align: middle; text-align: center; transform: rotate(-90deg); font-weight: bold; color: #374151;">Impact</td>
+            <td style="border: none;">
+              <table style="border-collapse: collapse; width: 100%;">`;
+    
+    // Build 5x5 grid (row 5 at top, row 1 at bottom)
+    for (let row = 5; row >= 1; row--) {
+      heatMapHTML += '<tr>';
+      for (let col = 1; col <= 5; col++) {
+        const isInherent = row === inherentImpact && col === inherentLikelihood;
+        const isResidual = row === residualImpact && col === residualLikelihood;
+        const cellColor = getCellColor(row, col);
+        let marker = '';
+        if (isInherent && isResidual) {
+          marker = '<span style="font-weight: bold; color: #1a1a1a;">I/R</span>';
+        } else if (isInherent) {
+          marker = '<span style="font-weight: bold; color: #1a1a1a; background: white; padding: 2px 6px; border-radius: 4px;">I</span>';
+        } else if (isResidual) {
+          marker = '<span style="font-weight: bold; color: #1a1a1a; background: white; padding: 2px 6px; border-radius: 4px;">R</span>';
+        }
+        heatMapHTML += `<td style="width: 50px; height: 50px; background: ${cellColor}; border: 1px solid #d1d5db; text-align: center; vertical-align: middle;">${marker}</td>`;
+      }
+      heatMapHTML += '</tr>';
+    }
+    
+    heatMapHTML += `
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="border: none;"></td>
+            <td style="border: none; text-align: center; font-weight: bold; color: #374151; padding-top: 8px;">Likelihood</td>
+          </tr>
+        </table>
+        <div style="margin-top: 10px; font-size: 12px; color: #6b7280;">
+          <span style="background: white; padding: 2px 6px; border: 1px solid #d1d5db; margin-right: 10px;"><strong>I</strong> = Inherent</span>
+          <span style="background: white; padding: 2px 6px; border: 1px solid #d1d5db;"><strong>R</strong> = Residual</span>
+        </div>
+      </div>`;
+    
+    return heatMapHTML;
+  };
+
   // Generate PDF content
   const generatePDF = (data: ReturnType<typeof prepareExportData>) => {
+    const heatMapHTML = generateHeatMapHTML(
+      data.sections.heatMap.inherentPosition.impact,
+      data.sections.heatMap.inherentPosition.likelihood,
+      data.sections.heatMap.residualPosition.impact,
+      data.sections.heatMap.residualPosition.likelihood
+    );
+
     const content = `
       <html>
       <head>
@@ -773,6 +838,7 @@ const RiskAssessmentForm = () => {
         <h2>4. ${data.sections.heatMap.title}</h2>
         <p><strong>Inherent Position:</strong> Impact ${data.sections.heatMap.inherentPosition.impact}, Likelihood ${data.sections.heatMap.inherentPosition.likelihood}</p>
         <p><strong>Residual Position:</strong> Impact ${data.sections.heatMap.residualPosition.impact}, Likelihood ${data.sections.heatMap.residualPosition.likelihood}</p>
+        ${heatMapHTML}
         <div class="summary"><strong>Summary:</strong> ${data.sections.heatMap.summary}</div>
         
         <h2>5. ${data.sections.issues.title}</h2>
@@ -792,6 +858,34 @@ const RiskAssessmentForm = () => {
       printWindow.document.close();
       printWindow.print();
     }
+  };
+
+  // Generate ASCII Heat Map for Excel
+  const generateHeatMapASCII = (inherentImpact: number, inherentLikelihood: number, residualImpact: number, residualLikelihood: number) => {
+    let ascii = '\nHEAT MAP VISUALIZATION\n';
+    ascii += '     L1   L2   L3   L4   L5\n';
+    ascii += '    +----+----+----+----+----+\n';
+    
+    for (let row = 5; row >= 1; row--) {
+      ascii += ` I${row} |`;
+      for (let col = 1; col <= 5; col++) {
+        const isInherent = row === inherentImpact && col === inherentLikelihood;
+        const isResidual = row === residualImpact && col === residualLikelihood;
+        if (isInherent && isResidual) {
+          ascii += 'I/R |';
+        } else if (isInherent) {
+          ascii += ' I  |';
+        } else if (isResidual) {
+          ascii += ' R  |';
+        } else {
+          ascii += '    |';
+        }
+      }
+      ascii += '\n    +----+----+----+----+----+\n';
+    }
+    ascii += 'Legend: I = Inherent Position, R = Residual Position\n';
+    ascii += 'Axis: L = Likelihood (1-5), I = Impact (1-5)\n';
+    return ascii;
   };
 
   // Generate Excel/CSV content
@@ -822,11 +916,17 @@ const RiskAssessmentForm = () => {
     });
     csvContent += `Summary,"${data.sections.residualRating.summary}"\n\n`;
     
-    // Heat Map
+    // Heat Map with ASCII visualization
     csvContent += `HEAT MAP\n`;
     csvContent += `Position,Impact,Likelihood\n`;
     csvContent += `Inherent,${data.sections.heatMap.inherentPosition.impact},${data.sections.heatMap.inherentPosition.likelihood}\n`;
     csvContent += `Residual,${data.sections.heatMap.residualPosition.impact},${data.sections.heatMap.residualPosition.likelihood}\n`;
+    csvContent += generateHeatMapASCII(
+      data.sections.heatMap.inherentPosition.impact,
+      data.sections.heatMap.inherentPosition.likelihood,
+      data.sections.heatMap.residualPosition.impact,
+      data.sections.heatMap.residualPosition.likelihood
+    );
     csvContent += `Summary,"${data.sections.heatMap.summary}"\n\n`;
     
     // Issues
@@ -847,6 +947,13 @@ const RiskAssessmentForm = () => {
 
   // Generate Word/HTML content
   const generateWord = (data: ReturnType<typeof prepareExportData>) => {
+    const heatMapHTML = generateHeatMapHTML(
+      data.sections.heatMap.inherentPosition.impact,
+      data.sections.heatMap.inherentPosition.likelihood,
+      data.sections.heatMap.residualPosition.impact,
+      data.sections.heatMap.residualPosition.likelihood
+    );
+
     const content = `
       <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
       <head><meta charset="utf-8"><title>${data.riskName}</title>
@@ -884,6 +991,7 @@ const RiskAssessmentForm = () => {
         <h2>4. Heat Map</h2>
         <p><strong>Inherent:</strong> Impact ${data.sections.heatMap.inherentPosition.impact}, Likelihood ${data.sections.heatMap.inherentPosition.likelihood}<br/>
         <strong>Residual:</strong> Impact ${data.sections.heatMap.residualPosition.impact}, Likelihood ${data.sections.heatMap.residualPosition.likelihood}</p>
+        ${heatMapHTML}
         <div class="summary"><strong>Summary:</strong> ${data.sections.heatMap.summary}</div>
         
         <h2>5. Issues</h2>
@@ -902,97 +1010,141 @@ const RiskAssessmentForm = () => {
     URL.revokeObjectURL(link.href);
   };
 
-  // Generate PPT/HTML content
+  // Generate PPT using pptxgenjs
   const generatePPT = (data: ReturnType<typeof prepareExportData>) => {
-    const slides = `
-      <html>
-      <head><title>${data.riskName} - Presentation</title>
-      <style>
-        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
-        .slide { width: 100%; min-height: 100vh; padding: 60px; box-sizing: border-box; page-break-after: always; }
-        .slide-title { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
-        .slide-content { background: #ffffff; }
-        h1 { font-size: 48px; margin-bottom: 20px; }
-        h2 { font-size: 36px; color: #1d4ed8; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
-        .big-score { font-size: 72px; color: #3b82f6; font-weight: bold; }
-        .summary-box { background: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0; font-size: 18px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; }
-        th { background: #3b82f6; color: white; padding: 12px; }
-        td { border: 1px solid #e5e7eb; padding: 10px; }
-        .meta { font-size: 18px; opacity: 0.8; }
-        .positions { display: flex; gap: 40px; margin: 20px 0; }
-        .position-card { background: #f3f4f6; padding: 20px; border-radius: 8px; flex: 1; text-align: center; }
-        .position-label { font-size: 14px; color: #6b7280; }
-        .position-value { font-size: 32px; font-weight: bold; color: #1d4ed8; }
-      </style></head>
-      <body>
-        <div class="slide slide-title">
-          <h1>${data.riskName}</h1>
-          <p class="meta">Risk Assessment Summary</p>
-          <p class="meta">${data.exportDate}</p>
-        </div>
-        
-        <div class="slide slide-content">
-          <h2>Inherent Rating</h2>
-          <div class="big-score">${data.sections.inherentRating.score} <span style="font-size:24px">(${data.sections.inherentRating.rating})</span></div>
-          <table><tr><th>Factor</th><th>Rating</th><th>Weight</th></tr>
-          ${data.sections.inherentRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td></tr>`).join('')}</table>
-          <div class="summary-box">${data.sections.inherentRating.summary}</div>
-        </div>
-        
-        <div class="slide slide-content">
-          <h2>Control Effectiveness</h2>
-          <div class="big-score">${data.sections.controlEffectiveness.score} <span style="font-size:24px">(${data.sections.controlEffectiveness.rating})</span></div>
-          <table><tr><th>Control</th><th>Type</th><th>Design</th><th>Operating</th><th>Testing</th></tr>
-          ${data.sections.controlEffectiveness.controls.map(c => `<tr><td>${c.name}</td><td>${c.type}</td><td>${c.designRating}/5</td><td>${c.operatingRating}/5</td><td>${c.testingRating}/5</td></tr>`).join('')}</table>
-          <div class="summary-box">${data.sections.controlEffectiveness.summary}</div>
-        </div>
-        
-        <div class="slide slide-content">
-          <h2>Residual Rating</h2>
-          <div class="big-score">${data.sections.residualRating.score} <span style="font-size:24px">(${data.sections.residualRating.rating})</span></div>
-          <p style="font-size:20px">Risk reduced by <strong>${data.sections.residualRating.riskReduction} points</strong></p>
-          <table><tr><th>Factor</th><th>Rating</th><th>Weight</th></tr>
-          ${data.sections.residualRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td></tr>`).join('')}</table>
-          <div class="summary-box">${data.sections.residualRating.summary}</div>
-        </div>
-        
-        <div class="slide slide-content">
-          <h2>Heat Map Summary</h2>
-          <div class="positions">
-            <div class="position-card">
-              <div class="position-label">Inherent Position</div>
-              <div class="position-value">Impact: ${data.sections.heatMap.inherentPosition.impact}</div>
-              <div class="position-value">Likelihood: ${data.sections.heatMap.inherentPosition.likelihood}</div>
-            </div>
-            <div class="position-card">
-              <div class="position-label">Residual Position</div>
-              <div class="position-value">Impact: ${data.sections.heatMap.residualPosition.impact}</div>
-              <div class="position-value">Likelihood: ${data.sections.heatMap.residualPosition.likelihood}</div>
-            </div>
-          </div>
-          <div class="summary-box">${data.sections.heatMap.summary}</div>
-        </div>
-        
-        <div class="slide slide-content">
-          <h2>Issues Overview</h2>
-          <div class="positions">
-            <div class="position-card"><div class="position-value">${data.sections.issues.totalOpen}</div><div class="position-label">Open Issues</div></div>
-            <div class="position-card"><div class="position-value">${data.sections.issues.totalClosed}</div><div class="position-label">Closed Issues</div></div>
-          </div>
-          <table><tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th></tr>
-          ${[...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues].slice(0, 5).map(i => `<tr><td>${i.id}</td><td>${i.title}</td><td>${i.severity}</td><td>${i.status}</td></tr>`).join('')}</table>
-          <div class="summary-box">${data.sections.issues.summary}</div>
-        </div>
-      </body></html>
-    `;
+    const pptx = new pptxgen();
+    pptx.title = data.riskName;
+    pptx.author = "Risk Assessment System";
     
-    const blob = new Blob([slides], { type: 'application/vnd.ms-powerpoint' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `${getSanitizedFilename()}.ppt`;
-    link.click();
-    URL.revokeObjectURL(link.href);
+    // Helper to get cell color based on risk score
+    const getCellColor = (row: number, col: number): string => {
+      const riskScore = row * col;
+      if (riskScore >= 15) return 'ef4444'; // High - Red
+      if (riskScore >= 8) return 'f59e0b'; // Medium - Amber
+      if (riskScore >= 4) return 'eab308'; // Low-Medium - Yellow
+      return '22c55e'; // Low - Green
+    };
+    
+    // Slide 1: Title
+    const slide1 = pptx.addSlide();
+    slide1.addText(data.riskName, { x: 0.5, y: 2, w: 9, h: 1.2, fontSize: 36, bold: true, color: '1d4ed8' });
+    slide1.addText('Risk Assessment Summary', { x: 0.5, y: 3.3, w: 9, fontSize: 20, color: '6b7280' });
+    slide1.addText(`Generated: ${data.exportDate}`, { x: 0.5, y: 4, w: 9, fontSize: 14, color: '9ca3af' });
+    
+    // Slide 2: Inherent Rating
+    const slide2 = pptx.addSlide();
+    slide2.addText('Inherent Rating', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slide2.addText(`Score: ${data.sections.inherentRating.score} (${data.sections.inherentRating.rating})`, { x: 0.5, y: 0.9, w: 9, fontSize: 24, bold: true, color: '3b82f6' });
+    const inherentRows: pptxgen.TableRow[] = [
+      [{ text: 'Factor', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Rating', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Weight', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }]
+    ];
+    data.sections.inherentRating.factors.forEach(f => {
+      inherentRows.push([{ text: f.name }, { text: `${f.rating}/5` }, { text: `${f.weightage}%` }]);
+    });
+    slide2.addTable(inherentRows, { x: 0.5, y: 1.5, w: 9, fontSize: 12, border: { pt: 0.5, color: 'e5e7eb' } });
+    slide2.addText(data.sections.inherentRating.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    
+    // Slide 3: Control Effectiveness
+    const slide3 = pptx.addSlide();
+    slide3.addText('Control Effectiveness', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slide3.addText(`Score: ${data.sections.controlEffectiveness.score} (${data.sections.controlEffectiveness.rating})`, { x: 0.5, y: 0.9, w: 9, fontSize: 24, bold: true, color: '3b82f6' });
+    const controlRows: pptxgen.TableRow[] = [
+      [{ text: 'Control', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Type', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Design', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Operating', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } },
+       { text: 'Testing', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }]
+    ];
+    data.sections.controlEffectiveness.controls.forEach(c => {
+      controlRows.push([{ text: c.name }, { text: c.type }, { text: `${c.designRating}/5` }, { text: `${c.operatingRating}/5` }, { text: `${c.testingRating}/5` }]);
+    });
+    slide3.addTable(controlRows, { x: 0.5, y: 1.5, w: 9, fontSize: 11, border: { pt: 0.5, color: 'e5e7eb' } });
+    slide3.addText(data.sections.controlEffectiveness.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    
+    // Slide 4: Residual Rating
+    const slide4 = pptx.addSlide();
+    slide4.addText('Residual Rating', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slide4.addText(`Score: ${data.sections.residualRating.score} (${data.sections.residualRating.rating}) - Reduced by ${data.sections.residualRating.riskReduction} points`, { x: 0.5, y: 0.9, w: 9, fontSize: 20, bold: true, color: '3b82f6' });
+    const residualRows: pptxgen.TableRow[] = [
+      [{ text: 'Factor', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Rating', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Weight', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }]
+    ];
+    data.sections.residualRating.factors.forEach(f => {
+      residualRows.push([{ text: f.name }, { text: `${f.rating}/5` }, { text: `${f.weightage}%` }]);
+    });
+    slide4.addTable(residualRows, { x: 0.5, y: 1.5, w: 9, fontSize: 12, border: { pt: 0.5, color: 'e5e7eb' } });
+    slide4.addText(data.sections.residualRating.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    
+    // Slide 5: Heat Map with visual grid
+    const slide5 = pptx.addSlide();
+    slide5.addText('Heat Map', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    
+    // Create 5x5 heat map grid
+    const heatMapRows: pptxgen.TableRow[] = [];
+    const inherentImpact = data.sections.heatMap.inherentPosition.impact;
+    const inherentLikelihood = data.sections.heatMap.inherentPosition.likelihood;
+    const residualImpact = data.sections.heatMap.residualPosition.impact;
+    const residualLikelihood = data.sections.heatMap.residualPosition.likelihood;
+    
+    for (let row = 5; row >= 1; row--) {
+      const tableRow: pptxgen.TableCell[] = [{ text: `I${row}`, options: { bold: true, fill: { color: 'f3f4f6' } } }];
+      for (let col = 1; col <= 5; col++) {
+        const isInherent = row === inherentImpact && col === inherentLikelihood;
+        const isResidual = row === residualImpact && col === residualLikelihood;
+        let cellText = '';
+        if (isInherent && isResidual) cellText = 'I/R';
+        else if (isInherent) cellText = 'I';
+        else if (isResidual) cellText = 'R';
+        tableRow.push({ 
+          text: cellText, 
+          options: { 
+            fill: { color: getCellColor(row, col) }, 
+            bold: true, 
+            color: '1a1a1a',
+            align: 'center',
+            valign: 'middle'
+          } 
+        });
+      }
+      heatMapRows.push(tableRow);
+    }
+    // Add header row for likelihood
+    heatMapRows.push([
+      { text: '', options: { fill: { color: 'ffffff' } } },
+      { text: 'L1', options: { bold: true, fill: { color: 'f3f4f6' }, align: 'center' } },
+      { text: 'L2', options: { bold: true, fill: { color: 'f3f4f6' }, align: 'center' } },
+      { text: 'L3', options: { bold: true, fill: { color: 'f3f4f6' }, align: 'center' } },
+      { text: 'L4', options: { bold: true, fill: { color: 'f3f4f6' }, align: 'center' } },
+      { text: 'L5', options: { bold: true, fill: { color: 'f3f4f6' }, align: 'center' } }
+    ]);
+    
+    slide5.addTable(heatMapRows, { x: 1.5, y: 1, w: 5, h: 3, fontSize: 14, border: { pt: 1, color: 'd1d5db' } });
+    slide5.addText('Impact (I1-I5) ↑', { x: 0.3, y: 2.5, w: 1, fontSize: 10, color: '6b7280', rotate: 270 });
+    slide5.addText('Likelihood (L1-L5) →', { x: 3.5, y: 4.2, w: 2, fontSize: 10, color: '6b7280' });
+    slide5.addText('Legend: I = Inherent Position, R = Residual Position', { x: 1.5, y: 4.5, w: 5, fontSize: 10, color: '6b7280' });
+    slide5.addText(data.sections.heatMap.summary, { x: 0.5, y: 4.8, w: 9, h: 0.7, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    
+    // Slide 6: Issues Overview
+    const slide6 = pptx.addSlide();
+    slide6.addText('Issues Overview', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slide6.addText(`Open: ${data.sections.issues.totalOpen}  |  Closed: ${data.sections.issues.totalClosed}`, { x: 0.5, y: 0.9, w: 9, fontSize: 20, bold: true, color: '3b82f6' });
+    const issueRows: pptxgen.TableRow[] = [
+      [{ text: 'ID', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Title', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Severity', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
+       { text: 'Status', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }]
+    ];
+    [...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues].slice(0, 6).forEach(i => {
+      issueRows.push([{ text: i.id }, { text: i.title }, { text: i.severity }, { text: i.status }]);
+    });
+    slide6.addTable(issueRows, { x: 0.5, y: 1.5, w: 9, fontSize: 11, border: { pt: 0.5, color: 'e5e7eb' } });
+    slide6.addText(data.sections.issues.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    
+    // Save the file
+    pptx.writeFile({ fileName: `${getSanitizedFilename()}.pptx` });
   };
 
   const handleExport = (format: string) => {
@@ -1014,7 +1166,7 @@ const RiskAssessmentForm = () => {
         break;
       case 'PPT':
         generatePPT(data);
-        toast.success(`PowerPoint "${filename}.ppt" downloaded`);
+        toast.success(`PowerPoint "${filename}.pptx" downloaded`);
         break;
     }
     setExportOpen(false);
