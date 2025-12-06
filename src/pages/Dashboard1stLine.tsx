@@ -266,8 +266,24 @@ const Dashboard1stLine = () => {
     setActionDialog({ open: true, type, riskId });
   };
 
+  // Update closed assessment dialog state
+  const [updateVersionDialogOpen, setUpdateVersionDialogOpen] = useState(false);
+  const [selectedRiskForUpdate, setSelectedRiskForUpdate] = useState<RiskData | null>(null);
+
   const handleUpdateClosedAssessment = (riskId: string) => {
-    toast.success(`Opening closed assessment update for ${riskId}`);
+    const risk = riskData.find(r => r.id === riskId);
+    if (risk) {
+      setSelectedRiskForUpdate(risk);
+      setUpdateVersionDialogOpen(true);
+    }
+  };
+
+  const handleProceedUpdateVersion = () => {
+    if (selectedRiskForUpdate) {
+      navigate(`/risk-assessment?riskId=${encodeURIComponent(selectedRiskForUpdate.id)}&riskName=${encodeURIComponent(selectedRiskForUpdate.title)}&mode=update-version`);
+      setUpdateVersionDialogOpen(false);
+      setSelectedRiskForUpdate(null);
+    }
   };
 
   const handleActionSubmit = () => {
@@ -1210,6 +1226,50 @@ const Dashboard1stLine = () => {
               Cancel
             </Button>
             <Button onClick={handleActionSubmit}>Confirm</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Update Version Confirmation Dialog */}
+      <Dialog open={updateVersionDialogOpen} onOpenChange={setUpdateVersionDialogOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RefreshCw className="w-5 h-5 text-amber-600" />
+              Create New Assessment Version
+            </DialogTitle>
+            <DialogDescription className="pt-2 text-left">
+              This will create a new version of the assessment with the same Assessment ID 
+              <span className="font-semibold text-foreground"> ({selectedRiskForUpdate?.id})</span>.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+              <h4 className="font-medium text-amber-800 dark:text-amber-200 mb-2">What happens next:</h4>
+              <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1.5">
+                <li className="flex items-start gap-2">
+                  <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>All data from the previous version will be pre-filled</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <Edit2 className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>All fields will be editable for updates</span>
+                </li>
+                <li className="flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+                  <span>Changed fields will be highlighted for easy identification</span>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setUpdateVersionDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleProceedUpdateVersion} className="bg-amber-600 hover:bg-amber-700 text-white">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Proceed
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
