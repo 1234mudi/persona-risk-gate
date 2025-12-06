@@ -1298,28 +1298,30 @@ const RiskAssessmentForm = () => {
     }
     
     return (
-      <Tooltip>
-        <TooltipTrigger asChild>
-          <div className={`relative ${isChanged ? 'ring-2 ring-blue-500 ring-offset-1 rounded-md' : ''}`}>
-            {isChanged && (
-              <div className="absolute -top-2 -right-2 z-10">
-                <Badge className="bg-blue-500 text-white text-[9px] px-1.5 py-0 h-4">
-                  Updated
-                </Badge>
-              </div>
-            )}
-            {children}
-          </div>
-        </TooltipTrigger>
-        {isChanged && originalValue !== null && originalValue !== undefined && (
-          <TooltipContent side="top" className="max-w-xs">
-            <p className="text-xs">
-              <span className="text-muted-foreground">Previous value: </span>
-              <span className="font-medium">{String(originalValue)}</span>
-            </p>
-          </TooltipContent>
-        )}
-      </Tooltip>
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <div className={`relative overflow-visible ${isChanged ? 'ring-2 ring-blue-400 ring-offset-2 rounded-md bg-blue-50/50 dark:bg-blue-950/30' : ''}`}>
+              {isChanged && (
+                <div className="absolute -top-3 -right-3 z-50">
+                  <Badge className="bg-blue-500 text-white text-[9px] px-1.5 py-0.5 h-5 shadow-md border border-blue-400">
+                    Updated
+                  </Badge>
+                </div>
+              )}
+              {children}
+            </div>
+          </TooltipTrigger>
+          {isChanged && originalValue !== null && originalValue !== undefined && (
+            <TooltipContent side="top" className="max-w-xs z-[100]">
+              <p className="text-xs">
+                <span className="text-muted-foreground">Previous value: </span>
+                <span className="font-medium">{String(originalValue)}</span>
+              </p>
+            </TooltipContent>
+          )}
+        </Tooltip>
+      </TooltipProvider>
     );
   };
 
@@ -1446,14 +1448,18 @@ const RiskAssessmentForm = () => {
                     </Badge>
                   </div>
                   <p className="text-xs text-amber-600 dark:text-amber-400">
-                    Assessment ID: {riskId} • Fields from previous version have been pre-filled. Updated fields will be highlighted in blue.
+                    Assessment ID: {riskId} • Fields from previous version have been pre-filled. Updated fields will be highlighted.
                   </p>
                 </div>
               </div>
-              <div className="flex items-center gap-2 text-xs text-amber-700 dark:text-amber-300">
-                <div className="flex items-center gap-1.5 px-2 py-1 bg-amber-100 dark:bg-amber-900/50 rounded">
-                  <span className="w-2 h-2 rounded-full bg-blue-500" />
-                  <span>= Updated field</span>
+              <div className="flex items-center gap-3 text-xs text-amber-700 dark:text-amber-300">
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white dark:bg-amber-900/50 rounded-md border border-amber-200 dark:border-amber-700">
+                  <div className="w-4 h-4 rounded ring-2 ring-blue-400 ring-offset-1 bg-blue-50 dark:bg-blue-950" />
+                  <span className="font-medium">Blue ring = Updated field</span>
+                </div>
+                <div className="flex items-center gap-1.5 px-2.5 py-1.5 bg-white dark:bg-amber-900/50 rounded-md border border-amber-200 dark:border-amber-700">
+                  <Badge className="bg-blue-500 text-white text-[8px] px-1 py-0 h-4">Updated</Badge>
+                  <span className="font-medium">Badge shows on changed fields</span>
                 </div>
               </div>
             </div>
@@ -1877,7 +1883,7 @@ const RiskAssessmentForm = () => {
                 </div>
 
                 {/* Factors Table */}
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border rounded-lg overflow-visible">
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
@@ -1924,7 +1930,7 @@ const RiskAssessmentForm = () => {
                               </TooltipProvider>
                             </div>
                           </td>
-                          <td className="p-1.5">
+                          <td className="p-1.5 overflow-visible">
                             <CollaborativeCell cellId={`${factorCellId}-rating`}>
                               <CellCommentPopover factorName={factor.name} field="Rating">
                                 <UpdateVersionIndicator 
@@ -1959,7 +1965,7 @@ const RiskAssessmentForm = () => {
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
-                          <td className="p-1.5">
+                          <td className="p-1.5 overflow-visible">
                             <CollaborativeCell cellId={`${factorCellId}-comments`}>
                               <CellCommentPopover factorName={factor.name} field="Comments">
                                 <UpdateVersionIndicator 
@@ -2046,7 +2052,7 @@ const RiskAssessmentForm = () => {
                   </div>
                 </div>
 
-                <div className="border rounded-lg overflow-x-auto">
+                <div className="border rounded-lg overflow-visible">
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
@@ -2088,78 +2094,93 @@ const RiskAssessmentForm = () => {
                                 </Badge>
                               </td>
                               <td className="p-1.5 text-xs">{control.owner}</td>
-                              <td className="p-1.5">
+                              <td className="p-1.5 overflow-visible">
                                 <CollaborativeCell cellId={`${controlCellId}-design`}>
                                   <CellCommentPopover factorName={control.id} field="Design">
-                                    <AIFieldIndicator 
-                                      isAIFilled={isFieldAIFilled(`control-${control.id}-design`)} 
-                                      isEdited={isFieldEdited(`control-${control.id}-design`)}
+                                    <UpdateVersionIndicator 
+                                      fieldKey={`control-${control.id}-design`}
+                                      originalValue={getOriginalValue('control', control.id, 'designRating')}
                                     >
-                                      <Select 
-                                        value={control.designRating.toString()} 
-                                        onValueChange={(v) => {
-                                          markFieldAsEdited(`control-${control.id}-design`);
-                                          updateControlRating(control.id, 'designRating', parseInt(v));
-                                        }}
+                                      <AIFieldIndicator 
+                                        isAIFilled={isFieldAIFilled(`control-${control.id}-design`)} 
+                                        isEdited={isFieldEdited(`control-${control.id}-design`)}
                                       >
-                                        <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-background border shadow-lg z-50">
-                                          {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                        </SelectContent>
-                                      </Select>
-                                    </AIFieldIndicator>
+                                        <Select 
+                                          value={control.designRating.toString()} 
+                                          onValueChange={(v) => {
+                                            markFieldAsEdited(`control-${control.id}-design`);
+                                            updateControlRating(control.id, 'designRating', parseInt(v));
+                                          }}
+                                        >
+                                          <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent className="bg-background border shadow-lg z-50">
+                                            {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                          </SelectContent>
+                                        </Select>
+                                      </AIFieldIndicator>
+                                    </UpdateVersionIndicator>
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
-                              <td className="p-1.5">
+                              <td className="p-1.5 overflow-visible">
                                 <CollaborativeCell cellId={`${controlCellId}-operating`}>
                                   <CellCommentPopover factorName={control.id} field="Operating">
-                                    <AIFieldIndicator 
-                                      isAIFilled={isFieldAIFilled(`control-${control.id}-operating`)} 
-                                      isEdited={isFieldEdited(`control-${control.id}-operating`)}
+                                    <UpdateVersionIndicator 
+                                      fieldKey={`control-${control.id}-operating`}
+                                      originalValue={getOriginalValue('control', control.id, 'operatingRating')}
                                     >
-                                      <Select 
-                                        value={control.operatingRating.toString()} 
-                                        onValueChange={(v) => {
-                                          markFieldAsEdited(`control-${control.id}-operating`);
-                                          updateControlRating(control.id, 'operatingRating', parseInt(v));
-                                        }}
+                                      <AIFieldIndicator 
+                                        isAIFilled={isFieldAIFilled(`control-${control.id}-operating`)} 
+                                        isEdited={isFieldEdited(`control-${control.id}-operating`)}
                                       >
-                                        <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-background border shadow-lg z-50">
-                                          {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                        </SelectContent>
-                                      </Select>
-                                    </AIFieldIndicator>
+                                        <Select 
+                                          value={control.operatingRating.toString()} 
+                                          onValueChange={(v) => {
+                                            markFieldAsEdited(`control-${control.id}-operating`);
+                                            updateControlRating(control.id, 'operatingRating', parseInt(v));
+                                          }}
+                                        >
+                                          <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent className="bg-background border shadow-lg z-50">
+                                            {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                          </SelectContent>
+                                        </Select>
+                                      </AIFieldIndicator>
+                                    </UpdateVersionIndicator>
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
-                              <td className="p-1.5">
+                              <td className="p-1.5 overflow-visible">
                                 <CollaborativeCell cellId={`${controlCellId}-testing`}>
                                   <CellCommentPopover factorName={control.id} field="Testing">
-                                    <AIFieldIndicator 
-                                      isAIFilled={isFieldAIFilled(`control-${control.id}-testing`)} 
-                                      isEdited={isFieldEdited(`control-${control.id}-testing`)}
+                                    <UpdateVersionIndicator 
+                                      fieldKey={`control-${control.id}-testing`}
+                                      originalValue={getOriginalValue('control', control.id, 'testingRating')}
                                     >
-                                      <Select 
-                                        value={control.testingRating.toString()} 
-                                        onValueChange={(v) => {
-                                          markFieldAsEdited(`control-${control.id}-testing`);
-                                          updateControlRating(control.id, 'testingRating', parseInt(v));
-                                        }}
+                                      <AIFieldIndicator 
+                                        isAIFilled={isFieldAIFilled(`control-${control.id}-testing`)} 
+                                        isEdited={isFieldEdited(`control-${control.id}-testing`)}
                                       >
-                                        <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                          <SelectValue />
-                                        </SelectTrigger>
-                                        <SelectContent className="bg-background border shadow-lg z-50">
-                                          {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                        </SelectContent>
-                                      </Select>
-                                    </AIFieldIndicator>
+                                        <Select 
+                                          value={control.testingRating.toString()} 
+                                          onValueChange={(v) => {
+                                            markFieldAsEdited(`control-${control.id}-testing`);
+                                            updateControlRating(control.id, 'testingRating', parseInt(v));
+                                          }}
+                                        >
+                                          <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                            <SelectValue />
+                                          </SelectTrigger>
+                                          <SelectContent className="bg-background border shadow-lg z-50">
+                                            {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                          </SelectContent>
+                                        </Select>
+                                      </AIFieldIndicator>
+                                    </UpdateVersionIndicator>
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
@@ -2263,7 +2284,7 @@ const RiskAssessmentForm = () => {
                   </div>
                 </div>
 
-                <div className="border rounded-lg overflow-hidden">
+                <div className="border rounded-lg overflow-visible">
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
@@ -2308,49 +2329,59 @@ const RiskAssessmentForm = () => {
                               </TooltipProvider>
                             </div>
                           </td>
-                          <td className="p-1.5">
+                          <td className="p-1.5 overflow-visible">
                             <CellCommentPopover factorName={factor.name} field="Rating">
-                              <AIFieldIndicator 
-                                isAIFilled={isFieldAIFilled(`residual-${factor.id}-rating`)} 
-                                isEdited={isFieldEdited(`residual-${factor.id}-rating`)}
+                              <UpdateVersionIndicator 
+                                fieldKey={`residual-${factor.id}-rating`}
+                                originalValue={getOriginalValue('residual', factor.id, 'rating')}
                               >
-                                <Select 
-                                  value={factor.rating.toString()} 
-                                  onValueChange={(v) => {
-                                    markFieldAsEdited(`residual-${factor.id}-rating`);
-                                    updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v), 'residual');
-                                  }}
+                                <AIFieldIndicator 
+                                  isAIFilled={isFieldAIFilled(`residual-${factor.id}-rating`)} 
+                                  isEdited={isFieldEdited(`residual-${factor.id}-rating`)}
                                 >
-                                  <SelectTrigger className="w-full bg-background h-7 text-xs">
-                                    <SelectValue />
-                                  </SelectTrigger>
-                                  <SelectContent className="bg-background border shadow-lg z-50">
-                                    <SelectItem value="0">Not Applicable (N/A)</SelectItem>
-                                    <SelectItem value="1">Very Low (1)</SelectItem>
-                                    <SelectItem value="2">Low (2)</SelectItem>
-                                    <SelectItem value="3">Medium (3)</SelectItem>
-                                    <SelectItem value="4">High (4)</SelectItem>
-                                    <SelectItem value="5">Very High (5)</SelectItem>
-                                  </SelectContent>
-                                </Select>
-                              </AIFieldIndicator>
+                                  <Select 
+                                    value={factor.rating.toString()} 
+                                    onValueChange={(v) => {
+                                      markFieldAsEdited(`residual-${factor.id}-rating`);
+                                      updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v), 'residual');
+                                    }}
+                                  >
+                                    <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-background border shadow-lg z-50">
+                                      <SelectItem value="0">Not Applicable (N/A)</SelectItem>
+                                      <SelectItem value="1">Very Low (1)</SelectItem>
+                                      <SelectItem value="2">Low (2)</SelectItem>
+                                      <SelectItem value="3">Medium (3)</SelectItem>
+                                      <SelectItem value="4">High (4)</SelectItem>
+                                      <SelectItem value="5">Very High (5)</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                </AIFieldIndicator>
+                              </UpdateVersionIndicator>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-1.5">
+                          <td className="p-1.5 overflow-visible">
                             <CellCommentPopover factorName={factor.name} field="Comments">
-                              <AIFieldIndicator 
-                                isAIFilled={isFieldAIFilled(`residual-${factor.id}-comments`)} 
-                                isEdited={isFieldEdited(`residual-${factor.id}-comments`)}
+                              <UpdateVersionIndicator 
+                                fieldKey={`residual-${factor.id}-comments`}
+                                originalValue={getOriginalValue('residual', factor.id, 'comments')}
                               >
-                                <Textarea 
-                                  value={factor.comments}
-                                  onChange={(e) => {
-                                    markFieldAsEdited(`residual-${factor.id}-comments`);
-                                    updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value, 'residual');
-                                  }}
-                                  className="min-h-[28px] resize-none text-xs"
-                                />
-                              </AIFieldIndicator>
+                                <AIFieldIndicator 
+                                  isAIFilled={isFieldAIFilled(`residual-${factor.id}-comments`)} 
+                                  isEdited={isFieldEdited(`residual-${factor.id}-comments`)}
+                                >
+                                  <Textarea 
+                                    value={factor.comments}
+                                    onChange={(e) => {
+                                      markFieldAsEdited(`residual-${factor.id}-comments`);
+                                      updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value, 'residual');
+                                    }}
+                                    className="min-h-[28px] resize-none text-xs"
+                                  />
+                                </AIFieldIndicator>
+                              </UpdateVersionIndicator>
                             </CellCommentPopover>
                           </td>
                           {showWeights && <td className="p-1.5 text-center text-sm font-medium">{factor.weightage}</td>}
