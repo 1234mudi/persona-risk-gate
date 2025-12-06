@@ -660,8 +660,363 @@ const RiskAssessmentForm = () => {
     setInviteEmail("");
   };
 
+  // Prepare export data with section summaries
+  const prepareExportData = () => {
+    const inherentImpact = inherentFactors.find(f => f.name === "Impact");
+    const inherentLikelihood = inherentFactors.find(f => f.name === "Likelihood");
+    const residualImpact = residualFactors.find(f => f.name === "Impact");
+    const residualLikelihood = residualFactors.find(f => f.name === "Likelihood");
+
+    const designAvg = controls.length > 0 
+      ? (controls.reduce((sum, c) => sum + c.designRating, 0) / controls.length).toFixed(1) 
+      : "0";
+    const operatingAvg = controls.length > 0 
+      ? (controls.reduce((sum, c) => sum + c.operatingRating, 0) / controls.length).toFixed(1) 
+      : "0";
+
+    return {
+      riskName,
+      exportDate: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      sections: {
+        inherentRating: {
+          title: "Inherent Rating",
+          factors: inherentFactors,
+          score: inherentScore,
+          rating: getRatingLabel(inherentScore).label,
+          summary: `The inherent risk is rated ${getRatingLabel(inherentScore).label} (${inherentScore}) based on Impact (${inherentImpact?.rating || 0}/5) and Likelihood (${inherentLikelihood?.rating || 0}/5). This assessment reflects the potential exposure before any controls are applied, considering factors such as regulatory requirements, financial implications, and operational complexity.`
+        },
+        controlEffectiveness: {
+          title: "Control Effectiveness",
+          controls: controls,
+          score: controlScore,
+          rating: getRatingLabel(controlScore).label,
+          summary: `${controls.length} controls are in place with an overall effectiveness rating of ${getRatingLabel(controlScore).label} (${controlScore}). Design effectiveness averages ${designAvg}/5, while operating effectiveness averages ${operatingAvg}/5. Key controls include ${controls.slice(0, 2).map(c => c.name).join(' and ')}.`
+        },
+        residualRating: {
+          title: "Residual Rating",
+          factors: residualFactors,
+          score: residualScore,
+          rating: getRatingLabel(residualScore).label,
+          riskReduction: riskReduction,
+          summary: `After applying controls, the residual risk is reduced to ${getRatingLabel(residualScore).label} (${residualScore}), representing a ${riskReduction} point improvement from the inherent risk level. The residual Impact is ${residualImpact?.rating || 0}/5 and Likelihood is ${residualLikelihood?.rating || 0}/5.`
+        },
+        heatMap: {
+          title: "Heat Map",
+          inherentPosition: { impact: inherentImpact?.rating || 0, likelihood: inherentLikelihood?.rating || 0 },
+          residualPosition: { impact: residualImpact?.rating || 0, likelihood: residualLikelihood?.rating || 0 },
+          summary: `The risk position moved from Inherent (Impact: ${inherentImpact?.rating || 0}, Likelihood: ${inherentLikelihood?.rating || 0}) to Residual (Impact: ${residualImpact?.rating || 0}, Likelihood: ${residualLikelihood?.rating || 0}). This represents a ${Number(riskReduction) > 1 ? 'significant' : Number(riskReduction) > 0.5 ? 'moderate' : 'minor'} risk reduction through the implementation of controls.`
+        },
+        issues: {
+          title: "Issues",
+          assessmentIssues: assessmentIssues,
+          activeRelatedIssues: activeRelatedIssues,
+          closedRelatedIssues: closedRelatedIssues,
+          totalOpen: assessmentIssues.filter(i => i.status === 'Open').length + activeRelatedIssues.filter(i => i.status === 'Open' || i.status === 'In Progress').length,
+          totalClosed: closedRelatedIssues.length,
+          summary: `${assessmentIssues.length} assessment issues identified, ${activeRelatedIssues.length} active related issues, and ${closedRelatedIssues.length} closed issues. High severity items include ${[...assessmentIssues, ...activeRelatedIssues].filter(i => i.severity === 'High').map(i => i.title).slice(0, 2).join(', ') || 'none identified'}.`
+        }
+      }
+    };
+  };
+
+  // Generate sanitized filename
+  const getSanitizedFilename = () => {
+    return riskName.replace(/[^a-zA-Z0-9\s]/g, '').replace(/\s+/g, '_');
+  };
+
+  // Generate PDF content
+  const generatePDF = (data: ReturnType<typeof prepareExportData>) => {
+    const content = `
+      <html>
+      <head>
+        <title>${data.riskName} - Risk Assessment</title>
+        <style>
+          body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.6; }
+          h1 { color: #1a1a1a; border-bottom: 2px solid #3b82f6; padding-bottom: 10px; }
+          h2 { color: #374151; margin-top: 30px; background: #f3f4f6; padding: 10px; }
+          .summary { background: #eff6ff; padding: 15px; border-left: 4px solid #3b82f6; margin: 15px 0; }
+          .score { font-size: 24px; font-weight: bold; color: #3b82f6; }
+          table { width: 100%; border-collapse: collapse; margin: 15px 0; }
+          th, td { border: 1px solid #e5e7eb; padding: 10px; text-align: left; }
+          th { background: #f9fafb; }
+          .meta { color: #6b7280; font-size: 14px; margin-bottom: 30px; }
+        </style>
+      </head>
+      <body>
+        <h1>${data.riskName}</h1>
+        <div class="meta">Generated on ${data.exportDate}</div>
+        
+        <h2>1. ${data.sections.inherentRating.title}</h2>
+        <p><strong>Score:</strong> <span class="score">${data.sections.inherentRating.score}</span> (${data.sections.inherentRating.rating})</p>
+        <table>
+          <tr><th>Factor</th><th>Rating</th><th>Weight</th><th>Comments</th></tr>
+          ${data.sections.inherentRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td><td>${f.comments}</td></tr>`).join('')}
+        </table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.inherentRating.summary}</div>
+        
+        <h2>2. ${data.sections.controlEffectiveness.title}</h2>
+        <p><strong>Score:</strong> <span class="score">${data.sections.controlEffectiveness.score}</span> (${data.sections.controlEffectiveness.rating})</p>
+        <table>
+          <tr><th>Control</th><th>Type</th><th>Owner</th><th>Design</th><th>Operating</th><th>Testing</th></tr>
+          ${data.sections.controlEffectiveness.controls.map(c => `<tr><td>${c.name}</td><td>${c.type}</td><td>${c.owner}</td><td>${c.designRating}/5</td><td>${c.operatingRating}/5</td><td>${c.testingRating}/5</td></tr>`).join('')}
+        </table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.controlEffectiveness.summary}</div>
+        
+        <h2>3. ${data.sections.residualRating.title}</h2>
+        <p><strong>Score:</strong> <span class="score">${data.sections.residualRating.score}</span> (${data.sections.residualRating.rating}) - Reduced by ${data.sections.residualRating.riskReduction} points</p>
+        <table>
+          <tr><th>Factor</th><th>Rating</th><th>Weight</th><th>Comments</th></tr>
+          ${data.sections.residualRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td><td>${f.comments}</td></tr>`).join('')}
+        </table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.residualRating.summary}</div>
+        
+        <h2>4. ${data.sections.heatMap.title}</h2>
+        <p><strong>Inherent Position:</strong> Impact ${data.sections.heatMap.inherentPosition.impact}, Likelihood ${data.sections.heatMap.inherentPosition.likelihood}</p>
+        <p><strong>Residual Position:</strong> Impact ${data.sections.heatMap.residualPosition.impact}, Likelihood ${data.sections.heatMap.residualPosition.likelihood}</p>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.heatMap.summary}</div>
+        
+        <h2>5. ${data.sections.issues.title}</h2>
+        <p><strong>Open Issues:</strong> ${data.sections.issues.totalOpen} | <strong>Closed Issues:</strong> ${data.sections.issues.totalClosed}</p>
+        <table>
+          <tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th><th>Owner</th></tr>
+          ${[...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues].map(i => `<tr><td>${i.id}</td><td>${i.title}</td><td>${i.severity}</td><td>${i.status}</td><td>${i.owner}</td></tr>`).join('')}
+        </table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.issues.summary}</div>
+      </body>
+      </html>
+    `;
+    
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(content);
+      printWindow.document.close();
+      printWindow.print();
+    }
+  };
+
+  // Generate Excel/CSV content
+  const generateExcel = (data: ReturnType<typeof prepareExportData>) => {
+    let csvContent = `${data.riskName} - Risk Assessment\nGenerated: ${data.exportDate}\n\n`;
+    
+    // Inherent Rating
+    csvContent += `INHERENT RATING\nScore,${data.sections.inherentRating.score},Rating,${data.sections.inherentRating.rating}\n`;
+    csvContent += `Factor,Rating,Weight,Comments\n`;
+    data.sections.inherentRating.factors.forEach(f => {
+      csvContent += `"${f.name}",${f.rating},${f.weightage}%,"${f.comments}"\n`;
+    });
+    csvContent += `Summary,"${data.sections.inherentRating.summary}"\n\n`;
+    
+    // Control Effectiveness
+    csvContent += `CONTROL EFFECTIVENESS\nScore,${data.sections.controlEffectiveness.score},Rating,${data.sections.controlEffectiveness.rating}\n`;
+    csvContent += `Control,Type,Owner,Design,Operating,Testing\n`;
+    data.sections.controlEffectiveness.controls.forEach(c => {
+      csvContent += `"${c.name}","${c.type}","${c.owner}",${c.designRating},${c.operatingRating},${c.testingRating}\n`;
+    });
+    csvContent += `Summary,"${data.sections.controlEffectiveness.summary}"\n\n`;
+    
+    // Residual Rating
+    csvContent += `RESIDUAL RATING\nScore,${data.sections.residualRating.score},Rating,${data.sections.residualRating.rating},Reduction,${data.sections.residualRating.riskReduction}\n`;
+    csvContent += `Factor,Rating,Weight,Comments\n`;
+    data.sections.residualRating.factors.forEach(f => {
+      csvContent += `"${f.name}",${f.rating},${f.weightage}%,"${f.comments}"\n`;
+    });
+    csvContent += `Summary,"${data.sections.residualRating.summary}"\n\n`;
+    
+    // Heat Map
+    csvContent += `HEAT MAP\n`;
+    csvContent += `Position,Impact,Likelihood\n`;
+    csvContent += `Inherent,${data.sections.heatMap.inherentPosition.impact},${data.sections.heatMap.inherentPosition.likelihood}\n`;
+    csvContent += `Residual,${data.sections.heatMap.residualPosition.impact},${data.sections.heatMap.residualPosition.likelihood}\n`;
+    csvContent += `Summary,"${data.sections.heatMap.summary}"\n\n`;
+    
+    // Issues
+    csvContent += `ISSUES\nOpen,${data.sections.issues.totalOpen},Closed,${data.sections.issues.totalClosed}\n`;
+    csvContent += `ID,Title,Severity,Status,Owner\n`;
+    [...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues].forEach(i => {
+      csvContent += `"${i.id}","${i.title}","${i.severity}","${i.status}","${i.owner}"\n`;
+    });
+    csvContent += `Summary,"${data.sections.issues.summary}"\n`;
+    
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${getSanitizedFilename()}.csv`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  // Generate Word/HTML content
+  const generateWord = (data: ReturnType<typeof prepareExportData>) => {
+    const content = `
+      <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word">
+      <head><meta charset="utf-8"><title>${data.riskName}</title>
+      <style>
+        body { font-family: Calibri, sans-serif; padding: 20px; }
+        h1 { color: #1a1a1a; }
+        h2 { color: #374151; background: #f3f4f6; padding: 8px; }
+        .summary { background: #eff6ff; padding: 12px; border-left: 3px solid #3b82f6; margin: 10px 0; }
+        table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+        th, td { border: 1px solid #d1d5db; padding: 8px; }
+        th { background: #f9fafb; }
+      </style></head>
+      <body>
+        <h1>${data.riskName}</h1>
+        <p><em>Generated: ${data.exportDate}</em></p>
+        
+        <h2>1. Inherent Rating</h2>
+        <p><strong>Score: ${data.sections.inherentRating.score}</strong> (${data.sections.inherentRating.rating})</p>
+        <table><tr><th>Factor</th><th>Rating</th><th>Weight</th><th>Comments</th></tr>
+        ${data.sections.inherentRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td><td>${f.comments}</td></tr>`).join('')}</table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.inherentRating.summary}</div>
+        
+        <h2>2. Control Effectiveness</h2>
+        <p><strong>Score: ${data.sections.controlEffectiveness.score}</strong> (${data.sections.controlEffectiveness.rating})</p>
+        <table><tr><th>Control</th><th>Type</th><th>Owner</th><th>Design</th><th>Operating</th><th>Testing</th></tr>
+        ${data.sections.controlEffectiveness.controls.map(c => `<tr><td>${c.name}</td><td>${c.type}</td><td>${c.owner}</td><td>${c.designRating}/5</td><td>${c.operatingRating}/5</td><td>${c.testingRating}/5</td></tr>`).join('')}</table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.controlEffectiveness.summary}</div>
+        
+        <h2>3. Residual Rating</h2>
+        <p><strong>Score: ${data.sections.residualRating.score}</strong> (${data.sections.residualRating.rating}) - Reduced by ${data.sections.residualRating.riskReduction} points</p>
+        <table><tr><th>Factor</th><th>Rating</th><th>Weight</th><th>Comments</th></tr>
+        ${data.sections.residualRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td><td>${f.comments}</td></tr>`).join('')}</table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.residualRating.summary}</div>
+        
+        <h2>4. Heat Map</h2>
+        <p><strong>Inherent:</strong> Impact ${data.sections.heatMap.inherentPosition.impact}, Likelihood ${data.sections.heatMap.inherentPosition.likelihood}<br/>
+        <strong>Residual:</strong> Impact ${data.sections.heatMap.residualPosition.impact}, Likelihood ${data.sections.heatMap.residualPosition.likelihood}</p>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.heatMap.summary}</div>
+        
+        <h2>5. Issues</h2>
+        <p><strong>Open:</strong> ${data.sections.issues.totalOpen} | <strong>Closed:</strong> ${data.sections.issues.totalClosed}</p>
+        <table><tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th><th>Owner</th></tr>
+        ${[...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues].map(i => `<tr><td>${i.id}</td><td>${i.title}</td><td>${i.severity}</td><td>${i.status}</td><td>${i.owner}</td></tr>`).join('')}</table>
+        <div class="summary"><strong>Summary:</strong> ${data.sections.issues.summary}</div>
+      </body></html>
+    `;
+    
+    const blob = new Blob([content], { type: 'application/msword' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${getSanitizedFilename()}.doc`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
+  // Generate PPT/HTML content
+  const generatePPT = (data: ReturnType<typeof prepareExportData>) => {
+    const slides = `
+      <html>
+      <head><title>${data.riskName} - Presentation</title>
+      <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 0; }
+        .slide { width: 100%; min-height: 100vh; padding: 60px; box-sizing: border-box; page-break-after: always; }
+        .slide-title { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; }
+        .slide-content { background: #ffffff; }
+        h1 { font-size: 48px; margin-bottom: 20px; }
+        h2 { font-size: 36px; color: #1d4ed8; border-bottom: 3px solid #3b82f6; padding-bottom: 10px; }
+        .big-score { font-size: 72px; color: #3b82f6; font-weight: bold; }
+        .summary-box { background: #eff6ff; padding: 20px; border-radius: 8px; margin: 20px 0; font-size: 18px; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 16px; }
+        th { background: #3b82f6; color: white; padding: 12px; }
+        td { border: 1px solid #e5e7eb; padding: 10px; }
+        .meta { font-size: 18px; opacity: 0.8; }
+        .positions { display: flex; gap: 40px; margin: 20px 0; }
+        .position-card { background: #f3f4f6; padding: 20px; border-radius: 8px; flex: 1; text-align: center; }
+        .position-label { font-size: 14px; color: #6b7280; }
+        .position-value { font-size: 32px; font-weight: bold; color: #1d4ed8; }
+      </style></head>
+      <body>
+        <div class="slide slide-title">
+          <h1>${data.riskName}</h1>
+          <p class="meta">Risk Assessment Summary</p>
+          <p class="meta">${data.exportDate}</p>
+        </div>
+        
+        <div class="slide slide-content">
+          <h2>Inherent Rating</h2>
+          <div class="big-score">${data.sections.inherentRating.score} <span style="font-size:24px">(${data.sections.inherentRating.rating})</span></div>
+          <table><tr><th>Factor</th><th>Rating</th><th>Weight</th></tr>
+          ${data.sections.inherentRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td></tr>`).join('')}</table>
+          <div class="summary-box">${data.sections.inherentRating.summary}</div>
+        </div>
+        
+        <div class="slide slide-content">
+          <h2>Control Effectiveness</h2>
+          <div class="big-score">${data.sections.controlEffectiveness.score} <span style="font-size:24px">(${data.sections.controlEffectiveness.rating})</span></div>
+          <table><tr><th>Control</th><th>Type</th><th>Design</th><th>Operating</th><th>Testing</th></tr>
+          ${data.sections.controlEffectiveness.controls.map(c => `<tr><td>${c.name}</td><td>${c.type}</td><td>${c.designRating}/5</td><td>${c.operatingRating}/5</td><td>${c.testingRating}/5</td></tr>`).join('')}</table>
+          <div class="summary-box">${data.sections.controlEffectiveness.summary}</div>
+        </div>
+        
+        <div class="slide slide-content">
+          <h2>Residual Rating</h2>
+          <div class="big-score">${data.sections.residualRating.score} <span style="font-size:24px">(${data.sections.residualRating.rating})</span></div>
+          <p style="font-size:20px">Risk reduced by <strong>${data.sections.residualRating.riskReduction} points</strong></p>
+          <table><tr><th>Factor</th><th>Rating</th><th>Weight</th></tr>
+          ${data.sections.residualRating.factors.map(f => `<tr><td>${f.name}</td><td>${f.rating}/5</td><td>${f.weightage}%</td></tr>`).join('')}</table>
+          <div class="summary-box">${data.sections.residualRating.summary}</div>
+        </div>
+        
+        <div class="slide slide-content">
+          <h2>Heat Map Summary</h2>
+          <div class="positions">
+            <div class="position-card">
+              <div class="position-label">Inherent Position</div>
+              <div class="position-value">Impact: ${data.sections.heatMap.inherentPosition.impact}</div>
+              <div class="position-value">Likelihood: ${data.sections.heatMap.inherentPosition.likelihood}</div>
+            </div>
+            <div class="position-card">
+              <div class="position-label">Residual Position</div>
+              <div class="position-value">Impact: ${data.sections.heatMap.residualPosition.impact}</div>
+              <div class="position-value">Likelihood: ${data.sections.heatMap.residualPosition.likelihood}</div>
+            </div>
+          </div>
+          <div class="summary-box">${data.sections.heatMap.summary}</div>
+        </div>
+        
+        <div class="slide slide-content">
+          <h2>Issues Overview</h2>
+          <div class="positions">
+            <div class="position-card"><div class="position-value">${data.sections.issues.totalOpen}</div><div class="position-label">Open Issues</div></div>
+            <div class="position-card"><div class="position-value">${data.sections.issues.totalClosed}</div><div class="position-label">Closed Issues</div></div>
+          </div>
+          <table><tr><th>ID</th><th>Title</th><th>Severity</th><th>Status</th></tr>
+          ${[...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues].slice(0, 5).map(i => `<tr><td>${i.id}</td><td>${i.title}</td><td>${i.severity}</td><td>${i.status}</td></tr>`).join('')}</table>
+          <div class="summary-box">${data.sections.issues.summary}</div>
+        </div>
+      </body></html>
+    `;
+    
+    const blob = new Blob([slides], { type: 'application/vnd.ms-powerpoint' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `${getSanitizedFilename()}.ppt`;
+    link.click();
+    URL.revokeObjectURL(link.href);
+  };
+
   const handleExport = (format: string) => {
-    toast.success(`Exporting assessment as ${format}...`);
+    const data = prepareExportData();
+    const filename = getSanitizedFilename();
+    
+    switch(format) {
+      case 'PDF':
+        generatePDF(data);
+        toast.success(`PDF "${filename}.pdf" ready for printing`);
+        break;
+      case 'Excel':
+        generateExcel(data);
+        toast.success(`Excel file "${filename}.csv" downloaded`);
+        break;
+      case 'Word':
+        generateWord(data);
+        toast.success(`Word document "${filename}.doc" downloaded`);
+        break;
+      case 'PPT':
+        generatePPT(data);
+        toast.success(`PowerPoint "${filename}.ppt" downloaded`);
+        break;
+    }
     setExportOpen(false);
   };
 
@@ -923,9 +1278,9 @@ const RiskAssessmentForm = () => {
                             <FileText className="w-5 h-5 text-blue-500" />
                             <span className="text-xs">Word</span>
                           </Button>
-                          <Button variant="outline" className="h-16 flex-col gap-1" onClick={() => handleExport('JSON')}>
-                            <Download className="w-5 h-5 text-purple-500" />
-                            <span className="text-xs">JSON</span>
+                          <Button variant="outline" className="h-16 flex-col gap-1" onClick={() => handleExport('PPT')}>
+                            <FileText className="w-5 h-5 text-purple-500" />
+                            <span className="text-xs">PPT</span>
                           </Button>
                         </div>
                       </div>
