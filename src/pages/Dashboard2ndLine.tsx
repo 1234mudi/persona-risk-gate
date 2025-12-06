@@ -811,7 +811,7 @@ const Dashboard2ndLine = () => {
                           />
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[50px] py-2 border-r border-b border-border"></TableHead>
+                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border text-xs">Update Completed</TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
