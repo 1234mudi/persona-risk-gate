@@ -109,6 +109,13 @@ const Dashboard1stLine = () => {
       riskTreatment: number;
     };
   } | null>(null);
+  
+  // Inline editing state
+  const [editingCell, setEditingCell] = useState<{
+    riskId: string;
+    field: string;
+    value: string;
+  } | null>(null);
 
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
@@ -274,6 +281,125 @@ const Dashboard1stLine = () => {
   const handleSaveEdit = () => {
     toast.success("Changes saved successfully");
     setEditDialog({ open: false, type: null, riskId: null, currentValue: "" });
+  };
+
+  // Inline editing handlers
+  const startInlineEdit = (riskId: string, field: string, value: string) => {
+    setEditingCell({ riskId, field, value });
+  };
+
+  const saveInlineEdit = () => {
+    if (!editingCell) return;
+    
+    setRiskData(prev => prev.map(risk => {
+      if (risk.id !== editingCell.riskId) return risk;
+      
+      switch (editingCell.field) {
+        case 'title':
+          return { ...risk, title: editingCell.value };
+        case 'businessUnit':
+          return { ...risk, businessUnit: editingCell.value };
+        case 'inherentRisk':
+          return { ...risk, inherentRisk: { ...risk.inherentRisk, level: editingCell.value } };
+        case 'residualRisk':
+          return { ...risk, residualRisk: { ...risk.residualRisk, level: editingCell.value } };
+        case 'controlEffectiveness':
+          return { ...risk, controlEffectiveness: { ...risk.controlEffectiveness, label: editingCell.value } };
+        case 'status':
+          return { ...risk, status: editingCell.value };
+        default:
+          return risk;
+      }
+    }));
+    
+    toast.success("Updated successfully");
+    setEditingCell(null);
+  };
+
+  const cancelInlineEdit = () => {
+    setEditingCell(null);
+  };
+
+  const handleInlineKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      saveInlineEdit();
+    } else if (e.key === 'Escape') {
+      cancelInlineEdit();
+    }
+  };
+
+  const renderEditableCell = (
+    riskId: string, 
+    field: string, 
+    value: string, 
+    displayContent: React.ReactNode,
+    type: 'text' | 'select' = 'text',
+    options?: string[]
+  ) => {
+    const isEditing = editingCell?.riskId === riskId && editingCell?.field === field;
+    
+    if (isEditing) {
+      if (type === 'select' && options) {
+        return (
+          <Select 
+            value={editingCell.value} 
+            onValueChange={(val) => {
+              setEditingCell({ ...editingCell, value: val });
+              setTimeout(() => {
+                setRiskData(prev => prev.map(risk => {
+                  if (risk.id !== riskId) return risk;
+                  switch (field) {
+                    case 'inherentRisk':
+                      return { ...risk, inherentRisk: { ...risk.inherentRisk, level: val } };
+                    case 'residualRisk':
+                      return { ...risk, residualRisk: { ...risk.residualRisk, level: val } };
+                    case 'controlEffectiveness':
+                      return { ...risk, controlEffectiveness: { ...risk.controlEffectiveness, label: val } };
+                    case 'status':
+                      return { ...risk, status: val };
+                    default:
+                      return risk;
+                  }
+                }));
+                toast.success("Updated successfully");
+                setEditingCell(null);
+              }, 100);
+            }}
+          >
+            <SelectTrigger className="h-7 text-xs min-w-[100px]" autoFocus onBlur={() => setTimeout(cancelInlineEdit, 200)}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="bg-popover border border-border shadow-lg z-50">
+              {options.map(opt => (
+                <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        );
+      }
+      
+      return (
+        <Input
+          value={editingCell.value}
+          onChange={(e) => setEditingCell({ ...editingCell, value: e.target.value })}
+          onKeyDown={handleInlineKeyDown}
+          onBlur={saveInlineEdit}
+          className="h-7 text-sm min-w-[120px]"
+          autoFocus
+        />
+      );
+    }
+    
+    return (
+      <div 
+        className="cursor-pointer hover:bg-muted/50 rounded px-1 py-0.5 -mx-1 transition-colors group"
+        onClick={() => startInlineEdit(riskId, field, value)}
+        title="Click to edit"
+      >
+        {displayContent}
+        <Edit2 className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 inline-block ml-1 transition-opacity" />
+      </div>
+    );
   };
 
   const handleAction = (type: typeof actionDialog.type, riskId: string) => {
@@ -1128,13 +1254,25 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <button 
-                            onClick={() => handleRiskNameClick(risk)}
-                            className="text-sm font-medium text-foreground hover:text-first-line hover:underline cursor-pointer text-left transition-colors"
-                          >
-                            {risk.title}
-                          </button>
-                          <div className="text-xs text-muted-foreground">{risk.businessUnit}</div>
+                          <div className="space-y-1">
+                            {renderEditableCell(
+                              risk.id,
+                              'title',
+                              risk.title,
+                              <button 
+                                onClick={(e) => { e.stopPropagation(); handleRiskNameClick(risk); }}
+                                className="text-sm font-medium text-foreground hover:text-first-line hover:underline cursor-pointer text-left transition-colors"
+                              >
+                                {risk.title}
+                              </button>
+                            )}
+                            {renderEditableCell(
+                              risk.id,
+                              'businessUnit',
+                              risk.businessUnit,
+                              <span className="text-xs text-muted-foreground">{risk.businessUnit}</span>
+                            )}
+                          </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
@@ -1183,9 +1321,16 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className={`${getRiskBadgeColor(risk.inherentRisk.color)}`}>
-                              {risk.inherentRisk.level}
-                            </Badge>
+                            {renderEditableCell(
+                              risk.id,
+                              'inherentRisk',
+                              risk.inherentRisk.level,
+                              <Badge variant="outline" className={`${getRiskBadgeColor(risk.inherentRisk.color)}`}>
+                                {risk.inherentRisk.level}
+                              </Badge>,
+                              'select',
+                              ['Critical', 'High', 'Medium', 'Low']
+                            )}
                             <span className={`text-xs flex items-center gap-0.5 ${risk.inherentTrend.up ? 'text-red-600' : 'text-green-600'}`}>
                               {risk.inherentTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
                               {risk.inherentTrend.value}
@@ -1203,7 +1348,14 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          {getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color)}
+                          {renderEditableCell(
+                            risk.id,
+                            'controlEffectiveness',
+                            risk.controlEffectiveness.label,
+                            getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color),
+                            'select',
+                            ['Effective', 'Partially Effective', 'Ineffective', 'Not Assessed']
+                          )}
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
@@ -1215,9 +1367,16 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center gap-2">
-                            <Badge variant="outline" className={`${getRiskBadgeColor(risk.residualRisk.color)}`}>
-                              {risk.residualRisk.level}
-                            </Badge>
+                            {renderEditableCell(
+                              risk.id,
+                              'residualRisk',
+                              risk.residualRisk.level,
+                              <Badge variant="outline" className={`${getRiskBadgeColor(risk.residualRisk.color)}`}>
+                                {risk.residualRisk.level}
+                              </Badge>,
+                              'select',
+                              ['Critical', 'High', 'Medium', 'Low']
+                            )}
                             <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-red-600' : 'text-green-600'}`}>
                               {risk.residualTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
                               {risk.residualTrend.value}
@@ -1225,7 +1384,14 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-b border-border">
-                          <Badge className={getStatusColor(risk.status)}>{risk.status}</Badge>
+                          {renderEditableCell(
+                            risk.id,
+                            'status',
+                            risk.status,
+                            <Badge className={getStatusColor(risk.status)}>{risk.status}</Badge>,
+                            'select',
+                            ['Sent for Assessment', 'In Progress', 'Pending Approval', 'Completed', 'Closed']
+                          )}
                         </TableCell>
                       </TableRow>
                       );
