@@ -846,7 +846,7 @@ const Dashboard1stLine = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-indigo-400 ring-offset-2" : ""}`}
                 >
-                  Pending Review
+                  Pending Approval
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "approve" ? "bg-white/20" : "bg-muted"
                   }`}>
