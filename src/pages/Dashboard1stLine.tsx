@@ -185,9 +185,22 @@ const Dashboard1stLine = () => {
 
   const [riskData, setRiskData] = useState<RiskData[]>(initialRiskData1stLine);
 
+  const getFilteredByTab = (data: RiskData[], tab: "own" | "assess" | "approve") => {
+    switch (tab) {
+      case "own":
+        return data; // All risks
+      case "assess":
+        return data.filter(risk => risk.status === "Sent for Assessment");
+      case "approve":
+        return data.filter(risk => risk.status === "Pending Approval");
+      default:
+        return data;
+    }
+  };
+
   const visibleRisks = useMemo(() => {
     const visible: RiskData[] = [];
-    let filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    let filtered = getFilteredByTab(riskData, activeTab);
     
     // Apply org level filter
     if (orgLevelFilter !== "all") {
@@ -483,7 +496,7 @@ const Dashboard1stLine = () => {
   }, [riskData]);
 
   const filteredRiskData = useMemo(() => {
-    let filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    let filtered = getFilteredByTab(riskData, activeTab);
     
     // Apply org level filter
     if (orgLevelFilter !== "all") {
@@ -820,7 +833,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "own" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.tabCategory === "own").length}
+                    {riskData.length}
                   </span>
                 </button>
                 <button
@@ -835,7 +848,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "assess" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.tabCategory === "assess").length}
+                    {riskData.filter(r => r.status === "Sent for Assessment").length}
                   </span>
                 </button>
                 <button
@@ -850,7 +863,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "approve" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.tabCategory === "approve").length}
+                    {riskData.filter(r => r.status === "Pending Approval").length}
                   </span>
                 </button>
               </div>
@@ -1403,7 +1416,7 @@ const initialRiskData1stLine: RiskData[] = [
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
     residualRisk: { level: "Medium", color: "yellow" },
     residualTrend: { value: "8%", up: false },
-    status: "In Progress",
+    status: "Sent for Assessment",
     lastAssessed: "2025-10-15",
     previousAssessments: 5,
     tabCategory: "assess",
@@ -1437,7 +1450,7 @@ const initialRiskData1stLine: RiskData[] = [
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
     residualRisk: { level: "High", color: "red" },
     residualTrend: { value: "14%", up: true },
-    status: "In Progress",
+    status: "Sent for Assessment",
     lastAssessed: "2025-10-18",
     previousAssessments: 8,
     tabCategory: "assess",
@@ -1470,7 +1483,7 @@ const initialRiskData1stLine: RiskData[] = [
     testResults: { label: "Operating Effective", sublabel: "" },
     residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "3%", up: false },
-    status: "Pending Review",
+    status: "Pending Approval",
     lastAssessed: "2025-11-01",
     previousAssessments: 12,
     tabCategory: "approve",
@@ -1570,7 +1583,7 @@ const initialRiskData1stLine: RiskData[] = [
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
     residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "2%", up: false },
-    status: "Pending Review",
+    status: "Pending Approval",
     lastAssessed: "2025-10-28",
     previousAssessments: 9,
     tabCategory: "approve",
@@ -1670,7 +1683,7 @@ const initialRiskData1stLine: RiskData[] = [
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
     residualRisk: { level: "Low", color: "green" },
     residualTrend: { value: "1%", up: false },
-    status: "Pending Review",
+    status: "Pending Approval",
     lastAssessed: "2025-11-02",
     previousAssessments: 8,
     tabCategory: "approve",
