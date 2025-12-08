@@ -899,6 +899,8 @@ const Dashboard1stLine = () => {
                         onClick={() => {
                           if (selectedRisks.size === 0) {
                             toast.error("Please select at least one risk assessment first");
+                          } else {
+                            setActionDialog({ open: true, type: "collaborate", riskId: Array.from(selectedRisks).join(",") });
                           }
                         }}
                       >
@@ -918,6 +920,8 @@ const Dashboard1stLine = () => {
                         onClick={() => {
                           if (selectedRisks.size === 0) {
                             toast.error("Please select at least one risk assessment first");
+                          } else {
+                            setActionDialog({ open: true, type: "reassign", riskId: Array.from(selectedRisks).join(",") });
                           }
                         }}
                       >
@@ -1460,30 +1464,84 @@ const Dashboard1stLine = () => {
 
       {/* Action Dialog */}
       <Dialog open={actionDialog.open} onOpenChange={(open) => !open && setActionDialog({ open: false, type: null, riskId: null })}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>
-              {actionDialog.type === "reassign" && "Reassign Risk"}
-              {actionDialog.type === "collaborate" && "Add Collaborator"}
+              {actionDialog.type === "reassign" && "Reassign Assessors"}
+              {actionDialog.type === "collaborate" && "Manage Collaborators"}
               {actionDialog.type === "reassess" && "Request Reassessment"}
             </DialogTitle>
             <DialogDescription>
-              {actionDialog.type === "reassign" && "Select a new owner for this risk assessment"}
-              {actionDialog.type === "collaborate" && "Invite someone to collaborate on this assessment"}
+              {actionDialog.type === "reassign" && `Update assessors for ${actionDialog.riskId?.split(",").length || 1} selected risk${(actionDialog.riskId?.split(",").length || 1) > 1 ? "s" : ""}`}
+              {actionDialog.type === "collaborate" && `Manage collaborators for ${actionDialog.riskId?.split(",").length || 1} selected risk${(actionDialog.riskId?.split(",").length || 1) > 1 ? "s" : ""}`}
               {actionDialog.type === "reassess" && "Request a reassessment of this risk"}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
+            {/* Current Assignees */}
             <div>
-              <Label>Select User</Label>
+              <Label className="text-sm font-medium">
+                {actionDialog.type === "collaborate" ? "Current Collaborators" : "Current Assessors"}
+              </Label>
+              <div className="mt-3 space-y-2">
+                {actionDialog.riskId?.split(",").slice(0, 3).map((riskId) => {
+                  const risk = riskData.find(r => r.id === riskId.trim());
+                  if (!risk) return null;
+                  return (
+                    <div key={riskId} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
+                      <span className="text-xs font-medium truncate max-w-[120px]">{risk.id}</span>
+                      <div className="flex items-center -space-x-2">
+                        {risk.assessors.slice(0, 3).map((assessor, idx) => {
+                          const initials = assessor.split(" ").map(n => n[0]).join("");
+                          const colors = ["bg-emerald-500", "bg-blue-500", "bg-purple-500", "bg-orange-500"];
+                          return (
+                            <div
+                              key={idx}
+                              className={`w-8 h-8 rounded-full ${colors[idx % colors.length]} flex items-center justify-center text-white text-xs font-semibold border-2 border-background`}
+                              title={assessor}
+                            >
+                              {initials}
+                            </div>
+                          );
+                        })}
+                        {risk.assessors.length > 3 && (
+                          <div className="w-8 h-8 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xs font-semibold border-2 border-background">
+                            +{risk.assessors.length - 3}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                {(actionDialog.riskId?.split(",").length || 0) > 3 && (
+                  <p className="text-xs text-muted-foreground text-center">
+                    ...and {(actionDialog.riskId?.split(",").length || 0) - 3} more risks
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Add New User */}
+            <div>
+              <Label>{actionDialog.type === "collaborate" ? "Add Collaborator" : "Add/Replace Assessor"}</Label>
               <Select>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Choose a user..." />
                 </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="john">John Smith</SelectItem>
-                  <SelectItem value="sarah">Sarah Johnson</SelectItem>
-                  <SelectItem value="mike">Mike Davis</SelectItem>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                  {Object.keys(assessorEmails).map((name) => {
+                    const initials = name.split(" ").map(n => n[0]).join("");
+                    return (
+                      <SelectItem key={name} value={name}>
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-blue-500 flex items-center justify-center text-white text-xs font-semibold">
+                            {initials}
+                          </div>
+                          <span>{name}</span>
+                        </div>
+                      </SelectItem>
+                    );
+                  })}
                 </SelectContent>
               </Select>
             </div>
@@ -1492,7 +1550,9 @@ const Dashboard1stLine = () => {
             <Button variant="outline" onClick={() => setActionDialog({ open: false, type: null, riskId: null })}>
               Cancel
             </Button>
-            <Button onClick={handleActionSubmit}>Confirm</Button>
+            <Button onClick={handleActionSubmit}>
+              {actionDialog.type === "collaborate" ? "Add Collaborator" : "Update Assessors"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
