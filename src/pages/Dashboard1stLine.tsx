@@ -1017,14 +1017,14 @@ const Dashboard1stLine = () => {
                 <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
                   Filter by Org Level
                 </Label>
-                <Select defaultValue="retail">
+                <Select defaultValue="lvl1">
                   <SelectTrigger id="assessment-context" className="w-48 h-8 bg-first-line text-white border-first-line">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="retail">Retail Banking</SelectItem>
-                    <SelectItem value="corporate">Corporate Banking</SelectItem>
-                    <SelectItem value="investment">Investment Banking</SelectItem>
+                    <SelectItem value="lvl1">Level 1</SelectItem>
+                    <SelectItem value="lvl2">Level 2</SelectItem>
+                    <SelectItem value="lvl3">Level 3</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
