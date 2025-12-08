@@ -894,17 +894,6 @@ const Dashboard1stLine = () => {
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <Plus className="h-3.5 w-3.5 mr-1" />
-                        Add New Risk
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Create a new risk entry</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
                         <UsersIcon className="h-3.5 w-3.5 mr-1" />
                         Collaborate
                       </Button>
