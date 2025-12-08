@@ -549,8 +549,8 @@ export function AIDocumentAssessmentModal({
             </div>
 
             {/* Editable Table */}
-            <div className="flex-1 border rounded-lg overflow-hidden min-h-0">
-              <ScrollArea className="h-full">
+            <div className="border rounded-lg overflow-hidden">
+              <ScrollArea className="h-[400px]">
                 <Table>
                   <TableHeader className="sticky top-0 bg-background z-10">
                     <TableRow>
