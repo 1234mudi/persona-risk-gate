@@ -168,45 +168,6 @@ const AssessmentCard = ({
               <FileText className="w-3.5 h-3.5" />
               <span className="ml-1">Assess Manually</span>
             </Button>
-            {hasManualEdits ? (
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <div className="ml-auto">
-                      <Button 
-                        size="sm"
-                        className="text-[11px] h-7 px-2.5 bg-muted text-muted-foreground cursor-not-allowed"
-                        disabled
-                      >
-                        <Info className="w-3.5 h-3.5" />
-                        <span className="ml-1">AI Disabled</span>
-                      </Button>
-                    </div>
-                  </TooltipTrigger>
-                  <TooltipContent side="top" className="max-w-[250px] text-xs">
-                    <p>AI assessment is disabled because this section contains manually updated values. Re-running AI would overwrite your changes.</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            ) : (
-              <Button 
-                size="sm"
-                className="text-[11px] h-7 px-2.5 bg-primary text-primary-foreground hover:bg-primary/90 ml-auto"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  onAIAssess();
-                }}
-                disabled={isAIAssessing || completion === 100}
-              >
-                {isAIAssessing ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Sparkles className="w-3.5 h-3.5" />
-                )}
-                <span className="ml-1">{isAIAssessing ? "Assessing..." : "Assess with AI"}</span>
-              </Button>
-            )}
           </div>
         </div>
       </div>
@@ -424,6 +385,26 @@ This risk is currently being managed within established parameters. No immediate
                   <p className="text-[10px] text-muted-foreground">Overall</p>
                 </div>
               </div>
+              <Button 
+                size="sm"
+                className="h-8 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
+                onClick={() => {
+                  // Assess all sections with AI
+                  cards.forEach((card, index) => {
+                    if (!manuallyEditedSections[card.sectionKey] && card.completion < 100) {
+                      setTimeout(() => handleAIAssess(card.sectionKey), index * 300);
+                    }
+                  });
+                }}
+                disabled={assessingSection !== null}
+              >
+                {assessingSection ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Sparkles className="w-3.5 h-3.5" />
+                )}
+                <span>{assessingSection ? "Assessing..." : "Assess with AI"}</span>
+              </Button>
               <Button 
                 size="sm"
                 variant="outline"
