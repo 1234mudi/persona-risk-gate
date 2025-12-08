@@ -1,5 +1,5 @@
-import { useState, useCallback } from "react";
-import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import { useState, useCallback, useMemo } from "react";
+import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2 } from "lucide-react";
 import mammoth from "mammoth";
 import {
   Dialog,
@@ -13,9 +13,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { toast } from "sonner";
 
-interface ParsedRisk {
+export interface ParsedRisk {
   id: string;
   title: string;
   riskLevel1: string;
@@ -37,16 +47,23 @@ interface ParsedRisk {
   lastAssessed: string;
 }
 
+interface ExistingRisk {
+  id: string;
+  title: string;
+}
+
 interface AIDocumentAssessmentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onRisksImported: (risks: ParsedRisk[]) => void;
+  existingRisks?: ExistingRisk[];
 }
 
 export function AIDocumentAssessmentModal({ 
   open, 
   onOpenChange,
-  onRisksImported 
+  onRisksImported,
+  existingRisks = []
 }: AIDocumentAssessmentModalProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -54,6 +71,22 @@ export function AIDocumentAssessmentModal({
   const [progress, setProgress] = useState(0);
   const [parsedRisks, setParsedRisks] = useState<ParsedRisk[]>([]);
   const [step, setStep] = useState<"upload" | "processing" | "review">("upload");
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+
+  // Create a map of existing risk IDs for quick lookup
+  const existingRiskMap = useMemo(() => {
+    const map = new Map<string, ExistingRisk>();
+    existingRisks.forEach(risk => map.set(risk.id, risk));
+    return map;
+  }, [existingRisks]);
+
+  // Determine if a risk is new or modified
+  const getRiskStatus = (risk: ParsedRisk): "new" | "modified" | "unchanged" => {
+    const existing = existingRiskMap.get(risk.id);
+    if (!existing) return "new";
+    if (existing.title !== risk.title) return "modified";
+    return "modified"; // For now, treat all matched IDs as potentially modified
+  };
 
   const acceptedTypes = [
     "text/csv",
@@ -348,6 +381,7 @@ export function AIDocumentAssessmentModal({
     setStep("upload");
     setProgress(0);
     setIsProcessing(false);
+    setEditingIndex(null);
     onOpenChange(false);
   };
 
@@ -357,9 +391,43 @@ export function AIDocumentAssessmentModal({
     return 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400';
   };
 
+  const getStatusBadge = (status: "new" | "modified" | "unchanged") => {
+    switch (status) {
+      case "new":
+        return <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30"><Plus className="w-3 h-3 mr-1" />New</Badge>;
+      case "modified":
+        return <Badge className="bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30"><Pencil className="w-3 h-3 mr-1" />Modified</Badge>;
+      default:
+        return null;
+    }
+  };
+
+  const updateRisk = (index: number, field: keyof ParsedRisk, value: string) => {
+    setParsedRisks(prev => prev.map((risk, i) => 
+      i === index ? { ...risk, [field]: value } : risk
+    ));
+  };
+
+  const deleteRisk = (index: number) => {
+    setParsedRisks(prev => prev.filter((_, i) => i !== index));
+    toast.success("Risk removed from import list");
+  };
+
+  // Count new vs modified
+  const riskCounts = useMemo(() => {
+    let newCount = 0;
+    let modifiedCount = 0;
+    parsedRisks.forEach(risk => {
+      const status = getRiskStatus(risk);
+      if (status === "new") newCount++;
+      else if (status === "modified") modifiedCount++;
+    });
+    return { newCount, modifiedCount };
+  }, [parsedRisks, existingRiskMap]);
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-4xl max-h-[85vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-first-line" />
@@ -456,58 +524,164 @@ export function AIDocumentAssessmentModal({
         )}
 
         {step === "review" && (
-          <div className="flex-1 flex flex-col overflow-hidden">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-5 h-5 text-green-500" />
-                <span className="font-medium">
-                  {parsedRisks.length} Risk Assessments Found
-                </span>
+          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+            {/* Summary Header */}
+            <div className="flex items-center justify-between mb-4 flex-shrink-0">
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <CheckCircle className="w-5 h-5 text-green-500" />
+                  <span className="font-medium">
+                    {parsedRisks.length} Risk Assessments Found
+                  </span>
+                </div>
+                <div className="flex items-center gap-2 text-sm">
+                  <Badge className="bg-green-500/20 text-green-600 dark:text-green-400">
+                    <Plus className="w-3 h-3 mr-1" />{riskCounts.newCount} New
+                  </Badge>
+                  <Badge className="bg-blue-500/20 text-blue-600 dark:text-blue-400">
+                    <Pencil className="w-3 h-3 mr-1" />{riskCounts.modifiedCount} Modified
+                  </Badge>
+                </div>
               </div>
               <Badge variant="outline">
-                Ready to Import
+                Click any cell to edit
               </Badge>
             </div>
 
-            <ScrollArea className="flex-1 border rounded-lg">
-              <div className="p-4 space-y-3">
-                {parsedRisks.slice(0, 20).map((risk, index) => (
-                  <div 
-                    key={index}
-                    className="p-3 bg-muted/30 rounded-lg border border-border/50"
-                  >
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className="text-xs">
-                            {risk.id}
-                          </Badge>
-                          <Badge className={`text-xs ${getRiskLevelColor(risk.inherentRisk)}`}>
-                            {risk.inherentRisk.replace(/[\[\]]/g, '')}
-                          </Badge>
-                        </div>
-                        <p className="text-sm font-medium truncate">{risk.title}</p>
-                        <div className="flex items-center gap-2 mt-1 text-xs text-muted-foreground">
-                          <span>{risk.businessUnit}</span>
-                          <span>•</span>
-                          <span>{risk.category}</span>
-                          <span>•</span>
-                          <span>Owner: {risk.owner}</span>
-                        </div>
-                      </div>
-                      <Badge variant="secondary" className="text-xs shrink-0">
-                        {risk.status}
-                      </Badge>
-                    </div>
-                  </div>
-                ))}
-                {parsedRisks.length > 20 && (
-                  <p className="text-center text-sm text-muted-foreground py-2">
-                    And {parsedRisks.length - 20} more...
-                  </p>
-                )}
-              </div>
-            </ScrollArea>
+            {/* Editable Table */}
+            <div className="flex-1 border rounded-lg overflow-hidden min-h-0">
+              <ScrollArea className="h-full">
+                <Table>
+                  <TableHeader className="sticky top-0 bg-background z-10">
+                    <TableRow>
+                      <TableHead className="w-[60px]">Status</TableHead>
+                      <TableHead className="w-[80px]">Risk ID</TableHead>
+                      <TableHead className="min-w-[200px]">Title</TableHead>
+                      <TableHead className="w-[120px]">Business Unit</TableHead>
+                      <TableHead className="w-[100px]">Category</TableHead>
+                      <TableHead className="w-[100px]">Owner</TableHead>
+                      <TableHead className="w-[100px]">Inherent Risk</TableHead>
+                      <TableHead className="w-[100px]">Residual Risk</TableHead>
+                      <TableHead className="w-[100px]">Status</TableHead>
+                      <TableHead className="w-[50px]"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {parsedRisks.map((risk, index) => {
+                      const riskStatus = getRiskStatus(risk);
+                      const isEditing = editingIndex === index;
+                      
+                      return (
+                        <TableRow 
+                          key={index}
+                          className={`
+                            ${riskStatus === "new" ? "bg-green-500/5 hover:bg-green-500/10" : ""}
+                            ${riskStatus === "modified" ? "bg-blue-500/5 hover:bg-blue-500/10" : ""}
+                          `}
+                        >
+                          <TableCell className="py-2">
+                            {getStatusBadge(riskStatus)}
+                          </TableCell>
+                          <TableCell className="py-2 font-mono text-xs">
+                            <Input
+                              value={risk.id}
+                              onChange={(e) => updateRisk(index, 'id', e.target.value)}
+                              className="h-7 text-xs px-2"
+                            />
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Input
+                              value={risk.title}
+                              onChange={(e) => updateRisk(index, 'title', e.target.value)}
+                              className="h-7 text-xs px-2"
+                            />
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Input
+                              value={risk.businessUnit}
+                              onChange={(e) => updateRisk(index, 'businessUnit', e.target.value)}
+                              className="h-7 text-xs px-2"
+                            />
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Input
+                              value={risk.category}
+                              onChange={(e) => updateRisk(index, 'category', e.target.value)}
+                              className="h-7 text-xs px-2"
+                            />
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Input
+                              value={risk.owner}
+                              onChange={(e) => updateRisk(index, 'owner', e.target.value)}
+                              className="h-7 text-xs px-2"
+                            />
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Select
+                              value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
+                                     risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                              onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
+                            >
+                              <SelectTrigger className="h-7 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="High">High</SelectItem>
+                                <SelectItem value="Medium">Medium</SelectItem>
+                                <SelectItem value="Low">Low</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Select
+                              value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
+                                     risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                              onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
+                            >
+                              <SelectTrigger className="h-7 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="High">High</SelectItem>
+                                <SelectItem value="Medium">Medium</SelectItem>
+                                <SelectItem value="Low">Low</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Select
+                              value={risk.status}
+                              onValueChange={(value) => updateRisk(index, 'status', value)}
+                            >
+                              <SelectTrigger className="h-7 text-xs">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
+                                <SelectItem value="In Progress">In Progress</SelectItem>
+                                <SelectItem value="Completed">Completed</SelectItem>
+                                <SelectItem value="Overdue">Overdue</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </TableCell>
+                          <TableCell className="py-2">
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
+                              onClick={() => deleteRisk(index)}
+                            >
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </ScrollArea>
+            </div>
           </div>
         )}
 
