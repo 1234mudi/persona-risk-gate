@@ -1216,18 +1216,18 @@ const Dashboard1stLine = () => {
                           <div className="space-y-1">
                             <div className="flex gap-1">
                               <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress.assess === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress.assess === "in-progress" ? "bg-amber-500" :
+                                risk.assessmentProgress?.assess === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress?.assess === "in-progress" ? "bg-amber-500" :
                                 "bg-gray-300 dark:bg-gray-600"
                               }`} />
                               <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress.reviewChallenge === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress.reviewChallenge === "in-progress" ? "bg-amber-500" :
+                                risk.assessmentProgress?.reviewChallenge === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress?.reviewChallenge === "in-progress" ? "bg-amber-500" :
                                 "bg-gray-300 dark:bg-gray-600"
                               }`} />
                               <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress.approve === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress.approve === "in-progress" ? "bg-amber-500" :
+                                risk.assessmentProgress?.approve === "completed" ? "bg-green-500" :
+                                risk.assessmentProgress?.approve === "in-progress" ? "bg-amber-500" :
                                 "bg-gray-300 dark:bg-gray-600"
                               }`} />
                             </div>
