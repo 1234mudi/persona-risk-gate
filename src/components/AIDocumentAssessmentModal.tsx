@@ -427,7 +427,7 @@ export function AIDocumentAssessmentModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="max-w-[95vw] w-[1400px] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-first-line" />
@@ -554,15 +554,15 @@ export function AIDocumentAssessmentModal({
                 <Table>
                   <TableHeader className="sticky top-0 bg-background z-10">
                     <TableRow>
-                      <TableHead className="w-[60px]">Status</TableHead>
-                      <TableHead className="w-[80px]">Risk ID</TableHead>
-                      <TableHead className="min-w-[200px]">Title</TableHead>
-                      <TableHead className="w-[120px]">Business Unit</TableHead>
-                      <TableHead className="w-[100px]">Category</TableHead>
-                      <TableHead className="w-[100px]">Owner</TableHead>
-                      <TableHead className="w-[100px]">Inherent Risk</TableHead>
-                      <TableHead className="w-[100px]">Residual Risk</TableHead>
-                      <TableHead className="w-[100px]">Status</TableHead>
+                      <TableHead className="w-[70px]">Status</TableHead>
+                      <TableHead className="w-[90px] whitespace-nowrap">Risk ID</TableHead>
+                      <TableHead className="min-w-[280px]">Title</TableHead>
+                      <TableHead className="w-[140px]">Business Unit</TableHead>
+                      <TableHead className="w-[120px]">Category</TableHead>
+                      <TableHead className="w-[120px]">Owner</TableHead>
+                      <TableHead className="w-[110px]">Inherent Risk</TableHead>
+                      <TableHead className="w-[110px]">Residual Risk</TableHead>
+                      <TableHead className="w-[130px]">Status</TableHead>
                       <TableHead className="w-[50px]"></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -582,11 +582,11 @@ export function AIDocumentAssessmentModal({
                           <TableCell className="py-2">
                             {getStatusBadge(riskStatus)}
                           </TableCell>
-                          <TableCell className="py-2 font-mono text-xs">
+                          <TableCell className="py-2 font-mono text-xs whitespace-nowrap">
                             <Input
                               value={risk.id}
                               onChange={(e) => updateRisk(index, 'id', e.target.value)}
-                              className="h-7 text-xs px-2"
+                              className="h-7 text-xs px-2 w-[75px]"
                             />
                           </TableCell>
                           <TableCell className="py-2">
