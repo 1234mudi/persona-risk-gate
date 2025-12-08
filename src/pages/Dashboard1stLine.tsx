@@ -1007,11 +1007,15 @@ const Dashboard1stLine = () => {
               </div>
             </div>
 
-            {/* Filters and Actions */}
             <div className="flex flex-wrap items-center gap-3 mb-4">
+              <div className="relative flex-1 min-w-[200px]">
+                <Input placeholder="Search risks..." className="pl-10 h-8" />
+                <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              </div>
+
               <div className="flex flex-col gap-1">
                 <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
-                  Assessment Context
+                  Filter by Org Level
                 </Label>
                 <Select defaultValue="retail">
                   <SelectTrigger id="assessment-context" className="w-48 h-8 bg-first-line text-white border-first-line">
@@ -1024,7 +1028,6 @@ const Dashboard1stLine = () => {
                   </SelectContent>
                 </Select>
               </div>
-
 
               {activeTab === "assess" && (
                 <Select value={assessorFilter} onValueChange={setAssessorFilter}>
@@ -1041,11 +1044,6 @@ const Dashboard1stLine = () => {
                   </SelectContent>
                 </Select>
               )}
-
-              <div className="relative flex-1 min-w-[200px]">
-                <Input placeholder="Search risks..." className="pl-10 h-8" />
-                <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-              </div>
             </div>
 
             {/* Bulk Action Toolbar */}
