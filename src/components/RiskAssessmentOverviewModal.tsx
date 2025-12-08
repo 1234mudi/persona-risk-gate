@@ -235,7 +235,7 @@ This risk is currently being managed within established parameters. No immediate
 
   const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
     onOpenChange(false);
-    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
+    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}&source=2nd-line`);
   };
 
   const cards = [

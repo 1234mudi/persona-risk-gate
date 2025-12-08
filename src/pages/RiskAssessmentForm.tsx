@@ -161,6 +161,7 @@ const RiskAssessmentForm = () => {
   const riskName = searchParams.get("riskName") || "KYC Risk Assessment Inadequacy";
   const aiAssessed = searchParams.get("aiAssessed");
   const mode = searchParams.get("mode"); // 'update-version' for new version creation
+  const source = searchParams.get("source") || "1st-line"; // Track where user came from
   const isUpdateVersionMode = mode === "update-version";
   
   const [activeTab, setActiveTab] = useState(section);
@@ -1472,7 +1473,10 @@ const RiskAssessmentForm = () => {
             <div className="flex items-center justify-between">
               {/* Left - Back & Collaboration */}
               <div className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/2nd-line-analyst?openOverview=true&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`)}>
+                <Button variant="ghost" size="sm" onClick={() => {
+                  const dashboardPath = source === "2nd-line" ? "/dashboard/2nd-line-analyst" : "/dashboard/1st-line-analyst";
+                  navigate(`${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
+                }}>
                   <ArrowLeft className="w-4 h-4 mr-2" />
                   Back
                 </Button>
