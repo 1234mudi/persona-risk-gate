@@ -219,18 +219,42 @@ const Dashboard1stLine = () => {
       });
     }
     
-    filtered.forEach(risk => {
-      if (risk.riskLevel === "Level 1") {
-        visible.push(risk);
-        if (expandedRows.has(risk.id)) {
-          const level2Risks = filtered.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
-          level2Risks.forEach(l2 => {
-            const level3Risks = filtered.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
-            visible.push(...level3Risks);
+    // Separate risks into hierarchical and standalone
+    const level1Risks = filtered.filter(r => r.riskLevel === "Level 1");
+    const level2Risks = filtered.filter(r => r.riskLevel === "Level 2");
+    const level3Risks = filtered.filter(r => r.riskLevel === "Level 3");
+    
+    // Track which Level 2/3 risks are shown in hierarchy
+    const shownInHierarchy = new Set<string>();
+    
+    level1Risks.forEach(risk => {
+      visible.push(risk);
+      if (expandedRows.has(risk.id)) {
+        const childLevel2 = level2Risks.filter(r => r.parentRisk === risk.title);
+        childLevel2.forEach(l2 => {
+          visible.push(l2);
+          shownInHierarchy.add(l2.id);
+          const childLevel3 = level3Risks.filter(r => r.parentRisk === l2.title);
+          childLevel3.forEach(l3 => {
+            visible.push(l3);
+            shownInHierarchy.add(l3.id);
           });
-        }
+        });
       }
     });
+    
+    // Add standalone Level 2/3 risks (imported or without parent)
+    level2Risks.forEach(r => {
+      if (!shownInHierarchy.has(r.id) && !r.parentRisk) {
+        visible.push(r);
+      }
+    });
+    level3Risks.forEach(r => {
+      if (!shownInHierarchy.has(r.id) && !r.parentRisk) {
+        visible.push(r);
+      }
+    });
+    
     return visible;
   }, [riskData, activeTab, expandedRows, orgLevelFilter]);
 
