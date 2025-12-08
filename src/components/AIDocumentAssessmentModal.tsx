@@ -50,6 +50,12 @@ export interface ParsedRisk {
 interface ExistingRisk {
   id: string;
   title: string;
+  businessUnit?: string;
+  category?: string;
+  owner?: string;
+  inherentRisk?: string;
+  residualRisk?: string;
+  status?: string;
 }
 
 interface AIDocumentAssessmentModalProps {
@@ -84,8 +90,25 @@ export function AIDocumentAssessmentModal({
   const getRiskStatus = (risk: ParsedRisk): "new" | "modified" | "unchanged" => {
     const existing = existingRiskMap.get(risk.id);
     if (!existing) return "new";
-    if (existing.title !== risk.title) return "modified";
-    return "modified"; // For now, treat all matched IDs as potentially modified
+    // Check if any field is different
+    if (existing.title !== risk.title ||
+        existing.businessUnit !== risk.businessUnit ||
+        existing.category !== risk.category ||
+        existing.owner !== risk.owner ||
+        existing.inherentRisk !== risk.inherentRisk ||
+        existing.residualRisk !== risk.residualRisk ||
+        existing.status !== risk.status) {
+      return "modified";
+    }
+    return "unchanged";
+  };
+
+  // Check if a specific field is modified
+  const isFieldModified = (risk: ParsedRisk, field: keyof ParsedRisk): boolean => {
+    const existing = existingRiskMap.get(risk.id);
+    if (!existing) return false; // New risks don't show as modified
+    const existingValue = existing[field as keyof ExistingRisk];
+    return existingValue !== undefined && existingValue !== risk[field];
   };
 
   const acceptedTypes = [
@@ -593,28 +616,28 @@ export function AIDocumentAssessmentModal({
                             <Input
                               value={risk.title}
                               onChange={(e) => updateRisk(index, 'title', e.target.value)}
-                              className="h-7 text-xs px-2"
+                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'title') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
                             />
                           </TableCell>
                           <TableCell className="py-2">
                             <Input
                               value={risk.businessUnit}
                               onChange={(e) => updateRisk(index, 'businessUnit', e.target.value)}
-                              className="h-7 text-xs px-2"
+                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'businessUnit') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
                             />
                           </TableCell>
                           <TableCell className="py-2">
                             <Input
                               value={risk.category}
                               onChange={(e) => updateRisk(index, 'category', e.target.value)}
-                              className="h-7 text-xs px-2"
+                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'category') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
                             />
                           </TableCell>
                           <TableCell className="py-2">
                             <Input
                               value={risk.owner}
                               onChange={(e) => updateRisk(index, 'owner', e.target.value)}
-                              className="h-7 text-xs px-2"
+                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'owner') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
                             />
                           </TableCell>
                           <TableCell className="py-2">
@@ -623,7 +646,7 @@ export function AIDocumentAssessmentModal({
                                      risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
                               onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
                             >
-                              <SelectTrigger className="h-7 text-xs">
+                              <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'inherentRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -639,7 +662,7 @@ export function AIDocumentAssessmentModal({
                                      risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
                               onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
                             >
-                              <SelectTrigger className="h-7 text-xs">
+                              <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'residualRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
@@ -654,7 +677,7 @@ export function AIDocumentAssessmentModal({
                               value={risk.status}
                               onValueChange={(value) => updateRisk(index, 'status', value)}
                             >
-                              <SelectTrigger className="h-7 text-xs">
+                              <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'status') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
                                 <SelectValue />
                               </SelectTrigger>
                               <SelectContent>
