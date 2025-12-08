@@ -1,9 +1,10 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
+import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -269,6 +270,80 @@ const Dashboard1stLine = () => {
   // Update closed assessment dialog state
   const [updateVersionDialogOpen, setUpdateVersionDialogOpen] = useState(false);
   const [selectedRiskForUpdate, setSelectedRiskForUpdate] = useState<RiskData | null>(null);
+  
+  // AI Document Assessment modal state
+  const [aiDocumentModalOpen, setAiDocumentModalOpen] = useState(false);
+
+  const handleImportedRisks = (parsedRisks: any[]) => {
+    // Convert parsed risks to RiskData format and add to the list
+    const newRisks: RiskData[] = parsedRisks.map((parsed, index) => ({
+      id: parsed.id || `IMPORT-${Date.now()}-${index}`,
+      title: parsed.title || parsed.riskLevel3 || 'Imported Risk',
+      dueDate: parsed.lastAssessed || new Date().toISOString().split('T')[0],
+      riskLevel: parsed.level || 'Level 3',
+      businessUnit: parsed.businessUnit || 'Unknown',
+      category: parsed.category || 'Operational',
+      owner: parsed.owner || 'Unassigned',
+      assessors: [parsed.assessor || 'Unassigned'],
+      orgLevel: {
+        level1: parsed.riskLevel1 || '',
+        level2: parsed.riskLevel2 || '',
+        level3: parsed.riskLevel3 || '',
+      },
+      assessmentProgress: {
+        assess: "not-started" as const,
+        reviewChallenge: "not-started" as const,
+        approve: "not-started" as const,
+      },
+      sectionCompletion: {
+        inherentRating: 0,
+        controlEffectiveness: 0,
+        residualRating: 0,
+        riskTreatment: 0,
+      },
+      inherentRisk: { 
+        level: parsed.inherentRisk?.replace(/[\[\]]/g, '').split(',')[1]?.trim() || 'Medium', 
+        color: parsed.inherentRisk?.toLowerCase().includes('high') ? 'red' : 
+               parsed.inherentRisk?.toLowerCase().includes('low') ? 'green' : 'yellow' 
+      },
+      inherentTrend: { 
+        value: parsed.inherentTrend?.includes('↑') ? '+5%' : 
+               parsed.inherentTrend?.includes('↓') ? '-5%' : '0%', 
+        up: parsed.inherentTrend?.includes('↑') 
+      },
+      relatedControls: { 
+        id: parsed.controls?.split(':')[0] || 'CTRL-NEW', 
+        name: parsed.controls?.split(':')[1]?.trim() || 'New Control', 
+        type: 'Preventive', 
+        nature: 'Manual' 
+      },
+      controlEffectiveness: { 
+        label: parsed.effectiveness || 'Not Assessed', 
+        color: parsed.effectiveness?.toLowerCase().includes('effective') && !parsed.effectiveness?.toLowerCase().includes('in') ? 'green' : 'yellow' 
+      },
+      testResults: { 
+        label: parsed.testResults || 'Not Tested', 
+        sublabel: 'Imported' 
+      },
+      residualRisk: { 
+        level: parsed.residualRisk?.replace(/[\[\]]/g, '').split(',')[1]?.trim() || 'Medium', 
+        color: parsed.residualRisk?.toLowerCase().includes('high') ? 'red' : 
+               parsed.residualRisk?.toLowerCase().includes('low') ? 'green' : 'yellow' 
+      },
+      residualTrend: { 
+        value: parsed.residualTrend?.includes('↑') ? '+3%' : 
+               parsed.residualTrend?.includes('↓') ? '-3%' : '0%', 
+        up: parsed.residualTrend?.includes('↑') 
+      },
+      status: parsed.status || 'Sent for Assessment',
+      lastAssessed: parsed.lastAssessed || new Date().toLocaleDateString(),
+      previousAssessments: 0,
+      tabCategory: "assess" as const,
+    }));
+
+    setRiskData(prev => [...newRisks, ...prev]);
+    toast.success(`${newRisks.length} risks imported and added to "Risks to Assess" tab`);
+  };
 
   const handleUpdateClosedAssessment = (riskId: string) => {
     const risk = riskData.find(r => r.id === riskId);
@@ -580,10 +655,13 @@ const Dashboard1stLine = () => {
                 <AlertCircle className="w-4 h-4" />
                 View My Action Plans
               </a>
-              <a href="#" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
-                <Send className="w-4 h-4" />
-                Submit for Review
-              </a>
+              <button 
+                onClick={() => setAiDocumentModalOpen(true)} 
+                className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left"
+              >
+                <Sparkles className="w-4 h-4" />
+                Assess Documents with AI
+              </button>
             </CardContent>
           </Card>
 
@@ -1163,6 +1241,12 @@ const Dashboard1stLine = () => {
         open={riskOverviewModalOpen}
         onOpenChange={setRiskOverviewModalOpen}
         risk={selectedRiskForOverview}
+      />
+
+      <AIDocumentAssessmentModal
+        open={aiDocumentModalOpen}
+        onOpenChange={setAiDocumentModalOpen}
+        onRisksImported={handleImportedRisks}
       />
 
       {/* Edit Dialog */}
