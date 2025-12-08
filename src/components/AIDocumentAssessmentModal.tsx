@@ -1,5 +1,5 @@
 import { useState, useCallback, useMemo } from "react";
-import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2 } from "lucide-react";
+import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight } from "lucide-react";
 import mammoth from "mammoth";
 import {
   Dialog,
@@ -24,6 +24,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export interface ParsedRisk {
   id: string;
@@ -109,6 +115,43 @@ export function AIDocumentAssessmentModal({
     if (!existing) return false; // New risks don't show as modified
     const existingValue = existing[field as keyof ExistingRisk];
     return existingValue !== undefined && existingValue !== risk[field];
+  };
+
+  // Get the original value for a field
+  const getOriginalValue = (risk: ParsedRisk, field: keyof ParsedRisk): string | undefined => {
+    const existing = existingRiskMap.get(risk.id);
+    if (!existing) return undefined;
+    return existing[field as keyof ExistingRisk];
+  };
+
+  // Render a field with change indicator
+  const renderModifiedField = (
+    risk: ParsedRisk, 
+    field: keyof ParsedRisk, 
+    children: React.ReactNode
+  ) => {
+    const isModified = isFieldModified(risk, field);
+    const originalValue = getOriginalValue(risk, field);
+    
+    if (!isModified) return children;
+    
+    return (
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="relative">
+            {children}
+            <div className="absolute -top-1 -right-1 w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs">
+          <div className="flex items-center gap-2 text-xs">
+            <span className="text-muted-foreground line-through">{originalValue || '(empty)'}</span>
+            <ArrowRight className="w-3 h-3 text-amber-500" />
+            <span className="text-foreground font-medium">{risk[field] || '(empty)'}</span>
+          </div>
+        </TooltipContent>
+      </Tooltip>
+    );
   };
 
   const acceptedTypes = [
@@ -547,33 +590,40 @@ export function AIDocumentAssessmentModal({
         )}
 
         {step === "review" && (
-          <div className="flex-1 flex flex-col overflow-hidden min-h-0">
-            {/* Summary Header */}
-            <div className="flex items-center justify-between mb-4 flex-shrink-0">
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-500" />
-                  <span className="font-medium">
-                    {parsedRisks.length} Risk Assessments Found
-                  </span>
+          <TooltipProvider delayDuration={100}>
+            <div className="flex-1 flex flex-col overflow-hidden min-h-0">
+              {/* Summary Header */}
+              <div className="flex items-center justify-between mb-4 flex-shrink-0">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <CheckCircle className="w-5 h-5 text-green-500" />
+                    <span className="font-medium">
+                      {parsedRisks.length} Risk Assessments Found
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Badge className="bg-green-500/20 text-green-600 dark:text-green-400 border-green-500/30">
+                      <Plus className="w-3 h-3 mr-1" />{riskCounts.newCount} New
+                    </Badge>
+                    <Badge className="bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-500/30">
+                      <Pencil className="w-3 h-3 mr-1" />{riskCounts.modifiedCount} Modified
+                    </Badge>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Badge className="bg-green-500/20 text-green-600 dark:text-green-400">
-                    <Plus className="w-3 h-3 mr-1" />{riskCounts.newCount} New
-                  </Badge>
-                  <Badge className="bg-blue-500/20 text-blue-600 dark:text-blue-400">
-                    <Pencil className="w-3 h-3 mr-1" />{riskCounts.modifiedCount} Modified
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
+                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
+                    <span>Changed field (hover for details)</span>
+                  </div>
+                  <Badge variant="outline">
+                    Click any cell to edit
                   </Badge>
                 </div>
               </div>
-              <Badge variant="outline">
-                Click any cell to edit
-              </Badge>
-            </div>
 
-            {/* Editable Table */}
-            <div className="border rounded-lg overflow-hidden">
-              <ScrollArea className="h-[400px]">
+              {/* Editable Table */}
+              <div className="border rounded-lg overflow-hidden">
+                <ScrollArea className="h-[400px]">
                 <Table>
                   <TableHeader className="sticky top-0 bg-background z-10">
                     <TableRow>
@@ -613,80 +663,94 @@ export function AIDocumentAssessmentModal({
                             />
                           </TableCell>
                           <TableCell className="py-2">
-                            <Input
-                              value={risk.title}
-                              onChange={(e) => updateRisk(index, 'title', e.target.value)}
-                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'title') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                            />
+                            {renderModifiedField(risk, 'title',
+                              <Input
+                                value={risk.title}
+                                onChange={(e) => updateRisk(index, 'title', e.target.value)}
+                                className={`h-7 text-xs px-2 ${isFieldModified(risk, 'title') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                              />
+                            )}
                           </TableCell>
                           <TableCell className="py-2">
-                            <Input
-                              value={risk.businessUnit}
-                              onChange={(e) => updateRisk(index, 'businessUnit', e.target.value)}
-                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'businessUnit') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                            />
+                            {renderModifiedField(risk, 'businessUnit',
+                              <Input
+                                value={risk.businessUnit}
+                                onChange={(e) => updateRisk(index, 'businessUnit', e.target.value)}
+                                className={`h-7 text-xs px-2 ${isFieldModified(risk, 'businessUnit') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                              />
+                            )}
                           </TableCell>
                           <TableCell className="py-2">
-                            <Input
-                              value={risk.category}
-                              onChange={(e) => updateRisk(index, 'category', e.target.value)}
-                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'category') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                            />
+                            {renderModifiedField(risk, 'category',
+                              <Input
+                                value={risk.category}
+                                onChange={(e) => updateRisk(index, 'category', e.target.value)}
+                                className={`h-7 text-xs px-2 ${isFieldModified(risk, 'category') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                              />
+                            )}
                           </TableCell>
                           <TableCell className="py-2">
-                            <Input
-                              value={risk.owner}
-                              onChange={(e) => updateRisk(index, 'owner', e.target.value)}
-                              className={`h-7 text-xs px-2 ${isFieldModified(risk, 'owner') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                            />
+                            {renderModifiedField(risk, 'owner',
+                              <Input
+                                value={risk.owner}
+                                onChange={(e) => updateRisk(index, 'owner', e.target.value)}
+                                className={`h-7 text-xs px-2 ${isFieldModified(risk, 'owner') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                              />
+                            )}
                           </TableCell>
                           <TableCell className="py-2">
-                            <Select
-                              value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
-                                     risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                              onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
-                            >
-                              <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'inherentRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="High">High</SelectItem>
-                                <SelectItem value="Medium">Medium</SelectItem>
-                                <SelectItem value="Low">Low</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            {renderModifiedField(risk, 'inherentRisk',
+                              <Select
+                                value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
+                                       risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                                onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
+                              >
+                                <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'inherentRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="High">High</SelectItem>
+                                  <SelectItem value="Medium">Medium</SelectItem>
+                                  <SelectItem value="Low">Low</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            )}
                           </TableCell>
                           <TableCell className="py-2">
-                            <Select
-                              value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
-                                     risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                              onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
-                            >
-                              <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'residualRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="High">High</SelectItem>
-                                <SelectItem value="Medium">Medium</SelectItem>
-                                <SelectItem value="Low">Low</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            {renderModifiedField(risk, 'residualRisk',
+                              <Select
+                                value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
+                                       risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                                onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
+                              >
+                                <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'residualRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="High">High</SelectItem>
+                                  <SelectItem value="Medium">Medium</SelectItem>
+                                  <SelectItem value="Low">Low</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            )}
                           </TableCell>
                           <TableCell className="py-2">
-                            <Select
-                              value={risk.status}
-                              onValueChange={(value) => updateRisk(index, 'status', value)}
-                            >
-                              <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'status') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
-                                <SelectItem value="In Progress">In Progress</SelectItem>
-                                <SelectItem value="Completed">Completed</SelectItem>
-                                <SelectItem value="Overdue">Overdue</SelectItem>
-                              </SelectContent>
-                            </Select>
+                            {renderModifiedField(risk, 'status',
+                              <Select
+                                value={risk.status}
+                                onValueChange={(value) => updateRisk(index, 'status', value)}
+                              >
+                                <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'status') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                  <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                  <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
+                                  <SelectItem value="In Progress">In Progress</SelectItem>
+                                  <SelectItem value="Completed">Completed</SelectItem>
+                                  <SelectItem value="Overdue">Overdue</SelectItem>
+                                </SelectContent>
+                              </Select>
+                            )}
                           </TableCell>
                           <TableCell className="py-2">
                             <Button
@@ -706,6 +770,7 @@ export function AIDocumentAssessmentModal({
               </ScrollArea>
             </div>
           </div>
+          </TooltipProvider>
         )}
 
         <DialogFooter className="mt-4">
