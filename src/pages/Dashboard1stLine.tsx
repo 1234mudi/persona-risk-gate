@@ -1025,16 +1025,6 @@ const Dashboard1stLine = () => {
                 </Select>
               </div>
 
-              <Select defaultValue="all">
-                <SelectTrigger className="w-40 h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                </SelectContent>
-              </Select>
 
               {activeTab === "assess" && (
                 <Select value={assessorFilter} onValueChange={setAssessorFilter}>
