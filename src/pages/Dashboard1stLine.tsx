@@ -893,7 +893,15 @@ const Dashboard1stLine = () => {
                 <div className="flex items-center gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                      <Button 
+                        size="sm" 
+                        className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground"
+                        onClick={() => {
+                          if (selectedRisks.size === 0) {
+                            toast.error("Please select at least one risk assessment first");
+                          }
+                        }}
+                      >
                         <UsersIcon className="h-3.5 w-3.5 mr-1" />
                         Collaborate
                       </Button>
@@ -904,7 +912,15 @@ const Dashboard1stLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                      <Button 
+                        size="sm" 
+                        className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground"
+                        onClick={() => {
+                          if (selectedRisks.size === 0) {
+                            toast.error("Please select at least one risk assessment first");
+                          }
+                        }}
+                      >
                         <UserPlus className="h-3.5 w-3.5 mr-1" />
                         Reassign
                       </Button>
