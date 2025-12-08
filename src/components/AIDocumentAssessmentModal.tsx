@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2 } from "lucide-react";
+import mammoth from "mammoth";
 import {
   Dialog,
   DialogContent,
@@ -171,6 +172,116 @@ export function AIDocumentAssessmentModal({
     return risks;
   };
 
+  const parseDOCX = async (file: File): Promise<ParsedRisk[]> => {
+    try {
+      const arrayBuffer = await file.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      const text = result.value;
+      
+      console.log("DOCX text extracted, length:", text.length);
+      console.log("DOCX preview:", text.substring(0, 500));
+
+      const risks: ParsedRisk[] = [];
+      
+      // Try to parse table-like structure from text
+      // DOCX tables often come out as tab or whitespace separated values
+      const lines = text.split('\n').filter(line => line.trim() !== '');
+      
+      console.log("DOCX lines found:", lines.length);
+      
+      // Look for risk ID patterns like R-001, RISK-001, etc.
+      const riskIdPattern = /^[A-Z]*-?\d{3}/;
+      
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        
+        // Check if line starts with a risk ID pattern
+        if (riskIdPattern.test(line)) {
+          // Split by tabs first, then by multiple spaces if no tabs
+          let values = line.includes('\t') 
+            ? line.split('\t').map(v => v.trim())
+            : line.split(/\s{2,}/).map(v => v.trim());
+          
+          console.log(`DOCX Line ${i}: parsed ${values.length} columns from:`, line.substring(0, 100));
+          
+          if (values.length >= 5) {
+            risks.push({
+              id: values[0] || `R-${String(risks.length + 1).padStart(3, '0')}`,
+              title: values[1] || '',
+              riskLevel1: values[2] || '',
+              riskLevel2: values[3] || '',
+              riskLevel3: values[4] || '',
+              level: values[5] || '',
+              businessUnit: values[6] || '',
+              category: values[7] || '',
+              owner: values[8] || '',
+              assessor: values[9] || '',
+              inherentRisk: values[10] || 'Medium',
+              inherentTrend: values[11] || '',
+              controls: values[12] || '',
+              effectiveness: values[13] || '',
+              testResults: values[14] || '',
+              residualRisk: values[15] || 'Low',
+              residualTrend: values[16] || '',
+              status: values[17] || 'Sent for Assessment',
+              lastAssessed: values[18] || new Date().toLocaleDateString(),
+            });
+          }
+        }
+      }
+      
+      // If no structured data found, try to extract any risk-related content
+      if (risks.length === 0) {
+        console.log("No structured risks found, trying alternative parsing...");
+        
+        // Look for lines that might contain risk data
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i].trim();
+          
+          // Look for lines with risk-related keywords
+          if (line.length > 20 && (
+            line.toLowerCase().includes('risk') ||
+            line.toLowerCase().includes('control') ||
+            line.toLowerCase().includes('assessment')
+          )) {
+            // Try to extract meaningful data
+            const parts = line.split(/[,\t|]/).map(p => p.trim()).filter(p => p.length > 0);
+            
+            if (parts.length >= 3) {
+              risks.push({
+                id: `R-${String(risks.length + 1).padStart(3, '0')}`,
+                title: parts[0] || line.substring(0, 100),
+                riskLevel1: '',
+                riskLevel2: '',
+                riskLevel3: '',
+                level: '',
+                businessUnit: parts[1] || '',
+                category: parts[2] || '',
+                owner: parts[3] || '',
+                assessor: '',
+                inherentRisk: 'Medium',
+                inherentTrend: '',
+                controls: '',
+                effectiveness: '',
+                testResults: '',
+                residualRisk: 'Low',
+                residualTrend: '',
+                status: 'Sent for Assessment',
+                lastAssessed: new Date().toLocaleDateString(),
+              });
+            }
+          }
+        }
+      }
+      
+      console.log("Total DOCX risks parsed:", risks.length);
+      return risks;
+    } catch (error) {
+      console.error("Error parsing DOCX:", error);
+      throw error;
+    }
+  };
+
   const processFiles = async () => {
     if (files.length === 0) {
       toast.error("Please upload at least one file");
@@ -194,14 +305,12 @@ export function AIDocumentAssessmentModal({
           const risks = parseCSV(content);
           allRisks.push(...risks);
         } else if (ext === 'docx') {
-          // For DOCX, we'd need a library or backend processing
-          // For now, simulate AI processing
-          toast.info(`Processing ${file.name} with AI...`);
-          await new Promise(resolve => setTimeout(resolve, 1500));
-          
-          // Simulate extracted risks from DOCX
-          // In production, this would use a document parsing service
-          toast.warning(`DOCX parsing requires backend AI processing. Using CSV data only.`);
+          toast.info(`Processing ${file.name}...`);
+          const risks = await parseDOCX(file);
+          allRisks.push(...risks);
+          if (risks.length > 0) {
+            toast.success(`Extracted ${risks.length} risks from ${file.name}`);
+          }
         }
       } catch (error) {
         console.error(`Error processing ${file.name}:`, error);
