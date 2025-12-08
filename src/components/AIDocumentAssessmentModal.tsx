@@ -99,8 +99,21 @@ export function AIDocumentAssessmentModal({
   };
 
   const parseCSV = (content: string): ParsedRisk[] => {
-    const lines = content.split('\n');
-    if (lines.length < 2) return [];
+    console.log("CSV content length:", content.length);
+    console.log("CSV preview:", content.substring(0, 500));
+    
+    // Normalize line endings (handle Windows \r\n, old Mac \r, and Unix \n)
+    const normalizedContent = content.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    const lines = normalizedContent.split('\n').filter(line => line.trim() !== '');
+    
+    console.log("Total lines found:", lines.length);
+    if (lines.length < 2) {
+      console.log("Not enough lines in CSV");
+      return [];
+    }
+    
+    // Log header to verify column structure
+    console.log("CSV Header:", lines[0]);
     
     const risks: ParsedRisk[] = [];
     
@@ -126,7 +139,10 @@ export function AIDocumentAssessmentModal({
       }
       values.push(current.trim());
       
-      if (values.length >= 18) {
+      console.log(`Line ${i}: parsed ${values.length} columns`);
+      
+      // Be more lenient - accept rows with at least 10 columns
+      if (values.length >= 10) {
         risks.push({
           id: values[0] || `R-${String(i).padStart(3, '0')}`,
           title: values[1] || '',
@@ -151,6 +167,7 @@ export function AIDocumentAssessmentModal({
       }
     }
     
+    console.log("Total risks parsed:", risks.length);
     return risks;
   };
 
