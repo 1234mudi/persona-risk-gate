@@ -179,99 +179,69 @@ export function AIDocumentAssessmentModal({
       const text = result.value;
       
       console.log("DOCX text extracted, length:", text.length);
-      console.log("DOCX preview:", text.substring(0, 500));
 
       const risks: ParsedRisk[] = [];
-      
-      // Try to parse table-like structure from text
-      // DOCX tables often come out as tab or whitespace separated values
-      const lines = text.split('\n').filter(line => line.trim() !== '');
+      const lines = text.split('\n').map(line => line.trim()).filter(line => line !== '');
       
       console.log("DOCX lines found:", lines.length);
       
-      // Look for risk ID patterns like R-001, RISK-001, etc.
-      const riskIdPattern = /^[A-Z]*-?\d{3}/;
+      // The DOCX table is extracted with each cell on a separate line
+      // Find where data starts (after header row which has "Risk ID", "Title", etc.)
+      const headerFields = ['Risk ID', 'Title', 'Risk Level 1', 'Risk Level 2', 'Risk Level 3', 
+                           'Level', 'Business Unit', 'Category', 'Owner', 'Assessor',
+                           'Inherent Risk', 'Inherent Trend', 'Controls', 'Effectiveness',
+                           'Test Results', 'Residual Risk', 'Residual Trend', 'Status', 'Last Assessed'];
       
+      // Find the start of data (after "Last Assessed" header)
+      let dataStartIndex = -1;
       for (let i = 0; i < lines.length; i++) {
-        const line = lines[i].trim();
-        
-        // Check if line starts with a risk ID pattern
-        if (riskIdPattern.test(line)) {
-          // Split by tabs first, then by multiple spaces if no tabs
-          let values = line.includes('\t') 
-            ? line.split('\t').map(v => v.trim())
-            : line.split(/\s{2,}/).map(v => v.trim());
-          
-          console.log(`DOCX Line ${i}: parsed ${values.length} columns from:`, line.substring(0, 100));
-          
-          if (values.length >= 5) {
-            risks.push({
-              id: values[0] || `R-${String(risks.length + 1).padStart(3, '0')}`,
-              title: values[1] || '',
-              riskLevel1: values[2] || '',
-              riskLevel2: values[3] || '',
-              riskLevel3: values[4] || '',
-              level: values[5] || '',
-              businessUnit: values[6] || '',
-              category: values[7] || '',
-              owner: values[8] || '',
-              assessor: values[9] || '',
-              inherentRisk: values[10] || 'Medium',
-              inherentTrend: values[11] || '',
-              controls: values[12] || '',
-              effectiveness: values[13] || '',
-              testResults: values[14] || '',
-              residualRisk: values[15] || 'Low',
-              residualTrend: values[16] || '',
-              status: values[17] || 'Sent for Assessment',
-              lastAssessed: values[18] || new Date().toLocaleDateString(),
-            });
+        if (lines[i] === 'Last Assessed') {
+          dataStartIndex = i + 1;
+          break;
+        }
+      }
+      
+      if (dataStartIndex === -1) {
+        console.log("Could not find header row, trying to find R-001 pattern");
+        // Fallback: find first R-XXX pattern
+        for (let i = 0; i < lines.length; i++) {
+          if (/^R-\d{3}$/.test(lines[i])) {
+            dataStartIndex = i;
+            break;
           }
         }
       }
       
-      // If no structured data found, try to extract any risk-related content
-      if (risks.length === 0) {
-        console.log("No structured risks found, trying alternative parsing...");
+      console.log("Data starts at line:", dataStartIndex);
+      
+      if (dataStartIndex === -1) {
+        console.log("Could not find data start");
+        return [];
+      }
+      
+      // Each risk record has 19 fields, but controls might span multiple lines
+      // Group lines into records - each record starts with R-XXX pattern
+      const riskIdPattern = /^R-\d{3}$/;
+      let currentRecord: string[] = [];
+      
+      for (let i = dataStartIndex; i < lines.length; i++) {
+        const line = lines[i];
         
-        // Look for lines that might contain risk data
-        for (let i = 0; i < lines.length; i++) {
-          const line = lines[i].trim();
-          
-          // Look for lines with risk-related keywords
-          if (line.length > 20 && (
-            line.toLowerCase().includes('risk') ||
-            line.toLowerCase().includes('control') ||
-            line.toLowerCase().includes('assessment')
-          )) {
-            // Try to extract meaningful data
-            const parts = line.split(/[,\t|]/).map(p => p.trim()).filter(p => p.length > 0);
-            
-            if (parts.length >= 3) {
-              risks.push({
-                id: `R-${String(risks.length + 1).padStart(3, '0')}`,
-                title: parts[0] || line.substring(0, 100),
-                riskLevel1: '',
-                riskLevel2: '',
-                riskLevel3: '',
-                level: '',
-                businessUnit: parts[1] || '',
-                category: parts[2] || '',
-                owner: parts[3] || '',
-                assessor: '',
-                inherentRisk: 'Medium',
-                inherentTrend: '',
-                controls: '',
-                effectiveness: '',
-                testResults: '',
-                residualRisk: 'Low',
-                residualTrend: '',
-                status: 'Sent for Assessment',
-                lastAssessed: new Date().toLocaleDateString(),
-              });
-            }
-          }
+        // If we hit a new Risk ID and we have a current record, save it
+        if (riskIdPattern.test(line) && currentRecord.length > 0) {
+          // Process the completed record
+          const risk = parseRecordToRisk(currentRecord);
+          if (risk) risks.push(risk);
+          currentRecord = [line];
+        } else {
+          currentRecord.push(line);
         }
+      }
+      
+      // Don't forget the last record
+      if (currentRecord.length > 0) {
+        const risk = parseRecordToRisk(currentRecord);
+        if (risk) risks.push(risk);
       }
       
       console.log("Total DOCX risks parsed:", risks.length);
@@ -280,6 +250,36 @@ export function AIDocumentAssessmentModal({
       console.error("Error parsing DOCX:", error);
       throw error;
     }
+  };
+
+  const parseRecordToRisk = (lines: string[]): ParsedRisk | null => {
+    if (lines.length < 10) return null;
+    
+    // Expected order: Risk ID, Title, Risk Level 1-3, Level, Business Unit, Category,
+    // Owner, Assessor, Inherent Risk, Inherent Trend, Controls, Effectiveness,
+    // Test Results, Residual Risk, Residual Trend, Status, Last Assessed
+    
+    return {
+      id: lines[0] || '',
+      title: lines[1] || '',
+      riskLevel1: lines[2] || '',
+      riskLevel2: lines[3] || '',
+      riskLevel3: lines[4] || '',
+      level: lines[5] || '',
+      businessUnit: lines[6] || '',
+      category: lines[7] || '',
+      owner: lines[8] || '',
+      assessor: lines[9] || '',
+      inherentRisk: lines[10] || 'Medium',
+      inherentTrend: lines[11] || '',
+      controls: lines[12] || '',
+      effectiveness: lines[13] || '',
+      testResults: lines[14] || '',
+      residualRisk: lines[15] || 'Low',
+      residualTrend: lines[16] || '',
+      status: lines[17] || 'Sent for Assessment',
+      lastAssessed: lines[18] || new Date().toLocaleDateString(),
+    };
   };
 
   const processFiles = async () => {
