@@ -789,15 +789,15 @@ const Dashboard1stLine = () => {
                     <TooltipTrigger asChild>
                       <Button 
                         size="sm" 
-                        className="h-7 bg-first-line hover:bg-first-line/90 text-white"
-                        onClick={handleSubmitForReview}
+                        className="h-7 bg-gradient-to-r from-first-line to-emerald-600 hover:from-first-line/90 hover:to-emerald-600/90 text-white"
+                        onClick={() => setAiDocumentModalOpen(true)}
                       >
-                        <Send className="h-3.5 w-3.5 mr-1" />
-                        Submit for Review
+                        <Sparkles className="h-3.5 w-3.5 mr-1" />
+                        Assess Documents with AI
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Submit selected assessments to 2nd Line for review</p>
+                      <p>Upload CSV/DOCX files to create risk assessments with AI</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
