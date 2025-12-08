@@ -494,7 +494,7 @@ const Dashboard1stLine = () => {
 
   const handleProceedUpdateVersion = () => {
     if (selectedRiskForUpdate) {
-      navigate(`/risk-assessment?riskId=${encodeURIComponent(selectedRiskForUpdate.id)}&riskName=${encodeURIComponent(selectedRiskForUpdate.title)}&mode=update-version`);
+      navigate(`/risk-assessment?riskId=${encodeURIComponent(selectedRiskForUpdate.id)}&riskName=${encodeURIComponent(selectedRiskForUpdate.title)}&mode=update-version&source=1st-line`);
       setUpdateVersionDialogOpen(false);
       setSelectedRiskForUpdate(null);
     }

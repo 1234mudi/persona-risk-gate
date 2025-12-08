@@ -208,7 +208,7 @@ export const RiskAssessmentOverviewModal1stLine = ({
 
   const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
     onOpenChange(false);
-    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
+    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}&source=1st-line`);
   };
 
   const handleAIAssess = (sectionKey: string) => {
@@ -237,7 +237,7 @@ export const RiskAssessmentOverviewModal1stLine = ({
         
         // Navigate to the form with aiAssessed param so the form knows to show AI indicators
         onOpenChange(false);
-        navigate(`/risk-assessment?section=${sectionKey}&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}&aiAssessed=${sectionKey}`);
+        navigate(`/risk-assessment?section=${sectionKey}&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}&aiAssessed=${sectionKey}&source=1st-line`);
       }
       
       setAssessingSection(null);
