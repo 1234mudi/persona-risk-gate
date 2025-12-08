@@ -1247,6 +1247,7 @@ const Dashboard1stLine = () => {
         open={aiDocumentModalOpen}
         onOpenChange={setAiDocumentModalOpen}
         onRisksImported={handleImportedRisks}
+        existingRisks={riskData.map(r => ({ id: r.id, title: r.title }))}
       />
 
       {/* Edit Dialog */}
