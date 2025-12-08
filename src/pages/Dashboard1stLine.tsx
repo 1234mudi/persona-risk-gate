@@ -1089,25 +1089,54 @@ const Dashboard1stLine = () => {
                           )}
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="space-y-1">
+                          <div className="space-y-1.5">
+                            {/* Overall completion percentage */}
+                            {(() => {
+                              const avg = Math.round(
+                                (risk.sectionCompletion.inherentRating + 
+                                 risk.sectionCompletion.controlEffectiveness + 
+                                 risk.sectionCompletion.residualRating + 
+                                 risk.sectionCompletion.riskTreatment) / 4
+                              );
+                              return (
+                                <div className="flex items-center gap-2">
+                                  <div className="flex-1 h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                                    <div 
+                                      className={`h-full rounded-full transition-all ${
+                                        avg === 100 ? 'bg-green-500' : 
+                                        avg >= 50 ? 'bg-amber-500' : 
+                                        avg > 0 ? 'bg-orange-500' : 'bg-gray-300 dark:bg-gray-600'
+                                      }`}
+                                      style={{ width: `${avg}%` }}
+                                    />
+                                  </div>
+                                  <span className={`text-xs font-semibold min-w-[32px] ${
+                                    avg === 100 ? 'text-green-600 dark:text-green-400' : 
+                                    avg >= 50 ? 'text-amber-600 dark:text-amber-400' : 
+                                    'text-muted-foreground'
+                                  }`}>{avg}%</span>
+                                </div>
+                              );
+                            })()}
+                            {/* Stage progress indicators */}
                             <div className="flex gap-1">
-                              <div className={`h-2 flex-1 rounded-sm ${
+                              <div className={`h-1.5 flex-1 rounded-sm ${
                                 risk.assessmentProgress.assess === "completed" ? "bg-green-500" :
                                 risk.assessmentProgress.assess === "in-progress" ? "bg-amber-500" :
                                 "bg-gray-300 dark:bg-gray-600"
                               }`} />
-                              <div className={`h-2 flex-1 rounded-sm ${
+                              <div className={`h-1.5 flex-1 rounded-sm ${
                                 risk.assessmentProgress.reviewChallenge === "completed" ? "bg-green-500" :
                                 risk.assessmentProgress.reviewChallenge === "in-progress" ? "bg-amber-500" :
                                 "bg-gray-300 dark:bg-gray-600"
                               }`} />
-                              <div className={`h-2 flex-1 rounded-sm ${
+                              <div className={`h-1.5 flex-1 rounded-sm ${
                                 risk.assessmentProgress.approve === "completed" ? "bg-green-500" :
                                 risk.assessmentProgress.approve === "in-progress" ? "bg-amber-500" :
                                 "bg-gray-300 dark:bg-gray-600"
                               }`} />
                             </div>
-                            <div className="flex justify-between text-[10px] text-muted-foreground">
+                            <div className="flex justify-between text-[9px] text-muted-foreground">
                               <span>Assess</span>
                               <span>Review</span>
                               <span>Approve</span>
