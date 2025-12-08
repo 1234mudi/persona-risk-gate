@@ -149,7 +149,7 @@ const AssessmentCard = ({
           </div>
 
           {/* Action buttons row */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Button 
               size="sm"
               variant="outline"
@@ -162,7 +162,7 @@ const AssessmentCard = ({
             <Button 
               size="sm"
               variant="outline"
-              className="text-[11px] h-7 px-2.5"
+              className="text-[11px] h-7 px-2.5 ml-auto"
               onClick={handleNavigate}
             >
               <FileText className="w-3.5 h-3.5" />
