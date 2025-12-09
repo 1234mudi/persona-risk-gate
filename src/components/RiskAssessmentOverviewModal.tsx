@@ -246,19 +246,17 @@ export const RiskAssessmentOverviewModal = ({
 
 Based on analysis of previous cycle data and current risk details:
 
-**Inherent Risk Assessment:**
-The inherent risk level remains elevated due to the nature of operations and external market conditions. Historical data indicates consistent exposure patterns with minor fluctuations.
+**Inherent Rating Review:**
+The inherent risk level remains elevated due to the nature of operations and external market conditions. Historical data indicates consistent exposure patterns with minor fluctuations in risk scoring without controls.
 
-**Control Environment:**
-Current controls demonstrate moderate effectiveness. Recommend reviewing automation opportunities to enhance control reliability and reduce manual intervention points.
+**Control Effectiveness Review:**
+Current controls demonstrate moderate effectiveness. Design and operating effectiveness evaluation suggests opportunities to enhance control reliability and reduce manual intervention points.
 
-**Residual Risk Position:**
-After applying existing controls, residual risk falls within acceptable tolerance levels. Continuous monitoring is advised to maintain this position.
+**Residual Rating Validation:**
+After applying existing controls, the post-control risk scoring falls within acceptable tolerance levels. Continuous monitoring is advised to maintain this position.
 
-**Treatment Recommendations:**
-1. Strengthen preventive controls in high-impact areas
-2. Implement additional monitoring for emerging risk indicators
-3. Schedule quarterly reviews to assess control adequacy
+**Issues:**
+${newIssuesCount > 0 ? `${newIssuesCount} new issues have been identified requiring review. Criticality breakdown: ${highCount > 0 ? `${highCount} High, ` : ''}${mediumCount > 0 ? `${mediumCount} Medium, ` : ''}${lowCount > 0 ? `${lowCount} Low` : ''}.` : 'No new issues identified during this assessment cycle.'}
 
 **Overall Assessment:**
 This risk is currently being managed within established parameters. No immediate escalation required, but proactive measures should be considered for the upcoming cycle.`;
