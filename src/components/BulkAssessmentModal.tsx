@@ -193,9 +193,8 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
             <div className="p-4 border-b border-border">
               <div className="flex items-center gap-2 text-sm font-medium">
                 <Info className="w-4 h-4 text-muted-foreground" />
-                Selected Risks
+                <span>Selected Risks: <span className="text-primary">{selectedRisks.length} Risks</span></span>
               </div>
-              <p className="text-xs text-primary mt-1">{selectedRisks.length} risks selected</p>
             </div>
             {/* Search Box */}
             <div className="p-3 border-b border-border">
