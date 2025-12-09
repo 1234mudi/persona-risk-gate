@@ -25,9 +25,11 @@ import {
   CheckCircle2,
   Loader2,
   Save,
-  Info
+  Info,
+  Upload
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { SingleRiskDocumentModal } from "./SingleRiskDocumentModal";
 
 interface RiskAssessmentOverviewModal1stLineProps {
   open: boolean;
@@ -182,6 +184,7 @@ export const RiskAssessmentOverviewModal1stLine = ({
 }: RiskAssessmentOverviewModal1stLineProps) => {
   const navigate = useNavigate();
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
+  const [documentModalOpen, setDocumentModalOpen] = useState(false);
   const [aiSummary, setAiSummary] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
   const [sectionCompletion, setSectionCompletion] = useState<{
@@ -388,22 +391,10 @@ This risk is currently being managed within established parameters. No immediate
               <Button 
                 size="sm"
                 className="h-8 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={() => {
-                  // Assess all sections with AI
-                  cards.forEach((card, index) => {
-                    if (!manuallyEditedSections[card.sectionKey] && card.completion < 100) {
-                      setTimeout(() => handleAIAssess(card.sectionKey), index * 300);
-                    }
-                  });
-                }}
-                disabled={assessingSection !== null}
+                onClick={() => setDocumentModalOpen(true)}
               >
-                {assessingSection ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : (
-                  <Sparkles className="w-3.5 h-3.5" />
-                )}
-                <span>{assessingSection ? "Assessing..." : "Assess Documents with AI"}</span>
+                <Upload className="w-3.5 h-3.5" />
+                <span>Assess Documents with AI</span>
               </Button>
               <Button 
                 size="sm"
@@ -491,6 +482,19 @@ This risk is currently being managed within established parameters. No immediate
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Single Risk Document Search Modal */}
+        <SingleRiskDocumentModal
+          open={documentModalOpen}
+          onOpenChange={setDocumentModalOpen}
+          risk={risk ? { id: risk.id, title: risk.title } : null}
+          onApplyChanges={(changes) => {
+            toast({
+              title: "Changes Applied",
+              description: `Risk ${risk?.id} has been updated with document data.`,
+            });
+          }}
+        />
       </DialogContent>
     </Dialog>
   );
