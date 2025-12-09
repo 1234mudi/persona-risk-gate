@@ -688,6 +688,7 @@ const Dashboard1stLine = () => {
         { label: "Overdue", value: assessmentDueCounts.overdue, sublabel: `${assessmentDueCounts.overdue} Overdue`, color: "bg-red-600" },
         { label: "Due This Week", value: assessmentDueCounts.dueThisWeek, sublabel: `${assessmentDueCounts.dueThisWeek} Due This Week`, color: "bg-amber-500" },
         { label: "Due This Month", value: assessmentDueCounts.dueThisMonth, sublabel: `${assessmentDueCounts.dueThisMonth} Due This Month`, color: "bg-green-600" },
+        { label: "Future", value: assessmentDueCounts.future, sublabel: `${assessmentDueCounts.future} Future`, color: "bg-blue-500" },
       ],
       description: "Complete overdue assessments first to maintain compliance.",
       tooltip: "Shows your assigned risk assessments by due date status. Focus on overdue and due today items to meet assessment deadlines.",
