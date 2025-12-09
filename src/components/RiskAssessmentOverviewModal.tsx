@@ -311,12 +311,11 @@ This risk is currently being managed within established parameters. No immediate
     navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}&source=2nd-line${panelParam}`);
   };
 
-  // Calculate issues data from props
-  const allIssues = [...assessmentIssues, ...activeRelatedIssues];
+  // Calculate issues data from props - only consider new issues (assessmentIssues)
   const newIssuesCount = assessmentIssues.length;
-  const highCount = allIssues.filter(i => i.severity === 'High').length;
-  const mediumCount = allIssues.filter(i => i.severity === 'Medium').length;
-  const lowCount = allIssues.filter(i => i.severity === 'Low').length;
+  const highCount = assessmentIssues.filter(i => i.severity === 'High').length;
+  const mediumCount = assessmentIssues.filter(i => i.severity === 'Medium').length;
+  const lowCount = assessmentIssues.filter(i => i.severity === 'Low').length;
 
   const cards = [
     {
