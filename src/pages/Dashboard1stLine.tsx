@@ -978,36 +978,55 @@ const Dashboard1stLine = () => {
                   {/* Chart - Pie or Bar */}
                   <div className="space-y-2">
                     {'chartType' in metric && metric.chartType === 'pie' ? (
-                      // Pie Chart
+                      // Filled Pie Chart
                       (() => {
                         const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string; chartColor?: string }>;
                         let total = 0;
                         for (const s of segments) total += s.value;
-                        let cumulativePercent = 0;
+                        
+                        // Calculate pie slices
+                        const slices: Array<{ path: string; color: string; percent: number }> = [];
+                        let currentAngle = 0;
+                        const cx = 18, cy = 18, r = 16;
+                        
+                        segments.forEach((segment) => {
+                          const percent = total > 0 ? (segment.value / total) * 100 : 0;
+                          const angle = (percent / 100) * 360;
+                          const startAngle = currentAngle;
+                          const endAngle = currentAngle + angle;
+                          
+                          // Convert angles to radians
+                          const startRad = (startAngle - 90) * (Math.PI / 180);
+                          const endRad = (endAngle - 90) * (Math.PI / 180);
+                          
+                          // Calculate arc points
+                          const x1 = cx + r * Math.cos(startRad);
+                          const y1 = cy + r * Math.sin(startRad);
+                          const x2 = cx + r * Math.cos(endRad);
+                          const y2 = cy + r * Math.sin(endRad);
+                          
+                          // Large arc flag
+                          const largeArc = angle > 180 ? 1 : 0;
+                          
+                          // Create path
+                          const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+                          
+                          slices.push({ path, color: segment.chartColor || '#888', percent });
+                          currentAngle = endAngle;
+                        });
+                        
                         return (
                           <div className="flex items-center gap-4">
                             <div className="relative w-16 h-16">
-                              <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
-                                {segments.map((segment, idx) => {
-                                  const percent = total > 0 ? (segment.value / total) * 100 : 0;
-                                  const dashArray = `${percent} ${100 - percent}`;
-                                  const dashOffset = -cumulativePercent;
-                                  cumulativePercent += percent;
-                                  return (
-                                    <circle
-                                      key={idx}
-                                      cx="18"
-                                      cy="18"
-                                      r="15.91549430918954"
-                                      fill="transparent"
-                                      stroke={segment.chartColor || '#888'}
-                                      strokeWidth="3.5"
-                                      strokeDasharray={dashArray}
-                                      strokeDashoffset={dashOffset}
-                                      className="transition-all duration-500"
-                                    />
-                                  );
-                                })}
+                              <svg viewBox="0 0 36 36" className="w-16 h-16">
+                                {slices.map((slice, idx) => (
+                                  <path
+                                    key={idx}
+                                    d={slice.path}
+                                    fill={slice.color}
+                                    className="transition-all duration-500"
+                                  />
+                                ))}
                               </svg>
                             </div>
                             <div className="flex flex-col gap-1">
