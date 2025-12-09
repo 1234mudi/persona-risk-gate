@@ -607,6 +607,29 @@ const Dashboard1stLine = () => {
     return { overdue, dueThisWeek, dueThisMonth, total: overdue + dueThisWeek + dueThisMonth };
   }, [riskData]);
 
+  // Calculate inherent risk rating counts from risk data
+  const inherentRiskCounts = useMemo(() => {
+    let critical = 0;
+    let high = 0;
+    let medium = 0;
+    let low = 0;
+    
+    riskData.forEach(risk => {
+      const level = risk.inherentRisk?.level?.toLowerCase() || "";
+      if (level.includes("critical")) {
+        critical++;
+      } else if (level.includes("high")) {
+        high++;
+      } else if (level.includes("medium")) {
+        medium++;
+      } else if (level.includes("low")) {
+        low++;
+      }
+    });
+    
+    return { critical, high, medium, low, total: critical + high + medium + low };
+  }, [riskData]);
+
   // 1st Line specific metrics
   const metrics = [
     {
@@ -625,14 +648,14 @@ const Dashboard1stLine = () => {
     },
     {
       title: "Inherent Risk Ratings",
-      value: 42,
-      trend: "+8 completed this month",
-      trendUp: true,
+      value: inherentRiskCounts.total,
+      trend: `${inherentRiskCounts.critical + inherentRiskCounts.high} require attention`,
+      trendUp: inherentRiskCounts.critical === 0,
       icon: AlertTriangle,
       segments: [
-        { label: "Critical", value: 5, sublabel: "5 Critical", color: "bg-red-600" },
-        { label: "High", value: 12, sublabel: "12 High", color: "bg-amber-500" },
-        { label: "Medium", value: 25, sublabel: "25 Medium", color: "bg-green-600" },
+        { label: "Critical", value: inherentRiskCounts.critical, sublabel: `${inherentRiskCounts.critical} Critical`, color: "bg-red-600" },
+        { label: "High", value: inherentRiskCounts.high, sublabel: `${inherentRiskCounts.high} High`, color: "bg-amber-500" },
+        { label: "Medium", value: inherentRiskCounts.medium, sublabel: `${inherentRiskCounts.medium} Medium`, color: "bg-green-600" },
       ],
       description: "Review Critical and High ratings for control adequacy.",
       tooltip: "Distribution of inherent risk ratings across your assigned risks. Higher ratings require stronger controls to mitigate.",
