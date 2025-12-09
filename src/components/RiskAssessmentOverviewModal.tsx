@@ -182,27 +182,12 @@ const AssessmentCard = ({
             </div>
           ) : (
             <>
-              {/* Progress and CTAs row */}
-              <div className="flex items-center gap-4">
-                {/* Progress */}
-                <div className="flex items-center gap-2 min-w-[160px]">
-                  <div className="flex-1">
-                    <Progress value={completion} className="h-1.5" />
-                  </div>
-                  <span className="text-xs font-semibold text-foreground w-10">{completion}%</span>
+              {/* Progress row */}
+              <div className="flex items-center gap-2 min-w-[160px]">
+                <div className="flex-1">
+                  <Progress value={completion} className="h-1.5" />
                 </div>
-
-                {/* CTA */}
-                <div className="flex gap-2 ml-auto">
-                  <Button 
-                    size="sm"
-                    className="text-[11px] h-7 px-2.5 bg-muted text-foreground hover:bg-muted/80"
-                    onClick={handleNavigate}
-                  >
-                    {secondaryCta.icon}
-                    <span className="ml-1">Continue</span>
-                  </Button>
-                </div>
+                <span className="text-xs font-semibold text-foreground w-10">{completion}%</span>
               </div>
 
               {/* Review Comments Progress */}
