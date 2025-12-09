@@ -3489,7 +3489,7 @@ const RiskAssessmentForm = () => {
             <div>
               <h3 className="font-medium mb-3 flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 text-blue-600" />
-                Issues identified from this assessment
+                New issues identified
                 <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
               </h3>
               <div className="space-y-2">
@@ -3915,7 +3915,7 @@ const RiskAssessmentForm = () => {
                     <div className="flex items-center gap-2">
                       <ChevronDown className={`w-4 h-4 text-blue-600 transition-transform duration-200 ${expandedIssueSections.has('assessment') ? 'rotate-0' : '-rotate-90'}`} />
                       <AlertCircle className="w-4 h-4 text-blue-600" />
-                      <span className="font-medium text-sm text-blue-800 dark:text-blue-200">Issues identified from this assessment</span>
+                      <span className="font-medium text-sm text-blue-800 dark:text-blue-200">New issues identified</span>
                     </div>
                     <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
                   </button>
