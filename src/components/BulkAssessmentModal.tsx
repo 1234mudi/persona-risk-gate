@@ -1,12 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Save, Send, Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Save, Send, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
-
 interface RiskData {
   id: string;
   title: string;
@@ -46,6 +46,7 @@ const mockControls = [
 
 export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onComplete, userType = "1st-line" }: BulkAssessmentModalProps) => {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Inherent Risk ratings
   const [inherentLikelihood, setInherentLikelihood] = useState("");
@@ -65,6 +66,31 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
   const [residualLikelihood, setResidualLikelihood] = useState("");
   const [residualImpact, setResidualImpact] = useState("");
   const [residualVelocity, setResidualVelocity] = useState("");
+
+  // Filter risks based on search query
+  const filteredRisks = useMemo(() => {
+    if (!searchQuery.trim()) return selectedRisks;
+    const query = searchQuery.toLowerCase();
+    return selectedRisks.filter(risk => 
+      risk.id.toLowerCase().includes(query) ||
+      risk.title.toLowerCase().includes(query) ||
+      risk.category.toLowerCase().includes(query) ||
+      risk.owner.toLowerCase().includes(query) ||
+      risk.riskLevel.toLowerCase().includes(query)
+    );
+  }, [selectedRisks, searchQuery]);
+
+  // Highlight matching text
+  const highlightMatch = (text: string, query: string) => {
+    if (!query.trim()) return text;
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    const parts = text.split(regex);
+    return parts.map((part, i) => 
+      regex.test(part) ? (
+        <mark key={i} className="bg-yellow-300 dark:bg-yellow-500/50 text-foreground rounded px-0.5">{part}</mark>
+      ) : part
+    );
+  };
 
   const handleAISuggest = async () => {
     setIsGeneratingAI(true);
@@ -171,31 +197,65 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
               </div>
               <p className="text-xs text-primary mt-1">{selectedRisks.length} risks selected</p>
             </div>
+            {/* Search Box */}
+            <div className="p-3 border-b border-border">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <Input
+                  placeholder="Search risks..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="pl-9 h-9 bg-muted/50 border-border/50 text-sm"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery("")}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-muted transition-colors"
+                  >
+                    <X className="w-3 h-3 text-muted-foreground" />
+                  </button>
+                )}
+              </div>
+              {searchQuery && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Showing {filteredRisks.length} of {selectedRisks.length} risks
+                </p>
+              )}
+            </div>
             <ScrollArea className="flex-1">
               <div className="p-3 space-y-2">
-                {selectedRisks.map(risk => (
-                  <div 
-                    key={risk.id} 
-                    className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
-                    onClick={() => {
-                      // Open the To-Do popup in a new tab by navigating to the correct dashboard based on user type
-                      const dashboardPath = userType === "2nd-line" 
-                        ? "/dashboard/2nd-line-analyst" 
-                        : userType === "risk-owner" 
-                          ? "/dashboard/risk-owner" 
-                          : "/dashboard/1st-line-analyst";
-                      const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
-                      window.open(url, '_blank');
-                    }}
-                    title="Click to open risk assessment in new tab"
-                  >
-                    <Badge variant="outline" className="text-xs font-mono mb-2 border-primary/50 text-primary">
-                      {risk.id}
-                    </Badge>
-                    <p className="text-sm font-medium leading-tight mb-1 group-hover:text-primary transition-colors">{risk.title}</p>
-                    <p className="text-xs text-muted-foreground">{risk.category}</p>
+                {filteredRisks.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">
+                    <Search className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                    <p className="text-sm">No risks match your search</p>
                   </div>
-                ))}
+                ) : (
+                  filteredRisks.map(risk => (
+                    <div 
+                      key={risk.id} 
+                      className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
+                      onClick={() => {
+                        // Open the To-Do popup in a new tab by navigating to the correct dashboard based on user type
+                        const dashboardPath = userType === "2nd-line" 
+                          ? "/dashboard/2nd-line-analyst" 
+                          : userType === "risk-owner" 
+                            ? "/dashboard/risk-owner" 
+                            : "/dashboard/1st-line-analyst";
+                        const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
+                        window.open(url, '_blank');
+                      }}
+                      title="Click to open risk assessment in new tab"
+                    >
+                      <Badge variant="outline" className="text-xs font-mono mb-2 border-primary/50 text-primary">
+                        {highlightMatch(risk.id, searchQuery)}
+                      </Badge>
+                      <p className="text-sm font-medium leading-tight mb-1 group-hover:text-primary transition-colors">
+                        {highlightMatch(risk.title, searchQuery)}
+                      </p>
+                      <p className="text-xs text-muted-foreground">{highlightMatch(risk.category, searchQuery)}</p>
+                    </div>
+                  ))
+                )}
               </div>
             </ScrollArea>
           </div>
