@@ -363,7 +363,7 @@ This risk is currently being managed within established parameters. No immediate
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-[70vw] p-0 overflow-hidden flex flex-col">
+      <DialogContent className="max-w-5xl w-[70vw] p-0 overflow-hidden flex flex-col [&>button]:top-3 [&>button]:right-3 [&>button]:z-10">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0">
           <div className="flex items-center justify-between">
