@@ -504,7 +504,7 @@ This risk is currently being managed within established parameters. No immediate
                 size="sm"
                 variant="outline"
                 onClick={handleOpenSummaryModal}
-                className="h-8 text-xs gap-1.5"
+                className="h-8 text-xs gap-1.5 border-2 border-green-500"
               >
                 <Sparkles className="w-3.5 h-3.5 text-primary fill-primary/20" />
                 <span>Assessment Summary</span>
