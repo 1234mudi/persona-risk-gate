@@ -11,6 +11,12 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { 
   AlertTriangle, 
   Shield, 
@@ -31,8 +37,10 @@ import {
   Download,
   AlertCircle,
   Pencil,
-  Check
+  Check,
+  BarChart3
 } from "lucide-react";
+import pptxgen from "pptxgenjs";
 
 // Helper function to render markdown-like formatting
 const renderFormattedText = (text: string) => {
@@ -385,6 +393,110 @@ This risk is currently being managed within established parameters. No immediate
     setSummaryModalOpen(false);
   };
 
+  // Export helper functions
+  const getSanitizedFilename = () => {
+    return `assessment-summary-${risk.id}`.replace(/[^a-zA-Z0-9\s-]/g, '').replace(/\s+/g, '_');
+  };
+
+  const generatePDF = () => {
+    const printContent = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <title>Assessment Summary - ${risk.id}</title>
+          <style>
+            body { font-family: Arial, sans-serif; padding: 40px; line-height: 1.6; }
+            h1 { color: #333; border-bottom: 2px solid #333; padding-bottom: 10px; }
+            .meta { color: #666; margin-bottom: 20px; }
+            .content { white-space: pre-wrap; }
+          </style>
+        </head>
+        <body>
+          <h1>Assessment Summary</h1>
+          <div class="meta">
+            <p><strong>Risk ID:</strong> ${risk.id}</p>
+            <p><strong>Risk Title:</strong> ${risk.title}</p>
+            <p><strong>Export Date:</strong> ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          </div>
+          <div class="content">${aiSummary.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>
+        </body>
+      </html>
+    `;
+    const printWindow = window.open('', '_blank');
+    if (printWindow) {
+      printWindow.document.write(printContent);
+      printWindow.document.close();
+      printWindow.print();
+    }
+    toast({ title: "PDF Export", description: "Print dialog opened for PDF export." });
+  };
+
+  const generateExcel = () => {
+    const csvContent = `Risk ID,Risk Title,Export Date,Summary\n"${risk.id}","${risk.title}","${new Date().toLocaleDateString()}","${aiSummary.replace(/"/g, '""').replace(/\n/g, ' ')}"`;
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${getSanitizedFilename()}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Excel Export", description: "Summary exported as CSV file." });
+  };
+
+  const generateWord = () => {
+    const htmlContent = `
+      <html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:w='urn:schemas-microsoft-com:office:word'>
+        <head><meta charset="utf-8"><title>Assessment Summary</title></head>
+        <body>
+          <h1>Assessment Summary</h1>
+          <p><strong>Risk ID:</strong> ${risk.id}</p>
+          <p><strong>Risk Title:</strong> ${risk.title}</p>
+          <p><strong>Export Date:</strong> ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+          <hr/>
+          <div>${aiSummary.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>').replace(/\n/g, '<br>')}</div>
+        </body>
+      </html>
+    `;
+    const blob = new Blob([htmlContent], { type: 'application/msword' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${getSanitizedFilename()}.doc`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast({ title: "Word Export", description: "Summary exported as Word document." });
+  };
+
+  const generatePPT = () => {
+    const pptx = new pptxgen();
+    pptx.title = `Assessment Summary - ${risk.id}`;
+    
+    // Title slide
+    const titleSlide = pptx.addSlide();
+    titleSlide.addText("Assessment Summary", { x: 0.5, y: 1.5, w: 9, h: 1, fontSize: 36, bold: true, color: "363636" });
+    titleSlide.addText(`${risk.id} - ${risk.title}`, { x: 0.5, y: 2.5, w: 9, h: 0.5, fontSize: 18, color: "666666" });
+    titleSlide.addText(`Export Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, { x: 0.5, y: 3.2, w: 9, h: 0.5, fontSize: 14, color: "999999" });
+
+    // Content slide
+    const contentSlide = pptx.addSlide();
+    contentSlide.addText("Summary Details", { x: 0.5, y: 0.3, w: 9, h: 0.5, fontSize: 24, bold: true, color: "363636" });
+    
+    const cleanSummary = aiSummary.replace(/\*\*/g, '').substring(0, 2000);
+    contentSlide.addText(cleanSummary, { x: 0.5, y: 1, w: 9, h: 4.5, fontSize: 12, color: "333333", valign: "top" });
+
+    pptx.writeFile({ fileName: `${getSanitizedFilename()}.pptx` });
+    toast({ title: "PowerPoint Export", description: "Summary exported as PowerPoint presentation." });
+  };
+
+  const handleExport = (format: string) => {
+    switch (format) {
+      case 'PDF': generatePDF(); break;
+      case 'Excel': generateExcel(); break;
+      case 'Word': generateWord(); break;
+      case 'PPT': generatePPT(); break;
+    }
+  };
+
   const cards = [
     {
       title: "Inherent Rating",
@@ -564,7 +676,7 @@ This risk is currently being managed within established parameters. No immediate
                   placeholder="Summary will appear here..."
                 />
               ) : (
-                <ScrollArea className="min-h-[280px] max-h-[280px] rounded-md border border-border p-3 bg-muted/30">
+                <ScrollArea className="min-h-[200px] max-h-[400px] rounded-md border border-border p-3 bg-muted/30">
                   <div className="space-y-1">
                     {renderFormattedText(aiSummary)}
                   </div>
@@ -595,28 +707,37 @@ This risk is currently being managed within established parameters. No immediate
                 </div>
               )}
               <div className="flex justify-between gap-2 pt-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    const blob = new Blob([aiSummary], { type: 'text/plain' });
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `assessment-summary-${risk.id}.txt`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                    toast({
-                      title: "Summary Exported",
-                      description: "The summary has been downloaded as a text file.",
-                    });
-                  }}
-                  disabled={isGenerating || !aiSummary}
-                  className="gap-1.5"
-                >
-                  <Download className="w-3.5 h-3.5" />
-                  Export
-                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      disabled={isGenerating || !aiSummary}
+                      className="gap-1.5"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      Export
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="bg-background border border-border z-50">
+                    <DropdownMenuItem onClick={() => handleExport('PDF')} className="cursor-pointer">
+                      <FileText className="w-4 h-4 text-red-500 mr-2" />
+                      PDF
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExport('Word')} className="cursor-pointer">
+                      <FileText className="w-4 h-4 text-blue-500 mr-2" />
+                      Word
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExport('Excel')} className="cursor-pointer">
+                      <BarChart3 className="w-4 h-4 text-emerald-500 mr-2" />
+                      Excel
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => handleExport('PPT')} className="cursor-pointer">
+                      <FileText className="w-4 h-4 text-orange-500 mr-2" />
+                      PowerPoint
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <div className="flex gap-2">
                   <Button
                     variant="outline"
