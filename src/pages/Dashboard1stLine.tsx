@@ -677,7 +677,7 @@ const Dashboard1stLine = () => {
   }, [riskData]);
 
   // 1st Line specific metrics
-  const metrics = [
+  const metrics = useMemo(() => [
     {
       title: "My Assessments Due",
       value: assessmentDueCounts.total,
@@ -734,7 +734,7 @@ const Dashboard1stLine = () => {
       description: "Focus on in-progress action plans to reduce risk exposure.",
       tooltip: "Remediation action plans assigned to you. In-progress items indicate control gaps requiring attention.",
     },
-  ];
+  ], [assessmentDueCounts, inherentRiskCounts, controlEvidenceCounts, actionPlanCounts]);
 
   // Get unique assessors for the filter dropdown (only from assess tab)
   const uniqueAssessors = useMemo(() => {
