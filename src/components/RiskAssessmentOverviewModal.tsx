@@ -29,6 +29,16 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 
+interface IssueItem {
+  id: string;
+  title: string;
+  description: string;
+  severity: string;
+  status: string;
+  dateIdentified: string;
+  owner: string;
+}
+
 interface RiskAssessmentOverviewModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -42,6 +52,8 @@ interface RiskAssessmentOverviewModalProps {
       riskTreatment: number;
     };
   } | null;
+  assessmentIssues?: IssueItem[];
+  activeRelatedIssues?: IssueItem[];
 }
 
 interface AssessmentCardProps {
@@ -220,6 +232,8 @@ export const RiskAssessmentOverviewModal = ({
   open,
   onOpenChange,
   risk,
+  assessmentIssues = [],
+  activeRelatedIssues = [],
 }: RiskAssessmentOverviewModalProps) => {
   const navigate = useNavigate();
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
@@ -272,8 +286,17 @@ This risk is currently being managed within established parameters. No immediate
 
   const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
     onOpenChange(false);
-    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}&source=2nd-line`);
+    // For issues section, add openPanel param to open the issues slider
+    const panelParam = section === 'issues' ? '&openPanel=issues' : '';
+    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}&source=2nd-line${panelParam}`);
   };
+
+  // Calculate issues data from props
+  const allIssues = [...assessmentIssues, ...activeRelatedIssues];
+  const newIssuesCount = assessmentIssues.length;
+  const highCount = allIssues.filter(i => i.severity === 'High').length;
+  const mediumCount = allIssues.filter(i => i.severity === 'Medium').length;
+  const lowCount = allIssues.filter(i => i.severity === 'Low').length;
 
   const cards = [
     {
@@ -353,11 +376,11 @@ This risk is currently being managed within established parameters. No immediate
       totalReviewComments: 0,
       isIssuesCard: true,
       issuesData: {
-        newIssues: 3,
+        newIssues: newIssuesCount,
         criticality: [
-          { label: "High", count: 1, color: "bg-red-500" },
-          { label: "Medium", count: 1, color: "bg-amber-500" },
-          { label: "Low", count: 1, color: "bg-blue-500" },
+          ...(highCount > 0 ? [{ label: "High", count: highCount, color: "bg-red-500" }] : []),
+          ...(mediumCount > 0 ? [{ label: "Medium", count: mediumCount, color: "bg-amber-500" }] : []),
+          ...(lowCount > 0 ? [{ label: "Low", count: lowCount, color: "bg-blue-500" }] : []),
         ]
       }
     },
