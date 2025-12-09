@@ -630,6 +630,23 @@ const Dashboard1stLine = () => {
     return { critical, high, medium, low, total: critical + high + medium + low };
   }, [riskData]);
 
+  // Calculate action plan counts from risk data status
+  const actionPlanCounts = useMemo(() => {
+    let completed = 0;
+    let inProgress = 0;
+    
+    riskData.forEach(risk => {
+      const status = risk.status?.toLowerCase() || "";
+      if (status === "completed" || status === "complete") {
+        completed++;
+      } else {
+        inProgress++;
+      }
+    });
+    
+    return { completed, inProgress, total: completed + inProgress };
+  }, [riskData]);
+
   // 1st Line specific metrics
   const metrics = [
     {
@@ -677,17 +694,16 @@ const Dashboard1stLine = () => {
     },
     {
       title: "Action Plans",
-      value: 15,
-      trend: "+2 new this week",
-      trendUp: false,
+      value: actionPlanCounts.total,
+      trend: `${actionPlanCounts.inProgress} in progress`,
+      trendUp: actionPlanCounts.completed > actionPlanCounts.inProgress,
       icon: CheckSquare,
       segments: [
-        { label: "Open", value: 6, sublabel: "6 Open", color: "bg-red-600" },
-        { label: "In Progress", value: 5, sublabel: "5 In Progress", color: "bg-amber-500" },
-        { label: "Completed", value: 4, sublabel: "4 Completed", color: "bg-green-600" },
+        { label: "In Progress", value: actionPlanCounts.inProgress, sublabel: `${actionPlanCounts.inProgress} In Progress`, color: "bg-amber-500" },
+        { label: "Completed", value: actionPlanCounts.completed, sublabel: `${actionPlanCounts.completed} Completed`, color: "bg-green-600" },
       ],
-      description: "Focus on open action plans to reduce risk exposure.",
-      tooltip: "Remediation action plans assigned to you. Open items indicate control gaps requiring attention.",
+      description: "Focus on in-progress action plans to reduce risk exposure.",
+      tooltip: "Remediation action plans assigned to you. In-progress items indicate control gaps requiring attention.",
     },
   ];
 
