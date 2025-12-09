@@ -642,14 +642,15 @@ This risk is currently being managed within established parameters. No immediate
 
         {/* Summary Modal */}
         <Dialog open={summaryModalOpen} onOpenChange={setSummaryModalOpen}>
-          <DialogContent className="max-w-lg">
-            <DialogHeader>
+          <DialogContent className="max-w-lg flex flex-col max-h-[85vh]">
+            <DialogHeader className="shrink-0">
               <DialogTitle className="flex items-center gap-2 text-base">
                 <Sparkles className="w-4 h-4 text-primary fill-primary/20" />
                 Assessment Summary
               </DialogTitle>
             </DialogHeader>
-            <div className="space-y-3">
+            
+            <div className="flex-1 overflow-y-auto space-y-3 min-h-0">
               <p className="text-xs text-muted-foreground">
                 Generated summary based on previous cycle data and current risk details. Edit as needed.
               </p>
@@ -667,7 +668,7 @@ This risk is currently being managed within established parameters. No immediate
                 />
               ) : (
               <div className="overflow-hidden">
-                <ScrollArea className="h-[350px] rounded-md border border-border p-3 bg-muted/30">
+                <ScrollArea className="h-[280px] rounded-md border border-border p-3 bg-muted/30">
                   <div className="space-y-1 pr-3">
                     {renderFormattedText(aiSummary)}
                   </div>
@@ -698,56 +699,58 @@ This risk is currently being managed within established parameters. No immediate
                   </Button>
                 </div>
               )}
-              <div className="flex justify-between gap-2 pt-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      disabled={isGenerating || !aiSummary}
-                      className="gap-1.5"
-                    >
-                      <Download className="w-3.5 h-3.5" />
-                      Export
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="bg-background border border-border z-50">
-                    <DropdownMenuItem onClick={() => handleExport('PDF')} className="cursor-pointer">
-                      <FileText className="w-4 h-4 text-red-500 mr-2" />
-                      PDF
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExport('Word')} className="cursor-pointer">
-                      <FileText className="w-4 h-4 text-blue-500 mr-2" />
-                      Word
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExport('Excel')} className="cursor-pointer">
-                      <BarChart3 className="w-4 h-4 text-emerald-500 mr-2" />
-                      Excel
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => handleExport('PPT')} className="cursor-pointer">
-                      <FileText className="w-4 h-4 text-orange-500 mr-2" />
-                      PowerPoint
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <div className="flex gap-2">
+            </div>
+            
+            {/* Fixed footer - always visible */}
+            <div className="flex justify-between gap-2 pt-3 border-t border-border shrink-0">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setSummaryModalOpen(false)}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={handleSaveSummary}
                     disabled={isGenerating || !aiSummary}
                     className="gap-1.5"
                   >
-                    <Save className="w-3.5 h-3.5" />
-                    Save Summary
+                    <Download className="w-3.5 h-3.5" />
+                    Export
                   </Button>
-                </div>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="bg-background border border-border z-50">
+                  <DropdownMenuItem onClick={() => handleExport('PDF')} className="cursor-pointer">
+                    <FileText className="w-4 h-4 text-red-500 mr-2" />
+                    PDF
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('Word')} className="cursor-pointer">
+                    <FileText className="w-4 h-4 text-blue-500 mr-2" />
+                    Word
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('Excel')} className="cursor-pointer">
+                    <BarChart3 className="w-4 h-4 text-emerald-500 mr-2" />
+                    Excel
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleExport('PPT')} className="cursor-pointer">
+                    <FileText className="w-4 h-4 text-orange-500 mr-2" />
+                    PowerPoint
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setSummaryModalOpen(false)}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={handleSaveSummary}
+                  disabled={isGenerating || !aiSummary}
+                  className="gap-1.5"
+                >
+                  <Save className="w-3.5 h-3.5" />
+                  Save Summary
+                </Button>
               </div>
             </div>
           </DialogContent>
