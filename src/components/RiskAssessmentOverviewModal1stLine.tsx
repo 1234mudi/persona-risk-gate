@@ -27,8 +27,10 @@ import {
   Save,
   Info,
   Upload,
-  Download
+  Download,
+  AlertCircle
 } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { SingleRiskDocumentModal } from "./SingleRiskDocumentModal";
 
@@ -62,6 +64,11 @@ interface AssessmentCardProps {
   onAIAssess: () => void;
   isAIAssessing: boolean;
   hasManualEdits: boolean;
+  isIssuesCard?: boolean;
+  issuesData?: {
+    newIssues: number;
+    criticality: Array<{ label: string; count: number; color: string }>;
+  };
 }
 
 const AssessmentCard = ({
@@ -81,6 +88,8 @@ const AssessmentCard = ({
   onAIAssess,
   isAIAssessing,
   hasManualEdits,
+  isIssuesCard = false,
+  issuesData,
 }: AssessmentCardProps & { sectionKey: string; onNavigate: (section: string, riskId: string, riskName: string) => void }) => {
   const handleNavigate = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -95,12 +104,16 @@ const AssessmentCard = ({
   };
 
   const getStatusLabel = () => {
+    if (isIssuesCard && issuesData) {
+      return `${issuesData.newIssues} New`;
+    }
     if (completion === 100) return "Complete";
     if (completion > 0) return "In Progress";
     return "Not Started";
   };
 
   const getStatusColor = () => {
+    if (isIssuesCard) return "text-blue-600 bg-blue-500/10";
     if (completion === 100) return "text-emerald-500 bg-emerald-500/10";
     if (completion > 0) return "text-amber-500 bg-amber-500/10";
     return "text-muted-foreground bg-muted";
@@ -119,7 +132,10 @@ const AssessmentCard = ({
       </div>
 
       {/* Card content */}
-      <div className="flex-1 mb-3 rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-all duration-200">
+      <div 
+        className="flex-1 mb-3 rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+        onClick={handleNavigate}
+      >
         <div className="p-3">
           {/* Header row */}
           <div className="flex items-start justify-between mb-2">
@@ -130,7 +146,6 @@ const AssessmentCard = ({
               <div>
                 <h3 
                   className="group text-sm font-semibold text-primary hover:text-primary/80 cursor-pointer transition-colors flex items-center gap-1 underline underline-offset-2 decoration-primary/40 hover:decoration-primary"
-                  onClick={handleNavigate}
                 >
                   {title}
                   <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
@@ -143,35 +158,62 @@ const AssessmentCard = ({
             </div>
           </div>
 
-          {/* Progress row */}
-          <div className="flex items-center gap-2 mb-2">
-            <div className="flex-1">
-              <Progress value={completion} className="h-1.5" />
+          {/* Issues Card - Criticality Chips */}
+          {isIssuesCard && issuesData ? (
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] text-muted-foreground">Criticality:</span>
+              {issuesData.criticality.map((item, idx) => (
+                <Badge 
+                  key={idx}
+                  className={`${item.color} text-white text-[10px] px-2 py-0.5 cursor-pointer hover:opacity-80`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onNavigate(sectionKey, riskId, riskName);
+                  }}
+                >
+                  {item.label}: {item.count}
+                </Badge>
+              ))}
             </div>
-            <span className="text-xs font-semibold text-foreground w-10">{completion}%</span>
-          </div>
+          ) : (
+            <>
+              {/* Progress row */}
+              <div className="flex items-center gap-2 mb-2">
+                <div className="flex-1">
+                  <Progress value={completion} className="h-1.5" />
+                </div>
+                <span className="text-xs font-semibold text-foreground w-10">{completion}%</span>
+              </div>
 
-          {/* Action buttons row */}
-          <div className="flex flex-wrap items-center gap-2">
-            <Button 
-              size="sm"
-              variant="outline"
-              className="text-[11px] h-7 px-2.5"
-              onClick={handleNavigate}
-            >
-              {primaryCta.icon}
-              <span className="ml-1">{primaryCta.label}</span>
-            </Button>
-            <Button 
-              size="sm"
-              variant="outline"
-              className="text-[11px] h-7 px-2.5 ml-auto"
-              onClick={handleNavigate}
-            >
-              <FileText className="w-3.5 h-3.5" />
-              <span className="ml-1">Assess Manually</span>
-            </Button>
-          </div>
+              {/* Action buttons row */}
+              <div className="flex flex-wrap items-center gap-2">
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  className="text-[11px] h-7 px-2.5"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigate(e);
+                  }}
+                >
+                  {primaryCta.icon}
+                  <span className="ml-1">{primaryCta.label}</span>
+                </Button>
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  className="text-[11px] h-7 px-2.5 ml-auto"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigate(e);
+                  }}
+                >
+                  <FileText className="w-3.5 h-3.5" />
+                  <span className="ml-1">Assess Manually</span>
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -344,21 +386,30 @@ This risk is currently being managed within established parameters. No immediate
       },
     },
     {
-      title: "Risk Treatment",
+      title: "Issues",
       riskId: risk.id,
       riskName: risk.title,
-      completion: currentCompletion?.riskTreatment ?? 0,
-      descriptor: "Mitigation & action plans",
-      icon: <Target className="w-4 h-4 text-muted-foreground" />,
-      sectionKey: "risk-treatment",
+      completion: 100,
+      descriptor: "New issues identified",
+      icon: <AlertCircle className="w-4 h-4 text-muted-foreground" />,
+      sectionKey: "issues",
       primaryCta: {
-        label: "Define Treatment Plan",
-        icon: <FileText className="w-3.5 h-3.5" />,
+        label: "View Issues",
+        icon: <AlertCircle className="w-3.5 h-3.5" />,
       },
       secondaryCta: {
-        label: "Review & Submit",
+        label: "Review Issues",
         icon: <ArrowRight className="w-3.5 h-3.5" />,
       },
+      isIssuesCard: true,
+      issuesData: {
+        newIssues: 3,
+        criticality: [
+          { label: "High", count: 1, color: "bg-red-500" },
+          { label: "Medium", count: 1, color: "bg-amber-500" },
+          { label: "Low", count: 1, color: "bg-blue-500" },
+        ]
+      }
     },
   ];
 
