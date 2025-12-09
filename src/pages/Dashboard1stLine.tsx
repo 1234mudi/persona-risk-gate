@@ -649,6 +649,30 @@ const Dashboard1stLine = () => {
     return { completed, inProgress, total: completed + inProgress };
   }, [riskData]);
 
+  // Calculate control evidence status from controlEffectiveness
+  const controlEvidenceCounts = useMemo(() => {
+    let effective = 0;
+    let partiallyEffective = 0;
+    let ineffective = 0;
+    let notAssessed = 0;
+    
+    riskData.forEach(risk => {
+      const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
+      if (label === "effective") {
+        effective++;
+      } else if (label === "partially effective") {
+        partiallyEffective++;
+      } else if (label === "ineffective") {
+        ineffective++;
+      } else {
+        notAssessed++;
+      }
+    });
+    
+    const total = effective + partiallyEffective + ineffective + notAssessed;
+    return { effective, partiallyEffective, ineffective, notAssessed, total };
+  }, [riskData]);
+
   // 1st Line specific metrics
   const metrics = [
     {
@@ -681,18 +705,18 @@ const Dashboard1stLine = () => {
     },
     {
       title: "Control Evidence Status",
-      value: 76,
-      isPercentage: true,
-      trend: "+12% since last month",
-      trendUp: true,
+      value: controlEvidenceCounts.total,
+      trend: `${controlEvidenceCounts.effective} effective`,
+      trendUp: controlEvidenceCounts.effective > controlEvidenceCounts.ineffective,
       icon: FileCheck,
       segments: [
-        { label: "Documented (76%)", value: 38, sublabel: "38 Documented", color: "bg-green-600" },
-        { label: "Pending (16%)", value: 8, sublabel: "8 Pending", color: "bg-amber-500" },
-        { label: "Missing (8%)", value: 4, sublabel: "4 Missing", color: "bg-red-600" },
+        { label: "Effective", value: controlEvidenceCounts.effective, sublabel: `${controlEvidenceCounts.effective} Effective`, color: "bg-green-600" },
+        { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, sublabel: `${controlEvidenceCounts.partiallyEffective} Partially Effective`, color: "bg-amber-500" },
+        { label: "Ineffective", value: controlEvidenceCounts.ineffective, sublabel: `${controlEvidenceCounts.ineffective} Ineffective`, color: "bg-red-600" },
+        { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, sublabel: `${controlEvidenceCounts.notAssessed} Not Assessed`, color: "bg-gray-400" },
       ],
-      description: "Upload missing control evidence to complete assessments.",
-      tooltip: "Tracks control documentation progress. Missing evidence blocks assessment completion and may delay approvals.",
+      description: "Review ineffective and not assessed controls.",
+      tooltip: "Control effectiveness ratings across your assigned risks. Focus on improving ineffective controls.",
     },
     {
       title: "Action Plans",
@@ -922,7 +946,7 @@ const Dashboard1stLine = () => {
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-2">
                     <span className="text-3xl font-bold text-foreground">
-                      {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
+                      {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
                     </span>
                   </div>
                   
