@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from "react";
-import { format } from "date-fns";
+import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
@@ -577,18 +577,48 @@ const Dashboard1stLine = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   });
 
+  // Calculate dynamic assessment due counts from risk data
+  const assessmentDueCounts = useMemo(() => {
+    const today = startOfDay(new Date());
+    const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Monday start
+    const monthEnd = endOfMonth(today);
+    
+    let overdue = 0;
+    let dueThisWeek = 0;
+    let dueThisMonth = 0;
+    
+    riskData.forEach(risk => {
+      try {
+        const dueDate = parseISO(risk.dueDate);
+        const dueDateStart = startOfDay(dueDate);
+        
+        if (isBefore(dueDateStart, today)) {
+          overdue++;
+        } else if (isBefore(dueDateStart, weekEnd) || isToday(dueDate)) {
+          dueThisWeek++;
+        } else if (isBefore(dueDateStart, monthEnd)) {
+          dueThisMonth++;
+        }
+      } catch (e) {
+        // Skip invalid dates
+      }
+    });
+    
+    return { overdue, dueThisWeek, dueThisMonth, total: overdue + dueThisWeek + dueThisMonth };
+  }, [riskData]);
+
   // 1st Line specific metrics
   const metrics = [
     {
       title: "My Assessments Due",
-      value: 18,
-      trend: "+3 since last week",
-      trendUp: false,
+      value: assessmentDueCounts.total,
+      trend: `${assessmentDueCounts.overdue} overdue`,
+      trendUp: assessmentDueCounts.overdue === 0,
       icon: Clock,
       segments: [
-        { label: "Overdue", value: 3, sublabel: "3 Overdue", color: "bg-red-600" },
-        { label: "Due Today", value: 5, sublabel: "5 Due Today", color: "bg-amber-500" },
-        { label: "Upcoming", value: 10, sublabel: "10 Upcoming", color: "bg-green-600" },
+        { label: "Overdue", value: assessmentDueCounts.overdue, sublabel: `${assessmentDueCounts.overdue} Overdue`, color: "bg-red-600" },
+        { label: "Due This Week", value: assessmentDueCounts.dueThisWeek, sublabel: `${assessmentDueCounts.dueThisWeek} Due This Week`, color: "bg-amber-500" },
+        { label: "Due This Month", value: assessmentDueCounts.dueThisMonth, sublabel: `${assessmentDueCounts.dueThisMonth} Due This Month`, color: "bg-green-600" },
       ],
       description: "Complete overdue assessments first to maintain compliance.",
       tooltip: "Shows your assigned risk assessments by due date status. Focus on overdue and due today items to meet assessment deadlines.",
