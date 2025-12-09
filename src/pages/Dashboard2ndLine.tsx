@@ -472,27 +472,28 @@ const Dashboard2ndLine = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-3 sm:px-6 py-2 sm:py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-second-line to-primary flex items-center justify-center">
-                <Shield className="w-6 h-6 text-white" />
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-second-line to-primary flex items-center justify-center flex-shrink-0">
+                <Shield className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
-              <div>
-                <h1 className="text-xl font-semibold text-foreground">
-                  2nd Line Risk Analyst Dashboard
+              <div className="min-w-0">
+                <h1 className="text-base sm:text-xl font-semibold text-foreground truncate">
+                  <span className="hidden sm:inline">2nd Line Risk Analyst Dashboard</span>
+                  <span className="sm:hidden">2nd Line Dashboard</span>
                 </h1>
-                <p className="text-sm text-muted-foreground">Risk and Control Self Assessment</p>
+                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Risk and Control Self Assessment</p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <User className="w-4 h-4 mr-2" />
-                    2nd Line Analyst
-                    <ChevronDown className="w-4 h-4 ml-2" />
+                  <Button variant="outline" size="sm" className="h-9 sm:h-9 px-2 sm:px-3">
+                    <User className="w-4 h-4 sm:mr-2" />
+                    <span className="hidden sm:inline">2nd Line Analyst</span>
+                    <ChevronDown className="w-4 h-4 ml-1 sm:ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -510,37 +511,37 @@ const Dashboard2ndLine = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Scorecards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {/* Quick Links Card */}
-          <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card">
-            <CardHeader className="pb-2">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Link className="w-5 h-5 text-primary" />
+          <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card sm:col-span-1">
+            <CardHeader className="pb-2 px-3 sm:px-6">
+              <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2">
+                <Link className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 Quick Links
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
-                <ClipboardCheck className="w-4 h-4" />
-                View Risks to be Assessed
+            <CardContent className="space-y-2 px-3 sm:px-6">
+              <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[36px] touch-manipulation">
+                <ClipboardCheck className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">View Risks to be Assessed</span>
               </button>
-              <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm w-full text-left">
-                <CheckCircle className="w-4 h-4" />
-                View Risks to be Approved
+              <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[36px] touch-manipulation">
+                <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">View Risks to be Approved</span>
               </button>
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
-                <AlertTriangle className="w-4 h-4" />
-                View Open Challenges
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[36px] touch-manipulation">
+                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">View Open Challenges</span>
               </a>
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
-                <CheckSquare className="w-4 h-4" />
-                View Completed Challenges
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[36px] touch-manipulation">
+                <CheckSquare className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">View Completed Challenges</span>
               </a>
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-sm">
-                <AlertCircle className="w-4 h-4" />
-                View Open Risk Events
+              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[36px] touch-manipulation">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">View Open Risk Events</span>
               </a>
             </CardContent>
           </Card>
@@ -549,38 +550,38 @@ const Dashboard2ndLine = () => {
             <Tooltip key={index}>
               <TooltipTrigger asChild>
                 <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
-                      <div className="w-10 h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
-                        <metric.icon className="w-5 h-5 text-primary" />
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-start justify-between mb-2 sm:mb-3">
+                      <h3 className="text-sm sm:text-lg font-bold text-foreground leading-tight">{metric.title}</h3>
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
+                        <metric.icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                       </div>
                     </div>
                 
                 <div className="space-y-2">
                   <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-foreground">
+                    <span className="text-2xl sm:text-3xl font-bold text-foreground">
                       {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
                     </span>
                   </div>
                   {metric.subLabel && (
-                    <p className="text-sm font-medium text-muted-foreground">{metric.subLabel}</p>
+                    <p className="text-xs sm:text-sm font-medium text-muted-foreground">{metric.subLabel}</p>
                   )}
                   
                   <div className="flex items-center gap-2">
                     {metric.trendUp ? (
-                      <TrendingUp className="w-4 h-4 text-green-600" />
+                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                     ) : (
-                      <TrendingDown className="w-4 h-4 text-red-600" />
+                      <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
                     )}
-                    <span className={`text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                    <span className={`text-xs sm:text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
                       {metric.trend}
                     </span>
                   </div>
                   
                   {/* Status Bar */}
                   <div className="space-y-2">
-                    <div className="flex h-6 rounded-lg overflow-hidden">
+                    <div className="flex h-4 sm:h-6 rounded-lg overflow-hidden">
                       {metric.segments.map((segment, idx) => {
                         const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
                         const percentage = (segment.value / total) * 100;
@@ -594,12 +595,12 @@ const Dashboard2ndLine = () => {
                       })}
                     </div>
                     
-                    {/* Legend */}
+                    {/* Legend - Collapsible on mobile */}
                     <div className="flex flex-wrap gap-x-2 gap-y-1">
                       {metric.segments.map((segment, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5">
-                          <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
-                          <span className="text-xs font-medium text-muted-foreground">
+                        <div key={idx} className="flex items-center gap-1">
+                          <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-sm ${segment.color}`} />
+                          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                             {segment.sublabel || segment.label}
                           </span>
                         </div>
@@ -607,15 +608,15 @@ const Dashboard2ndLine = () => {
                     </div>
                   </div>
                   
-                  <p className="text-xs text-muted-foreground leading-snug pt-2">
+                  <p className="text-[10px] sm:text-xs text-muted-foreground leading-snug pt-1 sm:pt-2 hidden sm:block">
                     {metric.description}
                   </p>
                 </div>
                 
                 {/* AI Generated Icon */}
-                <div className="absolute bottom-3 right-3">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-primary" />
+                <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3">
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
                   </div>
                 </div>
               </CardContent>
@@ -630,28 +631,27 @@ const Dashboard2ndLine = () => {
 
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
-          <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold">Active Risk Profile</CardTitle>
+          <CardHeader className="border-b border-border/50 space-y-0 py-2 sm:py-3 px-3 sm:px-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
+              <CardTitle className="text-base sm:text-lg font-semibold">Active Risk Profile</CardTitle>
               <TooltipProvider>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <Plus className="h-3.5 w-3.5 mr-1" />
-                        Add New Risk
+                      <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                        <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
+                        <span className="hidden sm:inline">Add New Risk</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
                       <p>Create a new risk entry</p>
                     </TooltipContent>
                   </Tooltip>
-                  {/* Update Existing Assessment button hidden */}
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <UsersIcon className="h-3.5 w-3.5 mr-1" />
-                        Collaborate
+                      <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                        <UsersIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
+                        <span className="hidden sm:inline">Collaborate</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -660,9 +660,9 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <UserPlus className="h-3.5 w-3.5 mr-1" />
-                        Reassign
+                      <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                        <UserPlus className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
+                        <span className="hidden sm:inline">Reassign</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -671,9 +671,9 @@ const Dashboard2ndLine = () => {
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <AlertTriangle className="h-3.5 w-3.5 mr-1" />
-                        Review & Challenge
+                      <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                        <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
+                        <span className="hidden sm:inline">Review & Challenge</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -684,78 +684,83 @@ const Dashboard2ndLine = () => {
               </TooltipProvider>
             </div>
           </CardHeader>
-          <CardContent className="p-4">
+          <CardContent className="p-3 sm:p-4">
             {/* Modern Segmented Tabs */}
             <div className="mb-3">
-              <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50">
-                <button
-                  onClick={() => setActiveTab("own")}
-                  className={`px-4 py-1.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
-                    activeTab === "own"
-                      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
-                >
-                  Risks I Own
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "own" ? "bg-white/20" : "bg-muted"
-                  }`}>
-                    {riskData.filter(r => r.tabCategory === "own").length}
-                  </span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-1.5 font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
-                    activeTab === "assess"
-                      ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
-                >
-                  Risks to be Assessed
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "assess" ? "bg-white/20" : "bg-muted"
-                  }`}>
-                    {riskData.filter(r => r.tabCategory === "assess").length}
-                  </span>
-                </button>
-                <button
-                  onClick={() => setActiveTab("approve")}
-                  className={`px-4 py-1.5 rounded-r-md font-medium text-sm transition-all ${
-                    activeTab === "approve"
-                      ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
-                >
-                  Risks to be Approved
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "approve" ? "bg-white/20" : "bg-muted"
-                  }`}>
-                    {riskData.filter(r => r.tabCategory === "approve").length}
-                  </span>
-                </button>
+              <div className="flex overflow-x-auto scrollbar-hide -mx-3 px-3 sm:mx-0 sm:px-0">
+                <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50 min-w-max">
+                  <button
+                    onClick={() => setActiveTab("own")}
+                    className={`px-3 sm:px-4 py-1.5 rounded-l-md font-medium text-xs sm:text-sm transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
+                      activeTab === "own"
+                        ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                    } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
+                  >
+                    <span className="hidden sm:inline">Risks I Own</span>
+                    <span className="sm:hidden">Own</span>
+                    <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
+                      activeTab === "own" ? "bg-white/20" : "bg-muted"
+                    }`}>
+                      {riskData.filter(r => r.tabCategory === "own").length}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("assess")}
+                    className={`px-3 sm:px-4 py-1.5 font-medium text-xs sm:text-sm transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
+                      activeTab === "assess"
+                        ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                    } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
+                  >
+                    <span className="hidden sm:inline">Risks to be Assessed</span>
+                    <span className="sm:hidden">Assess</span>
+                    <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
+                      activeTab === "assess" ? "bg-white/20" : "bg-muted"
+                    }`}>
+                      {riskData.filter(r => r.tabCategory === "assess").length}
+                    </span>
+                  </button>
+                  <button
+                    onClick={() => setActiveTab("approve")}
+                    className={`px-3 sm:px-4 py-1.5 rounded-r-md font-medium text-xs sm:text-sm transition-all whitespace-nowrap ${
+                      activeTab === "approve"
+                        ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md"
+                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                    } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
+                  >
+                    <span className="hidden sm:inline">Risks to be Approved</span>
+                    <span className="sm:hidden">Approve</span>
+                    <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
+                      activeTab === "approve" ? "bg-white/20" : "bg-muted"
+                    }`}>
+                      {riskData.filter(r => r.tabCategory === "approve").length}
+                    </span>
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Info Banner */}
-            <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2.5 mb-3">
+            <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg p-2 sm:p-2.5 mb-3">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-yellow-800 dark:text-yellow-200">
-                  {activeTab === "own" && "These are risks you own and are responsible for managing. Review control effectiveness and ensure residual risks remain within acceptable tolerance."}
-                  {activeTab === "assess" && "These risks require your assessment and input. Evaluate risk ratings, validate controls, and provide your professional judgment on the adequacy of mitigation measures."}
-                  {activeTab === "approve" && "These risk assessments are awaiting your approval. Review completeness, validate assessment quality, and ensure alignment with enterprise risk appetite before approving."}
+                <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
+                <p className="text-[10px] sm:text-xs text-yellow-800 dark:text-yellow-200 leading-snug">
+                  {activeTab === "own" && "These are risks you own and are responsible for managing."}
+                  {activeTab === "assess" && "These risks require your assessment and input."}
+                  {activeTab === "approve" && "These risk assessments are awaiting your approval."}
                 </p>
               </div>
             </div>
 
             {/* Filters and Actions */}
-            <div className="flex flex-wrap items-center gap-3 mb-4">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 mb-4">
               <div className="flex flex-col gap-1">
                 <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
                   Assessment Context
                 </Label>
                 <Select defaultValue="retail">
-                  <SelectTrigger id="assessment-context" className="w-48 h-8 bg-primary text-primary-foreground border-primary">
+                  <SelectTrigger id="assessment-context" className="w-full sm:w-48 h-9 sm:h-8 bg-primary text-primary-foreground border-primary">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -767,7 +772,7 @@ const Dashboard2ndLine = () => {
               </div>
 
               <Select defaultValue="all">
-                <SelectTrigger className="w-40 h-8">
+                <SelectTrigger className="w-full sm:w-40 h-9 sm:h-8">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -777,44 +782,44 @@ const Dashboard2ndLine = () => {
                 </SelectContent>
               </Select>
 
-              <div className="relative flex-1 min-w-[200px]">
-                <Input placeholder="Search risks..." className="pl-10 h-8" />
+              <div className="relative flex-1 min-w-0 sm:min-w-[200px]">
+                <Input placeholder="Search risks..." className="pl-10 h-9 sm:h-8 w-full" />
                 <Shield className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
             </div>
 
             {/* Bulk Action Toolbar - Shows when items are selected */}
             {selectedRisks.size > 0 && (
-              <div className="mb-4 p-3 bg-primary/5 border border-primary/20 rounded-lg shadow-sm animate-in slide-in-from-top-2 duration-200">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <Badge variant="secondary" className="font-medium">
-                      {selectedRisks.size} risk{selectedRisks.size !== 1 ? 's' : ''} selected
+              <div className="mb-4 p-2 sm:p-3 bg-primary/5 border border-primary/20 rounded-lg shadow-sm animate-in slide-in-from-top-2 duration-200">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 sm:gap-0">
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Badge variant="secondary" className="font-medium text-xs sm:text-sm">
+                      {selectedRisks.size} selected
                     </Badge>
                     <button 
                       onClick={clearSelection}
-                      className="text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+                      className="text-xs sm:text-sm text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
                     >
                       <X className="w-3 h-3" />
-                      Clear selection
+                      Clear
                     </button>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 w-full sm:w-auto">
                     <Button 
                       size="sm" 
-                      className="h-8 bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md hover:shadow-lg transition-all"
+                      className="h-9 sm:h-8 flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md hover:shadow-lg transition-all"
                       onClick={() => setBulkAssessmentOpen(true)}
                     >
-                      <Sparkles className="w-4 h-4 mr-1.5" />
-                      Perform Assessment
+                      <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
+                      <span className="text-xs sm:text-sm">Perform Assessment</span>
                     </Button>
                   </div>
                 </div>
               </div>
             )}
 
-            {/* Table */}
-            <div className="border rounded-lg overflow-hidden">
+            {/* Table with horizontal scroll */}
+            <div className="border rounded-lg overflow-hidden -mx-3 sm:mx-0">
               <div className="overflow-x-auto">
                 <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">

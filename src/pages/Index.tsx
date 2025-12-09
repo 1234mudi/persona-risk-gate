@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Shield, Users, BarChart3, UserCheck, ClipboardCheck } from "lucide-react";
+import { Shield, Users, BarChart3, UserCheck, ClipboardCheck, Menu, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -14,6 +14,7 @@ const Index = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -75,20 +76,32 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
       {/* Header */}
       <header className="border-b border-border/50 bg-gradient-to-r from-primary/5 to-first-line/10 backdrop-blur-sm">
-        <div className="container mx-auto px-6 py-2">
+        <div className="container mx-auto px-4 sm:px-6 py-2">
           <div className="space-y-1">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-first-line flex items-center justify-center">
-                  <Shield className="w-5 h-5 text-white" />
+              <div className="flex items-center gap-2 sm:gap-2.5">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-primary to-first-line flex items-center justify-center">
+                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
                 </div>
-                <h1 className="text-lg font-semibold text-foreground">
-                  Risk & Control Self- Assessment (RCSA)
+                <h1 className="text-base sm:text-lg font-semibold text-foreground leading-tight">
+                  <span className="hidden sm:inline">Risk & Control Self- Assessment (RCSA)</span>
+                  <span className="sm:hidden">RCSA</span>
                 </h1>
               </div>
-              <ThemeToggle />
+              <div className="flex items-center gap-2">
+                <ThemeToggle />
+                {/* Mobile menu button */}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="lg:hidden"
+                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                >
+                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                </Button>
+              </div>
             </div>
-            <p className="text-xs text-muted-foreground pl-10.5">
+            <p className="text-xs text-muted-foreground pl-9 sm:pl-10.5 hidden sm:block">
               A comprehensive platform for managing enterprise risk assessments, control evaluations, and remediation tracking across your organization.
             </p>
           </div>
@@ -96,14 +109,14 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-12 max-w-7xl mx-auto items-start">
+      <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto items-start">
           {/* Login Form Section */}
-          <div className="flex items-start justify-center lg:justify-end">
-            <Card className="w-full max-w-md p-6 shadow-lg border-border/50">
+          <div className="flex items-start justify-center lg:justify-end order-1 lg:order-1">
+            <Card className="w-full max-w-md p-4 sm:p-6 shadow-lg border-border/50">
               <div className="space-y-4">
                 <div className="space-y-0.5 text-center">
-                  <h2 className="text-xl font-bold text-foreground">Welcome Back</h2>
+                  <h2 className="text-lg sm:text-xl font-bold text-foreground">Welcome Back</h2>
                   <p className="text-xs text-muted-foreground">
                     Sign in to your workspace to continue
                   </p>
@@ -118,7 +131,7 @@ const Index = () => {
                       placeholder="Enter your email or username"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="h-9"
+                      className="h-10 sm:h-9"
                       required
                     />
                   </div>
@@ -139,16 +152,17 @@ const Index = () => {
                       placeholder="Enter your password"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="h-9"
+                      className="h-10 sm:h-9"
                       required
                     />
                   </div>
 
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center space-x-2 min-h-[44px]">
                     <Checkbox
                       id="remember"
                       checked={rememberMe}
                       onCheckedChange={(checked) => setRememberMe(checked as boolean)}
+                      className="h-5 w-5"
                     />
                     <Label
                       htmlFor="remember"
@@ -158,7 +172,7 @@ const Index = () => {
                     </Label>
                   </div>
 
-                  <Button type="submit" className="w-full h-9 text-sm font-medium">
+                  <Button type="submit" className="w-full h-11 sm:h-9 text-sm font-medium">
                     Sign In
                   </Button>
                 </form>
@@ -174,15 +188,15 @@ const Index = () => {
           </div>
 
           {/* Persona Cards Section */}
-          <div className="space-y-4">
+          <div className="space-y-4 order-2 lg:order-2">
             <div className="space-y-1">
-              <h2 className="text-xl font-bold text-foreground">Quick Access</h2>
-              <p className="text-sm text-muted-foreground">
+              <h2 className="text-lg sm:text-xl font-bold text-foreground">Quick Access</h2>
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 Click on a persona card below based on your role to access the test environment
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {/* Column 1 - First Line Roles */}
               <div className="flex flex-col gap-3">
                 <div className="flex items-center gap-2 pb-1 border-b border-first-line/30">
