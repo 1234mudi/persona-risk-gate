@@ -652,46 +652,6 @@ const DashboardRiskOwner = () => {
           ))}
         </div>
 
-        {/* Assessment Type Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <Card className="border-[3px] border-border/50 dark:border-border shadow-sm bg-gradient-to-br from-slate-900 to-slate-800 dark:from-card dark:to-card">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center flex-shrink-0">
-                  <TrendingUp className="w-6 h-6 text-cyan-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white dark:text-foreground mb-2">Event-Driven Risk Detection</h3>
-                  <p className="text-sm text-slate-300 dark:text-muted-foreground mb-4">
-                    Automated risk identification leveraging operational events and data anomalies to detect emerging risks
-                  </p>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                    Create Event-Driven Assessment
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="border-[3px] border-border/50 dark:border-border shadow-sm bg-gradient-to-br from-slate-900 to-slate-800 dark:from-card dark:to-card">
-            <CardContent className="p-6">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-lg bg-cyan-500/20 border border-cyan-500/30 flex items-center justify-center flex-shrink-0">
-                  <CheckSquare className="w-6 h-6 text-cyan-400" />
-                </div>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white dark:text-foreground mb-2">Guided/Structured Assessment</h3>
-                  <p className="text-sm text-slate-300 dark:text-muted-foreground mb-4">
-                    Step-by-step structured approach with guided workflows and standardized methodologies
-                  </p>
-                  <Button className="w-full bg-teal-500 hover:bg-teal-600 text-white">
-                    Create Guided Assessment
-                  </Button>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
 
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
