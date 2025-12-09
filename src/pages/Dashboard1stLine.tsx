@@ -368,32 +368,34 @@ const Dashboard1stLine = () => {
           <Select 
             value={editingCell.value} 
             onValueChange={(val) => {
-              setEditingCell({ ...editingCell, value: val });
-              setTimeout(() => {
-                setRiskData(prev => prev.map(risk => {
-                  if (risk.id !== riskId) return risk;
-                  switch (field) {
-                    case 'inherentRisk':
-                      return { ...risk, inherentRisk: { ...risk.inherentRisk, level: val } };
-                    case 'residualRisk':
-                      return { ...risk, residualRisk: { ...risk.residualRisk, level: val } };
-                    case 'controlEffectiveness':
-                      return { ...risk, controlEffectiveness: { ...risk.controlEffectiveness, label: val } };
-                    case 'status':
-                      return { ...risk, status: val };
-                    default:
-                      return risk;
-                  }
-                }));
-                toast.success("Updated successfully");
+              setRiskData(prev => prev.map(risk => {
+                if (risk.id !== riskId) return risk;
+                switch (field) {
+                  case 'inherentRisk':
+                    return { ...risk, inherentRisk: { ...risk.inherentRisk, level: val } };
+                  case 'residualRisk':
+                    return { ...risk, residualRisk: { ...risk.residualRisk, level: val } };
+                  case 'controlEffectiveness':
+                    return { ...risk, controlEffectiveness: { ...risk.controlEffectiveness, label: val } };
+                  case 'status':
+                    return { ...risk, status: val };
+                  default:
+                    return risk;
+                }
+              }));
+              toast.success("Updated successfully");
+              setEditingCell(null);
+            }}
+            onOpenChange={(open) => {
+              if (!open) {
                 setEditingCell(null);
-              }, 100);
+              }
             }}
           >
-            <SelectTrigger className="h-7 text-xs min-w-[100px]" autoFocus onBlur={() => setTimeout(cancelInlineEdit, 200)}>
+            <SelectTrigger className="h-7 text-xs min-w-[100px]">
               <SelectValue />
             </SelectTrigger>
-            <SelectContent className="bg-popover border border-border shadow-lg z-50">
+            <SelectContent className="bg-popover border border-border shadow-lg z-[100]">
               {options.map(opt => (
                 <SelectItem key={opt} value={opt}>{opt}</SelectItem>
               ))}
