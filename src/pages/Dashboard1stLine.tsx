@@ -825,6 +825,14 @@ const Dashboard1stLine = () => {
                 <Sparkles className="w-4 h-4" />
                 Assess Documents with AI
               </button>
+              <a href="/downloads/risk-events-final.docx" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
+                <FileText className="w-4 h-4" />
+                Download Risk Events (Word)
+              </a>
+              <a href="/downloads/risk-events-final.csv" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
+                <FileText className="w-4 h-4" />
+                Download Risk Events (CSV)
+              </a>
             </CardContent>
           </Card>
 
