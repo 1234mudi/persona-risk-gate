@@ -427,8 +427,7 @@ This risk is currently being managed within established parameters. No immediate
                 onClick={() => handleNavigateToSection('inherent-rating', risk.id, risk.title)}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 h-8 text-xs"
               >
-                <span>Continue</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
+                Continue
               </Button>
             </div>
           </div>
