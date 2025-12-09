@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
@@ -28,8 +29,36 @@ import {
   Info,
   Upload,
   Download,
-  AlertCircle
+  AlertCircle,
+  Pencil,
+  Check
 } from "lucide-react";
+
+// Helper function to render markdown-like formatting
+const renderFormattedText = (text: string) => {
+  if (!text) return null;
+  
+  const lines = text.split('\n');
+  
+  return lines.map((line, index) => {
+    // Process bold (**text**)
+    let processedLine = line.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+    // Process italic (*text*)
+    processedLine = processedLine.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em class="italic">$1</em>');
+    
+    if (line.trim() === '') {
+      return <br key={index} />;
+    }
+    
+    return (
+      <p 
+        key={index} 
+        className="text-sm leading-relaxed text-foreground"
+        dangerouslySetInnerHTML={{ __html: processedLine }}
+      />
+    );
+  });
+};
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { SingleRiskDocumentModal } from "./SingleRiskDocumentModal";
@@ -244,6 +273,7 @@ export const RiskAssessmentOverviewModal1stLine = ({
   const [documentModalOpen, setDocumentModalOpen] = useState(false);
   const [aiSummary, setAiSummary] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isEditingSummary, setIsEditingSummary] = useState(false);
   const [sectionCompletion, setSectionCompletion] = useState<{
     inherentRating: number;
     controlEffectiveness: number;
@@ -527,13 +557,43 @@ This risk is currently being managed within established parameters. No immediate
                   <Loader2 className="w-6 h-6 animate-spin text-primary" />
                   <span className="ml-2 text-sm text-muted-foreground">Generating summary...</span>
                 </div>
-              ) : (
+              ) : isEditingSummary ? (
                 <Textarea
                   value={aiSummary}
                   onChange={(e) => setAiSummary(e.target.value)}
                   className="min-h-[280px] text-sm leading-relaxed"
                   placeholder="Summary will appear here..."
                 />
+              ) : (
+                <ScrollArea className="min-h-[280px] max-h-[280px] rounded-md border border-border p-3 bg-muted/30">
+                  <div className="space-y-1">
+                    {renderFormattedText(aiSummary)}
+                  </div>
+                </ScrollArea>
+              )}
+              
+              {/* Edit Toggle Button */}
+              {!isGenerating && aiSummary && (
+                <div className="flex justify-end">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setIsEditingSummary(!isEditingSummary)}
+                    className="gap-1.5 text-xs"
+                  >
+                    {isEditingSummary ? (
+                      <>
+                        <Check className="w-3.5 h-3.5" />
+                        Done Editing
+                      </>
+                    ) : (
+                      <>
+                        <Pencil className="w-3.5 h-3.5" />
+                        Edit
+                      </>
+                    )}
+                  </Button>
+                </div>
               )}
               <div className="flex justify-between gap-2 pt-2">
                 <Button
