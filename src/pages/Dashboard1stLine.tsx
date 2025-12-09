@@ -588,6 +588,7 @@ const Dashboard1stLine = () => {
     let overdue = 0;
     let dueThisWeek = 0;
     let dueThisMonth = 0;
+    let future = 0;
     
     riskData.forEach(risk => {
       try {
@@ -600,13 +601,15 @@ const Dashboard1stLine = () => {
           dueThisWeek++;
         } else if (isBefore(dueDateStart, monthEnd)) {
           dueThisMonth++;
+        } else {
+          future++;
         }
       } catch (e) {
         // Skip invalid dates
       }
     });
     
-    return { overdue, dueThisWeek, dueThisMonth, total: overdue + dueThisWeek + dueThisMonth };
+    return { overdue, dueThisWeek, dueThisMonth, future, total: riskData.length };
   }, [riskData]);
 
   // Calculate inherent risk rating counts from risk data
