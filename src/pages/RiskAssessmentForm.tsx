@@ -1088,10 +1088,41 @@ const RiskAssessmentForm = () => {
     slide1.addText('Risk Assessment Summary', { x: 0.5, y: 3.3, w: 9, fontSize: 20, color: '6b7280' });
     slide1.addText(`Generated: ${data.exportDate}`, { x: 0.5, y: 4, w: 9, fontSize: 14, color: '9ca3af' });
     
-    // Slide 2: Inherent Rating
-    const slide2 = pptx.addSlide();
-    slide2.addText('Inherent Rating', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
-    slide2.addText(`Score: ${data.sections.inherentRating.score} (${data.sections.inherentRating.rating})`, { x: 0.5, y: 0.9, w: 9, fontSize: 24, bold: true, color: '3b82f6' });
+    // Slide 2: Assessment Summary (AI-generated overview)
+    const slideSummary = pptx.addSlide();
+    slideSummary.addText('Assessment Summary', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    
+    // Calculate issues data for summary
+    const allIssues = [...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues];
+    const newIssuesCount = data.sections.issues.assessmentIssues.length;
+    const highCount = allIssues.filter(i => i.severity === 'High').length;
+    const mediumCount = allIssues.filter(i => i.severity === 'Medium').length;
+    const lowCount = allIssues.filter(i => i.severity === 'Low').length;
+    
+    const issuesSummaryText = newIssuesCount > 0 
+      ? `${newIssuesCount} new issues have been identified requiring review. Criticality breakdown: ${highCount > 0 ? `${highCount} High` : ''}${highCount > 0 && (mediumCount > 0 || lowCount > 0) ? ', ' : ''}${mediumCount > 0 ? `${mediumCount} Medium` : ''}${mediumCount > 0 && lowCount > 0 ? ', ' : ''}${lowCount > 0 ? `${lowCount} Low` : ''}.`
+      : 'No new issues identified during this assessment cycle.';
+    
+    const summaryContent = [
+      { title: 'Inherent Rating Review', text: `The inherent risk level remains elevated due to the nature of operations and external market conditions. Historical data indicates consistent exposure patterns with minor fluctuations in risk scoring without controls. Current Score: ${data.sections.inherentRating.score} (${data.sections.inherentRating.rating})` },
+      { title: 'Control Effectiveness Review', text: `Current controls demonstrate moderate effectiveness. Design and operating effectiveness evaluation suggests opportunities to enhance control reliability and reduce manual intervention points. Current Score: ${data.sections.controlEffectiveness.score} (${data.sections.controlEffectiveness.rating})` },
+      { title: 'Residual Rating Validation', text: `After applying existing controls, the post-control risk scoring falls within acceptable tolerance levels. Continuous monitoring is advised to maintain this position. Current Score: ${data.sections.residualRating.score} (${data.sections.residualRating.rating})` },
+      { title: 'Issues', text: issuesSummaryText }
+    ];
+    
+    let yPos = 0.8;
+    summaryContent.forEach((section) => {
+      slideSummary.addText(section.title, { x: 0.5, y: yPos, w: 9, fontSize: 14, bold: true, color: '374151' });
+      slideSummary.addText(section.text, { x: 0.5, y: yPos + 0.3, w: 9, fontSize: 11, color: '6b7280' });
+      yPos += 1.15;
+    });
+    
+    slideSummary.addText('Overall: This risk is currently being managed within established parameters. Proactive measures should be considered for the upcoming cycle.', { x: 0.5, y: yPos + 0.1, w: 9, h: 0.5, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151', bold: true });
+    
+    // Slide 3: Inherent Rating
+    const slideInherent = pptx.addSlide();
+    slideInherent.addText('Inherent Rating Review', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slideInherent.addText(`Score: ${data.sections.inherentRating.score} (${data.sections.inherentRating.rating})`, { x: 0.5, y: 0.9, w: 9, fontSize: 24, bold: true, color: '3b82f6' });
     const inherentRows: pptxgen.TableRow[] = [
       [{ text: 'Factor', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
        { text: 'Rating', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
@@ -1100,13 +1131,13 @@ const RiskAssessmentForm = () => {
     data.sections.inherentRating.factors.forEach(f => {
       inherentRows.push([{ text: f.name }, { text: `${f.rating}/5` }, { text: `${f.weightage}%` }]);
     });
-    slide2.addTable(inherentRows, { x: 0.5, y: 1.5, w: 9, fontSize: 12, border: { pt: 0.5, color: 'e5e7eb' } });
-    slide2.addText(data.sections.inherentRating.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    slideInherent.addTable(inherentRows, { x: 0.5, y: 1.5, w: 9, fontSize: 12, border: { pt: 0.5, color: 'e5e7eb' } });
+    slideInherent.addText(data.sections.inherentRating.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
     
-    // Slide 3: Control Effectiveness
-    const slide3 = pptx.addSlide();
-    slide3.addText('Control Effectiveness', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
-    slide3.addText(`Score: ${data.sections.controlEffectiveness.score} (${data.sections.controlEffectiveness.rating})`, { x: 0.5, y: 0.9, w: 9, fontSize: 24, bold: true, color: '3b82f6' });
+    // Slide 4: Control Effectiveness
+    const slideControl = pptx.addSlide();
+    slideControl.addText('Control Effectiveness Review', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slideControl.addText(`Score: ${data.sections.controlEffectiveness.score} (${data.sections.controlEffectiveness.rating})`, { x: 0.5, y: 0.9, w: 9, fontSize: 24, bold: true, color: '3b82f6' });
     const controlRows: pptxgen.TableRow[] = [
       [{ text: 'Control', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
        { text: 'Type', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
@@ -1117,13 +1148,13 @@ const RiskAssessmentForm = () => {
     data.sections.controlEffectiveness.controls.forEach(c => {
       controlRows.push([{ text: c.name }, { text: c.type }, { text: `${c.designRating}/5` }, { text: `${c.operatingRating}/5` }, { text: `${c.testingRating}/5` }]);
     });
-    slide3.addTable(controlRows, { x: 0.5, y: 1.5, w: 9, fontSize: 11, border: { pt: 0.5, color: 'e5e7eb' } });
-    slide3.addText(data.sections.controlEffectiveness.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    slideControl.addTable(controlRows, { x: 0.5, y: 1.5, w: 9, fontSize: 11, border: { pt: 0.5, color: 'e5e7eb' } });
+    slideControl.addText(data.sections.controlEffectiveness.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
     
-    // Slide 4: Residual Rating
-    const slide4 = pptx.addSlide();
-    slide4.addText('Residual Rating', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
-    slide4.addText(`Score: ${data.sections.residualRating.score} (${data.sections.residualRating.rating}) - Reduced by ${data.sections.residualRating.riskReduction} points`, { x: 0.5, y: 0.9, w: 9, fontSize: 20, bold: true, color: '3b82f6' });
+    // Slide 5: Residual Rating
+    const slideResidual = pptx.addSlide();
+    slideResidual.addText('Residual Rating Validation', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slideResidual.addText(`Score: ${data.sections.residualRating.score} (${data.sections.residualRating.rating}) - Reduced by ${data.sections.residualRating.riskReduction} points`, { x: 0.5, y: 0.9, w: 9, fontSize: 20, bold: true, color: '3b82f6' });
     const residualRows: pptxgen.TableRow[] = [
       [{ text: 'Factor', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
        { text: 'Rating', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
@@ -1132,12 +1163,12 @@ const RiskAssessmentForm = () => {
     data.sections.residualRating.factors.forEach(f => {
       residualRows.push([{ text: f.name }, { text: `${f.rating}/5` }, { text: `${f.weightage}%` }]);
     });
-    slide4.addTable(residualRows, { x: 0.5, y: 1.5, w: 9, fontSize: 12, border: { pt: 0.5, color: 'e5e7eb' } });
-    slide4.addText(data.sections.residualRating.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    slideResidual.addTable(residualRows, { x: 0.5, y: 1.5, w: 9, fontSize: 12, border: { pt: 0.5, color: 'e5e7eb' } });
+    slideResidual.addText(data.sections.residualRating.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
     
-    // Slide 5: Heat Map with visual grid
-    const slide5 = pptx.addSlide();
-    slide5.addText('Heat Map', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    // Slide 6: Heat Map with visual grid (moved after Issues in the modal, but Heat Map is still useful here)
+    const slideHeatMap = pptx.addSlide();
+    slideHeatMap.addText('Heat Map', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
     
     // Create 5x5 heat map grid
     const heatMapRows: pptxgen.TableRow[] = [];
@@ -1178,16 +1209,16 @@ const RiskAssessmentForm = () => {
       { text: 'L5', options: { bold: true, fill: { color: 'f3f4f6' }, align: 'center' } }
     ]);
     
-    slide5.addTable(heatMapRows, { x: 1.5, y: 1, w: 5, h: 3, fontSize: 14, border: { pt: 1, color: 'd1d5db' } });
-    slide5.addText('Impact (I1-I5) ↑', { x: 0.3, y: 2.5, w: 1, fontSize: 10, color: '6b7280', rotate: 270 });
-    slide5.addText('Likelihood (L1-L5) →', { x: 3.5, y: 4.2, w: 2, fontSize: 10, color: '6b7280' });
-    slide5.addText('Legend: I = Inherent Position, R = Residual Position', { x: 1.5, y: 4.5, w: 5, fontSize: 10, color: '6b7280' });
-    slide5.addText(data.sections.heatMap.summary, { x: 0.5, y: 4.8, w: 9, h: 0.7, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    slideHeatMap.addTable(heatMapRows, { x: 1.5, y: 1, w: 5, h: 3, fontSize: 14, border: { pt: 1, color: 'd1d5db' } });
+    slideHeatMap.addText('Impact (I1-I5) ↑', { x: 0.3, y: 2.5, w: 1, fontSize: 10, color: '6b7280', rotate: 270 });
+    slideHeatMap.addText('Likelihood (L1-L5) →', { x: 3.5, y: 4.2, w: 2, fontSize: 10, color: '6b7280' });
+    slideHeatMap.addText('Legend: I = Inherent Position, R = Residual Position', { x: 1.5, y: 4.5, w: 5, fontSize: 10, color: '6b7280' });
+    slideHeatMap.addText(data.sections.heatMap.summary, { x: 0.5, y: 4.8, w: 9, h: 0.7, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
     
-    // Slide 6: Issues Overview
-    const slide6 = pptx.addSlide();
-    slide6.addText('Issues Overview', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
-    slide6.addText(`Open: ${data.sections.issues.totalOpen}  |  Closed: ${data.sections.issues.totalClosed}`, { x: 0.5, y: 0.9, w: 9, fontSize: 20, bold: true, color: '3b82f6' });
+    // Slide 7: Issues Overview
+    const slideIssues = pptx.addSlide();
+    slideIssues.addText('Issues', { x: 0.5, y: 0.3, w: 9, fontSize: 28, bold: true, color: '1d4ed8' });
+    slideIssues.addText(`Open: ${data.sections.issues.totalOpen}  |  Closed: ${data.sections.issues.totalClosed}`, { x: 0.5, y: 0.9, w: 9, fontSize: 20, bold: true, color: '3b82f6' });
     const issueRows: pptxgen.TableRow[] = [
       [{ text: 'ID', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
        { text: 'Title', options: { bold: true, fill: { color: '3b82f6' }, color: 'ffffff' } }, 
@@ -1197,8 +1228,8 @@ const RiskAssessmentForm = () => {
     [...data.sections.issues.assessmentIssues, ...data.sections.issues.activeRelatedIssues].slice(0, 6).forEach(i => {
       issueRows.push([{ text: i.id }, { text: i.title }, { text: i.severity }, { text: i.status }]);
     });
-    slide6.addTable(issueRows, { x: 0.5, y: 1.5, w: 9, fontSize: 11, border: { pt: 0.5, color: 'e5e7eb' } });
-    slide6.addText(data.sections.issues.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
+    slideIssues.addTable(issueRows, { x: 0.5, y: 1.5, w: 9, fontSize: 11, border: { pt: 0.5, color: 'e5e7eb' } });
+    slideIssues.addText(data.sections.issues.summary, { x: 0.5, y: 4.2, w: 9, h: 1, fontSize: 11, fill: { color: 'eff6ff' }, color: '374151' });
     
     // Save the file
     pptx.writeFile({ fileName: `${getSanitizedFilename()}.pptx` });
