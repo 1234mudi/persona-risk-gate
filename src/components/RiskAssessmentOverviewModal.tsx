@@ -163,23 +163,30 @@ const AssessmentCard = ({
             </div>
           </div>
 
-          {/* Issues Card - Criticality Chips */}
+          {/* Issues Card - Criticality Chips or No Action indicator */}
           {isIssuesCard && issuesData ? (
-            <div className="flex items-center gap-2 flex-wrap">
-              <span className="text-[11px] text-muted-foreground">Criticality:</span>
-              {issuesData.criticality.map((item, idx) => (
-                <Badge 
-                  key={idx}
-                  className={`${item.color} text-white text-[10px] px-2 py-0.5 cursor-pointer hover:opacity-80`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onNavigate(sectionKey, riskId, riskName);
-                  }}
-                >
-                  {item.label}: {item.count}
-                </Badge>
-              ))}
-            </div>
+            issuesData.newIssues > 0 ? (
+              <div className="flex items-center gap-2 flex-wrap">
+                <span className="text-[11px] text-muted-foreground">Criticality:</span>
+                {issuesData.criticality.map((item, idx) => (
+                  <Badge 
+                    key={idx}
+                    className={`${item.color} text-white text-[10px] px-2 py-0.5 cursor-pointer hover:opacity-80`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onNavigate(sectionKey, riskId, riskName);
+                    }}
+                  >
+                    {item.label}: {item.count}
+                  </Badge>
+                ))}
+              </div>
+            ) : (
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-[11px] text-emerald-600">No new issues identified — No action required</span>
+              </div>
+            )
           ) : (
             <>
               {/* Progress row */}
