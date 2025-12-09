@@ -727,9 +727,10 @@ const Dashboard1stLine = () => {
       trend: `${actionPlanCounts.inProgress} in progress`,
       trendUp: actionPlanCounts.completed > actionPlanCounts.inProgress,
       icon: CheckSquare,
+      chartType: "pie" as const,
       segments: [
-        { label: "In Progress", value: actionPlanCounts.inProgress, sublabel: `${actionPlanCounts.inProgress} In Progress`, color: "bg-amber-500" },
-        { label: "Completed", value: actionPlanCounts.completed, sublabel: `${actionPlanCounts.completed} Completed`, color: "bg-green-600" },
+        { label: "In Progress", value: actionPlanCounts.inProgress, sublabel: `${actionPlanCounts.inProgress} In Progress`, color: "bg-amber-500", chartColor: "#f59e0b" },
+        { label: "Completed", value: actionPlanCounts.completed, sublabel: `${actionPlanCounts.completed} Completed`, color: "bg-green-600", chartColor: "#16a34a" },
       ],
       description: "Focus on in-progress action plans to reduce risk exposure.",
       tooltip: "Remediation action plans assigned to you. In-progress items indicate control gaps requiring attention.",
@@ -964,33 +965,93 @@ const Dashboard1stLine = () => {
                     </span>
                   </div>
                   
-                  {/* Status Bar */}
+                  {/* Chart - Pie or Bar */}
                   <div className="space-y-2">
-                    <div className="flex h-6 rounded-lg overflow-hidden">
-                      {metric.segments.map((segment, idx) => {
-                        const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
-                        const percentage = (segment.value / total) * 100;
+                    {'chartType' in metric && metric.chartType === 'pie' ? (
+                      // Pie Chart
+                      (() => {
+                        const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string; chartColor?: string }>;
+                        let total = 0;
+                        for (const s of segments) total += s.value;
+                        let cumulativePercent = 0;
                         return (
-                          <div
-                            key={idx}
-                            className={segment.color}
-                            style={{ width: `${percentage}%` }}
-                          />
+                          <div className="flex items-center gap-4">
+                            <div className="relative w-16 h-16">
+                              <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
+                                {segments.map((segment, idx) => {
+                                  const percent = total > 0 ? (segment.value / total) * 100 : 0;
+                                  const dashArray = `${percent} ${100 - percent}`;
+                                  const dashOffset = -cumulativePercent;
+                                  cumulativePercent += percent;
+                                  return (
+                                    <circle
+                                      key={idx}
+                                      cx="18"
+                                      cy="18"
+                                      r="15.91549430918954"
+                                      fill="transparent"
+                                      stroke={segment.chartColor || '#888'}
+                                      strokeWidth="3.5"
+                                      strokeDasharray={dashArray}
+                                      strokeDashoffset={dashOffset}
+                                      className="transition-all duration-500"
+                                    />
+                                  );
+                                })}
+                              </svg>
+                            </div>
+                            <div className="flex flex-col gap-1">
+                              {segments.map((segment, idx) => {
+                                const percent = total > 0 ? Math.round((segment.value / total) * 100) : 0;
+                                return (
+                                  <div key={idx} className="flex items-center gap-1.5">
+                                    <div className={`w-2.5 h-2.5 rounded-full ${segment.color}`} />
+                                    <span className="text-xs font-medium text-muted-foreground">
+                                      {segment.value} {segment.label} ({percent}%)
+                                    </span>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          </div>
                         );
-                      })}
-                    </div>
-                    
-                    {/* Legend */}
-                    <div className="flex flex-wrap gap-x-2 gap-y-1">
-                      {metric.segments.map((segment, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5">
-                          <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
-                          <span className="text-xs font-medium text-muted-foreground">
-                            {segment.sublabel || segment.label}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
+                      })()
+                    ) : (
+                      // Bar Chart (default)
+                      (() => {
+                        const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
+                        let total = 0;
+                        for (const s of segments) total += s.value;
+                        return (
+                          <>
+                            <div className="flex h-6 rounded-lg overflow-hidden">
+                              {segments.map((segment, idx) => {
+                                const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                                return (
+                                  <div
+                                    key={idx}
+                                    className={segment.color}
+                                    style={{ width: `${percentage}%` }}
+                                  />
+                                );
+                              })}
+                            </div>
+                            
+                            {/* Legend */}
+                            <div className="flex flex-wrap gap-x-2 gap-y-1">
+                              {segments.map((segment, idx) => (
+                                <div key={idx} className="flex items-center gap-1.5">
+                                  <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
+                                  <span className="text-xs font-medium text-muted-foreground">
+                                    {segment.sublabel || segment.label}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          </>
+                        );
+                      })()
+                    )}
                   </div>
                   
                   <p className="text-xs text-muted-foreground leading-snug pt-2">
