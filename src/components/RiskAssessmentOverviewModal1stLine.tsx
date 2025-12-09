@@ -643,7 +643,7 @@ This risk is currently being managed within established parameters. No immediate
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-5xl w-[70vw] p-0 overflow-hidden flex flex-col [&>button]:top-3 [&>button]:right-3 [&>button]:z-10">
+      <DialogContent className="sm:max-w-5xl w-[95vw] p-0 overflow-hidden flex flex-col max-h-[90vh] [&>button]:top-3 [&>button]:right-3 [&>button]:z-10">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0 pr-12">
           <div className="flex items-center justify-between">
@@ -713,7 +713,7 @@ This risk is currently being managed within established parameters. No immediate
 
         {/* AI Summary Modal */}
         <Dialog open={summaryModalOpen} onOpenChange={setSummaryModalOpen}>
-          <DialogContent className="max-w-lg flex flex-col max-h-[85vh]">
+          <DialogContent className="sm:max-w-lg w-[95vw] flex flex-col max-h-[80vh]">
             <DialogHeader className="shrink-0">
               <DialogTitle className="flex items-center gap-2 text-base">
                 <Sparkles className="w-4 h-4 text-primary fill-primary/20" />
