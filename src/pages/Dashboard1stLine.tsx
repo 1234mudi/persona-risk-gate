@@ -680,7 +680,7 @@ const Dashboard1stLine = () => {
   const metrics = useMemo(() => [
     {
       title: "My Assessments Due",
-      value: assessmentDueCounts.total,
+      value: assessmentDueCounts.overdue + assessmentDueCounts.dueThisWeek,
       trend: `${assessmentDueCounts.overdue} overdue`,
       trendUp: assessmentDueCounts.overdue === 0,
       icon: Clock,
