@@ -661,20 +661,18 @@ const Dashboard1stLine = () => {
     
     riskData.forEach(risk => {
       const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
-      // Treat "effective", "partially effective", and "design effective" as effective
-      if (label === "effective" || label === "partially effective" || label === "design effective") {
+      if (label === "effective") {
         effective++;
+      } else if (label === "partially effective") {
+        partiallyEffective++;
       } else if (label === "ineffective") {
         ineffective++;
-      } else if (label === "not assessed" || label === "") {
-        notAssessed++;
       } else {
-        // Any other value counts as effective (e.g., "operating effective")
-        effective++;
+        notAssessed++;
       }
     });
     
-    const total = effective + ineffective + notAssessed;
+    const total = effective + partiallyEffective + ineffective + notAssessed;
     return { effective, partiallyEffective, ineffective, notAssessed, total };
   }, [riskData]);
 
@@ -716,6 +714,7 @@ const Dashboard1stLine = () => {
       icon: FileCheck,
       segments: [
         { label: "Effective", value: controlEvidenceCounts.effective, sublabel: `${controlEvidenceCounts.effective} Effective`, color: "bg-green-600" },
+        { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, sublabel: `${controlEvidenceCounts.partiallyEffective} Partially Effective`, color: "bg-amber-500" },
         { label: "Ineffective", value: controlEvidenceCounts.ineffective, sublabel: `${controlEvidenceCounts.ineffective} Ineffective`, color: "bg-red-600" },
         { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, sublabel: `${controlEvidenceCounts.notAssessed} Not Assessed`, color: "bg-gray-400" },
       ],
