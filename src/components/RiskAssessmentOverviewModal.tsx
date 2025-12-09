@@ -22,7 +22,8 @@ import {
   Sparkles,
   Loader2,
   Save,
-  Target
+  Target,
+  Download
 } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 
@@ -350,8 +351,8 @@ This risk is currently being managed within established parameters. No immediate
                 onClick={handleOpenSummaryModal}
                 className="h-8 text-xs gap-1.5"
               >
-                <Sparkles className="w-3.5 h-3.5 text-primary" />
-                <span>AI Assessment Summary</span>
+                <Sparkles className="w-3.5 h-3.5 text-primary fill-primary/20" />
+                <span>Assessment Summary</span>
               </Button>
               <Button 
                 size="sm"
@@ -380,18 +381,18 @@ This risk is currently being managed within established parameters. No immediate
           </div>
         </div>
 
-        {/* AI Summary Modal */}
+        {/* Summary Modal */}
         <Dialog open={summaryModalOpen} onOpenChange={setSummaryModalOpen}>
           <DialogContent className="max-w-lg">
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-base">
-                <Sparkles className="w-4 h-4 text-primary" />
-                AI Assessment Summary
+                <Sparkles className="w-4 h-4 text-primary fill-primary/20" />
+                Assessment Summary
               </DialogTitle>
             </DialogHeader>
             <div className="space-y-3">
               <p className="text-xs text-muted-foreground">
-                AI-generated summary based on previous cycle data and current risk details. Edit as needed.
+                Generated summary based on previous cycle data and current risk details. Edit as needed.
               </p>
               {isGenerating ? (
                 <div className="flex items-center justify-center py-12">
@@ -403,26 +404,50 @@ This risk is currently being managed within established parameters. No immediate
                   value={aiSummary}
                   onChange={(e) => setAiSummary(e.target.value)}
                   className="min-h-[280px] text-sm leading-relaxed"
-                  placeholder="AI summary will appear here..."
+                  placeholder="Summary will appear here..."
                 />
               )}
-              <div className="flex justify-end gap-2 pt-2">
+              <div className="flex justify-between gap-2 pt-2">
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setSummaryModalOpen(false)}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={handleSaveSummary}
+                  onClick={() => {
+                    const blob = new Blob([aiSummary], { type: 'text/plain' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `assessment-summary-${risk.id}.txt`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    toast({
+                      title: "Summary Exported",
+                      description: "The summary has been downloaded as a text file.",
+                    });
+                  }}
                   disabled={isGenerating || !aiSummary}
                   className="gap-1.5"
                 >
-                  <Save className="w-3.5 h-3.5" />
-                  Save Summary
+                  <Download className="w-3.5 h-3.5" />
+                  Export
                 </Button>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSummaryModalOpen(false)}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={handleSaveSummary}
+                    disabled={isGenerating || !aiSummary}
+                    className="gap-1.5"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    Save Summary
+                  </Button>
+                </div>
               </div>
             </div>
           </DialogContent>
