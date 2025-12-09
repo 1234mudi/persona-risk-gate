@@ -1693,7 +1693,7 @@ const Dashboard1stLine = () => {
 
       {/* Action Dialog */}
       <Dialog open={actionDialog.open} onOpenChange={(open) => !open && setActionDialog({ open: false, type: null, riskId: null })}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="sm:max-w-md w-[95vw] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {actionDialog.type === "reassign" && "Reassign Assessors"}
@@ -1788,7 +1788,7 @@ const Dashboard1stLine = () => {
 
       {/* Update Version Confirmation Dialog */}
       <Dialog open={updateVersionDialogOpen} onOpenChange={setUpdateVersionDialogOpen}>
-        <DialogContent className="max-w-md">
+        <DialogContent className="sm:max-w-md w-[95vw] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <RefreshCw className="w-5 h-5 text-amber-600" />

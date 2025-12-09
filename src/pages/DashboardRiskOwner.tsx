@@ -835,13 +835,18 @@ const DashboardRiskOwner = () => {
               </div>
 
               <Select defaultValue="all">
-                <SelectTrigger className="w-40 h-8">
+                <SelectTrigger className="w-48 h-8">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50">
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="pending-approval">Pending Approval</SelectItem>
+                  <SelectItem value="review-challenge">Review & Challenge</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="closed">Closed</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -1181,7 +1186,7 @@ const DashboardRiskOwner = () => {
 
       {/* Action Dialog */}
       <Dialog open={actionDialog.open} onOpenChange={(open) => !open && setActionDialog({ open: false, type: null, riskId: null })}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md w-[95vw] max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {actionDialog.type === "reassign" && "Reassign Risk"}
