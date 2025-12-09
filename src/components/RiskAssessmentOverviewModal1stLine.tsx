@@ -34,6 +34,16 @@ import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { SingleRiskDocumentModal } from "./SingleRiskDocumentModal";
 
+interface IssueItem {
+  id: string;
+  title: string;
+  description: string;
+  severity: string;
+  status: string;
+  dateIdentified: string;
+  owner: string;
+}
+
 interface RiskAssessmentOverviewModal1stLineProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -47,6 +57,8 @@ interface RiskAssessmentOverviewModal1stLineProps {
       riskTreatment: number;
     };
   } | null;
+  assessmentIssues?: IssueItem[];
+  activeRelatedIssues?: IssueItem[];
 }
 
 interface AssessmentCardProps {
@@ -224,6 +236,8 @@ export const RiskAssessmentOverviewModal1stLine = ({
   open,
   onOpenChange,
   risk,
+  assessmentIssues = [],
+  activeRelatedIssues = [],
 }: RiskAssessmentOverviewModal1stLineProps) => {
   const navigate = useNavigate();
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
@@ -254,8 +268,17 @@ export const RiskAssessmentOverviewModal1stLine = ({
 
   const handleNavigateToSection = (section: string, riskId: string, riskName: string) => {
     onOpenChange(false);
-    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}&source=1st-line`);
+    // For issues section, add openPanel param to open the issues slider
+    const panelParam = section === 'issues' ? '&openPanel=issues' : '';
+    navigate(`/risk-assessment?section=${section}&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}&source=1st-line${panelParam}`);
   };
+
+  // Calculate issues data from props
+  const allIssues = [...assessmentIssues, ...activeRelatedIssues];
+  const newIssuesCount = assessmentIssues.length;
+  const highCount = allIssues.filter(i => i.severity === 'High').length;
+  const mediumCount = allIssues.filter(i => i.severity === 'Medium').length;
+  const lowCount = allIssues.filter(i => i.severity === 'Low').length;
 
   const handleAIAssess = (sectionKey: string) => {
     setAssessingSection(sectionKey);
@@ -403,11 +426,11 @@ This risk is currently being managed within established parameters. No immediate
       },
       isIssuesCard: true,
       issuesData: {
-        newIssues: 3,
+        newIssues: newIssuesCount,
         criticality: [
-          { label: "High", count: 1, color: "bg-red-500" },
-          { label: "Medium", count: 1, color: "bg-amber-500" },
-          { label: "Low", count: 1, color: "bg-blue-500" },
+          ...(highCount > 0 ? [{ label: "High", count: highCount, color: "bg-red-500" }] : []),
+          ...(mediumCount > 0 ? [{ label: "Medium", count: mediumCount, color: "bg-amber-500" }] : []),
+          ...(lowCount > 0 ? [{ label: "Low", count: lowCount, color: "bg-blue-500" }] : []),
         ]
       }
     },

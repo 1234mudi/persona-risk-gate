@@ -162,14 +162,15 @@ const RiskAssessmentForm = () => {
   const aiAssessed = searchParams.get("aiAssessed");
   const mode = searchParams.get("mode"); // 'update-version' for new version creation
   const source = searchParams.get("source") || "1st-line"; // Track where user came from
+  const openPanel = searchParams.get("openPanel"); // Open specific panel on load
   const isUpdateVersionMode = mode === "update-version";
   
   const [activeTab, setActiveTab] = useState(section);
   const [bottomTab, setBottomTab] = useState("previous-assessments");
   const [showWeights, setShowWeights] = useState(true);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [rightPanelOpen, setRightPanelOpen] = useState(false);
-  const [rightPanelTab, setRightPanelTab] = useState<'assessments' | 'review' | 'issues' | 'metrics' | 'details'>('assessments');
+  const [rightPanelOpen, setRightPanelOpen] = useState(openPanel === 'issues');
+  const [rightPanelTab, setRightPanelTab] = useState<'assessments' | 'review' | 'issues' | 'metrics' | 'details'>(openPanel === 'issues' ? 'issues' : 'assessments');
   const [collaborateOpen, setCollaborateOpen] = useState(false);
   const [exportOpen, setExportOpen] = useState(false);
   const [chatMessage, setChatMessage] = useState("");
