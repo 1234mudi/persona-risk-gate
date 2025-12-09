@@ -1133,6 +1133,47 @@ const Dashboard1stLine = () => {
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border text-xs">Update Completed</TableHead>
+                      <TableHead className="min-w-[220px] py-2 border-r border-b border-border">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-1.5 hover:text-first-line transition-colors">
+                              Risk Title
+                              <ChevronDown className="w-4 h-4" />
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" className="bg-popover border border-border shadow-lg z-50">
+                            <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Org Level</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("all")}
+                              className={orgLevelFilter === "all" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              All Levels
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("level1")}
+                              className={orgLevelFilter === "level1" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              Org Level 1 (Operational)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("level2")}
+                              className={orgLevelFilter === "level2" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              Org Level 2 (Retail Banking)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setOrgLevelFilter("level3")}
+                              className={orgLevelFilter === "level3" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              Org Level 3 (ATM)
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableHead>
+                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
+                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
