@@ -467,22 +467,83 @@ This risk is currently being managed within established parameters. No immediate
     toast({ title: "Word Export", description: "Summary exported as Word document." });
   };
 
+  // Helper function to parse AI summary into sections
+  const parseAISummaryToSections = (summary: string) => {
+    const defaultText = "No data available for this section.";
+    
+    const inherentMatch = summary.match(/\*\*Inherent Risk Assessment:\*\*\s*([\s\S]*?)(?=\*\*Control|$)/);
+    const controlMatch = summary.match(/\*\*Control Environment:\*\*\s*([\s\S]*?)(?=\*\*Residual|$)/);
+    const residualMatch = summary.match(/\*\*Residual Risk Position:\*\*\s*([\s\S]*?)(?=\*\*Treatment|$)/);
+    const treatmentMatch = summary.match(/\*\*Treatment Recommendations:\*\*\s*([\s\S]*?)(?=\*\*Overall|$)/);
+    const overallMatch = summary.match(/\*\*Overall Assessment:\*\*\s*([\s\S]*?)$/);
+    
+    return {
+      inherentRating: inherentMatch ? inherentMatch[1].trim() : defaultText,
+      controlEffectiveness: controlMatch ? controlMatch[1].trim() : defaultText,
+      residualRating: residualMatch ? residualMatch[1].trim() : defaultText,
+      treatment: treatmentMatch ? treatmentMatch[1].trim() : defaultText,
+      overall: overallMatch ? overallMatch[1].trim() : "This risk is currently being managed within established parameters."
+    };
+  };
+
   const generatePPT = () => {
     const pptx = new pptxgen();
     pptx.title = `Assessment Summary - ${risk.id}`;
+    pptx.author = "Risk Assessment System";
     
-    // Title slide
-    const titleSlide = pptx.addSlide();
-    titleSlide.addText("Assessment Summary", { x: 0.5, y: 1.5, w: 9, h: 1, fontSize: 36, bold: true, color: "363636" });
-    titleSlide.addText(`${risk.id} - ${risk.title}`, { x: 0.5, y: 2.5, w: 9, h: 0.5, fontSize: 18, color: "666666" });
-    titleSlide.addText(`Export Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, { x: 0.5, y: 3.2, w: 9, h: 0.5, fontSize: 14, color: "999999" });
+    const sections = parseAISummaryToSections(aiSummary);
+    
+    // Slide 1: Title
+    const slide1 = pptx.addSlide();
+    slide1.addText(risk.title, { x: 0.5, y: 2, w: 9, h: 1.2, fontSize: 36, bold: true, color: "1d4ed8" });
+    slide1.addText("Risk Assessment Summary", { x: 0.5, y: 3.3, w: 9, h: 0.5, fontSize: 20, color: "6b7280" });
+    slide1.addText(`Risk ID: ${risk.id}`, { x: 0.5, y: 3.9, w: 9, h: 0.4, fontSize: 14, color: "9ca3af" });
+    slide1.addText(`Generated: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, { x: 0.5, y: 4.4, w: 9, h: 0.4, fontSize: 14, color: "9ca3af" });
 
-    // Content slide
-    const contentSlide = pptx.addSlide();
-    contentSlide.addText("Summary Details", { x: 0.5, y: 0.3, w: 9, h: 0.5, fontSize: 24, bold: true, color: "363636" });
+    // Slide 2: Assessment Summary Overview
+    const slide2 = pptx.addSlide();
+    slide2.addText("Assessment Summary", { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 28, bold: true, color: "1d4ed8" });
     
-    const cleanSummary = aiSummary.replace(/\*\*/g, '').substring(0, 2000);
-    contentSlide.addText(cleanSummary, { x: 0.5, y: 1, w: 9, h: 4.5, fontSize: 12, color: "333333", valign: "top" });
+    const summaryItems = [
+      { title: "Inherent Risk Assessment", text: sections.inherentRating.substring(0, 200) + (sections.inherentRating.length > 200 ? "..." : "") },
+      { title: "Control Environment", text: sections.controlEffectiveness.substring(0, 200) + (sections.controlEffectiveness.length > 200 ? "..." : "") },
+      { title: "Residual Risk Position", text: sections.residualRating.substring(0, 200) + (sections.residualRating.length > 200 ? "..." : "") },
+      { title: "Treatment Recommendations", text: sections.treatment.substring(0, 200) + (sections.treatment.length > 200 ? "..." : "") }
+    ];
+    
+    let yPos = 1;
+    summaryItems.forEach((item) => {
+      slide2.addText(item.title, { x: 0.5, y: yPos, w: 9, h: 0.35, fontSize: 14, bold: true, color: "374151" });
+      slide2.addText(item.text, { x: 0.5, y: yPos + 0.35, w: 9, h: 0.7, fontSize: 11, color: "6b7280", valign: "top" });
+      yPos += 1.2;
+    });
+
+    // Slide 3: Inherent Risk Assessment (detailed)
+    const slide3 = pptx.addSlide();
+    slide3.addText("Inherent Risk Assessment", { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 28, bold: true, color: "1d4ed8" });
+    slide3.addText(sections.inherentRating, { x: 0.5, y: 1, w: 9, h: 4, fontSize: 14, color: "374151", valign: "top" });
+
+    // Slide 4: Control Environment (detailed)
+    const slide4 = pptx.addSlide();
+    slide4.addText("Control Environment", { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 28, bold: true, color: "1d4ed8" });
+    slide4.addText(sections.controlEffectiveness, { x: 0.5, y: 1, w: 9, h: 4, fontSize: 14, color: "374151", valign: "top" });
+
+    // Slide 5: Residual Risk Position (detailed)
+    const slide5 = pptx.addSlide();
+    slide5.addText("Residual Risk Position", { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 28, bold: true, color: "1d4ed8" });
+    slide5.addText(sections.residualRating, { x: 0.5, y: 1, w: 9, h: 4, fontSize: 14, color: "374151", valign: "top" });
+
+    // Slide 6: Treatment Recommendations (detailed)
+    const slide6 = pptx.addSlide();
+    slide6.addText("Treatment Recommendations", { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 28, bold: true, color: "1d4ed8" });
+    slide6.addText(sections.treatment, { x: 0.5, y: 1, w: 9, h: 4, fontSize: 14, color: "374151", valign: "top" });
+
+    // Slide 7: Overall Assessment
+    const slide7 = pptx.addSlide();
+    slide7.addText("Overall Assessment", { x: 0.5, y: 0.3, w: 9, h: 0.6, fontSize: 28, bold: true, color: "1d4ed8" });
+    slide7.addText(sections.overall, { x: 0.5, y: 1, w: 9, h: 3.5, fontSize: 14, color: "374151", valign: "top" });
+    slide7.addText(`Risk ID: ${risk.id}`, { x: 0.5, y: 4.5, w: 4, h: 0.4, fontSize: 12, color: "6b7280" });
+    slide7.addText(`Assessment Date: ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, { x: 5, y: 4.5, w: 4, h: 0.4, fontSize: 12, color: "6b7280" });
 
     pptx.writeFile({ fileName: `${getSanitizedFilename()}.pptx` });
     toast({ title: "PowerPoint Export", description: "Summary exported as PowerPoint presentation." });
@@ -676,11 +737,13 @@ This risk is currently being managed within established parameters. No immediate
                   placeholder="Summary will appear here..."
                 />
               ) : (
-                <ScrollArea className="min-h-[200px] max-h-[400px] rounded-md border border-border p-3 bg-muted/30">
-                  <div className="space-y-1">
+              <div className="overflow-hidden">
+                <ScrollArea className="h-[350px] rounded-md border border-border p-3 bg-muted/30">
+                  <div className="space-y-1 pr-3">
                     {renderFormattedText(aiSummary)}
                   </div>
                 </ScrollArea>
+              </div>
               )}
               
               {/* Edit Toggle Button */}
