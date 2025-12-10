@@ -394,6 +394,28 @@ const Dashboard2ndLine = () => {
 
   const filteredRiskData = riskData.filter(risk => risk.tabCategory === activeTab);
 
+  // Get unique business units for grouping
+  const businessUnitsInView = useMemo(() => {
+    const units = [...new Set(filteredRiskData.map(r => r.businessUnit))];
+    return units.sort();
+  }, [filteredRiskData]);
+
+  // State to track expanded business unit groups
+  const [expandedBusinessUnits, setExpandedBusinessUnits] = useState<Set<string>>(new Set(businessUnitsInView));
+
+  // Toggle business unit group expansion
+  const toggleBusinessUnitGroup = (unit: string) => {
+    setExpandedBusinessUnits(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(unit)) {
+        newSet.delete(unit);
+      } else {
+        newSet.add(unit);
+      }
+      return newSet;
+    });
+  };
+
   // Filter and organize risks by hierarchy
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
@@ -413,6 +435,27 @@ const Dashboard2ndLine = () => {
     });
     return visible;
   };
+
+  // Get risks grouped by business unit
+  const getGroupedRisks = useMemo(() => {
+    const visibleRisks = getVisibleRisks();
+    const grouped: { [key: string]: RiskData[] } = {};
+    
+    visibleRisks.forEach(risk => {
+      if (!grouped[risk.businessUnit]) {
+        grouped[risk.businessUnit] = [];
+      }
+      grouped[risk.businessUnit].push(risk);
+    });
+    
+    // Sort business units alphabetically
+    const sortedKeys = Object.keys(grouped).sort();
+    return sortedKeys.map(unit => ({
+      businessUnit: unit,
+      risks: grouped[unit],
+      count: grouped[unit].length
+    }));
+  }, [filteredRiskData, expandedRows]);
 
   const getLevel2Children = (level1Risk: RiskData): RiskData[] => {
     return filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === level1Risk.title);
@@ -763,9 +806,9 @@ const Dashboard2ndLine = () => {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] sm:text-xs text-yellow-800 dark:text-yellow-200 leading-snug">
-                  {activeTab === "own" && "These are risks you own and are responsible for managing. Click on the Risk Title to begin."}
-                  {activeTab === "assess" && "These risks require your assessment and input. Click on the Risk Title to begin."}
-                  {activeTab === "approve" && "These risk assessments are awaiting your approval. Click on the Risk Title to begin."}
+                  {activeTab === "own" && "You are the owner of these risks. Click on the Risk Title to begin your assessment."}
+                  {activeTab === "assess" && "These risks are assigned to you for assessment. Click on the Risk Title to begin."}
+                  {activeTab === "approve" && "These risk assessments require your approval. Click on the Risk Title to begin."}
                 </p>
               </div>
             </div>
@@ -856,12 +899,13 @@ const Dashboard2ndLine = () => {
                           />
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border text-xs">Update Completed</TableHead>
+                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border text-xs">Revise Assessment</TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Business Unit</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
@@ -1025,6 +1069,11 @@ const Dashboard2ndLine = () => {
                               </Badge>
                             ))}
                           </div>
+                        </TableCell>
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <Badge variant="outline" className="text-xs font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700">
+                            {risk.businessUnit}
+                          </Badge>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex flex-wrap gap-1">

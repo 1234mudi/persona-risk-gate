@@ -92,6 +92,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
 import { AIFieldIndicator } from "@/components/AIFieldIndicator";
+import { AddControlModal } from "@/components/AddControlModal";
 
 // Types
 interface Factor {
@@ -180,6 +181,7 @@ const RiskAssessmentForm = () => {
   const [selectedCollaborators, setSelectedCollaborators] = useState<string[]>([]);
   const [activeCellComment, setActiveCellComment] = useState<{factorId: string; field: string} | null>(null);
   const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
+  const [addControlModalOpen, setAddControlModalOpen] = useState(false);
   
   // AI field tracking - tracks which fields have been AI-filled and which have been manually edited
   const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
@@ -1515,17 +1517,65 @@ const RiskAssessmentForm = () => {
                 
                 {/* Collaborative Status Indicators */}
                 <div className="flex items-center gap-3 px-3 py-1.5 bg-primary/90 rounded-full">
-                  {/* User Avatars - Overlapping */}
+                  {/* User Avatars - Overlapping with Tooltips */}
                   <div className="flex -space-x-2">
-                  <div className="w-7 h-7 rounded-full bg-emerald-500 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-30">
-                      SJ
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-blue-400 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-20">
-                      MC
-                    </div>
-                    <div className="w-7 h-7 rounded-full bg-slate-300 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-slate-700 z-10">
-                      ER
-                    </div>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="w-7 h-7 rounded-full bg-emerald-500 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-30 cursor-pointer">
+                            SJ
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="p-3">
+                          <div className="space-y-1">
+                            <p className="font-semibold text-sm">Sarah Johnson</p>
+                            <p className="text-xs text-muted-foreground">Risk Analyst</p>
+                            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
+                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-xs">Editing: Inherent Rating</span>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="w-7 h-7 rounded-full bg-blue-400 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-20 cursor-pointer">
+                            MC
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="p-3">
+                          <div className="space-y-1">
+                            <p className="font-semibold text-sm">Michael Chen</p>
+                            <p className="text-xs text-muted-foreground">Compliance Officer</p>
+                            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
+                              <Eye className="w-3 h-3 text-muted-foreground" />
+                              <span className="text-xs">Viewing: Control Effectiveness</span>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <div className="w-7 h-7 rounded-full bg-slate-300 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-slate-700 z-10 cursor-pointer">
+                            ER
+                          </div>
+                        </TooltipTrigger>
+                        <TooltipContent side="bottom" className="p-3">
+                          <div className="space-y-1">
+                            <p className="font-semibold text-sm">Emily Roberts</p>
+                            <p className="text-xs text-muted-foreground">Senior Auditor</p>
+                            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
+                              <Eye className="w-3 h-3 text-muted-foreground" />
+                              <span className="text-xs">Viewing: Residual Rating</span>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   </div>
                   
                   {/* Editing Status */}
@@ -1550,7 +1600,7 @@ const RiskAssessmentForm = () => {
                   onClick={() => { setRightPanelOpen(true); setRightPanelTab('review'); }}
                 >
                   <MessageSquare className="w-4 h-4 mr-2" />
-                  Review
+                  Add Comments
                 </Button>
 
                 {/* Summarize & Export Dialog */}
@@ -2100,7 +2150,7 @@ const RiskAssessmentForm = () => {
 <th className="p-1.5 text-left text-xs font-medium w-28">Design Effectiveness</th>
                               <th className="p-1.5 text-left text-xs font-medium w-28">Operating Effectiveness</th>
                               <th className="p-1.5 text-left text-xs font-medium w-28">Overall Effectiveness</th>
-                        <th className="p-1.5 text-left text-xs font-medium w-14">Avg</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-24">Average Control Score</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2129,7 +2179,19 @@ const RiskAssessmentForm = () => {
                                   {control.type}
                                 </Badge>
                               </td>
-                              <td className="p-1.5 text-xs">{control.owner}</td>
+                              <td className="p-1.5">
+                                <div className="flex items-center gap-1.5">
+                                  <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-full border border-border">
+                                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[9px] font-medium text-primary">
+                                      {control.owner.split(' ').map(w => w[0]).join('').substring(0, 2) || control.owner.substring(0, 2)}
+                                    </div>
+                                    <div className="flex flex-col">
+                                      <span className="text-xs font-medium leading-tight">{control.owner === "Compliance Team" ? "John Smith" : control.owner === "Risk Management" ? "Sarah Lee" : "Mike Davis"}</span>
+                                      <span className="text-[10px] text-muted-foreground leading-tight">{control.owner}</span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </td>
                               <td className="p-1.5 overflow-visible">
                                 <CollaborativeCell cellId={`${controlCellId}-design`}>
                                   <CellCommentPopover factorName={control.id} field="Design">
@@ -2266,7 +2328,36 @@ const RiskAssessmentForm = () => {
                     </tbody>
                   </table>
                 </div>
-                <Button variant="outline" className="mt-3 gap-2 h-8 text-sm"><Plus className="w-3.5 h-3.5" />Add Control</Button>
+                <Button 
+                  variant="outline" 
+                  className="mt-3 gap-2 h-8 text-sm"
+                  onClick={() => setAddControlModalOpen(true)}
+                >
+                  <Plus className="w-3.5 h-3.5" />Add Control
+                </Button>
+                
+                {/* Add Control Modal */}
+                <AddControlModal 
+                  open={addControlModalOpen}
+                  onOpenChange={setAddControlModalOpen}
+                  existingControlIds={controls.map(c => c.id)}
+                  onAddControls={(newControls) => {
+                    const controlsToAdd = newControls.map(c => ({
+                      id: c.id,
+                      name: c.name,
+                      description: `${c.name} - Control added from available controls library`,
+                      type: c.type,
+                      owner: c.type === "Preventive" ? "Compliance Team" : "Risk Management",
+                      designRating: c.prevDesign,
+                      operatingRating: c.prevOperating,
+                      testingRating: Math.round((c.prevDesign + c.prevOperating) / 2),
+                      evidences: [],
+                      cellComments: []
+                    }));
+                    setControls([...controls, ...controlsToAdd]);
+                    toast.success(`${newControls.length} control(s) added successfully`);
+                  }}
+                />
               </Card>
 
               <div className="flex items-center justify-between">
@@ -3242,7 +3333,7 @@ const RiskAssessmentForm = () => {
                     <th className="p-3 text-center text-sm font-medium">Design</th>
                     <th className="p-3 text-center text-sm font-medium">Operating</th>
                     <th className="p-3 text-center text-sm font-medium">Testing</th>
-                    <th className="p-3 text-center text-sm font-medium">Avg</th>
+                    <th className="p-3 text-center text-sm font-medium">Average Control Score</th>
                   </tr>
                 </thead>
                 <tbody>
