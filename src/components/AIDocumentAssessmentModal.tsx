@@ -435,8 +435,20 @@ export function AIDocumentAssessmentModal({
 
   const handleImport = () => {
     if (parsedRisks.length > 0) {
-      onRisksImported(parsedRisks);
-      toast.success(`Imported ${parsedRisks.length} risk assessments`);
+      // Filter to only include new and modified risks (exclude unchanged/duplicates)
+      const risksToImport = parsedRisks.filter(risk => {
+        const status = getRiskStatus(risk);
+        return status === "new" || status === "modified";
+      });
+      
+      if (risksToImport.length === 0) {
+        toast.info("No new or modified risks to import - all risks already exist");
+        handleClose();
+        return;
+      }
+      
+      onRisksImported(risksToImport);
+      toast.success(`Imported ${risksToImport.length} risk assessments (${riskCounts.newCount} new, ${riskCounts.modifiedCount} updated)`);
       handleClose();
     }
   };
