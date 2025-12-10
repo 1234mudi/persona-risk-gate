@@ -197,7 +197,22 @@ const Dashboard2ndLine = () => {
     return visible;
   }, [riskData, activeTab, expandedRows]);
 
+  // Helper to check if a risk is completed/closed
+  const isRiskCompleted = (risk: RiskData): boolean => {
+    const status = risk.status?.toLowerCase() || "";
+    return status === "completed" || status === "complete" || status === "closed";
+  };
+
+  // Get selectable risks (exclude completed/closed)
+  const selectableRisks = useMemo(() => 
+    visibleRisks.filter(r => !isRiskCompleted(r)),
+    [visibleRisks]
+  );
+
   const toggleRiskSelection = (riskId: string) => {
+    const risk = riskData.find(r => r.id === riskId);
+    if (risk && isRiskCompleted(risk)) return; // Don't toggle completed/closed risks
+    
     setSelectedRisks(prev => {
       const newSet = new Set(prev);
       if (newSet.has(riskId)) {
@@ -210,10 +225,10 @@ const Dashboard2ndLine = () => {
   };
 
   const toggleSelectAll = () => {
-    if (selectedRisks.size === visibleRisks.length) {
+    if (selectedRisks.size === selectableRisks.length && selectableRisks.length > 0) {
       setSelectedRisks(new Set());
     } else {
-      setSelectedRisks(new Set(visibleRisks.map(r => r.id)));
+      setSelectedRisks(new Set(selectableRisks.map(r => r.id)));
     }
   };
 
@@ -834,8 +849,9 @@ const Dashboard2ndLine = () => {
                       <TableHead className="w-12 py-2 border-r border-b border-border">
                         <div className="flex items-center justify-center">
                           <Checkbox 
-                            checked={visibleRisks.length > 0 && selectedRisks.size === visibleRisks.length}
+                            checked={selectableRisks.length > 0 && selectedRisks.size === selectableRisks.length}
                             onCheckedChange={toggleSelectAll}
+                            disabled={selectableRisks.length === 0}
                           />
                         </div>
                       </TableHead>
@@ -873,6 +889,8 @@ const Dashboard2ndLine = () => {
                             <Checkbox 
                               checked={selectedRisks.has(risk.id)}
                               onCheckedChange={() => toggleRiskSelection(risk.id)}
+                              disabled={isRiskCompleted(risk)}
+                              className={isRiskCompleted(risk) ? "opacity-50 cursor-not-allowed" : ""}
                             />
                           </div>
                         </TableCell>
