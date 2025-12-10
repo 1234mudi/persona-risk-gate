@@ -555,9 +555,9 @@ const Dashboard2ndLine = () => {
   const businessUnitAggregations = useMemo(() => {
     const aggregations: Record<string, {
       riskCount: number;
-      avgInherentRisk: { level: string; color: string };
-      avgControlEffectiveness: { level: string; color: string };
-      avgResidualRisk: { level: string; color: string };
+      avgInherentRisk: { level: string; color: string; score: number };
+      avgControlEffectiveness: { level: string; color: string; score: number };
+      avgResidualRisk: { level: string; color: string; score: number };
     }> = {};
 
     businessUnitsInView.forEach(unit => {
@@ -578,9 +578,9 @@ const Dashboard2ndLine = () => {
 
       aggregations[unit] = {
         riskCount: unitRisks.length,
-        avgInherentRisk: getAggregatedLevel(avgInherent),
-        avgControlEffectiveness: getAggregatedControlEffectiveness(avgControl),
-        avgResidualRisk: getAggregatedLevel(avgResidual),
+        avgInherentRisk: { ...getAggregatedLevel(avgInherent), score: avgInherent },
+        avgControlEffectiveness: { ...getAggregatedControlEffectiveness(avgControl), score: avgControl },
+        avgResidualRisk: { ...getAggregatedLevel(avgResidual), score: avgResidual },
       };
     });
 
@@ -1096,49 +1096,63 @@ const Dashboard2ndLine = () => {
                         const aggregation = businessUnitAggregations[group.businessUnit];
                         return (
                           <>
-                            {/* Business Unit Group Header Row - Left Aligned */}
+                            {/* Business Unit Group Header Row - Unified with Aggregation Cards */}
                             <TableRow key={`agg-${group.businessUnit}`} className="bg-slate-100 dark:bg-slate-800 border-t-2 border-l-4 border-l-primary border-primary/30">
-                              <TableCell colSpan={8} className="py-3 border-r border-b border-border">
-                                <div className="flex items-center gap-3">
-                                  <Building2 className="w-5 h-5 text-primary" />
-                                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Grouped by: Business Unit</span>
-                                  <span className="font-bold text-base">{group.businessUnit}</span>
-                                  <Badge variant="secondary" className="text-xs font-medium">{group.count} risks</Badge>
+                              <TableCell colSpan={14} className="py-3 border-b border-border">
+                                <div className="flex items-center justify-between gap-4">
+                                  {/* Left side: Business Unit info */}
+                                  <div className="flex items-center gap-3">
+                                    <Building2 className="w-5 h-5 text-primary" />
+                                    <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Grouped by: Business Unit</span>
+                                    <span className="font-bold text-base">{group.businessUnit}</span>
+                                    <Badge variant="secondary" className="text-xs font-medium">{group.count} risks</Badge>
+                                  </div>
+                                  
+                                  {/* Right side: Aggregated metrics cards */}
+                                  {aggregation && (
+                                    <div className="flex items-center gap-3">
+                                      {/* Inherent Rating Card */}
+                                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background/80 border border-border shadow-sm">
+                                        <div className="flex flex-col">
+                                          <span className="text-[10px] text-muted-foreground uppercase font-medium tracking-wide">Inherent Rating</span>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold text-foreground">{aggregation.avgInherentRisk.score.toFixed(1)}</span>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border rounded-full px-2 text-xs`}>
+                                              {aggregation.avgInherentRisk.level}
+                                            </Badge>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Control Effectiveness Card */}
+                                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background/80 border border-border shadow-sm">
+                                        <div className="flex flex-col">
+                                          <span className="text-[10px] text-muted-foreground uppercase font-medium tracking-wide">Control Effectiveness</span>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold text-foreground">{aggregation.avgControlEffectiveness.score.toFixed(1)}</span>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border rounded-full px-2 text-xs`}>
+                                              {aggregation.avgControlEffectiveness.level}
+                                            </Badge>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      
+                                      {/* Residual Rating Card */}
+                                      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background/80 border border-border shadow-sm">
+                                        <div className="flex flex-col">
+                                          <span className="text-[10px] text-muted-foreground uppercase font-medium tracking-wide">Residual Rating</span>
+                                          <div className="flex items-center gap-2">
+                                            <span className="text-sm font-bold text-foreground">{aggregation.avgResidualRisk.score.toFixed(1)}</span>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border rounded-full px-2 text-xs`}>
+                                              {aggregation.avgResidualRisk.level}
+                                            </Badge>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
                                 </div>
                               </TableCell>
-                              <TableCell className="py-3 border-r border-b border-border">
-                                {aggregation && (
-                                  <div className="flex flex-col items-start gap-0.5">
-                                    <span className="text-[10px] text-muted-foreground uppercase font-medium">Agg. Inherent</span>
-                                    <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border rounded-full px-2 text-xs`}>
-                                      {aggregation.avgInherentRisk.level}
-                                    </Badge>
-                                  </div>
-                                )}
-                              </TableCell>
-                              <TableCell className="py-3 border-r border-b border-border" />
-                              <TableCell className="py-3 border-r border-b border-border">
-                                {aggregation && (
-                                  <div className="flex flex-col items-start gap-0.5">
-                                    <span className="text-[10px] text-muted-foreground uppercase font-medium">Agg. Control Eff.</span>
-                                    <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border rounded-full px-2 text-xs`}>
-                                      {aggregation.avgControlEffectiveness.level}
-                                    </Badge>
-                                  </div>
-                                )}
-                              </TableCell>
-                              <TableCell className="py-3 border-r border-b border-border" />
-                              <TableCell className="py-3 border-r border-b border-border">
-                                {aggregation && (
-                                  <div className="flex flex-col items-start gap-0.5">
-                                    <span className="text-[10px] text-muted-foreground uppercase font-medium">Agg. Residual</span>
-                                    <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border rounded-full px-2 text-xs`}>
-                                      {aggregation.avgResidualRisk.level}
-                                    </Badge>
-                                  </div>
-                                )}
-                              </TableCell>
-                              <TableCell className="py-3 border-b border-border" />
                             </TableRow>
                             
                             {/* Individual Risk Rows - Always visible */}
