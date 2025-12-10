@@ -501,9 +501,9 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
               <Layers className="w-5 h-5 text-white" />
             </div>
             <div>
-              <h2 className="text-xl font-semibold">Bulk Risk Assessment</h2>
+              <h2 className="text-xl font-semibold">Assess Selected Risks</h2>
               <p className="text-sm text-muted-foreground">
-                Perform bulk assessment for {selectedRisks.length} selected risks
+                Apply common ratings across {selectedRisks.length} risks simultaneously
               </p>
             </div>
           </div>
