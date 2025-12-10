@@ -528,9 +528,9 @@ const Dashboard2ndLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Scorecards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {/* Quick Links Card */}
-          <Card className="lg:col-span-2 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card sm:col-span-1">
+          <Card className="lg:col-span-1 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card sm:col-span-1">
             <CardHeader className="pb-1 pt-3 px-4">
               <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2">
                 <Link className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
@@ -538,7 +538,7 @@ const Dashboard2ndLine = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-3">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-1">
+              <div className="flex flex-col gap-y-1.5">
                 <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[28px] touch-manipulation">
                   <ClipboardCheck className="w-4 h-4 flex-shrink-0" />
                   <span>View Risks to be Assessed</span>
@@ -646,11 +646,11 @@ const Dashboard2ndLine = () => {
           ))}
         </div>
 
-        {/* Active Risk Profile Section */}
+        {/* Risk Coverage by Business Unit Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
           <CardHeader className="border-b border-border/50 space-y-0 py-2 sm:py-3 px-3 sm:px-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
-              <CardTitle className="text-base sm:text-lg font-semibold">Active Risk Profile</CardTitle>
+              <CardTitle className="text-base sm:text-lg font-semibold">Risk Coverage by Business Unit</CardTitle>
               <TooltipProvider>
                 <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                   <Tooltip>
@@ -763,9 +763,9 @@ const Dashboard2ndLine = () => {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] sm:text-xs text-yellow-800 dark:text-yellow-200 leading-snug">
-                  {activeTab === "own" && "These are risks you own and are responsible for managing."}
-                  {activeTab === "assess" && "These risks require your assessment and input."}
-                  {activeTab === "approve" && "These risk assessments are awaiting your approval."}
+                  {activeTab === "own" && "These are risks you own and are responsible for managing. Click on the Risk Title to begin."}
+                  {activeTab === "assess" && "These risks require your assessment and input. Click on the Risk Title to begin."}
+                  {activeTab === "approve" && "These risk assessments are awaiting your approval. Click on the Risk Title to begin."}
                 </p>
               </div>
             </div>
@@ -773,17 +773,18 @@ const Dashboard2ndLine = () => {
             {/* Filters and Actions */}
             <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3 mb-4">
               <div className="flex flex-col gap-1">
-                <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
-                  Assessment Context
+                <Label htmlFor="business-unit" className="text-xs font-medium text-muted-foreground">
+                  Business Unit
                 </Label>
-                <Select defaultValue="retail">
-                  <SelectTrigger id="assessment-context" className="w-full sm:w-48 h-9 sm:h-8 bg-primary text-primary-foreground border-primary">
+                <Select defaultValue="all">
+                  <SelectTrigger id="business-unit" className="w-full sm:w-48 h-9 sm:h-8 bg-primary text-primary-foreground border-primary">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="retail">Retail Banking</SelectItem>
-                    <SelectItem value="corporate">Corporate Banking</SelectItem>
-                    <SelectItem value="investment">Investment Banking</SelectItem>
+                    <SelectItem value="all">All Business Units</SelectItem>
+                    {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
+                      <SelectItem key={unit} value={unit.toLowerCase().replace(/\s+/g, '-')}>{unit}</SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
