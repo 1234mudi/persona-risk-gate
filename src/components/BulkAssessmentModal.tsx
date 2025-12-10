@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Save, Send, Loader2, Search } from "lucide-react";
+import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Send, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 interface RiskData {
   id: string;
@@ -430,9 +430,6 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     return "bg-muted";
   };
 
-  const handleSaveAsDraft = () => {
-    toast.success(`${checkedCount} assessments saved as draft`);
-  };
 
   const handleSubmitAll = () => {
     if (checkedCount === 0) {
@@ -478,10 +475,6 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={() => onOpenChange(false)} className="h-9">
               Cancel
-            </Button>
-            <Button variant="outline" size="sm" onClick={handleSaveAsDraft} className="h-9">
-              <Save className="w-4 h-4 mr-1.5" />
-              Save as Draft
             </Button>
             <Button size="sm" onClick={handleSubmitAll} disabled={checkedCount === 0} className="h-9 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white disabled:opacity-50">
               <Send className="w-4 h-4 mr-1.5" />
