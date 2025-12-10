@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -460,21 +460,8 @@ const Dashboard2ndLine = () => {
     return units.sort();
   }, [filteredRiskData]);
 
-  // State to track expanded business unit groups
-  const [expandedBusinessUnits, setExpandedBusinessUnits] = useState<Set<string>>(new Set(businessUnitsInView));
-
-  // Toggle business unit group expansion
-  const toggleBusinessUnitGroup = (unit: string) => {
-    setExpandedBusinessUnits(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(unit)) {
-        newSet.delete(unit);
-      } else {
-        newSet.add(unit);
-      }
-      return newSet;
-    });
-  };
+  // State to track if grouped by business unit (default: true)
+  const [isGroupedByBusinessUnit, setIsGroupedByBusinessUnit] = useState(true);
 
   // Filter and organize risks by hierarchy
   const getVisibleRisks = () => {
@@ -1053,7 +1040,28 @@ const Dashboard2ndLine = () => {
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
-                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Business Unit</TableHead>
+                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">
+                        <div className="flex items-center gap-2">
+                          <span>Business Unit</span>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <button
+                                onClick={() => setIsGroupedByBusinessUnit(!isGroupedByBusinessUnit)}
+                                className={`p-1 rounded hover:bg-muted transition-colors ${isGroupedByBusinessUnit ? 'bg-primary/10' : ''}`}
+                              >
+                                {isGroupedByBusinessUnit ? (
+                                  <Layers className="w-4 h-4 text-primary" />
+                                ) : (
+                                  <List className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                              <p>{isGroupedByBusinessUnit ? "Click to ungroup" : "Click to group by Business Unit"}</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        </div>
+                      </TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
@@ -1065,81 +1073,70 @@ const Dashboard2ndLine = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {getGroupedRisks.map((group) => {
-                      const aggregation = businessUnitAggregations[group.businessUnit];
-                      return (
-                        <>
-                          {/* Business Unit Aggregation Row */}
-                          <TableRow key={`agg-${group.businessUnit}`} className="bg-slate-100 dark:bg-slate-800 border-t-2 border-primary/30">
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border">
-                              <button
-                                onClick={() => toggleBusinessUnitGroup(group.businessUnit)}
-                                className="flex items-center gap-2 w-full text-left"
-                              >
-                                {expandedBusinessUnits.has(group.businessUnit) ? (
-                                  <ChevronDown className="w-4 h-4" />
-                                ) : (
-                                  <ChevronRight className="w-4 h-4" />
+                    {isGroupedByBusinessUnit ? (
+                      // Grouped view - Business Unit headers with risks underneath
+                      getGroupedRisks.map((group) => {
+                        const aggregation = businessUnitAggregations[group.businessUnit];
+                        return (
+                          <>
+                            {/* Business Unit Group Header Row - Left Aligned */}
+                            <TableRow key={`agg-${group.businessUnit}`} className="bg-slate-100 dark:bg-slate-800 border-t-2 border-l-4 border-l-primary border-primary/30">
+                              <TableCell colSpan={8} className="py-3 border-r border-b border-border">
+                                <div className="flex items-center gap-3">
+                                  <Building2 className="w-5 h-5 text-primary" />
+                                  <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Grouped by: Business Unit</span>
+                                  <span className="font-bold text-base">{group.businessUnit}</span>
+                                  <Badge variant="secondary" className="text-xs font-medium">{group.count} risks</Badge>
+                                </div>
+                              </TableCell>
+                              <TableCell className="py-3 border-r border-b border-border">
+                                {aggregation && (
+                                  <div className="flex items-center gap-1">
+                                    <Badge className={`${getRiskBadgeColor(aggregation.avgInherentRisk.color)} border rounded-full px-2 text-xs`}>
+                                      {aggregation.avgInherentRisk.level}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">Avg</span>
+                                  </div>
                                 )}
-                                <span className="font-bold text-sm">{group.businessUnit}</span>
-                                <Badge variant="secondary" className="text-xs">{group.count} risks</Badge>
-                              </button>
-                            </TableCell>
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border">
-                              {aggregation && (
-                                <div className="flex items-center gap-1">
-                                  <Badge className={`${getRiskBadgeColor(aggregation.avgInherentRisk.color)} border rounded-full px-2 text-xs`}>
-                                    {aggregation.avgInherentRisk.level}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">Avg</span>
-                                </div>
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border">
-                              {aggregation && (
-                                <div className="flex items-center gap-1">
-                                  <Badge className={`${getRiskBadgeColor(aggregation.avgControlEffectiveness.color)} border rounded-full px-2 text-xs`}>
-                                    {aggregation.avgControlEffectiveness.level}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">Avg</span>
-                                </div>
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2 border-r border-b border-border" />
-                            <TableCell className="py-2 border-r border-b border-border">
-                              {aggregation && (
-                                <div className="flex items-center gap-1">
-                                  <Badge className={`${getRiskBadgeColor(aggregation.avgResidualRisk.color)} border rounded-full px-2 text-xs`}>
-                                    {aggregation.avgResidualRisk.level}
-                                  </Badge>
-                                  <span className="text-xs text-muted-foreground">Avg</span>
-                                </div>
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2 border-b border-border" />
-                          </TableRow>
-                          
-                          {/* Individual Risk Rows */}
-                          {expandedBusinessUnits.has(group.businessUnit) && group.risks.map((risk, index) => {
-                            const isLevel1 = risk.riskLevel === "Level 1";
-                            const isLevel2 = risk.riskLevel === "Level 2";
-                            const isLevel3 = risk.riskLevel === "Level 3";
-                            const isExpanded = expandedRows.has(risk.id);
-                            const canExpand = hasChildren(risk);
+                              </TableCell>
+                              <TableCell className="py-3 border-r border-b border-border" />
+                              <TableCell className="py-3 border-r border-b border-border">
+                                {aggregation && (
+                                  <div className="flex items-center gap-1">
+                                    <Badge className={`${getRiskBadgeColor(aggregation.avgControlEffectiveness.color)} border rounded-full px-2 text-xs`}>
+                                      {aggregation.avgControlEffectiveness.level}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">Avg</span>
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell className="py-3 border-r border-b border-border" />
+                              <TableCell className="py-3 border-r border-b border-border">
+                                {aggregation && (
+                                  <div className="flex items-center gap-1">
+                                    <Badge className={`${getRiskBadgeColor(aggregation.avgResidualRisk.color)} border rounded-full px-2 text-xs`}>
+                                      {aggregation.avgResidualRisk.level}
+                                    </Badge>
+                                    <span className="text-xs text-muted-foreground">Avg</span>
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell className="py-3 border-b border-border" />
+                            </TableRow>
                             
-                            return (
-                            <TableRow key={`${group.businessUnit}-${index}`} className={`hover:bg-muted/50 transition-colors ${
-                              isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
-                              'bg-orange-50/10 dark:bg-orange-950/10'
-                            }`}>
+                            {/* Individual Risk Rows - Always visible */}
+                            {group.risks.map((risk, index) => {
+                              const isLevel1 = risk.riskLevel === "Level 1";
+                              const isLevel2 = risk.riskLevel === "Level 2";
+                              const isLevel3 = risk.riskLevel === "Level 3";
+                              const isExpanded = expandedRows.has(risk.id);
+                              const canExpand = hasChildren(risk);
+                              
+                              return (
+                              <TableRow key={`${group.businessUnit}-${index}`} className={`hover:bg-muted/50 transition-colors ${
+                                isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
+                                'bg-orange-50/10 dark:bg-orange-950/10'
+                              }`}>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center justify-center">
                             <Checkbox 
@@ -1480,7 +1477,148 @@ const Dashboard2ndLine = () => {
                           })}
                         </>
                       );
-                    })}
+                    })
+                  ) : (
+                    // Ungrouped view - flat list of all risks
+                    getVisibleRisks().map((risk, index) => {
+                      const isLevel1 = risk.riskLevel === "Level 1";
+                      const isLevel2 = risk.riskLevel === "Level 2";
+                      const isLevel3 = risk.riskLevel === "Level 3";
+                      const isExpanded = expandedRows.has(risk.id);
+                      const canExpand = hasChildren(risk);
+                      
+                      return (
+                        <TableRow key={`flat-${risk.id}-${index}`} className={`hover:bg-muted/50 transition-colors ${
+                          isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
+                          'bg-orange-50/10 dark:bg-orange-950/10'
+                        }`}>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <div className="flex items-center justify-center">
+                              <Checkbox 
+                                checked={selectedRisks.has(risk.id)}
+                                onCheckedChange={() => toggleRiskSelection(risk.id)}
+                                disabled={isRiskCompleted(risk)}
+                                className={isRiskCompleted(risk) ? "opacity-50 cursor-not-allowed" : ""}
+                              />
+                            </div>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      className="p-1.5 rounded-md bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 transition-colors"
+                                      onClick={() => handleUpdateClosedAssessment(risk.id)}
+                                    >
+                                      <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Update this closed assessment</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <div className={`text-sm font-medium ${
+                              new Date(risk.dueDate) < new Date() 
+                                ? 'text-destructive' 
+                                : 'text-foreground'
+                            }`}>
+                              {format(new Date(risk.dueDate), 'MMM dd, yyyy')}
+                            </div>
+                            {new Date(risk.dueDate) < new Date() && (
+                              <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
+                            )}
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <div className="space-y-1">
+                              <div className="flex gap-1">
+                                <div className={`h-2 flex-1 rounded-sm ${
+                                  risk.assessmentProgress.assess === "completed" ? "bg-green-500" :
+                                  risk.assessmentProgress.assess === "in-progress" ? "bg-amber-500" :
+                                  "bg-gray-300 dark:bg-gray-600"
+                                }`} />
+                                <div className={`h-2 flex-1 rounded-sm ${
+                                  risk.assessmentProgress.reviewChallenge === "completed" ? "bg-green-500" :
+                                  risk.assessmentProgress.reviewChallenge === "in-progress" ? "bg-amber-500" :
+                                  "bg-gray-300 dark:bg-gray-600"
+                                }`} />
+                                <div className={`h-2 flex-1 rounded-sm ${
+                                  risk.assessmentProgress.approve === "completed" ? "bg-green-500" :
+                                  risk.assessmentProgress.approve === "in-progress" ? "bg-amber-500" :
+                                  "bg-gray-300 dark:bg-gray-600"
+                                }`} />
+                              </div>
+                              <div className="flex justify-between text-[10px] text-muted-foreground">
+                                <span>Assess</span>
+                                <span>Review/Challenge</span>
+                                <span>Approve</span>
+                              </div>
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <button 
+                                  onClick={() => handleRiskNameClick(risk)}
+                                  className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                >
+                                  {risk.title}
+                                </button>
+                              </TooltipTrigger>
+                              <TooltipContent>
+                                <p>Click to open the risk assessment overview</p>
+                              </TooltipContent>
+                            </Tooltip>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
+                              {risk.riskLevel}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <span className="text-sm">{risk.businessUnit}</span>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <span className="text-sm">{risk.assessors.join(", ")}</span>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <span className="text-sm">{risk.lastAssessed}</span>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-2 text-xs`}>
+                              {risk.inherentRisk.level}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <span className="text-sm">{risk.relatedControls.name}</span>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <Badge className={`${getRiskBadgeColor(risk.controlEffectiveness.color)} border rounded-full px-2 text-xs`}>
+                              {risk.controlEffectiveness.label}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <span className="text-sm">{risk.testResults.label}</span>
+                          </TableCell>
+                          <TableCell className="py-2 border-r border-b border-border">
+                            <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-2 text-xs`}>
+                              {risk.residualRisk.level}
+                            </Badge>
+                          </TableCell>
+                          <TableCell className="py-2 border-b border-border">
+                            <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm`}>
+                              {risk.status}
+                            </Badge>
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })
+                  )}
                   </TableBody>
                 </Table>
               </div>
