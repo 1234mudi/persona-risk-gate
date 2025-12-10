@@ -648,6 +648,23 @@ const Dashboard2ndLine = () => {
     }
   };
 
+  const getRiskBadgeColorBg = (color: string) => {
+    switch (color) {
+      case "red":
+        return "bg-red-500/20 text-red-600 dark:text-red-400 border-red-300 dark:border-red-800";
+      case "orange":
+        return "bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-800";
+      case "yellow":
+        return "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-300 dark:border-yellow-800";
+      case "cyan":
+        return "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border-cyan-300 dark:border-cyan-800";
+      case "green":
+        return "bg-green-500/20 text-green-600 dark:text-green-400 border-green-300 dark:border-green-800";
+      default:
+        return "bg-muted text-muted-foreground";
+    }
+  };
+
   const getEffectivenessBadge = (label: string, color: string) => {
     const colorClass = color === "green" 
       ? "bg-green-500 text-white" 
@@ -936,9 +953,9 @@ const Dashboard2ndLine = () => {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] sm:text-xs text-yellow-800 dark:text-yellow-200 leading-snug">
-                  {activeTab === "own" && "You are the owner of these risks. Click on the Risk Title to begin your assessment."}
-                  {activeTab === "assess" && "These risks are assigned to you for assessment. Click on the Risk Title to begin."}
-                  {activeTab === "approve" && "These risk assessments require your approval. Click on the Risk Title to begin."}
+                  {activeTab === "own" && "You are the owner of these risks. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin."}
+                  {activeTab === "assess" && "These risks are assigned to you for assessment. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin."}
+                  {activeTab === "approve" && "These risk assessments require your approval. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review."}
                 </p>
               </div>
             </div>
@@ -1091,33 +1108,33 @@ const Dashboard2ndLine = () => {
                               </TableCell>
                               <TableCell className="py-3 border-r border-b border-border">
                                 {aggregation && (
-                                  <div className="flex items-center gap-1">
-                                    <Badge className={`${getRiskBadgeColor(aggregation.avgInherentRisk.color)} border rounded-full px-2 text-xs`}>
+                                  <div className="flex flex-col items-start gap-0.5">
+                                    <span className="text-[10px] text-muted-foreground uppercase font-medium">Agg. Inherent</span>
+                                    <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border rounded-full px-2 text-xs`}>
                                       {aggregation.avgInherentRisk.level}
                                     </Badge>
-                                    <span className="text-xs text-muted-foreground">Avg</span>
                                   </div>
                                 )}
                               </TableCell>
                               <TableCell className="py-3 border-r border-b border-border" />
                               <TableCell className="py-3 border-r border-b border-border">
                                 {aggregation && (
-                                  <div className="flex items-center gap-1">
-                                    <Badge className={`${getRiskBadgeColor(aggregation.avgControlEffectiveness.color)} border rounded-full px-2 text-xs`}>
+                                  <div className="flex flex-col items-start gap-0.5">
+                                    <span className="text-[10px] text-muted-foreground uppercase font-medium">Agg. Control Eff.</span>
+                                    <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border rounded-full px-2 text-xs`}>
                                       {aggregation.avgControlEffectiveness.level}
                                     </Badge>
-                                    <span className="text-xs text-muted-foreground">Avg</span>
                                   </div>
                                 )}
                               </TableCell>
                               <TableCell className="py-3 border-r border-b border-border" />
                               <TableCell className="py-3 border-r border-b border-border">
                                 {aggregation && (
-                                  <div className="flex items-center gap-1">
-                                    <Badge className={`${getRiskBadgeColor(aggregation.avgResidualRisk.color)} border rounded-full px-2 text-xs`}>
+                                  <div className="flex flex-col items-start gap-0.5">
+                                    <span className="text-[10px] text-muted-foreground uppercase font-medium">Agg. Residual</span>
+                                    <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border rounded-full px-2 text-xs`}>
                                       {aggregation.avgResidualRisk.level}
                                     </Badge>
-                                    <span className="text-xs text-muted-foreground">Avg</span>
                                   </div>
                                 )}
                               </TableCell>
