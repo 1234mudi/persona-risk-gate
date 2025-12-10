@@ -400,16 +400,23 @@ const RiskAssessmentForm = () => {
     { id: "TRT-003", action: "Deploy automated monitoring tools", owner: "Operations", dueDate: "2025-08-01", status: "Not Started", progress: 0 },
   ]);
 
-  // Metrics & Losses
+  // Metrics & Losses - Enhanced with detailed information
   const [metricsData] = useState({
     kris: [
-      { name: "KYC Completion Rate", current: 94.5, target: 98, trend: "up" },
-      { name: "False Positive Rate", current: 12.3, target: 8, trend: "down" },
-      { name: "Average Processing Time", current: 2.4, target: 2, trend: "stable" },
+      { id: "KRI-001", name: "KYC Completion Rate", description: "Percentage of customer onboarding with complete KYC documentation", current: 94.5, target: 98, threshold: "≥ 98%", breachType: "Below Threshold", trend: "up", unit: "%" },
+      { id: "KRI-002", name: "False Positive Rate", description: "Rate of incorrectly flagged transactions in AML screening", current: 12.3, target: 8, threshold: "≤ 8%", breachType: "Above Threshold", trend: "down", unit: "%" },
+      { id: "KRI-003", name: "Average Processing Time", description: "Mean time to complete customer verification process", current: 2.4, target: 2, threshold: "≤ 2 days", breachType: "Above Threshold", trend: "stable", unit: "days" },
+      { id: "KRI-004", name: "Document Verification Accuracy", description: "Accuracy rate of automated document verification", current: 89.2, target: 95, threshold: "≥ 95%", breachType: "Below Threshold", trend: "up", unit: "%" },
+      { id: "KRI-005", name: "Customer Data Update Rate", description: "Percentage of customer records updated within refresh cycle", current: 76.8, target: 90, threshold: "≥ 90%", breachType: "Below Threshold", trend: "stable", unit: "%" },
+      { id: "KRI-006", name: "Sanction Screening Coverage", description: "Percentage of transactions screened against sanction lists", current: 99.8, target: 100, threshold: "= 100%", breachType: "Below Threshold", trend: "up", unit: "%" },
+      { id: "KRI-007", name: "Alert Investigation Time", description: "Average time to investigate and close alerts", current: 4.2, target: 3, threshold: "≤ 3 days", breachType: "Above Threshold", trend: "down", unit: "days" },
+      { id: "KRI-008", name: "Periodic Review Completion", description: "Completion rate of scheduled customer reviews", current: 82.5, target: 95, threshold: "≥ 95%", breachType: "Below Threshold", trend: "up", unit: "%" },
     ],
     losses: [
-      { id: "LOSS-001", description: "Regulatory fine - incomplete KYC records", amount: 250000, date: "2024-08-15" },
-      { id: "LOSS-002", description: "Operational loss - fraud incident", amount: 75000, date: "2024-06-20" },
+      { id: "LOSS-2024-001", name: "Regulatory Fine - KYC Non-Compliance", description: "Regulatory fine for incomplete KYC records identified during examination", amount: 250000, date: "2024-08-15", category: "Regulatory", status: "Approved" },
+      { id: "LOSS-2024-002", name: "Fraud Incident - Identity Verification Gap", description: "Operational loss due to fraud incident resulting from identity verification weakness", amount: 75000, date: "2024-06-20", category: "Fraud", status: "Approved" },
+      { id: "LOSS-2024-003", name: "System Downtime - Verification Platform", description: "Business disruption loss from extended platform outage affecting customer onboarding", amount: 180000, date: "2024-09-05", category: "Operational", status: "Approved" },
+      { id: "LOSS-2024-004", name: "Customer Compensation - Processing Delays", description: "Goodwill payments to customers affected by excessive verification delays", amount: 45000, date: "2024-10-12", category: "Customer Impact", status: "Approved" },
     ]
   });
   
@@ -486,22 +493,172 @@ const RiskAssessmentForm = () => {
     });
   };
 
-  // Issues data - categorized
+  // Issues data - categorized with expanded attributes
   const [assessmentIssues] = useState([
-    { id: "ISS-2025-001", title: "Control testing failure identified", description: "KYC verification control failed 3 out of 10 sample tests", severity: "High", status: "Open", dateIdentified: "2025-01-15", owner: "Compliance Team" },
-    { id: "ISS-2025-002", title: "Documentation gap in verification process", description: "Missing audit trail for 15% of customer verifications", severity: "Medium", status: "Open", dateIdentified: "2025-01-18", owner: "Operations" },
+    { 
+      id: "ISS-2025-001", 
+      title: "Control testing failure identified", 
+      description: "KYC verification control failed 3 out of 10 sample tests", 
+      detailedDescription: "During the Q4 2024 control testing cycle, the KYC verification control (CTL-001) failed 3 out of 10 sample tests. The failures were primarily due to incomplete documentation and inconsistent application of verification procedures. This represents a 30% failure rate, significantly above the acceptable threshold of 5%.",
+      severity: "High", 
+      status: "Open", 
+      dateIdentified: "2025-01-15", 
+      owner: "Compliance Team",
+      ownerEmail: "compliance.team@company.com",
+      ownerDepartment: "Risk & Compliance",
+      actionPlan: {
+        steps: [
+          "Conduct root cause analysis of failed tests",
+          "Update verification procedures documentation",
+          "Retrain staff on updated procedures",
+          "Implement automated checklist validation"
+        ],
+        targetDate: "2025-03-15",
+        progress: 25
+      },
+      attachments: [
+        { name: "Control_Testing_Report_Q4.pdf", type: "Report", size: "2.4 MB", uploadedDate: "2025-01-16" },
+        { name: "Failed_Samples_Evidence.xlsx", type: "Evidence", size: "856 KB", uploadedDate: "2025-01-16" }
+      ]
+    },
+    { 
+      id: "ISS-2025-002", 
+      title: "Documentation gap in verification process", 
+      description: "Missing audit trail for 15% of customer verifications", 
+      detailedDescription: "Internal audit identified that 15% of customer verifications completed in 2024 lack complete audit trails. The missing documentation includes timestamp records, approver signatures, and source document references. This gap creates compliance risk and hinders regulatory examination readiness.",
+      severity: "Medium", 
+      status: "Open", 
+      dateIdentified: "2025-01-18", 
+      owner: "Operations",
+      ownerEmail: "ops.manager@company.com",
+      ownerDepartment: "Operations",
+      actionPlan: {
+        steps: [
+          "Identify all affected customer records",
+          "Implement automated audit trail capture",
+          "Backfill missing documentation where possible",
+          "Establish monitoring dashboard"
+        ],
+        targetDate: "2025-04-30",
+        progress: 10
+      },
+      attachments: [
+        { name: "Audit_Trail_Gap_Analysis.docx", type: "Analysis", size: "1.1 MB", uploadedDate: "2025-01-19" }
+      ]
+    },
   ]);
 
   const [activeRelatedIssues] = useState([
-    { id: "ISS-2024-015", title: "KYC documentation gaps", description: "Incomplete customer documentation in legacy system records", severity: "High", status: "In Progress", dateIdentified: "2024-08-22", owner: "IT Department" },
-    { id: "ISS-2024-022", title: "Delayed verification process", description: "Average verification time exceeds SLA by 40%", severity: "Medium", status: "Open", dateIdentified: "2024-09-10", owner: "Operations" },
-    { id: "ISS-2024-028", title: "Missing audit trail records", description: "Transaction monitoring gaps identified during internal audit", severity: "High", status: "Open", dateIdentified: "2024-10-05", owner: "Compliance Team" },
+    { 
+      id: "ISS-2024-015", 
+      title: "KYC documentation gaps", 
+      description: "Incomplete customer documentation in legacy system records", 
+      detailedDescription: "Legacy system migration revealed significant gaps in customer documentation. Approximately 2,500 customer records from pre-2020 onboarding lack complete KYC documentation packages.",
+      severity: "High", 
+      status: "In Progress", 
+      dateIdentified: "2024-08-22", 
+      owner: "IT Department",
+      ownerEmail: "it.lead@company.com",
+      ownerDepartment: "Information Technology",
+      actionPlan: {
+        steps: [
+          "Complete data extraction from legacy system",
+          "Validate and cleanse migrated records",
+          "Request missing documents from customers",
+          "Update customer profiles in new system"
+        ],
+        targetDate: "2025-06-30",
+        progress: 45
+      },
+      attachments: [
+        { name: "Legacy_Migration_Status.xlsx", type: "Status Report", size: "3.2 MB", uploadedDate: "2024-12-01" }
+      ]
+    },
+    { 
+      id: "ISS-2024-022", 
+      title: "Delayed verification process", 
+      description: "Average verification time exceeds SLA by 40%", 
+      detailedDescription: "Current average verification time is 7 days versus the 5-day SLA target. Root causes include manual handoffs, lack of automation, and resource constraints during peak periods.",
+      severity: "Medium", 
+      status: "Open", 
+      dateIdentified: "2024-09-10", 
+      owner: "Operations",
+      ownerEmail: "ops.manager@company.com",
+      ownerDepartment: "Operations",
+      actionPlan: {
+        steps: [
+          "Process mapping and bottleneck identification",
+          "Implement workflow automation",
+          "Add surge capacity procedures"
+        ],
+        targetDate: "2025-05-15",
+        progress: 30
+      },
+      attachments: []
+    },
+    { 
+      id: "ISS-2024-028", 
+      title: "Missing audit trail records", 
+      description: "Transaction monitoring gaps identified during internal audit", 
+      detailedDescription: "Internal audit found 8% of high-value transactions lack complete monitoring records. This includes missing alert investigation notes and disposition documentation.",
+      severity: "High", 
+      status: "Open", 
+      dateIdentified: "2024-10-05", 
+      owner: "Compliance Team",
+      ownerEmail: "compliance.team@company.com",
+      ownerDepartment: "Risk & Compliance",
+      actionPlan: {
+        steps: [
+          "Implement mandatory field validation",
+          "Deploy automated record completeness checks",
+          "Conduct targeted staff training"
+        ],
+        targetDate: "2025-03-31",
+        progress: 55
+      },
+      attachments: [
+        { name: "Internal_Audit_Report.pdf", type: "Audit Report", size: "4.8 MB", uploadedDate: "2024-10-10" }
+      ]
+    },
   ]);
 
   const [closedRelatedIssues] = useState([
-    { id: "ISS-2024-005", title: "Incomplete customer records", description: "Address verification missing for batch of onboarded customers", severity: "Medium", status: "Closed", dateIdentified: "2024-06-15", closedDate: "2024-09-15", owner: "Data Management" },
-    { id: "ISS-2024-011", title: "System access control weakness", description: "Excessive user privileges in KYC system", severity: "High", status: "Closed", dateIdentified: "2024-07-20", closedDate: "2024-11-20", owner: "IT Security" },
-    { id: "ISS-2023-089", title: "Training gap identified", description: "New staff missing AML certification", severity: "Low", status: "Closed", dateIdentified: "2023-11-10", closedDate: "2024-01-10", owner: "HR & Training" },
+    { 
+      id: "ISS-2024-005", 
+      title: "Incomplete customer records", 
+      description: "Address verification missing for batch of onboarded customers", 
+      severity: "Medium", 
+      status: "Closed", 
+      dateIdentified: "2024-06-15", 
+      closedDate: "2024-09-15", 
+      owner: "Data Management",
+      ownerEmail: "data.mgmt@company.com",
+      ownerDepartment: "Data Management"
+    },
+    { 
+      id: "ISS-2024-011", 
+      title: "System access control weakness", 
+      description: "Excessive user privileges in KYC system", 
+      severity: "High", 
+      status: "Closed", 
+      dateIdentified: "2024-07-20", 
+      closedDate: "2024-11-20", 
+      owner: "IT Security",
+      ownerEmail: "it.security@company.com",
+      ownerDepartment: "IT Security"
+    },
+    { 
+      id: "ISS-2023-089", 
+      title: "Training gap identified", 
+      description: "New staff missing AML certification", 
+      severity: "Low", 
+      status: "Closed", 
+      dateIdentified: "2023-11-10", 
+      closedDate: "2024-01-10", 
+      owner: "HR & Training",
+      ownerEmail: "hr.training@company.com",
+      ownerDepartment: "Human Resources"
+    },
   ]);
 
   // Issues accordion state
@@ -1788,7 +1945,7 @@ const RiskAssessmentForm = () => {
                             {activeCollaborators.map((c) => (
                               <div 
                                 key={c.id} 
-                                className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-400 to-orange-400 flex items-center justify-center text-white text-xs font-medium border-2 border-white dark:border-gray-800"
+                                className="w-8 h-8 rounded-full bg-gradient-to-br from-amber-500 to-amber-600 dark:from-amber-600 dark:to-amber-700 flex items-center justify-center text-white text-xs font-medium border-2 border-white dark:border-gray-800"
                                 title={`${c.name} - ${c.role}`}
                               >
                                 {c.avatar}
@@ -3184,9 +3341,9 @@ const RiskAssessmentForm = () => {
 
       {/* Expanded Panel Dialog for Metrics & Losses */}
       <Dialog open={expandedPanel === 'metrics'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 gap-0">
           {/* Colored Header Bar */}
-          <div className="bg-gradient-to-r from-amber-500 to-orange-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-amber-600 to-amber-700 dark:from-amber-700 dark:to-amber-800 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
@@ -3194,7 +3351,7 @@ const RiskAssessmentForm = () => {
                 </div>
                 <div>
                   <DialogTitle className="text-white text-lg">Metrics and Losses</DialogTitle>
-                  <p className="text-amber-100 text-sm">Full screen view • Risk metrics and loss data</p>
+                  <p className="text-white/80 text-sm">Full screen view • Risk metrics and loss data</p>
                 </div>
               </div>
               <Button 
@@ -3208,57 +3365,138 @@ const RiskAssessmentForm = () => {
             </div>
           </div>
           <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
-            <div className="space-y-4">
-            <p className="text-sm text-muted-foreground">
-              Risk metrics and associated loss data help quantify the current risk exposure.
-            </p>
-            <div className="grid grid-cols-2 gap-4">
-              {/* Outlier Metrics Card */}
-              <div className="border-l-4 border-l-amber-500 border rounded-lg p-6">
-                <div className="flex items-start gap-3 mb-4">
-                  <AlertCircle className="w-6 h-6 text-amber-500" />
-                  <div>
-                    <h4 className="font-semibold text-lg">Outlier Metrics</h4>
-                    <p className="text-sm text-muted-foreground">Metrics outside defined thresholds</p>
-                  </div>
+            <div className="space-y-6">
+              <p className="text-sm text-muted-foreground">
+                Risk metrics and associated loss data help quantify the current risk exposure.
+              </p>
+              
+              {/* Detailed Outlier Metrics Table */}
+              <div className="space-y-3">
+                <div className="flex items-center gap-2">
+                  <AlertCircle className="w-5 h-5 text-amber-500" />
+                  <h4 className="font-semibold text-lg">Key Risk Indicators (KRIs) - Threshold Breaches</h4>
+                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400">
+                    {metricsData.kris.length} metrics outside threshold
+                  </Badge>
                 </div>
-                <div className="flex items-baseline gap-2 mb-3">
-                  <span className="text-3xl font-bold">8</span>
-                  <span className="text-sm text-muted-foreground">of 12 metrics</span>
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="p-3 text-left font-medium">Metric ID</th>
+                        <th className="p-3 text-left font-medium">Metric Name</th>
+                        <th className="p-3 text-center font-medium">Current</th>
+                        <th className="p-3 text-center font-medium">Threshold</th>
+                        <th className="p-3 text-center font-medium">Breach Type</th>
+                        <th className="p-3 text-center font-medium">Trend</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {metricsData.kris.map((metric) => (
+                        <tr key={metric.id} className="border-t hover:bg-muted/30">
+                          <td className="p-3 font-mono text-xs text-blue-600">{metric.id}</td>
+                          <td className="p-3">
+                            <div className="font-medium">{metric.name}</div>
+                            <div className="text-xs text-muted-foreground">{metric.description}</div>
+                          </td>
+                          <td className="p-3 text-center font-semibold">
+                            {metric.current}{metric.unit === "%" ? "%" : ` ${metric.unit}`}
+                          </td>
+                          <td className="p-3 text-center text-muted-foreground">{metric.threshold}</td>
+                          <td className="p-3 text-center">
+                            <Badge className={
+                              metric.breachType === "Above Threshold" 
+                                ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" 
+                                : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                            }>
+                              {metric.breachType}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-center">
+                            {metric.trend === "up" && <TrendingUp className="w-4 h-4 text-green-500 mx-auto" />}
+                            {metric.trend === "down" && <TrendingDown className="w-4 h-4 text-red-500 mx-auto" />}
+                            {metric.trend === "stable" && <span className="text-muted-foreground">—</span>}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
                 </div>
-                <div className="space-y-2 text-sm mb-4">
-                  <div className="flex items-center gap-2 text-amber-600">
-                    <TrendingUp className="w-4 h-4" />
-                    <span>5 Above Threshold</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-blue-600">
-                    <TrendingDown className="w-4 h-4" />
-                    <span>3 Below Threshold</span>
-                  </div>
-                </div>
-                <div className="bg-amber-50 rounded-md p-3 text-sm text-amber-700">
-                  42% of metrics are currently exceeding their defined thresholds.
+                <div className="bg-amber-50 dark:bg-amber-950/20 rounded-md p-3 text-sm text-amber-700 dark:text-amber-300">
+                  <strong>Summary:</strong> {metricsData.kris.filter(m => m.breachType === "Above Threshold").length} metrics above threshold, {metricsData.kris.filter(m => m.breachType === "Below Threshold").length} metrics below threshold. Overall breach rate: {Math.round((metricsData.kris.length / 12) * 100)}% of monitored KRIs.
                 </div>
               </div>
 
-              {/* Loss Incurred Card */}
-              <div className="border-l-4 border-l-red-500 border rounded-lg p-6">
-                <div className="flex items-start gap-3 mb-4">
-                  <Target className="w-6 h-6 text-red-500" />
-                  <div>
-                    <h4 className="font-semibold text-lg">Loss Incurred</h4>
-                    <p className="text-sm text-muted-foreground">Due to Risk</p>
+              {/* Detailed Loss Events Table */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Target className="w-5 h-5 text-red-500" />
+                    <h4 className="font-semibold text-lg">Loss Events</h4>
+                    <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400">
+                      {metricsData.losses.length} events
+                    </Badge>
+                  </div>
+                  <div className="text-2xl font-bold text-red-600 dark:text-red-400">
+                    Total: ${metricsData.losses.reduce((sum, l) => sum + l.amount, 0).toLocaleString()}
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-2">Total approved loss amount</p>
-                <div className="text-3xl font-bold text-red-600 mb-4">
-                  $2,450,000
+                <div className="border rounded-lg overflow-hidden">
+                  <table className="w-full text-sm">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="p-3 text-left font-medium">Event ID</th>
+                        <th className="p-3 text-left font-medium">Event Name</th>
+                        <th className="p-3 text-center font-medium">Category</th>
+                        <th className="p-3 text-center font-medium">Date</th>
+                        <th className="p-3 text-center font-medium">Status</th>
+                        <th className="p-3 text-right font-medium">Amount</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {metricsData.losses.map((loss) => (
+                        <tr key={loss.id} className="border-t hover:bg-muted/30">
+                          <td className="p-3 font-mono text-xs text-red-600">{loss.id}</td>
+                          <td className="p-3">
+                            <div className="font-medium">{loss.name}</div>
+                            <div className="text-xs text-muted-foreground">{loss.description}</div>
+                          </td>
+                          <td className="p-3 text-center">
+                            <Badge variant="outline" className={
+                              loss.category === "Regulatory" ? "border-purple-300 text-purple-700 dark:text-purple-400" :
+                              loss.category === "Fraud" ? "border-red-300 text-red-700 dark:text-red-400" :
+                              loss.category === "Operational" ? "border-blue-300 text-blue-700 dark:text-blue-400" :
+                              "border-amber-300 text-amber-700 dark:text-amber-400"
+                            }>
+                              {loss.category}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-center text-muted-foreground">{loss.date}</td>
+                          <td className="p-3 text-center">
+                            <Badge className="bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400">
+                              {loss.status}
+                            </Badge>
+                          </td>
+                          <td className="p-3 text-right font-bold text-red-600 dark:text-red-400">
+                            ${loss.amount.toLocaleString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                    <tfoot className="bg-muted/30">
+                      <tr className="border-t-2">
+                        <td colSpan={5} className="p-3 text-right font-semibold">Total Losses:</td>
+                        <td className="p-3 text-right font-bold text-lg text-red-600 dark:text-red-400">
+                          ${metricsData.losses.reduce((sum, l) => sum + l.amount, 0).toLocaleString()}
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
                 </div>
-                <div className="bg-red-50 rounded-md p-3 text-sm text-red-700">
-                  Losses have increased by 18% compared to the previous assessment period.
+                <div className="bg-red-50 dark:bg-red-950/20 rounded-md p-3 text-sm text-red-700 dark:text-red-300">
+                  <strong>Trend Analysis:</strong> Losses have increased by 18% compared to the previous assessment period. Regulatory fines account for 45% of total losses.
                 </div>
               </div>
-            </div>
             </div>
           </div>
         </DialogContent>
@@ -3268,7 +3506,7 @@ const RiskAssessmentForm = () => {
       <Dialog open={expandedPanel === 'inherent-rating'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0 gap-0">
           {/* Colored Header Bar */}
-          <div className="bg-gradient-to-r from-orange-500 to-red-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-rose-600 to-rose-700 dark:from-rose-700 dark:to-rose-800 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
@@ -3276,7 +3514,7 @@ const RiskAssessmentForm = () => {
                 </div>
                 <div>
                   <DialogTitle className="text-white text-lg">Inherent Risk Rating</DialogTitle>
-                  <p className="text-orange-100 text-sm">Full screen view • Calculated based on weighted impact factors</p>
+                  <p className="text-white/80 text-sm">Full screen view • Calculated based on weighted impact factors</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -3636,7 +3874,7 @@ const RiskAssessmentForm = () => {
       <Dialog open={expandedPanel === 'issues'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
           {/* Colored Header Bar */}
-          <div className="bg-gradient-to-r from-amber-500 to-red-500 px-6 py-4">
+          <div className="bg-gradient-to-r from-rose-600 to-rose-700 dark:from-rose-700 dark:to-rose-800 px-6 py-4">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-white/20 flex items-center justify-center">
@@ -3644,7 +3882,7 @@ const RiskAssessmentForm = () => {
                 </div>
                 <div>
                   <DialogTitle className="text-white text-lg">Related Issues</DialogTitle>
-                  <p className="text-amber-100 text-sm">Full screen view • Issues and findings</p>
+                  <p className="text-white/80 text-sm">Full screen view • Issues and findings</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
@@ -3664,66 +3902,188 @@ const RiskAssessmentForm = () => {
           </div>
           <div className="p-6 overflow-auto max-h-[calc(90vh-80px)]">
             <div className="space-y-6">
-            {/* Issues from Assessment */}
-            <div>
-              <h3 className="font-medium mb-3 flex items-center gap-2">
-                <AlertCircle className="w-4 h-4 text-blue-600" />
-                New issues identified
-                <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
-              </h3>
-              <div className="space-y-2">
-                {assessmentIssues.map((issue) => (
-                  <div key={issue.id} className="p-4 border-l-4 border-l-blue-500 border rounded-lg bg-blue-50/50 dark:bg-blue-950/20">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-sm text-blue-600">{issue.id}</span>
-                      <Badge className={issue.severity === "High" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}>{issue.severity}</Badge>
-                    </div>
-                    <p className="font-medium">{issue.title}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+              
+              {/* AI-Generated Insights Section */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border border-purple-200 dark:border-purple-800">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-purple-500/10">
+                    <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                   </div>
-                ))}
-              </div>
-            </div>
-            {/* Active Related Issues */}
-            <div>
-              <h3 className="font-medium mb-3 flex items-center gap-2">
-                <AlertTriangle className="w-4 h-4 text-amber-600" />
-                Other Active Issues related to the Risk
-                <Badge className="bg-amber-600 text-white">{activeRelatedIssues.length}</Badge>
-              </h3>
-              <div className="space-y-2">
-                {activeRelatedIssues.map((issue) => (
-                  <div key={issue.id} className="p-4 border-l-4 border-l-amber-500 border rounded-lg bg-amber-50/50 dark:bg-amber-950/20">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-sm text-blue-600">{issue.id}</span>
-                      <Badge className={issue.severity === "High" ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"}>{issue.severity}</Badge>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-purple-900 dark:text-purple-100 flex items-center gap-2">
+                      AI-Generated Insights
+                      <Badge variant="outline" className="text-xs border-purple-300 text-purple-600 dark:text-purple-400">Auto-analyzed</Badge>
+                    </h4>
+                    <div className="mt-3 space-y-2 text-sm text-purple-800 dark:text-purple-200">
+                      <p>• <strong>Pattern detected:</strong> 60% of open issues relate to documentation and audit trail gaps - suggesting systemic process weakness</p>
+                      <p>• <strong>Root cause analysis:</strong> Legacy system migration created verification gaps; incomplete data transfer protocols affected 2,500+ records</p>
+                      <p>• <strong>Recommended priority:</strong> ISS-2024-015 should be addressed first as it impacts 3 downstream controls and has cascading effects on compliance metrics</p>
+                      <p>• <strong>Trend alert:</strong> High severity issues increased by 25% compared to last quarter - escalation to Risk Committee recommended</p>
+                      <p>• <strong>Resource insight:</strong> IT Department owns 40% of open issues - consider capacity planning review</p>
                     </div>
-                    <p className="font-medium">{issue.title}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
                   </div>
-                ))}
+                </div>
               </div>
-            </div>
-            {/* Closed Issues */}
-            <div>
-              <h3 className="font-medium mb-3 flex items-center gap-2">
-                <XCircle className="w-4 h-4 text-slate-500" />
-                Closed Issues related to the Risk
-                <Badge variant="secondary">{closedRelatedIssues.length}</Badge>
-              </h3>
-              <div className="space-y-2">
-                {closedRelatedIssues.map((issue) => (
-                  <div key={issue.id} className="p-4 border-l-4 border-l-slate-400 border rounded-lg bg-slate-50/50 dark:bg-slate-950/20 opacity-80">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="font-mono text-sm text-slate-500">{issue.id}</span>
-                      <Badge variant="outline" className="text-slate-500">{issue.severity}</Badge>
+
+              {/* Issues from Assessment - Enhanced */}
+              <div>
+                <h3 className="font-medium mb-3 flex items-center gap-2">
+                  <AlertCircle className="w-4 h-4 text-blue-600" />
+                  New issues identified
+                  <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
+                </h3>
+                <div className="space-y-3">
+                  {assessmentIssues.map((issue: any) => (
+                    <div key={issue.id} className="p-4 border-l-4 border-l-blue-500 border rounded-lg bg-blue-50/50 dark:bg-blue-950/20">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                        <Badge className={issue.severity === "High" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}>{issue.severity}</Badge>
+                      </div>
+                      <p className="font-medium">{issue.title}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+                      
+                      {/* Detailed Description */}
+                      {issue.detailedDescription && (
+                        <div className="mt-3 p-3 bg-background/50 rounded-md text-sm">
+                          <p className="text-muted-foreground">{issue.detailedDescription}</p>
+                        </div>
+                      )}
+                      
+                      {/* Owner Details */}
+                      <div className="mt-3 flex items-center gap-4 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Users className="w-3 h-3" />
+                          {issue.owner}
+                        </span>
+                        {issue.ownerEmail && (
+                          <span className="flex items-center gap-1">
+                            <AtSign className="w-3 h-3" />
+                            {issue.ownerEmail}
+                          </span>
+                        )}
+                        {issue.ownerDepartment && (
+                          <Badge variant="outline" className="text-xs">{issue.ownerDepartment}</Badge>
+                        )}
+                      </div>
+                      
+                      {/* Action Plan */}
+                      {issue.actionPlan && (
+                        <div className="mt-4 p-3 border rounded-md bg-background/30">
+                          <div className="flex items-center justify-between mb-2">
+                            <h5 className="text-sm font-medium flex items-center gap-1">
+                              <ClipboardCheck className="w-4 h-4 text-blue-500" />
+                              Action Plan
+                            </h5>
+                            <span className="text-xs text-muted-foreground">Target: {issue.actionPlan.targetDate}</span>
+                          </div>
+                          <ul className="text-sm space-y-1 mb-3">
+                            {issue.actionPlan.steps.map((step: string, idx: number) => (
+                              <li key={idx} className="flex items-start gap-2">
+                                <span className="text-muted-foreground">{idx + 1}.</span>
+                                <span>{step}</span>
+                              </li>
+                            ))}
+                          </ul>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-blue-500 rounded-full" style={{ width: `${issue.actionPlan.progress}%` }} />
+                            </div>
+                            <span className="text-xs font-medium">{issue.actionPlan.progress}%</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      {/* Attachments */}
+                      {issue.attachments && issue.attachments.length > 0 && (
+                        <div className="mt-3">
+                          <h5 className="text-xs font-medium text-muted-foreground mb-2 flex items-center gap-1">
+                            <Paperclip className="w-3 h-3" />
+                            Attachments ({issue.attachments.length})
+                          </h5>
+                          <div className="flex flex-wrap gap-2">
+                            {issue.attachments.map((att: any, idx: number) => (
+                              <div key={idx} className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded text-xs">
+                                <FileText className="w-3 h-3 text-blue-500" />
+                                <span>{att.name}</span>
+                                <span className="text-muted-foreground">({att.size})</span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
                     </div>
-                    <p className="font-medium text-muted-foreground">{issue.title}</p>
-                    <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
+              
+              {/* Active Related Issues - Enhanced */}
+              <div>
+                <h3 className="font-medium mb-3 flex items-center gap-2">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  Other Active Issues related to the Risk
+                  <Badge className="bg-amber-600 text-white">{activeRelatedIssues.length}</Badge>
+                </h3>
+                <div className="space-y-3">
+                  {activeRelatedIssues.map((issue: any) => (
+                    <div key={issue.id} className="p-4 border-l-4 border-l-amber-500 border rounded-lg bg-amber-50/50 dark:bg-amber-950/20">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className="text-xs">{issue.status}</Badge>
+                          <Badge className={issue.severity === "High" ? "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400" : "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"}>{issue.severity}</Badge>
+                        </div>
+                      </div>
+                      <p className="font-medium">{issue.title}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+                      
+                      {/* Owner and Action Plan Progress */}
+                      <div className="mt-3 flex items-center justify-between">
+                        <div className="flex items-center gap-4 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {issue.owner}
+                          </span>
+                          {issue.ownerDepartment && (
+                            <Badge variant="outline" className="text-xs">{issue.ownerDepartment}</Badge>
+                          )}
+                        </div>
+                        {issue.actionPlan && (
+                          <div className="flex items-center gap-2">
+                            <div className="w-20 h-2 bg-muted rounded-full overflow-hidden">
+                              <div className="h-full bg-amber-500 rounded-full" style={{ width: `${issue.actionPlan.progress}%` }} />
+                            </div>
+                            <span className="text-xs font-medium">{issue.actionPlan.progress}%</span>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* Closed Issues */}
+              <div>
+                <h3 className="font-medium mb-3 flex items-center gap-2">
+                  <XCircle className="w-4 h-4 text-slate-500" />
+                  Closed Issues related to the Risk
+                  <Badge variant="secondary">{closedRelatedIssues.length}</Badge>
+                </h3>
+                <div className="space-y-2">
+                  {closedRelatedIssues.map((issue: any) => (
+                    <div key={issue.id} className="p-4 border-l-4 border-l-slate-400 border rounded-lg bg-slate-50/50 dark:bg-slate-950/20 opacity-80">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="font-mono text-sm text-slate-500">{issue.id}</span>
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-muted-foreground">Closed: {issue.closedDate}</span>
+                          <Badge variant="outline" className="text-slate-500">{issue.severity}</Badge>
+                        </div>
+                      </div>
+                      <p className="font-medium text-muted-foreground">{issue.title}</p>
+                      <p className="text-sm text-muted-foreground mt-1">{issue.description}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </DialogContent>

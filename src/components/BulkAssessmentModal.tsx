@@ -680,10 +680,10 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
             <ScrollArea className="flex-1">
               <div className="p-6 space-y-6">
                 {/* Section 1: Inherent Risk Assessment */}
-                <section className="rounded-xl border border-border border-l-4 border-l-orange-500 bg-card overflow-hidden shadow-sm">
-                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 border-b border-border">
+                <section className="rounded-xl border border-border border-l-4 border-l-rose-500 bg-card overflow-hidden shadow-sm">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-rose-50 to-rose-100/50 dark:from-rose-950/20 dark:to-rose-900/10 border-b border-border">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-semibold text-sm shadow">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-rose-600 to-rose-700 dark:from-rose-700 dark:to-rose-800 flex items-center justify-center text-white font-semibold text-sm shadow">
                         1
                       </div>
                       <AlertTriangle className="w-5 h-5 text-orange-500" />
