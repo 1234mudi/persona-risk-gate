@@ -2013,17 +2013,17 @@ const RiskAssessmentForm = () => {
               
               {/* Right side - Score Cards (compact) */}
               <div className="flex items-center gap-2 flex-shrink-0">
-                <Card className={`px-2.5 py-1 border-l-4 ${getRatingLabel(inherentScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(inherentScore).color === 'bg-orange-500' ? 'border-l-orange-500 bg-orange-50 dark:bg-orange-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
+                <Card className={`px-2.5 py-1 border-l-4 ${getRatingLabel(inherentScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(inherentScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(inherentScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
                   <div className="text-[9px] text-muted-foreground">Inherent Risk</div>
                   <div className="text-sm font-bold">{inherentScore}</div>
                   <div className="text-[9px] text-muted-foreground">{getRatingLabel(inherentScore).label}</div>
                 </Card>
-                <Card className={`px-2.5 py-1 border-l-4 ${getRatingLabel(controlScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(controlScore).color === 'bg-orange-500' ? 'border-l-orange-500 bg-orange-50 dark:bg-orange-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
+                <Card className={`px-2.5 py-1 border-l-4 ${getRatingLabel(controlScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(controlScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(controlScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
                   <div className="text-[9px] text-muted-foreground">Control Eff.</div>
                   <div className="text-sm font-bold">{controlScore}</div>
                   <div className="text-[9px] text-muted-foreground">{getRatingLabel(controlScore).label}</div>
                 </Card>
-                <Card className={`px-2.5 py-1 border-l-4 ${getRatingLabel(residualScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(residualScore).color === 'bg-orange-500' ? 'border-l-orange-500 bg-orange-50 dark:bg-orange-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
+                <Card className={`px-2.5 py-1 border-l-4 ${getRatingLabel(residualScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(residualScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(residualScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
                   <div className="text-[9px] text-muted-foreground">Residual Risk</div>
                   <div className="text-sm font-bold">{residualScore}</div>
                   <div className="text-[9px] text-muted-foreground">{getRatingLabel(residualScore).label}</div>
@@ -3369,6 +3369,30 @@ const RiskAssessmentForm = () => {
               <p className="text-sm text-muted-foreground">
                 Risk metrics and associated loss data help quantify the current risk exposure.
               </p>
+              
+              {/* AI-Generated Insights for Metrics & Losses */}
+              <div className="p-4 rounded-xl bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-950/30 dark:to-indigo-950/30 border border-purple-200 dark:border-purple-800">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-purple-500/10">
+                    <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                  </div>
+                  <div className="flex-1">
+                    <h4 className="font-semibold text-purple-900 dark:text-purple-100 flex items-center gap-2">
+                      AI-Generated Insights
+                      <Badge variant="outline" className="text-xs border-purple-300 text-purple-600 dark:border-purple-700 dark:text-purple-400">
+                        Auto-analyzed
+                      </Badge>
+                    </h4>
+                    <div className="mt-3 space-y-2 text-sm text-purple-800 dark:text-purple-200">
+                      <p>• <strong>Critical Pattern:</strong> 3 KRIs related to document verification are consistently breaching thresholds, suggesting a systemic issue in the verification workflow.</p>
+                      <p>• <strong>Trend Alert:</strong> False Positive Rate has increased by 4.3 percentage points over the last quarter - consider recalibrating AML screening parameters.</p>
+                      <p>• <strong>Loss Correlation:</strong> 60% of loss events are linked to regulatory fines. Strengthening compliance controls could reduce exposure by an estimated $300K annually.</p>
+                      <p>• <strong>Priority Action:</strong> KYC Completion Rate (94.5%) is closest to threshold recovery - targeted intervention here could move this metric to compliant status within 30 days.</p>
+                      <p>• <strong>Root Cause:</strong> Customer Data Update Rate breach likely stems from delayed batch processing in legacy systems. Consider API-based real-time updates.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               
               {/* Detailed Outlier Metrics Table */}
               <div className="space-y-3">
