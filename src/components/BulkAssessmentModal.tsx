@@ -478,7 +478,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
             </Button>
             <Button size="sm" onClick={handleSubmitAll} disabled={checkedCount === 0} className="h-9 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white disabled:opacity-50">
               <Send className="w-4 h-4 mr-1.5" />
-              Apply to All Selected Risks ({checkedCount})
+              Apply to All Selected Risks
             </Button>
           </div>
         </div>
