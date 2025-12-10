@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -160,6 +160,34 @@ const Dashboard2ndLine = () => {
     "Daniel Kim": "daniel.kim@company.com",
     "Olivia Brown": "olivia.brown@company.com",
     "George Harris": "george.harris@company.com",
+  };
+
+  // Department mapping for assessors
+  const assessorDepartments: Record<string, string> = {
+    "John Smith": "Risk Analytics",
+    "Sarah Johnson": "Compliance & Governance",
+    "Mike Davis": "Internal Audit",
+    "James Brown": "Credit Risk Management",
+    "Lisa Martinez": "Operational Risk",
+    "Tom Wilson": "Market Risk",
+    "Alex Turner": "Financial Controls",
+    "Maria Garcia": "Enterprise Risk",
+    "Robert Chen": "Technology Risk",
+    "Nina Patel": "Regulatory Affairs",
+    "David Lee": "Business Continuity",
+    "Emma White": "Strategic Risk",
+    "Chris Anderson": "Fraud Prevention",
+    "Sophia Taylor": "Liquidity Risk",
+    "Daniel Kim": "Vendor Management",
+    "Olivia Brown": "Data Governance",
+    "George Harris": "Legal & Compliance",
+  };
+
+  // Section mapping for assessors (based on index)
+  const assessorSections: Record<number, string[]> = {
+    0: ["Assess", "Review & Challenge"],
+    1: ["Review & Challenge"],
+    2: ["Assess"],
   };
   const [editDialog, setEditDialog] = useState<{
     open: boolean;
@@ -489,6 +517,89 @@ const Dashboard2ndLine = () => {
     }));
   }, [filteredRiskData, expandedRows]);
 
+  // Helper function to convert risk level to numeric score
+  const getRiskScore = (level: string): number => {
+    const levelMap: Record<string, number> = {
+      "Critical": 5,
+      "High": 4,
+      "Medium-High": 3,
+      "Medium": 3,
+      "Low-Medium": 2,
+      "Low": 1,
+    };
+    return levelMap[level] || 3;
+  };
+
+  // Helper function to convert numeric score back to level
+  const getAggregatedLevel = (avgScore: number): { level: string; color: string } => {
+    if (avgScore >= 4.5) return { level: "Critical", color: "red" };
+    if (avgScore >= 3.5) return { level: "High", color: "orange" };
+    if (avgScore >= 2.5) return { level: "Medium", color: "yellow" };
+    if (avgScore >= 1.5) return { level: "Low-Medium", color: "cyan" };
+    return { level: "Low", color: "green" };
+  };
+
+  // Helper function to convert control effectiveness to numeric score
+  const getControlScore = (effectiveness: { label: string; color: string }): number => {
+    const map: Record<string, number> = {
+      "Strong": 5,
+      "Effective": 5,
+      "Adequate": 4,
+      "Partially Effective": 3,
+      "Moderate": 3,
+      "Needs Improvement": 2,
+      "Ineffective": 2,
+      "Weak": 1,
+      "Not Assessed": 3,
+    };
+    return map[effectiveness.label] || 3;
+  };
+
+  // Helper function to convert numeric score back to control effectiveness
+  const getAggregatedControlEffectiveness = (avgScore: number): { level: string; color: string } => {
+    if (avgScore >= 4.5) return { level: "Strong", color: "green" };
+    if (avgScore >= 3.5) return { level: "Adequate", color: "cyan" };
+    if (avgScore >= 2.5) return { level: "Moderate", color: "yellow" };
+    if (avgScore >= 1.5) return { level: "Needs Improvement", color: "orange" };
+    return { level: "Weak", color: "red" };
+  };
+
+  // Business Unit Aggregation
+  const businessUnitAggregations = useMemo(() => {
+    const aggregations: Record<string, {
+      riskCount: number;
+      avgInherentRisk: { level: string; color: string };
+      avgControlEffectiveness: { level: string; color: string };
+      avgResidualRisk: { level: string; color: string };
+    }> = {};
+
+    businessUnitsInView.forEach(unit => {
+      const unitRisks = filteredRiskData.filter(r => r.businessUnit === unit);
+      if (unitRisks.length === 0) return;
+
+      // Calculate average inherent risk
+      const inherentScores = unitRisks.map(r => getRiskScore(r.inherentRisk.level));
+      const avgInherent = inherentScores.reduce((a, b) => a + b, 0) / inherentScores.length;
+
+      // Calculate average control effectiveness
+      const controlScores = unitRisks.map(r => getControlScore(r.controlEffectiveness));
+      const avgControl = controlScores.reduce((a, b) => a + b, 0) / controlScores.length;
+
+      // Calculate average residual risk
+      const residualScores = unitRisks.map(r => getRiskScore(r.residualRisk.level));
+      const avgResidual = residualScores.reduce((a, b) => a + b, 0) / residualScores.length;
+
+      aggregations[unit] = {
+        riskCount: unitRisks.length,
+        avgInherentRisk: getAggregatedLevel(avgInherent),
+        avgControlEffectiveness: getAggregatedControlEffectiveness(avgControl),
+        avgResidualRisk: getAggregatedLevel(avgResidual),
+      };
+    });
+
+    return aggregations;
+  }, [filteredRiskData, businessUnitsInView]);
+
   const getLevel2Children = (level1Risk: RiskData): RiskData[] => {
     return filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === level1Risk.title);
   };
@@ -723,9 +834,9 @@ const Dashboard2ndLine = () => {
 
         {/* Risk Coverage by Business Unit Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
-          <CardHeader className="border-b border-border/50 space-y-0 py-2 sm:py-3 px-3 sm:px-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 sm:gap-0">
-              <CardTitle className="text-base sm:text-lg font-semibold">Risk Coverage by Business Unit</CardTitle>
+          <CardHeader className="border-b border-border/50 space-y-0 py-1.5 sm:py-2 px-3 sm:px-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-0">
+              <CardTitle className="text-sm sm:text-base font-semibold">Risk Coverage by Business Unit</CardTitle>
               <TooltipProvider>
                 <div className="flex flex-wrap items-center gap-1 sm:gap-2">
                   <Tooltip>
@@ -785,7 +896,7 @@ const Dashboard2ndLine = () => {
                     onClick={() => setActiveTab("own")}
                     className={`px-3 sm:px-4 py-1.5 rounded-l-md font-medium text-xs sm:text-sm transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
                       activeTab === "own"
-                        ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
+                        ? "bg-primary text-primary-foreground shadow-md"
                         : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                     } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                   >
@@ -801,7 +912,7 @@ const Dashboard2ndLine = () => {
                     onClick={() => setActiveTab("assess")}
                     className={`px-3 sm:px-4 py-1.5 font-medium text-xs sm:text-sm transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
                       activeTab === "assess"
-                        ? "bg-gradient-to-br from-blue-500 to-cyan-600 text-white shadow-md"
+                        ? "bg-primary text-primary-foreground shadow-md"
                         : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                     } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                   >
@@ -817,7 +928,7 @@ const Dashboard2ndLine = () => {
                     onClick={() => setActiveTab("approve")}
                     className={`px-3 sm:px-4 py-1.5 rounded-r-md font-medium text-xs sm:text-sm transition-all whitespace-nowrap ${
                       activeTab === "approve"
-                        ? "bg-gradient-to-br from-purple-500 to-violet-600 text-white shadow-md"
+                        ? "bg-primary text-primary-foreground shadow-md"
                         : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                     } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                   >
@@ -954,18 +1065,81 @@ const Dashboard2ndLine = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {getVisibleRisks().map((risk, index) => {
-                      const isLevel1 = risk.riskLevel === "Level 1";
-                      const isLevel2 = risk.riskLevel === "Level 2";
-                      const isLevel3 = risk.riskLevel === "Level 3";
-                      const isExpanded = expandedRows.has(risk.id);
-                      const canExpand = hasChildren(risk);
-                      
+                    {getGroupedRisks.map((group) => {
+                      const aggregation = businessUnitAggregations[group.businessUnit];
                       return (
-                      <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
-                        isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
-                        'bg-orange-50/10 dark:bg-orange-950/10'
-                      }`}>
+                        <>
+                          {/* Business Unit Aggregation Row */}
+                          <TableRow key={`agg-${group.businessUnit}`} className="bg-slate-100 dark:bg-slate-800 border-t-2 border-primary/30">
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border">
+                              <button
+                                onClick={() => toggleBusinessUnitGroup(group.businessUnit)}
+                                className="flex items-center gap-2 w-full text-left"
+                              >
+                                {expandedBusinessUnits.has(group.businessUnit) ? (
+                                  <ChevronDown className="w-4 h-4" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4" />
+                                )}
+                                <span className="font-bold text-sm">{group.businessUnit}</span>
+                                <Badge variant="secondary" className="text-xs">{group.count} risks</Badge>
+                              </button>
+                            </TableCell>
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border">
+                              {aggregation && (
+                                <div className="flex items-center gap-1">
+                                  <Badge className={`${getRiskBadgeColor(aggregation.avgInherentRisk.color)} border rounded-full px-2 text-xs`}>
+                                    {aggregation.avgInherentRisk.level}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">Avg</span>
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border">
+                              {aggregation && (
+                                <div className="flex items-center gap-1">
+                                  <Badge className={`${getRiskBadgeColor(aggregation.avgControlEffectiveness.color)} border rounded-full px-2 text-xs`}>
+                                    {aggregation.avgControlEffectiveness.level}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">Avg</span>
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="py-2 border-r border-b border-border" />
+                            <TableCell className="py-2 border-r border-b border-border">
+                              {aggregation && (
+                                <div className="flex items-center gap-1">
+                                  <Badge className={`${getRiskBadgeColor(aggregation.avgResidualRisk.color)} border rounded-full px-2 text-xs`}>
+                                    {aggregation.avgResidualRisk.level}
+                                  </Badge>
+                                  <span className="text-xs text-muted-foreground">Avg</span>
+                                </div>
+                              )}
+                            </TableCell>
+                            <TableCell className="py-2 border-b border-border" />
+                          </TableRow>
+                          
+                          {/* Individual Risk Rows */}
+                          {expandedBusinessUnits.has(group.businessUnit) && group.risks.map((risk, index) => {
+                            const isLevel1 = risk.riskLevel === "Level 1";
+                            const isLevel2 = risk.riskLevel === "Level 2";
+                            const isLevel3 = risk.riskLevel === "Level 3";
+                            const isExpanded = expandedRows.has(risk.id);
+                            const canExpand = hasChildren(risk);
+                            
+                            return (
+                            <TableRow key={`${group.businessUnit}-${index}`} className={`hover:bg-muted/50 transition-colors ${
+                              isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
+                              'bg-orange-50/10 dark:bg-orange-950/10'
+                            }`}>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center justify-center">
                             <Checkbox 
@@ -1124,28 +1298,36 @@ const Dashboard2ndLine = () => {
                                     {assessor}
                                   </Badge>
                                 </TooltipTrigger>
-                                <TooltipContent className="max-w-xs">
-                                  <div className="space-y-2">
-                                    <div className="font-medium text-sm">{assessor}</div>
+                                <TooltipContent className="max-w-xs p-3">
+                                  <div className="space-y-2.5">
+                                    <div className="font-semibold text-sm border-b border-border pb-2">{assessor}</div>
                                     <div className="flex items-center gap-2 text-xs">
-                                      <Mail className="w-3 h-3" />
+                                      <Mail className="w-3.5 h-3.5 text-muted-foreground" />
                                       <span>{assessorEmails[assessor] || `${assessor.toLowerCase().replace(' ', '.')}@company.com`}</span>
                                     </div>
-                                    <div className="pt-1 border-t border-border">
-                                      <div className="text-xs font-medium text-muted-foreground mb-1">Sections Updated:</div>
+                                    <div className="flex items-center gap-2 text-xs">
+                                      <Building2 className="w-3.5 h-3.5 text-muted-foreground" />
+                                      <span className="font-medium">{assessorDepartments[assessor] || "Risk Management"}</span>
+                                    </div>
+                                    <div className="pt-2 border-t border-border">
+                                      <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground mb-1.5">
+                                        <ClipboardList className="w-3.5 h-3.5" />
+                                        <span>Sections Worked On:</span>
+                                      </div>
                                       <div className="flex flex-wrap gap-1">
-                                        {idx === 0 && (
-                                          <>
-                                            <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300">Assess</Badge>
-                                            <Badge variant="outline" className="text-xs bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300">Review & Challenge</Badge>
-                                          </>
-                                        )}
-                                        {idx === 1 && (
-                                          <Badge variant="outline" className="text-xs bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300">Review & Challenge</Badge>
-                                        )}
-                                        {idx === 2 && (
-                                          <Badge variant="outline" className="text-xs bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300">Assess</Badge>
-                                        )}
+                                        {(assessorSections[idx] || ["Assess"]).map((section, sIdx) => (
+                                          <Badge 
+                                            key={sIdx} 
+                                            variant="outline" 
+                                            className={`text-xs ${
+                                              section === "Assess" 
+                                                ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700" 
+                                                : "bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-700"
+                                            }`}
+                                          >
+                                            {section}
+                                          </Badge>
+                                        ))}
                                       </div>
                                     </div>
                                   </div>
@@ -1294,7 +1476,10 @@ const Dashboard2ndLine = () => {
                           </Badge>
                         </TableCell>
                       </TableRow>
-                    );
+                            );
+                          })}
+                        </>
+                      );
                     })}
                   </TableBody>
                 </Table>

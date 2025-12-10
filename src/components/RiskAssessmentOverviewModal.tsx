@@ -583,7 +583,7 @@ This risk is currently being managed within established parameters. No immediate
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl w-[95vw] p-0 overflow-hidden flex flex-col h-auto">
+      <DialogContent className="sm:max-w-5xl w-[95vw] p-0 flex flex-col max-h-[85vh]">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0">
           <div className="flex items-center justify-between">
@@ -626,7 +626,7 @@ This risk is currently being managed within established parameters. No immediate
         </div>
         
         {/* Content - Vertical timeline layout */}
-        <div className="flex-1 overflow-auto p-4 bg-gradient-to-b from-background to-muted/20">
+        <div className="p-4 bg-gradient-to-b from-background to-muted/20">
           <div className="max-w-xl mx-auto">
             {cards.map((card, index) => (
               <AssessmentCard 
