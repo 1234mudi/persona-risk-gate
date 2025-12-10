@@ -2081,11 +2081,10 @@ const RiskAssessmentForm = () => {
                     </tbody>
                   </table>
                 </div>
-                <Button variant="outline" className="mt-4 gap-2"><Plus className="w-4 h-4" />Add Row</Button>
               </Card>
 
               <div className="flex items-center justify-between">
-                <Button variant="outline" className="gap-2" disabled><ChevronLeft className="w-4 h-4" />Previous</Button>
+                <Button variant="outline" className="gap-2" disabled><ChevronLeft className="w-4 h-4" />Back to Previous Section</Button>
                 <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={() => setActiveTab("control-effectiveness")}>
                   Continue to Control Effectiveness<ChevronRight className="w-4 h-4" />
                 </Button>
@@ -2361,7 +2360,7 @@ const RiskAssessmentForm = () => {
               </Card>
 
               <div className="flex items-center justify-between">
-                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("inherent-rating")}><ChevronLeft className="w-4 h-4" />Previous</Button>
+                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("inherent-rating")}><ChevronLeft className="w-4 h-4" />Back to Previous Section</Button>
                 <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700" onClick={() => setActiveTab("residual-rating")}>
                   Continue to Residual Rating<ChevronRight className="w-4 h-4" />
                 </Button>
@@ -2520,7 +2519,7 @@ const RiskAssessmentForm = () => {
               </Card>
 
               <div className="flex items-center justify-between">
-                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("control-effectiveness")}><ChevronLeft className="w-4 h-4" />Previous</Button>
+                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("control-effectiveness")}><ChevronLeft className="w-4 h-4" />Back to Previous Section</Button>
                 <Button className="gap-2 bg-purple-600 hover:bg-purple-700" onClick={() => setActiveTab("heat-map")}>
                   View Heat Map<ChevronRight className="w-4 h-4" />
                 </Button>
