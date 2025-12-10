@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Save, Send, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 interface RiskData {
@@ -47,6 +48,34 @@ const mockControls = [
 export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onComplete, userType = "1st-line" }: BulkAssessmentModalProps) => {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [checkedRisks, setCheckedRisks] = useState<Set<string>>(() => new Set(selectedRisks.map(r => r.id)));
+
+  // Update checked risks when selectedRisks changes
+  useMemo(() => {
+    setCheckedRisks(new Set(selectedRisks.map(r => r.id)));
+  }, [selectedRisks]);
+
+  const toggleRiskCheck = (riskId: string) => {
+    setCheckedRisks(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(riskId)) {
+        newSet.delete(riskId);
+      } else {
+        newSet.add(riskId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleAllRisks = (checked: boolean) => {
+    if (checked) {
+      setCheckedRisks(new Set(filteredRisks.map(r => r.id)));
+    } else {
+      setCheckedRisks(new Set());
+    }
+  };
+
+  const checkedCount = checkedRisks.size;
   
   // Inherent Risk ratings
   const [inherentLikelihood, setInherentLikelihood] = useState("");
@@ -131,11 +160,15 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
   };
 
   const handleSaveAsDraft = () => {
-    toast.success(`${selectedRisks.length} assessments saved as draft`);
+    toast.success(`${checkedCount} assessments saved as draft`);
   };
 
   const handleSubmitAll = () => {
-    toast.success(`${selectedRisks.length} assessments submitted successfully`);
+    if (checkedCount === 0) {
+      toast.error("Please select at least one risk to submit");
+      return;
+    }
+    toast.success(`${checkedCount} assessments submitted successfully`);
     onComplete();
     onOpenChange(false);
   };
@@ -179,9 +212,9 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
               <Save className="w-4 h-4 mr-1.5" />
               Save as Draft
             </Button>
-            <Button size="sm" onClick={handleSubmitAll} className="h-9 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white">
+            <Button size="sm" onClick={handleSubmitAll} disabled={checkedCount === 0} className="h-9 bg-gradient-to-r from-violet-600 to-purple-600 hover:from-violet-700 hover:to-purple-700 text-white disabled:opacity-50">
               <Send className="w-4 h-4 mr-1.5" />
-              Submit Assessment ({selectedRisks.length})
+              Submit Assessment ({checkedCount})
             </Button>
           </div>
         </div>
@@ -191,9 +224,19 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
           {/* Left Sidebar - Selected Risks */}
           <div className="w-[280px] border-r border-border bg-background/50 flex flex-col shrink-0">
             <div className="p-4 border-b border-border">
-              <div className="flex items-center gap-2 text-sm font-medium">
-                <Info className="w-4 h-4 text-muted-foreground" />
-                <span>Selected Risks: <span className="text-primary">{selectedRisks.length} Risks</span></span>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Info className="w-4 h-4 text-muted-foreground" />
+                  <span>Selected: <span className="text-primary">{checkedCount}/{selectedRisks.length}</span></span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Checkbox
+                    checked={checkedCount === filteredRisks.length && filteredRisks.length > 0}
+                    onCheckedChange={(checked) => toggleAllRisks(!!checked)}
+                    className="h-4 w-4"
+                  />
+                  <span className="text-xs text-muted-foreground">All</span>
+                </div>
               </div>
             </div>
             {/* Search Box */}
@@ -232,26 +275,41 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                   filteredRisks.map(risk => (
                     <div 
                       key={risk.id} 
-                      className="p-3 rounded-lg border border-border bg-card hover:bg-muted/50 transition-colors cursor-pointer group"
-                      onClick={() => {
-                        // Open the To-Do popup in a new tab by navigating to the correct dashboard based on user type
-                        const dashboardPath = userType === "2nd-line" 
-                          ? "/dashboard/2nd-line-analyst" 
-                          : userType === "risk-owner" 
-                            ? "/dashboard/risk-owner" 
-                            : "/dashboard/1st-line-analyst";
-                        const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
-                        window.open(url, '_blank');
-                      }}
-                      title="Click to open risk assessment in new tab"
+                      className={`p-3 rounded-lg border transition-colors cursor-pointer group ${
+                        checkedRisks.has(risk.id) 
+                          ? 'border-primary/50 bg-primary/5' 
+                          : 'border-border bg-card hover:bg-muted/50'
+                      }`}
                     >
-                      <Badge variant="outline" className="text-xs font-mono mb-2 border-primary/50 text-primary">
-                        {highlightMatch(risk.id, searchQuery)}
-                      </Badge>
-                      <p className="text-sm font-medium leading-tight mb-1 group-hover:text-primary transition-colors">
-                        {highlightMatch(risk.title, searchQuery)}
-                      </p>
-                      <p className="text-xs text-muted-foreground">{highlightMatch(risk.category, searchQuery)}</p>
+                      <div className="flex items-start gap-2">
+                        <Checkbox
+                          checked={checkedRisks.has(risk.id)}
+                          onCheckedChange={() => toggleRiskCheck(risk.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-0.5 h-4 w-4 shrink-0"
+                        />
+                        <div 
+                          className="flex-1 min-w-0"
+                          onClick={() => {
+                            const dashboardPath = userType === "2nd-line" 
+                              ? "/dashboard/2nd-line-analyst" 
+                              : userType === "risk-owner" 
+                                ? "/dashboard/risk-owner" 
+                                : "/dashboard/1st-line-analyst";
+                            const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
+                            window.open(url, '_blank');
+                          }}
+                          title="Click to open risk assessment in new tab"
+                        >
+                          <Badge variant="outline" className="text-xs font-mono mb-2 border-primary/50 text-primary">
+                            {highlightMatch(risk.id, searchQuery)}
+                          </Badge>
+                          <p className="text-sm font-medium leading-tight mb-1 group-hover:text-primary transition-colors">
+                            {highlightMatch(risk.title, searchQuery)}
+                          </p>
+                          <p className="text-xs text-muted-foreground">{highlightMatch(risk.category, searchQuery)}</p>
+                        </div>
+                      </div>
                     </div>
                   ))
                 )}
