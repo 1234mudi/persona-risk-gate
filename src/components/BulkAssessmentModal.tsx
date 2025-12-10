@@ -76,6 +76,27 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
   };
 
   const checkedCount = checkedRisks.size;
+
+  // Get currently checked risks data
+  const checkedRisksData = useMemo(() => {
+    return selectedRisks.filter(r => checkedRisks.has(r.id));
+  }, [selectedRisks, checkedRisks]);
+
+  // Compute common values across selected risks
+  const commonValues = useMemo(() => {
+    if (checkedRisksData.length === 0) {
+      return { hasCommon: false, category: null, riskLevel: null, owner: null };
+    }
+    
+    const firstRisk = checkedRisksData[0];
+    const category = checkedRisksData.every(r => r.category === firstRisk.category) ? firstRisk.category : null;
+    const riskLevel = checkedRisksData.every(r => r.riskLevel === firstRisk.riskLevel) ? firstRisk.riskLevel : null;
+    const owner = checkedRisksData.every(r => r.owner === firstRisk.owner) ? firstRisk.owner : null;
+    
+    const hasCommon = category !== null || riskLevel !== null || owner !== null;
+    
+    return { hasCommon, category, riskLevel, owner };
+  }, [checkedRisksData]);
   
   // Inherent Risk ratings
   const [inherentLikelihood, setInherentLikelihood] = useState("");
@@ -342,6 +363,83 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
 
             <ScrollArea className="flex-1">
               <div className="p-6 space-y-6">
+                {/* Common Reference Details Section */}
+                <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+                  <div className="flex items-center justify-between p-4 bg-gradient-to-r from-violet-50 to-purple-50/50 dark:from-violet-950/20 dark:to-purple-900/10 border-b border-border">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-purple-500 flex items-center justify-center text-white font-semibold text-sm shadow">
+                        <Info className="w-4 h-4" />
+                      </div>
+                      <span className="font-medium">Common Reference Details</span>
+                      <Badge variant="outline" className="bg-muted/50 text-muted-foreground border-border text-xs">
+                        {checkedCount} risk{checkedCount !== 1 ? 's' : ''} selected
+                      </Badge>
+                    </div>
+                  </div>
+                  {checkedCount === 0 ? (
+                    <div className="p-6 text-center text-muted-foreground">
+                      <Info className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No risks selected. Please select at least one risk from the left panel.</p>
+                    </div>
+                  ) : !commonValues.hasCommon ? (
+                    <div className="p-6 text-center text-muted-foreground">
+                      <Info className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No shared reference details are available for the current selection.</p>
+                      <p className="text-xs mt-1 opacity-70">The selected risks have different categories, risk levels, and owners.</p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/30">
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Attribute</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Common Value</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {commonValues.category && (
+                            <tr className="border-b border-border/50 hover:bg-muted/20">
+                              <td className="py-3 px-4 font-medium text-sm">Category</td>
+                              <td className="py-3 px-4">
+                                <Badge variant="outline" className="bg-primary/10 text-primary border-primary/30">
+                                  {commonValues.category}
+                                </Badge>
+                              </td>
+                            </tr>
+                          )}
+                          {commonValues.riskLevel && (
+                            <tr className="border-b border-border/50 hover:bg-muted/20">
+                              <td className="py-3 px-4 font-medium text-sm">Risk Level</td>
+                              <td className="py-3 px-4">
+                                <Badge 
+                                  variant="outline" 
+                                  className={
+                                    commonValues.riskLevel === 'Critical' 
+                                      ? 'bg-red-100 text-red-700 border-red-300 dark:bg-red-900/30 dark:text-red-400 dark:border-red-700'
+                                      : commonValues.riskLevel === 'High'
+                                        ? 'bg-orange-100 text-orange-700 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-700'
+                                        : commonValues.riskLevel === 'Medium'
+                                          ? 'bg-yellow-100 text-yellow-700 border-yellow-300 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-700'
+                                          : 'bg-green-100 text-green-700 border-green-300 dark:bg-green-900/30 dark:text-green-400 dark:border-green-700'
+                                  }
+                                >
+                                  {commonValues.riskLevel}
+                                </Badge>
+                              </td>
+                            </tr>
+                          )}
+                          {commonValues.owner && (
+                            <tr className="hover:bg-muted/20">
+                              <td className="py-3 px-4 font-medium text-sm">Owner</td>
+                              <td className="py-3 px-4 text-sm">{commonValues.owner}</td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </section>
+
                 {/* Section 1: Inherent Risk Assessment */}
                 <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 border-b border-border">
@@ -353,7 +451,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                       <span className="font-medium">Inherent Risk Assessment - Rate each factor from 1 (Low) to 5 (Critical)</span>
                     </div>
                     <Badge variant="outline" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
-                      Applies to all {selectedRisks.length} selected risks
+                      Applies to {checkedCount} selected risk{checkedCount !== 1 ? 's' : ''}
                     </Badge>
                   </div>
                   <div className="overflow-x-auto">
@@ -544,7 +642,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                       <span className="font-medium">Residual Risk Assessment - Rate each factor from 1 (Low) to 5 (Critical) after control mitigation</span>
                     </div>
                     <Badge variant="outline" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
-                      Applies to all {selectedRisks.length} selected risks
+                      Applies to {checkedCount} selected risk{checkedCount !== 1 ? 's' : ''}
                     </Badge>
                   </div>
                   <div className="overflow-x-auto">
