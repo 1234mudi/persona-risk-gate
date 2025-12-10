@@ -757,7 +757,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                       <div className="w-5 h-5 rounded-full border-2 border-green-500 flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-green-500"></div>
                       </div>
-                      <span className="font-medium">Control Effectiveness Assessment - Rate each dimension from 1 (Ineffective) to 5 (Highly Effective)</span>
+                      <span className="font-medium">Control Effectiveness Assessment - Evaluate design, operating effectiveness, and testing results</span>
                     </div>
                   </div>
                   <div className="overflow-x-auto">
@@ -783,15 +783,11 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                             <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">Control Name</th>
                             <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">Type</th>
                             <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[80px]">Common</th>
-                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
-                              Design <span className="text-destructive">*</span>
-                            </th>
-                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
-                              Operating <span className="text-destructive">*</span>
-                            </th>
-                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
-                              Testing <span className="text-destructive">*</span>
-                            </th>
+                            {CONTROL_DIMENSIONS.map(dim => (
+                              <th key={dim.id} className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[140px]">
+                                {dim.shortName} <span className="text-destructive">*</span>
+                              </th>
+                            ))}
                             <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[80px]">Avg</th>
                           </tr>
                         </thead>
@@ -815,51 +811,23 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                                     <span className="text-xs text-muted-foreground italic">Varies</span>
                                   )}
                                 </td>
-                                <td className="py-3 px-4">
-                                  <Select 
-                                    value={controlRatings[control.id]?.design || ""} 
-                                    onValueChange={(v) => updateControlRating(control.id, "design", v)}
-                                  >
-                                    <SelectTrigger className="h-9 bg-muted/50 border-border/50">
-                                      <SelectValue placeholder="" />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-popover border border-border z-50">
-                                      {[1, 2, 3, 4, 5].map(n => (
-                                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </td>
-                                <td className="py-3 px-4">
-                                  <Select 
-                                    value={controlRatings[control.id]?.operating || ""} 
-                                    onValueChange={(v) => updateControlRating(control.id, "operating", v)}
-                                  >
-                                    <SelectTrigger className="h-9 bg-muted/50 border-border/50">
-                                      <SelectValue placeholder="" />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-popover border border-border z-50">
-                                      {[1, 2, 3, 4, 5].map(n => (
-                                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </td>
-                                <td className="py-3 px-4">
-                                  <Select 
-                                    value={controlRatings[control.id]?.testing || ""} 
-                                    onValueChange={(v) => updateControlRating(control.id, "testing", v)}
-                                  >
-                                    <SelectTrigger className="h-9 bg-muted/50 border-border/50">
-                                      <SelectValue placeholder="" />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-popover border border-border z-50">
-                                      {[1, 2, 3, 4, 5].map(n => (
-                                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
-                                      ))}
-                                    </SelectContent>
-                                  </Select>
-                                </td>
+                                {CONTROL_DIMENSIONS.map(dim => (
+                                  <td key={dim.id} className="py-3 px-4">
+                                    <Select 
+                                      value={controlRatings[control.id]?.[dim.id as "design" | "operating" | "testing"] || ""} 
+                                      onValueChange={(v) => updateControlRating(control.id, dim.id as "design" | "operating" | "testing", v)}
+                                    >
+                                      <SelectTrigger className="h-9 bg-muted/50 border-border/50 w-[130px]">
+                                        <SelectValue placeholder="" />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-popover border border-border z-50">
+                                        {CONTROL_RATING_OPTIONS.map(opt => (
+                                          <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                        ))}
+                                      </SelectContent>
+                                    </Select>
+                                  </td>
+                                ))}
                                 <td className="py-3 px-4 text-center text-sm font-medium text-muted-foreground">
                                   {calculateAvgScore(control.id)}
                                 </td>
