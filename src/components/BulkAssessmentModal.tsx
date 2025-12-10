@@ -9,6 +9,12 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Send, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { 
   FACTOR_RATING_OPTIONS, 
   CONTROL_RATING_OPTIONS,
@@ -646,20 +652,29 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
               <p className="text-xs text-muted-foreground/70">
                 Note: The details shown here are common reference values applied across all selected risks.
               </p>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={handleAISuggest} 
-                disabled={isGeneratingAI}
-                className="text-primary hover:text-primary hover:bg-primary/10"
-              >
-                {isGeneratingAI ? (
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                ) : (
-                  <Sparkles className="w-4 h-4 mr-2" />
-                )}
-                Apply AI Suggestions (All Sections)
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      variant="default" 
+                      size="sm" 
+                      onClick={handleAISuggest} 
+                      disabled={isGeneratingAI}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground"
+                    >
+                      {isGeneratingAI ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <Sparkles className="w-4 h-4 mr-2" />
+                      )}
+                      Apply AI Suggestions
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Suggestions are generated based on previous assessment history and available data.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
 
             <ScrollArea className="flex-1">
