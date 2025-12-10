@@ -101,6 +101,11 @@ const Dashboard2ndLine = () => {
       riskTreatment: number;
     };
   } | null>(null);
+  
+  // Filter states
+  const [businessUnitFilter, setBusinessUnitFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   // Check URL params to auto-open modal on navigation back
   useEffect(() => {
@@ -392,7 +397,34 @@ const Dashboard2ndLine = () => {
     },
   ];
 
-  const filteredRiskData = riskData.filter(risk => risk.tabCategory === activeTab);
+  const filteredRiskData = useMemo(() => {
+    return riskData.filter(risk => {
+      // Tab filter
+      if (risk.tabCategory !== activeTab) return false;
+      
+      // Business Unit filter
+      if (businessUnitFilter !== "all" && risk.businessUnit !== businessUnitFilter) return false;
+      
+      // Status filter
+      if (statusFilter !== "all") {
+        const normalizedRiskStatus = risk.status.toLowerCase().replace(/\s+/g, '-').replace('&', '');
+        if (normalizedRiskStatus !== statusFilter) return false;
+      }
+      
+      // Search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        const matchesSearch = 
+          risk.title.toLowerCase().includes(query) ||
+          risk.id.toLowerCase().includes(query) ||
+          risk.owner.toLowerCase().includes(query) ||
+          risk.businessUnit.toLowerCase().includes(query);
+        if (!matchesSearch) return false;
+      }
+      
+      return true;
+    });
+  }, [riskData, activeTab, businessUnitFilter, statusFilter, searchQuery]);
 
   // Get unique business units for grouping
   const businessUnitsInView = useMemo(() => {
@@ -819,20 +851,20 @@ const Dashboard2ndLine = () => {
                 <Label htmlFor="business-unit" className="text-xs font-medium text-muted-foreground">
                   Business Unit
                 </Label>
-                <Select defaultValue="all">
+                <Select value={businessUnitFilter} onValueChange={setBusinessUnitFilter}>
                   <SelectTrigger id="business-unit" className="w-full sm:w-48 h-9 sm:h-8 bg-primary text-primary-foreground border-primary">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Business Units</SelectItem>
                     {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
-                      <SelectItem key={unit} value={unit.toLowerCase().replace(/\s+/g, '-')}>{unit}</SelectItem>
+                      <SelectItem key={unit} value={unit}>{unit}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
-              <Select defaultValue="all">
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
                 <SelectTrigger className="w-full sm:w-48 h-9 sm:h-8">
                   <SelectValue />
                 </SelectTrigger>
@@ -849,7 +881,12 @@ const Dashboard2ndLine = () => {
               </Select>
 
               <div className="relative flex-1 min-w-0 sm:min-w-[200px]">
-                <Input placeholder="Search risks..." className="pl-10 h-9 sm:h-8 w-full" />
+                <Input 
+                  placeholder="Search risks..." 
+                  className="pl-10 h-9 sm:h-8 w-full" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
                 <Shield className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
             </div>
