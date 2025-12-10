@@ -320,7 +320,10 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
           {/* Main Content - Assessment Sections */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* AI Suggestions Button */}
-            <div className="px-6 py-3 flex justify-end border-b border-border/50">
+            <div className="px-6 py-3 flex items-center justify-between border-b border-border/50">
+              <p className="text-xs text-muted-foreground/70">
+                Note: The details shown here are common reference values applied across all selected risks.
+              </p>
               <Button 
                 variant="ghost" 
                 size="sm" 
