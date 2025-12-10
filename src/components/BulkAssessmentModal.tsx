@@ -9,6 +9,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Send, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
+import { 
+  FACTOR_RATING_OPTIONS, 
+  CONTROL_RATING_OPTIONS,
+  INHERENT_FACTORS, 
+  RESIDUAL_FACTORS,
+  CONTROL_DIMENSIONS,
+} from "@/lib/riskAssessmentSchema";
 interface RiskData {
   id: string;
   title: string;
@@ -54,14 +61,15 @@ const mockControls = [
 ];
 
 // Mock reference data per risk (simulating existing values)
+// Uses Impact and Likelihood to match main form schema
 const mockRiskReferenceData: Record<string, {
-  inherent: { likelihood: string; impact: string; velocity: string };
-  residual: { likelihood: string; impact: string; velocity: string };
+  inherent: { impact: string; likelihood: string };
+  residual: { impact: string; likelihood: string };
   controls: Record<string, { design: string; operating: string; testing: string }>;
 }> = {
   "R-001": {
-    inherent: { likelihood: "3", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "3" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "4", operating: "3", testing: "4" },
       "CTRL-002": { design: "3", operating: "4", testing: "3" },
@@ -70,8 +78,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-001-A": {
-    inherent: { likelihood: "4", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "4" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "4", operating: "3", testing: "4" },
       "CTRL-002": { design: "4", operating: "4", testing: "3" },
@@ -80,8 +88,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-001-A-1": {
-    inherent: { likelihood: "3", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "3" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "4", operating: "3", testing: "4" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
@@ -90,8 +98,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-002": {
-    inherent: { likelihood: "4", impact: "4", velocity: "3" },
-    residual: { likelihood: "3", impact: "2", velocity: "2" },
+    inherent: { impact: "4", likelihood: "4" },
+    residual: { impact: "2", likelihood: "3" },
     controls: {
       "CTRL-001": { design: "4", operating: "4", testing: "4" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
@@ -100,8 +108,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-002-A": {
-    inherent: { likelihood: "4", impact: "4", velocity: "3" },
-    residual: { likelihood: "3", impact: "2", velocity: "2" },
+    inherent: { impact: "4", likelihood: "4" },
+    residual: { impact: "2", likelihood: "3" },
     controls: {
       "CTRL-001": { design: "4", operating: "4", testing: "4" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
@@ -110,8 +118,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-003": {
-    inherent: { likelihood: "3", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "3" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "3", operating: "3", testing: "3" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
@@ -120,8 +128,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-003-A": {
-    inherent: { likelihood: "3", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "3" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "3", operating: "3", testing: "3" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
@@ -130,8 +138,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-004": {
-    inherent: { likelihood: "5", impact: "4", velocity: "3" },
-    residual: { likelihood: "3", impact: "3", velocity: "2" },
+    inherent: { impact: "4", likelihood: "5" },
+    residual: { impact: "3", likelihood: "3" },
     controls: {
       "CTRL-001": { design: "4", operating: "4", testing: "4" },
       "CTRL-002": { design: "4", operating: "4", testing: "4" },
@@ -140,8 +148,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-005": {
-    inherent: { likelihood: "3", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "3" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "3", operating: "3", testing: "3" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
@@ -151,8 +159,8 @@ const mockRiskReferenceData: Record<string, {
   },
   // 1st Line risks
   "R-1L-001": {
-    inherent: { likelihood: "4", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "4" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "4", operating: "3", testing: "4" },
       "CTRL-002": { design: "3", operating: "4", testing: "3" },
@@ -161,8 +169,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-1L-001-A": {
-    inherent: { likelihood: "4", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "4" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "4", operating: "3", testing: "4" },
       "CTRL-002": { design: "3", operating: "4", testing: "3" },
@@ -171,8 +179,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-1L-002": {
-    inherent: { likelihood: "3", impact: "4", velocity: "3" },
-    residual: { likelihood: "2", impact: "3", velocity: "2" },
+    inherent: { impact: "4", likelihood: "3" },
+    residual: { impact: "3", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "3", operating: "3", testing: "3" },
       "CTRL-002": { design: "4", operating: "4", testing: "4" },
@@ -182,8 +190,8 @@ const mockRiskReferenceData: Record<string, {
   },
   // Risk Owner risks
   "R-RO-001": {
-    inherent: { likelihood: "4", impact: "4", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "4", likelihood: "4" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "4", operating: "4", testing: "4" },
       "CTRL-002": { design: "4", operating: "4", testing: "4" },
@@ -192,8 +200,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-RO-001-A": {
-    inherent: { likelihood: "4", impact: "4", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "4", likelihood: "4" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "4", operating: "4", testing: "4" },
       "CTRL-002": { design: "4", operating: "4", testing: "4" },
@@ -202,8 +210,8 @@ const mockRiskReferenceData: Record<string, {
     }
   },
   "R-RO-002": {
-    inherent: { likelihood: "3", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    inherent: { impact: "3", likelihood: "3" },
+    residual: { impact: "2", likelihood: "2" },
     controls: {
       "CTRL-001": { design: "3", operating: "3", testing: "3" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
@@ -264,10 +272,14 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     [selectedRisks]
   );
   
-  // Inherent Risk ratings
-  const [inherentLikelihood, setInherentLikelihood] = useState("");
-  const [inherentImpact, setInherentImpact] = useState("");
-  const [inherentVelocity, setInherentVelocity] = useState("");
+  // Inherent Risk ratings - dynamically from schema
+  const [inherentRatings, setInherentRatings] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    INHERENT_FACTORS.forEach(factor => {
+      initial[factor.id] = "";
+    });
+    return initial;
+  });
 
   // Control Effectiveness ratings
   const [controlRatings, setControlRatings] = useState<Record<string, { design: string; operating: string; testing: string }>>(() => {
@@ -278,10 +290,14 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     return initial;
   });
 
-  // Residual Risk ratings
-  const [residualLikelihood, setResidualLikelihood] = useState("");
-  const [residualImpact, setResidualImpact] = useState("");
-  const [residualVelocity, setResidualVelocity] = useState("");
+  // Residual Risk ratings - dynamically from schema
+  const [residualRatings, setResidualRatings] = useState<Record<string, string>>(() => {
+    const initial: Record<string, string> = {};
+    RESIDUAL_FACTORS.forEach(factor => {
+      initial[factor.id] = "";
+    });
+    return initial;
+  });
 
   // Filter risks based on search query - exclude completed/closed risks entirely
   const filteredRisks = useMemo(() => {
@@ -302,8 +318,8 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     const checkedRiskIds = Array.from(checkedRisks);
     if (checkedRiskIds.length === 0) {
       return {
-        inherent: { likelihood: null, impact: null, velocity: null },
-        residual: { likelihood: null, impact: null, velocity: null },
+        inherent: {} as Record<string, string | null>,
+        residual: {} as Record<string, string | null>,
         controls: {} as Record<string, { design: string | null; operating: string | null; testing: string | null }>,
         hasAnyInherent: false,
         hasAnyResidual: false,
@@ -313,13 +329,19 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
 
     const riskData = checkedRiskIds.map(id => mockRiskReferenceData[id]).filter(Boolean);
     
-    const inherentLikelihood = findCommonValue(riskData.map(d => d?.inherent?.likelihood));
-    const inherentImpact = findCommonValue(riskData.map(d => d?.inherent?.impact));
-    const inherentVelocity = findCommonValue(riskData.map(d => d?.inherent?.velocity));
+    // Build inherent common values dynamically from schema
+    const inherentCommon: Record<string, string | null> = {};
+    INHERENT_FACTORS.forEach(factor => {
+      const key = factor.name.toLowerCase() as keyof typeof riskData[0]['inherent'];
+      inherentCommon[factor.id] = findCommonValue(riskData.map(d => d?.inherent?.[key]));
+    });
     
-    const residualLikelihood = findCommonValue(riskData.map(d => d?.residual?.likelihood));
-    const residualImpact = findCommonValue(riskData.map(d => d?.residual?.impact));
-    const residualVelocity = findCommonValue(riskData.map(d => d?.residual?.velocity));
+    // Build residual common values dynamically from schema
+    const residualCommon: Record<string, string | null> = {};
+    RESIDUAL_FACTORS.forEach(factor => {
+      const key = factor.name.toLowerCase() as keyof typeof riskData[0]['residual'];
+      residualCommon[factor.id] = findCommonValue(riskData.map(d => d?.residual?.[key]));
+    });
 
     const controlCommon: Record<string, { design: string | null; operating: string | null; testing: string | null }> = {};
     mockControls.forEach(control => {
@@ -330,13 +352,13 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
       };
     });
 
-    const hasAnyInherent = inherentLikelihood !== null || inherentImpact !== null || inherentVelocity !== null;
-    const hasAnyResidual = residualLikelihood !== null || residualImpact !== null || residualVelocity !== null;
+    const hasAnyInherent = Object.values(inherentCommon).some(v => v !== null);
+    const hasAnyResidual = Object.values(residualCommon).some(v => v !== null);
     const hasAnyControls = Object.values(controlCommon).some(c => c.design !== null || c.operating !== null || c.testing !== null);
 
     return {
-      inherent: { likelihood: inherentLikelihood, impact: inherentImpact, velocity: inherentVelocity },
-      residual: { likelihood: residualLikelihood, impact: residualImpact, velocity: residualVelocity },
+      inherent: inherentCommon,
+      residual: residualCommon,
       controls: controlCommon,
       hasAnyInherent,
       hasAnyResidual,
@@ -360,10 +382,11 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     setIsGeneratingAI(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    // Apply AI suggestions
-    setInherentLikelihood("4");
-    setInherentImpact("3");
-    setInherentVelocity("2");
+    // Apply AI suggestions using schema-based ratings
+    setInherentRatings({
+      "1": "4", // Impact
+      "2": "3", // Likelihood
+    });
     
     setControlRatings({
       "CTRL-001": { design: "4", operating: "3", testing: "4" },
@@ -372,12 +395,21 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
       "CTRL-004": { design: "3", operating: "3", testing: "3" },
     });
     
-    setResidualLikelihood("2");
-    setResidualImpact("2");
-    setResidualVelocity("1");
+    setResidualRatings({
+      "1": "2", // Impact
+      "2": "2", // Likelihood
+    });
     
     setIsGeneratingAI(false);
     toast.success("AI suggestions applied to all sections");
+  };
+
+  const updateInherentRating = (factorId: string, value: string) => {
+    setInherentRatings(prev => ({ ...prev, [factorId]: value }));
+  };
+
+  const updateResidualRating = (factorId: string, value: string) => {
+    setResidualRatings(prev => ({ ...prev, [factorId]: value }));
   };
 
   const updateControlRating = (controlId: string, field: "design" | "operating" | "testing", value: string) => {
@@ -398,21 +430,24 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
   const calculateRiskProgress = useCallback((riskId: string): number => {
     if (!checkedRisks.has(riskId)) return 0;
     
-    // Total fields: 3 inherent + 3 residual + (4 controls * 3 fields each) = 18 total
-    const totalFields = 18;
+    // Total fields dynamically calculated from schema
+    const inherentFieldCount = INHERENT_FACTORS.length;
+    const residualFieldCount = RESIDUAL_FACTORS.length;
+    const controlFieldCount = mockControls.length * CONTROL_DIMENSIONS.length;
+    const totalFields = inherentFieldCount + residualFieldCount + controlFieldCount;
     let completedFields = 0;
     
-    // Inherent section (3 fields)
-    if (inherentLikelihood) completedFields++;
-    if (inherentImpact) completedFields++;
-    if (inherentVelocity) completedFields++;
+    // Inherent section (dynamic from schema)
+    Object.values(inherentRatings).forEach(rating => {
+      if (rating) completedFields++;
+    });
     
-    // Residual section (3 fields)
-    if (residualLikelihood) completedFields++;
-    if (residualImpact) completedFields++;
-    if (residualVelocity) completedFields++;
+    // Residual section (dynamic from schema)
+    Object.values(residualRatings).forEach(rating => {
+      if (rating) completedFields++;
+    });
     
-    // Control ratings (4 controls * 3 fields = 12 fields)
+    // Control ratings
     Object.values(controlRatings).forEach(control => {
       if (control.design) completedFields++;
       if (control.operating) completedFields++;
@@ -420,7 +455,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     });
     
     return Math.round((completedFields / totalFields) * 100);
-  }, [checkedRisks, inherentLikelihood, inherentImpact, inherentVelocity, residualLikelihood, residualImpact, residualVelocity, controlRatings]);
+  }, [checkedRisks, inherentRatings, residualRatings, controlRatings]);
 
   // Get progress color based on percentage
   const getProgressColor = (progress: number): string => {
@@ -671,90 +706,41 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                           </tr>
                         </thead>
                         <tbody>
-                          <tr className="border-b border-border/50 hover:bg-muted/20">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                <span className="font-medium">Likelihood</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-muted-foreground">Probability of risk event occurring</td>
-                            <td className="py-4 px-4 text-center">
-                              {commonReferenceValues.inherent.likelihood ? (
-                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.inherent.likelihood)?.label || commonReferenceValues.inherent.likelihood}</Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground italic">Varies</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-4">
-                              <Select value={inherentLikelihood} onValueChange={setInherentLikelihood}>
-                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {ratingOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          </tr>
-                          <tr className="border-b border-border/50 hover:bg-muted/20">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                <span className="font-medium">Impact</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-muted-foreground">Potential impact on business operations</td>
-                            <td className="py-4 px-4 text-center">
-                              {commonReferenceValues.inherent.impact ? (
-                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.inherent.impact)?.label || commonReferenceValues.inherent.impact}</Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground italic">Varies</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-4">
-                              <Select value={inherentImpact} onValueChange={setInherentImpact}>
-                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {ratingOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          </tr>
-                          <tr className="hover:bg-muted/20">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                                <span className="font-medium">Velocity</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-muted-foreground">Speed at which risk can materialize</td>
-                            <td className="py-4 px-4 text-center">
-                              {commonReferenceValues.inherent.velocity ? (
-                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.inherent.velocity)?.label || commonReferenceValues.inherent.velocity}</Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground italic">Varies</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-4">
-                              <Select value={inherentVelocity} onValueChange={setInherentVelocity}>
-                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {ratingOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          </tr>
+                          {INHERENT_FACTORS.map((factor, index) => (
+                            <tr key={factor.id} className={`${index < INHERENT_FACTORS.length - 1 ? 'border-b border-border/50' : ''} hover:bg-muted/20`}>
+                              <td className="py-4 px-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                  <span className="font-medium">{factor.name}</span>
+                                </div>
+                              </td>
+                              <td className="py-4 px-4 text-muted-foreground text-sm">{factor.description}</td>
+                              <td className="py-4 px-4 text-center">
+                                {commonReferenceValues.inherent[factor.id] ? (
+                                  <Badge variant="outline" className="text-xs">
+                                    {FACTOR_RATING_OPTIONS.find(o => o.value === commonReferenceValues.inherent[factor.id])?.label || commonReferenceValues.inherent[factor.id]}
+                                  </Badge>
+                                ) : (
+                                  <span className="text-xs text-muted-foreground italic">Varies</span>
+                                )}
+                              </td>
+                              <td className="py-4 px-4">
+                                <Select 
+                                  value={inherentRatings[factor.id] || ""} 
+                                  onValueChange={(v) => updateInherentRating(factor.id, v)}
+                                >
+                                  <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                    <SelectValue placeholder="Select" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-popover border border-border z-50">
+                                    {FACTOR_RATING_OPTIONS.map(opt => (
+                                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     )}
@@ -928,90 +914,41 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                           </tr>
                         </thead>
                         <tbody>
-                          <tr className="border-b border-border/50 hover:bg-muted/20">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                <span className="font-medium">Likelihood</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-muted-foreground">Probability after control mitigation</td>
-                            <td className="py-4 px-4 text-center">
-                              {commonReferenceValues.residual.likelihood ? (
-                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.residual.likelihood)?.label || commonReferenceValues.residual.likelihood}</Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground italic">Varies</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-4">
-                              <Select value={residualLikelihood} onValueChange={setResidualLikelihood}>
-                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {ratingOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          </tr>
-                          <tr className="border-b border-border/50 hover:bg-muted/20">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                <span className="font-medium">Impact</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-muted-foreground">Remaining impact after controls</td>
-                            <td className="py-4 px-4 text-center">
-                              {commonReferenceValues.residual.impact ? (
-                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.residual.impact)?.label || commonReferenceValues.residual.impact}</Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground italic">Varies</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-4">
-                              <Select value={residualImpact} onValueChange={setResidualImpact}>
-                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {ratingOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          </tr>
-                          <tr className="hover:bg-muted/20">
-                            <td className="py-4 px-4">
-                              <div className="flex items-center gap-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                                <span className="font-medium">Velocity</span>
-                              </div>
-                            </td>
-                            <td className="py-4 px-4 text-muted-foreground">Risk velocity after mitigation</td>
-                            <td className="py-4 px-4 text-center">
-                              {commonReferenceValues.residual.velocity ? (
-                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.residual.velocity)?.label || commonReferenceValues.residual.velocity}</Badge>
-                              ) : (
-                                <span className="text-xs text-muted-foreground italic">Varies</span>
-                              )}
-                            </td>
-                            <td className="py-4 px-4">
-                              <Select value={residualVelocity} onValueChange={setResidualVelocity}>
-                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="Select" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {ratingOptions.map(opt => (
-                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                          </tr>
+                          {RESIDUAL_FACTORS.map((factor, index) => (
+                            <tr key={factor.id} className={`${index < RESIDUAL_FACTORS.length - 1 ? 'border-b border-border/50' : ''} hover:bg-muted/20`}>
+                              <td className="py-4 px-4">
+                                <div className="flex items-center gap-2">
+                                  <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                  <span className="font-medium">{factor.name}</span>
+                                </div>
+                              </td>
+                              <td className="py-4 px-4 text-muted-foreground text-sm">{factor.description}</td>
+                              <td className="py-4 px-4 text-center">
+                                {commonReferenceValues.residual[factor.id] ? (
+                                  <Badge variant="outline" className="text-xs">
+                                    {FACTOR_RATING_OPTIONS.find(o => o.value === commonReferenceValues.residual[factor.id])?.label || commonReferenceValues.residual[factor.id]}
+                                  </Badge>
+                                ) : (
+                                  <span className="text-xs text-muted-foreground italic">Varies</span>
+                                )}
+                              </td>
+                              <td className="py-4 px-4">
+                                <Select 
+                                  value={residualRatings[factor.id] || ""} 
+                                  onValueChange={(v) => updateResidualRating(factor.id, v)}
+                                >
+                                  <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                    <SelectValue placeholder="Select" />
+                                  </SelectTrigger>
+                                  <SelectContent className="bg-popover border border-border z-50">
+                                    {FACTOR_RATING_OPTIONS.map(opt => (
+                                      <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                              </td>
+                            </tr>
+                          ))}
                         </tbody>
                       </table>
                     )}
