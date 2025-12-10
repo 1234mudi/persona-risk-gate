@@ -908,40 +908,42 @@ const Dashboard1stLine = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           {/* Quick Links Card */}
           <Card className="lg:col-span-2 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-card dark:to-card">
-            <CardHeader className="pb-2">
+            <CardHeader className="pb-1 pt-3 px-4">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Link className="w-5 h-5 text-first-line" />
                 Quick Links
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left">
-                <ClipboardCheck className="w-4 h-4" />
-                View My Pending Assessments
-              </button>
-              <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left">
-                <FileCheck className="w-4 h-4" />
-                View Control Evidence Tasks
-              </button>
-              <a href="#" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
-                <AlertCircle className="w-4 h-4" />
-                View My Action Plans
-              </a>
-              <button 
-                onClick={() => setAiDocumentModalOpen(true)} 
-                className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left"
-              >
-                <Sparkles className="w-4 h-4" />
-                Assess Documents with AI
-              </button>
-              <a href="/downloads/risk-events-final.docx" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
-                <FileText className="w-4 h-4" />
-                Download Risk Events (Word)
-              </a>
-              <a href="/downloads/risk-events-final.csv" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm">
-                <FileText className="w-4 h-4" />
-                Download Risk Events (CSV)
-              </a>
+            <CardContent className="px-4 pb-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-1">
+                <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]">
+                  <ClipboardCheck className="w-4 h-4" />
+                  View My Pending Assessments
+                </button>
+                <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]">
+                  <FileCheck className="w-4 h-4" />
+                  View Control Evidence Tasks
+                </button>
+                <a href="#" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
+                  <AlertCircle className="w-4 h-4" />
+                  View My Action Plans
+                </a>
+                <button 
+                  onClick={() => setAiDocumentModalOpen(true)} 
+                  className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  Assess Documents with AI
+                </button>
+                <a href="/downloads/risk-events-final.docx" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
+                  <FileText className="w-4 h-4" />
+                  Download Risk Events (Word)
+                </a>
+                <a href="/downloads/risk-events-final.csv" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
+                  <FileText className="w-4 h-4" />
+                  Download Risk Events (CSV)
+                </a>
+              </div>
             </CardContent>
           </Card>
 
