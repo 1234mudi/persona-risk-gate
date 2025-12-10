@@ -239,9 +239,6 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
   }, [selectableRisks]);
 
   const toggleRiskCheck = (riskId: string) => {
-    const risk = selectedRisks.find(r => r.id === riskId);
-    if (risk && isRiskCompleted(risk)) return; // Don't toggle completed/closed risks
-    
     setCheckedRisks(prev => {
       const newSet = new Set(prev);
       if (newSet.has(riskId)) {
@@ -255,8 +252,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
 
   const toggleAllRisks = (checked: boolean) => {
     if (checked) {
-      // Only select risks that are not completed/closed
-      setCheckedRisks(new Set(filteredRisks.filter(r => !isRiskCompleted(r)).map(r => r.id)));
+      setCheckedRisks(new Set(filteredRisks.map(r => r.id)));
     } else {
       setCheckedRisks(new Set());
     }
@@ -287,11 +283,12 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
   const [residualImpact, setResidualImpact] = useState("");
   const [residualVelocity, setResidualVelocity] = useState("");
 
-  // Filter risks based on search query
+  // Filter risks based on search query - exclude completed/closed risks entirely
   const filteredRisks = useMemo(() => {
-    if (!searchQuery.trim()) return selectedRisks;
+    const activeRisks = selectedRisks.filter(r => !isRiskCompleted(r));
+    if (!searchQuery.trim()) return activeRisks;
     const query = searchQuery.toLowerCase();
-    return selectedRisks.filter(risk => 
+    return activeRisks.filter(risk => 
       risk.id.toLowerCase().includes(query) ||
       risk.title.toLowerCase().includes(query) ||
       risk.category.toLowerCase().includes(query) ||
@@ -547,78 +544,68 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                     <p className="text-sm">No risks match your search</p>
                   </div>
                 ) : (
-                  filteredRisks.map(risk => {
-                    const isCompleted = isRiskCompleted(risk);
-                    return (
-                      <div 
-                        key={risk.id} 
-                        className={`p-3 rounded-lg border transition-colors group ${
-                          isCompleted 
-                            ? 'border-border/50 bg-muted/30 opacity-60 cursor-not-allowed'
-                            : checkedRisks.has(risk.id) 
-                              ? 'border-primary/50 bg-primary/5 cursor-pointer' 
-                              : 'border-border bg-card hover:bg-muted/50 cursor-pointer'
-                        }`}
-                      >
-                        <div className="flex items-start gap-2">
-                          <Checkbox
-                            checked={checkedRisks.has(risk.id)}
-                            onCheckedChange={() => toggleRiskCheck(risk.id)}
-                            onClick={(e) => e.stopPropagation()}
-                            disabled={isCompleted}
-                            className="mt-0.5 h-4 w-4 shrink-0"
-                          />
-                          <div 
-                            className="flex-1 min-w-0"
-                            onClick={() => {
-                              if (isCompleted) return;
-                              const dashboardPath = userType === "2nd-line" 
-                                ? "/dashboard/2nd-line-analyst" 
-                                : userType === "risk-owner" 
-                                  ? "/dashboard/risk-owner" 
-                                  : "/dashboard/1st-line-analyst";
-                              const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
-                              window.open(url, '_blank');
-                            }}
-                            title={isCompleted ? "This risk is completed/closed and cannot be selected" : "Click to open risk assessment in new tab"}
-                          >
-                            <div className="flex items-center gap-2 mb-2">
-                              <Badge variant="outline" className="text-xs font-mono border-primary/50 text-primary">
-                                {highlightMatch(risk.id, searchQuery)}
-                              </Badge>
-                              {isCompleted && (
-                                <Badge variant="outline" className="text-xs bg-muted text-muted-foreground border-muted-foreground/30">
-                                  {risk.status}
-                                </Badge>
-                              )}
-                            </div>
-                            <p className={`text-sm font-medium leading-tight mb-1 ${isCompleted ? '' : 'group-hover:text-primary'} transition-colors`}>
-                              {highlightMatch(risk.title, searchQuery)}
-                            </p>
-                            <p className="text-xs text-muted-foreground mb-2">{highlightMatch(risk.category, searchQuery)}</p>
-                            {/* Progress indicator */}
-                            {checkedRisks.has(risk.id) && !isCompleted && (
+                  filteredRisks.map(risk => (
+                    <div 
+                      key={risk.id} 
+                      className={`p-3 rounded-lg border transition-colors group ${
+                        checkedRisks.has(risk.id) 
+                          ? 'border-primary/50 bg-primary/5 cursor-pointer' 
+                          : 'border-border bg-card hover:bg-muted/50 cursor-pointer'
+                      }`}
+                    >
+                      <div className="flex items-start gap-2">
+                        <Checkbox
+                          checked={checkedRisks.has(risk.id)}
+                          onCheckedChange={() => toggleRiskCheck(risk.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          className="mt-0.5 h-4 w-4 shrink-0"
+                        />
+                        <div 
+                          className="flex-1 min-w-0"
+                          onClick={() => {
+                            const dashboardPath = userType === "2nd-line" 
+                              ? "/dashboard/2nd-line-analyst" 
+                              : userType === "risk-owner" 
+                                ? "/dashboard/risk-owner" 
+                                : "/dashboard/1st-line-analyst";
+                            const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
+                            window.open(url, '_blank');
+                          }}
+                          title="Click to open risk assessment in new tab"
+                        >
+                          <div className="flex items-center gap-2 mb-2">
+                            <Badge variant="outline" className="text-xs font-mono border-primary/50 text-primary">
+                              {highlightMatch(risk.id, searchQuery)}
+                            </Badge>
+                          </div>
+                          <p className="text-sm font-medium leading-tight mb-1 group-hover:text-primary transition-colors">
+                            {highlightMatch(risk.title, searchQuery)}
+                          </p>
+                          <p className="text-xs text-muted-foreground mb-2">{highlightMatch(risk.category, searchQuery)}</p>
+                          {/* Progress indicator */}
+                          {checkedRisks.has(risk.id) && (
+                            <div className="flex items-center gap-2">
                               <div className="relative h-1.5 flex-1 bg-muted rounded-full overflow-hidden">
                                 <div 
                                   className={`h-full transition-all duration-300 ${getProgressColor(calculateRiskProgress(risk.id))}`}
                                   style={{ width: `${calculateRiskProgress(risk.id)}%` }}
                                 />
-                                <span className={`text-xs font-medium min-w-[32px] text-right ${
-                                  calculateRiskProgress(risk.id) === 100 
-                                    ? 'text-green-600 dark:text-green-400' 
-                                    : calculateRiskProgress(risk.id) >= 50 
-                                      ? 'text-amber-600 dark:text-amber-400'
-                                      : 'text-muted-foreground'
-                                }`}>
-                                  {calculateRiskProgress(risk.id)}%
-                                </span>
                               </div>
-                            )}
-                          </div>
+                              <span className={`text-xs font-medium min-w-[32px] text-right ${
+                                calculateRiskProgress(risk.id) === 100 
+                                  ? 'text-green-600 dark:text-green-400' 
+                                  : calculateRiskProgress(risk.id) >= 50 
+                                    ? 'text-amber-600 dark:text-amber-400'
+                                    : 'text-muted-foreground'
+                              }`}>
+                                {calculateRiskProgress(risk.id)}%
+                              </span>
+                            </div>
+                          )}
                         </div>
                       </div>
-                    );
-                  })
+                    </div>
+                  ))
                 )}
               </div>
             </ScrollArea>
