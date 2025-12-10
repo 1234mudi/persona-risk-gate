@@ -506,7 +506,24 @@ const Dashboard1stLine = () => {
       tabCategory: "assess" as const,
     }));
 
-    setRiskData(prev => [...newRisks, ...prev]);
+    setRiskData(prev => {
+      // Create a map of existing risk IDs for quick lookup
+      const existingIds = new Set(prev.map(r => r.id));
+      
+      // Separate new risks from updates to existing risks
+      const trulyNewRisks = newRisks.filter(r => !existingIds.has(r.id));
+      const updatedRisks = newRisks.filter(r => existingIds.has(r.id));
+      
+      // Update existing risks with new data, or keep them unchanged
+      const updatedExisting = prev.map(existingRisk => {
+        const update = updatedRisks.find(r => r.id === existingRisk.id);
+        return update ? { ...existingRisk, ...update } : existingRisk;
+      });
+      
+      // Return truly new risks prepended to the updated existing risks
+      return [...trulyNewRisks, ...updatedExisting];
+    });
+    
     toast.success(`${newRisks.length} risks imported and added to "Risks to Assess" tab`);
   };
 
