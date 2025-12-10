@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -6,6 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Progress } from "@/components/ui/progress";
 import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Save, Send, Loader2, Search } from "lucide-react";
 import { toast } from "sonner";
 interface RiskData {
@@ -396,6 +397,42 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
     return (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1);
   };
 
+  // Calculate progress for each risk based on current form completion
+  const calculateRiskProgress = useCallback((riskId: string): number => {
+    if (!checkedRisks.has(riskId)) return 0;
+    
+    // Total fields: 3 inherent + 3 residual + (4 controls * 3 fields each) = 18 total
+    const totalFields = 18;
+    let completedFields = 0;
+    
+    // Inherent section (3 fields)
+    if (inherentLikelihood) completedFields++;
+    if (inherentImpact) completedFields++;
+    if (inherentVelocity) completedFields++;
+    
+    // Residual section (3 fields)
+    if (residualLikelihood) completedFields++;
+    if (residualImpact) completedFields++;
+    if (residualVelocity) completedFields++;
+    
+    // Control ratings (4 controls * 3 fields = 12 fields)
+    Object.values(controlRatings).forEach(control => {
+      if (control.design) completedFields++;
+      if (control.operating) completedFields++;
+      if (control.testing) completedFields++;
+    });
+    
+    return Math.round((completedFields / totalFields) * 100);
+  }, [checkedRisks, inherentLikelihood, inherentImpact, inherentVelocity, residualLikelihood, residualImpact, residualVelocity, controlRatings]);
+
+  // Get progress color based on percentage
+  const getProgressColor = (progress: number): string => {
+    if (progress === 100) return "bg-green-500";
+    if (progress >= 50) return "bg-amber-500";
+    if (progress > 0) return "bg-orange-500";
+    return "bg-muted";
+  };
+
   const handleSaveAsDraft = () => {
     toast.success(`${checkedCount} assessments saved as draft`);
   };
@@ -558,7 +595,25 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                             <p className={`text-sm font-medium leading-tight mb-1 ${isCompleted ? '' : 'group-hover:text-primary'} transition-colors`}>
                               {highlightMatch(risk.title, searchQuery)}
                             </p>
-                            <p className="text-xs text-muted-foreground">{highlightMatch(risk.category, searchQuery)}</p>
+                            <p className="text-xs text-muted-foreground mb-2">{highlightMatch(risk.category, searchQuery)}</p>
+                            {/* Progress indicator */}
+                            {checkedRisks.has(risk.id) && !isCompleted && (
+                              <div className="relative h-1.5 flex-1 bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className={`h-full transition-all duration-300 ${getProgressColor(calculateRiskProgress(risk.id))}`}
+                                  style={{ width: `${calculateRiskProgress(risk.id)}%` }}
+                                />
+                                <span className={`text-xs font-medium min-w-[32px] text-right ${
+                                  calculateRiskProgress(risk.id) === 100 
+                                    ? 'text-green-600 dark:text-green-400' 
+                                    : calculateRiskProgress(risk.id) >= 50 
+                                      ? 'text-amber-600 dark:text-amber-400'
+                                      : 'text-muted-foreground'
+                                }`}>
+                                  {calculateRiskProgress(risk.id)}%
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
