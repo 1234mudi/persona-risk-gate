@@ -1029,7 +1029,7 @@ const Dashboard2ndLine = () => {
                       onClick={() => setBulkAssessmentOpen(true)}
                     >
                       <Sparkles className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5" />
-                      <span className="text-xs sm:text-sm">Perform Assessment</span>
+                      <span className="text-xs sm:text-sm">Assess Selected Risks</span>
                     </Button>
                   </div>
                 </div>
