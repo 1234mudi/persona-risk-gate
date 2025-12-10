@@ -200,10 +200,37 @@ const RiskAssessmentForm = () => {
     cellId: string;
     collaborator: { name: string; avatar: string; color: string };
   }[]>([
+    // Inherent Rating section collaborators
     { cellId: "financial-impact-rating", collaborator: { name: "Sarah Johnson", avatar: "SJ", color: "bg-emerald-500" } },
-    { cellId: "ctl-001-design", collaborator: { name: "Michael Chen", avatar: "MC", color: "bg-blue-500" } },
     { cellId: "operational-impact-comments", collaborator: { name: "Emily Roberts", avatar: "ER", color: "bg-purple-500" } },
+    // Control Effectiveness section collaborators
+    { cellId: "ctl-001-design", collaborator: { name: "Michael Chen", avatar: "MC", color: "bg-blue-500" } },
+    // Residual Rating section collaborators
+    { cellId: "residual-financial-impact-rating", collaborator: { name: "Anna Lee", avatar: "AL", color: "bg-amber-500" } },
   ]);
+  
+  // Helper to determine which section a cellId belongs to
+  const getSectionFromCellId = (cellId: string): 'inherent' | 'control' | 'residual' | null => {
+    // Control fields - match control IDs (ctl-xxx)
+    if (cellId.startsWith('ctl-')) {
+      return 'control';
+    }
+    // Residual risk fields - match residual factor names
+    if (cellId.startsWith('residual-')) {
+      return 'residual';
+    }
+    // Inherent risk fields - all other factor fields
+    const inherentPatterns = ['financial-impact', 'operational-impact', 'reputational-impact', 'regulatory-impact', 'strategic-impact'];
+    if (inherentPatterns.some(pattern => cellId.includes(pattern))) {
+      return 'inherent';
+    }
+    return null;
+  };
+
+  // Get collaborators active in a specific section
+  const getCollaboratorsForSection = (section: 'inherent' | 'control' | 'residual') => {
+    return collaboratorPositions.filter(pos => getSectionFromCellId(pos.cellId) === section);
+  };
   
   // Track which sections have active editors
   const [activeSections] = useState<{ section: string; color: string }[]>([
@@ -1965,9 +1992,18 @@ const RiskAssessmentForm = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="flex -space-x-1.5">
-                      <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">SJ</div>
-                      <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">MC</div>
-                      <div className="w-5 h-5 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">ER</div>
+                      {getCollaboratorsForSection('inherent').map((pos, idx) => (
+                        <div 
+                          key={idx}
+                          className={`w-5 h-5 rounded-full ${pos.collaborator.color} border-2 border-white dark:border-background flex items-center justify-center text-[8px] font-semibold text-white`}
+                          title={pos.collaborator.name}
+                        >
+                          {pos.collaborator.avatar}
+                        </div>
+                      ))}
+                      {getCollaboratorsForSection('inherent').length === 0 && (
+                        <span className="text-xs text-muted-foreground">No active editors</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -2133,9 +2169,18 @@ const RiskAssessmentForm = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="flex -space-x-1.5">
-                      <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">SJ</div>
-                      <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">MC</div>
-                      <div className="w-5 h-5 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">ER</div>
+                      {getCollaboratorsForSection('control').map((pos, idx) => (
+                        <div 
+                          key={idx}
+                          className={`w-5 h-5 rounded-full ${pos.collaborator.color} border-2 border-white dark:border-background flex items-center justify-center text-[8px] font-semibold text-white`}
+                          title={pos.collaborator.name}
+                        >
+                          {pos.collaborator.avatar}
+                        </div>
+                      ))}
+                      {getCollaboratorsForSection('control').length === 0 && (
+                        <span className="text-xs text-muted-foreground">No active editors</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -2406,9 +2451,18 @@ const RiskAssessmentForm = () => {
                   </div>
                   <div className="flex items-center gap-1">
                     <div className="flex -space-x-1.5">
-                      <div className="w-5 h-5 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">SJ</div>
-                      <div className="w-5 h-5 rounded-full bg-blue-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">MC</div>
-                      <div className="w-5 h-5 rounded-full bg-purple-500 border-2 border-white flex items-center justify-center text-[8px] font-semibold text-white">ER</div>
+                      {getCollaboratorsForSection('residual').map((pos, idx) => (
+                        <div 
+                          key={idx}
+                          className={`w-5 h-5 rounded-full ${pos.collaborator.color} border-2 border-white dark:border-background flex items-center justify-center text-[8px] font-semibold text-white`}
+                          title={pos.collaborator.name}
+                        >
+                          {pos.collaborator.avatar}
+                        </div>
+                      ))}
+                      {getCollaboratorsForSection('residual').length === 0 && (
+                        <span className="text-xs text-muted-foreground">No active editors</span>
+                      )}
                     </div>
                   </div>
                 </div>
