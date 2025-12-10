@@ -583,7 +583,7 @@ This risk is currently being managed within established parameters. No immediate
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl w-[95vw] p-0 overflow-hidden flex flex-col max-h-[90vh]">
+      <DialogContent className="sm:max-w-5xl w-[95vw] p-0 overflow-hidden flex flex-col h-auto">
         {/* Header */}
         <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0">
           <div className="flex items-center justify-between">
@@ -619,7 +619,7 @@ This risk is currently being managed within established parameters. No immediate
                 onClick={() => handleNavigateToSection('inherent-rating', risk.id, risk.title)}
                 className="bg-primary text-primary-foreground hover:bg-primary/90 h-8 text-xs"
               >
-                Continue
+                View Assessment Details
               </Button>
             </div>
           </div>
