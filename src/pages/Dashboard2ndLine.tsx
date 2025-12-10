@@ -1099,8 +1099,8 @@ const Dashboard2ndLine = () => {
                             {/* Business Unit Group Header Row - Unified with Aggregation Cards */}
                             <TableRow key={`agg-${group.businessUnit}`} className="bg-slate-100 dark:bg-slate-800 border-t-2 border-l-4 border-l-primary border-primary/30">
                               <TableCell colSpan={14} className="py-3 border-b border-border">
-                                <div className="flex items-center justify-between gap-4">
-                                  {/* Left side: Business Unit info */}
+                                <div className="flex items-center flex-wrap gap-4">
+                                  {/* Business Unit info */}
                                   <div className="flex items-center gap-3">
                                     <Building2 className="w-5 h-5 text-primary" />
                                     <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">Grouped by: Business Unit</span>
@@ -1108,9 +1108,11 @@ const Dashboard2ndLine = () => {
                                     <Badge variant="secondary" className="text-xs font-medium">{group.count} risks</Badge>
                                   </div>
                                   
-                                  {/* Right side: Aggregated metrics cards */}
+                                  {/* Aggregated metrics cards - inline after BU info */}
                                   {aggregation && (
-                                    <div className="flex items-center gap-3">
+                                    <>
+                                      <div className="h-6 w-px bg-border" />
+                                      <div className="flex items-center gap-2 flex-wrap">
                                       {/* Inherent Rating Card */}
                                       <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-background/80 border border-border shadow-sm">
                                         <div className="flex flex-col">
@@ -1149,7 +1151,8 @@ const Dashboard2ndLine = () => {
                                           </div>
                                         </div>
                                       </div>
-                                    </div>
+                                      </div>
+                                    </>
                                   )}
                                 </div>
                               </TableCell>
