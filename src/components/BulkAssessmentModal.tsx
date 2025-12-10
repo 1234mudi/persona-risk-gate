@@ -14,6 +14,7 @@ interface RiskData {
   riskLevel: string;
   owner: string;
   category: string;
+  status?: string;
   assessmentProgress: {
     assess: "not-started" | "in-progress" | "completed";
     reviewChallenge: "not-started" | "in-progress" | "completed";
@@ -28,6 +29,12 @@ interface RiskData {
   inherentRisk: { level: string; color: string };
   residualRisk: { level: string; color: string };
 }
+
+// Helper to check if a risk is completed/closed
+const isRiskCompleted = (risk: RiskData): boolean => {
+  const status = risk.status?.toLowerCase() || "";
+  return status === "completed" || status === "closed";
+};
 
 interface BulkAssessmentModalProps {
   open: boolean;
@@ -216,14 +223,24 @@ const findCommonValue = (values: (string | undefined)[]): string | null => {
 export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onComplete, userType = "1st-line" }: BulkAssessmentModalProps) => {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-  const [checkedRisks, setCheckedRisks] = useState<Set<string>>(() => new Set(selectedRisks.map(r => r.id)));
+  
+  // Filter out completed/closed risks for initial selection
+  const selectableRisks = useMemo(() => 
+    selectedRisks.filter(r => !isRiskCompleted(r)), 
+    [selectedRisks]
+  );
+  
+  const [checkedRisks, setCheckedRisks] = useState<Set<string>>(() => new Set(selectableRisks.map(r => r.id)));
 
-  // Update checked risks when selectedRisks changes
+  // Update checked risks when selectedRisks changes (only selectable ones)
   useMemo(() => {
-    setCheckedRisks(new Set(selectedRisks.map(r => r.id)));
-  }, [selectedRisks]);
+    setCheckedRisks(new Set(selectableRisks.map(r => r.id)));
+  }, [selectableRisks]);
 
   const toggleRiskCheck = (riskId: string) => {
+    const risk = selectedRisks.find(r => r.id === riskId);
+    if (risk && isRiskCompleted(risk)) return; // Don't toggle completed/closed risks
+    
     setCheckedRisks(prev => {
       const newSet = new Set(prev);
       if (newSet.has(riskId)) {
@@ -237,13 +254,18 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
 
   const toggleAllRisks = (checked: boolean) => {
     if (checked) {
-      setCheckedRisks(new Set(filteredRisks.map(r => r.id)));
+      // Only select risks that are not completed/closed
+      setCheckedRisks(new Set(filteredRisks.filter(r => !isRiskCompleted(r)).map(r => r.id)));
     } else {
       setCheckedRisks(new Set());
     }
   };
 
   const checkedCount = checkedRisks.size;
+  const selectableFilteredCount = useMemo(() => 
+    selectedRisks.filter(r => !isRiskCompleted(r)).length,
+    [selectedRisks]
+  );
   
   // Inherent Risk ratings
   const [inherentLikelihood, setInherentLikelihood] = useState("");
@@ -446,8 +468,9 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                 </div>
                 <div className="flex items-center gap-2">
                   <Checkbox
-                    checked={checkedCount === filteredRisks.length && filteredRisks.length > 0}
+                    checked={checkedCount === selectableFilteredCount && selectableFilteredCount > 0}
                     onCheckedChange={(checked) => toggleAllRisks(!!checked)}
+                    disabled={selectableFilteredCount === 0}
                     className="h-4 w-4"
                   />
                   <span className="text-xs text-muted-foreground">All</span>
@@ -487,46 +510,60 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                     <p className="text-sm">No risks match your search</p>
                   </div>
                 ) : (
-                  filteredRisks.map(risk => (
-                    <div 
-                      key={risk.id} 
-                      className={`p-3 rounded-lg border transition-colors cursor-pointer group ${
-                        checkedRisks.has(risk.id) 
-                          ? 'border-primary/50 bg-primary/5' 
-                          : 'border-border bg-card hover:bg-muted/50'
-                      }`}
-                    >
-                      <div className="flex items-start gap-2">
-                        <Checkbox
-                          checked={checkedRisks.has(risk.id)}
-                          onCheckedChange={() => toggleRiskCheck(risk.id)}
-                          onClick={(e) => e.stopPropagation()}
-                          className="mt-0.5 h-4 w-4 shrink-0"
-                        />
-                        <div 
-                          className="flex-1 min-w-0"
-                          onClick={() => {
-                            const dashboardPath = userType === "2nd-line" 
-                              ? "/dashboard/2nd-line-analyst" 
-                              : userType === "risk-owner" 
-                                ? "/dashboard/risk-owner" 
-                                : "/dashboard/1st-line-analyst";
-                            const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
-                            window.open(url, '_blank');
-                          }}
-                          title="Click to open risk assessment in new tab"
-                        >
-                          <Badge variant="outline" className="text-xs font-mono mb-2 border-primary/50 text-primary">
-                            {highlightMatch(risk.id, searchQuery)}
-                          </Badge>
-                          <p className="text-sm font-medium leading-tight mb-1 group-hover:text-primary transition-colors">
-                            {highlightMatch(risk.title, searchQuery)}
-                          </p>
-                          <p className="text-xs text-muted-foreground">{highlightMatch(risk.category, searchQuery)}</p>
+                  filteredRisks.map(risk => {
+                    const isCompleted = isRiskCompleted(risk);
+                    return (
+                      <div 
+                        key={risk.id} 
+                        className={`p-3 rounded-lg border transition-colors group ${
+                          isCompleted 
+                            ? 'border-border/50 bg-muted/30 opacity-60 cursor-not-allowed'
+                            : checkedRisks.has(risk.id) 
+                              ? 'border-primary/50 bg-primary/5 cursor-pointer' 
+                              : 'border-border bg-card hover:bg-muted/50 cursor-pointer'
+                        }`}
+                      >
+                        <div className="flex items-start gap-2">
+                          <Checkbox
+                            checked={checkedRisks.has(risk.id)}
+                            onCheckedChange={() => toggleRiskCheck(risk.id)}
+                            onClick={(e) => e.stopPropagation()}
+                            disabled={isCompleted}
+                            className="mt-0.5 h-4 w-4 shrink-0"
+                          />
+                          <div 
+                            className="flex-1 min-w-0"
+                            onClick={() => {
+                              if (isCompleted) return;
+                              const dashboardPath = userType === "2nd-line" 
+                                ? "/dashboard/2nd-line-analyst" 
+                                : userType === "risk-owner" 
+                                  ? "/dashboard/risk-owner" 
+                                  : "/dashboard/1st-line-analyst";
+                              const url = `${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(risk.id)}&riskName=${encodeURIComponent(risk.title)}`;
+                              window.open(url, '_blank');
+                            }}
+                            title={isCompleted ? "This risk is completed/closed and cannot be selected" : "Click to open risk assessment in new tab"}
+                          >
+                            <div className="flex items-center gap-2 mb-2">
+                              <Badge variant="outline" className="text-xs font-mono border-primary/50 text-primary">
+                                {highlightMatch(risk.id, searchQuery)}
+                              </Badge>
+                              {isCompleted && (
+                                <Badge variant="outline" className="text-xs bg-muted text-muted-foreground border-muted-foreground/30">
+                                  {risk.status}
+                                </Badge>
+                              )}
+                            </div>
+                            <p className={`text-sm font-medium leading-tight mb-1 ${isCompleted ? '' : 'group-hover:text-primary'} transition-colors`}>
+                              {highlightMatch(risk.title, searchQuery)}
+                            </p>
+                            <p className="text-xs text-muted-foreground">{highlightMatch(risk.category, searchQuery)}</p>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  ))
+                    );
+                  })
                 )}
               </div>
             </ScrollArea>
