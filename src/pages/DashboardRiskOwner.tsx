@@ -506,7 +506,7 @@ const DashboardRiskOwner = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-700 dark:to-amber-800 flex items-center justify-center">
                 <UserCheck className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -545,7 +545,7 @@ const DashboardRiskOwner = () => {
         {/* Scorecards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           {/* Quick Links Card */}
-          <Card className="lg:col-span-2 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-amber-50 to-orange-50/50 dark:from-card dark:to-card">
+          <Card className="lg:col-span-2 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-amber-50 to-amber-100/50 dark:from-card dark:to-card">
             <CardHeader className="pb-1 pt-3 px-4">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Link className="w-5 h-5 text-amber-600" />
@@ -722,7 +722,7 @@ const DashboardRiskOwner = () => {
                   onClick={() => setActiveTab("own")}
                   className={`px-4 py-1.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
                     activeTab === "own"
-                      ? "bg-gradient-to-br from-amber-500 to-orange-600 text-white shadow-md"
+                      ? "bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-700 dark:to-amber-800 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-amber-400 ring-offset-2" : ""}`}
                 >
@@ -737,9 +737,9 @@ const DashboardRiskOwner = () => {
                   onClick={() => setActiveTab("assess")}
                   className={`px-4 py-1.5 font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
                     activeTab === "assess"
-                      ? "bg-gradient-to-br from-orange-500 to-amber-600 text-white shadow-md"
+                      ? "bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-700 dark:to-amber-800 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-orange-400 ring-offset-2" : ""}`}
+                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-amber-400 ring-offset-2" : ""}`}
                 >
                   In Progress
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
