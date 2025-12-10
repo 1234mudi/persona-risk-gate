@@ -45,6 +45,62 @@ const mockControls = [
   { id: "CTRL-004", name: "Audit Trail Monitoring", type: "Detective", owner: "Compliance" },
 ];
 
+// Mock reference data per risk (simulating existing values)
+const mockRiskReferenceData: Record<string, {
+  inherent: { likelihood: string; impact: string; velocity: string };
+  residual: { likelihood: string; impact: string; velocity: string };
+  controls: Record<string, { design: string; operating: string; testing: string }>;
+}> = {
+  "RSK-001": {
+    inherent: { likelihood: "4", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "3", testing: "4" },
+      "CTRL-002": { design: "3", operating: "4", testing: "3" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "RSK-002": {
+    inherent: { likelihood: "4", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "3", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "3", testing: "4" },
+      "CTRL-002": { design: "4", operating: "4", testing: "3" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "RSK-003": {
+    inherent: { likelihood: "3", impact: "4", velocity: "3" },
+    residual: { likelihood: "2", impact: "2", velocity: "2" },
+    controls: {
+      "CTRL-001": { design: "3", operating: "3", testing: "3" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "4", operating: "3", testing: "3" },
+      "CTRL-004": { design: "4", operating: "4", testing: "4" },
+    }
+  },
+  "RSK-004": {
+    inherent: { likelihood: "5", impact: "4", velocity: "3" },
+    residual: { likelihood: "3", impact: "2", velocity: "2" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "4", testing: "4" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "4", operating: "4", testing: "3" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+};
+
+// Helper to find common value across selected risks
+const findCommonValue = (values: (string | undefined)[]): string | null => {
+  const filtered = values.filter(v => v !== undefined && v !== "");
+  if (filtered.length === 0) return null;
+  const first = filtered[0];
+  return filtered.every(v => v === first) ? first! : null;
+};
+
 export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onComplete, userType = "1st-line" }: BulkAssessmentModalProps) => {
   const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -108,6 +164,53 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
       risk.riskLevel.toLowerCase().includes(query)
     );
   }, [selectedRisks, searchQuery]);
+
+  // Compute common reference values based on checked risks
+  const commonReferenceValues = useMemo(() => {
+    const checkedRiskIds = Array.from(checkedRisks);
+    if (checkedRiskIds.length === 0) {
+      return {
+        inherent: { likelihood: null, impact: null, velocity: null },
+        residual: { likelihood: null, impact: null, velocity: null },
+        controls: {} as Record<string, { design: string | null; operating: string | null; testing: string | null }>,
+        hasAnyInherent: false,
+        hasAnyResidual: false,
+        hasAnyControls: false,
+      };
+    }
+
+    const riskData = checkedRiskIds.map(id => mockRiskReferenceData[id]).filter(Boolean);
+    
+    const inherentLikelihood = findCommonValue(riskData.map(d => d?.inherent?.likelihood));
+    const inherentImpact = findCommonValue(riskData.map(d => d?.inherent?.impact));
+    const inherentVelocity = findCommonValue(riskData.map(d => d?.inherent?.velocity));
+    
+    const residualLikelihood = findCommonValue(riskData.map(d => d?.residual?.likelihood));
+    const residualImpact = findCommonValue(riskData.map(d => d?.residual?.impact));
+    const residualVelocity = findCommonValue(riskData.map(d => d?.residual?.velocity));
+
+    const controlCommon: Record<string, { design: string | null; operating: string | null; testing: string | null }> = {};
+    mockControls.forEach(control => {
+      controlCommon[control.id] = {
+        design: findCommonValue(riskData.map(d => d?.controls?.[control.id]?.design)),
+        operating: findCommonValue(riskData.map(d => d?.controls?.[control.id]?.operating)),
+        testing: findCommonValue(riskData.map(d => d?.controls?.[control.id]?.testing)),
+      };
+    });
+
+    const hasAnyInherent = inherentLikelihood !== null || inherentImpact !== null || inherentVelocity !== null;
+    const hasAnyResidual = residualLikelihood !== null || residualImpact !== null || residualVelocity !== null;
+    const hasAnyControls = Object.values(controlCommon).some(c => c.design !== null || c.operating !== null || c.testing !== null);
+
+    return {
+      inherent: { likelihood: inherentLikelihood, impact: inherentImpact, velocity: inherentVelocity },
+      residual: { likelihood: residualLikelihood, impact: residualImpact, velocity: residualVelocity },
+      controls: controlCommon,
+      hasAnyInherent,
+      hasAnyResidual,
+      hasAnyControls,
+    };
+  }, [checkedRisks]);
 
   // Highlight matching text
   const highlightMatch = (text: string, query: string) => {
@@ -357,82 +460,120 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                     </Badge>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border bg-muted/30">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Factor</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Description</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">
-                            Rating (Bulk) <span className="text-destructive">*</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border-b border-border/50 hover:bg-muted/20">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                              <span className="font-medium">Likelihood</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-muted-foreground">Probability of risk event occurring</td>
-                          <td className="py-4 px-4">
-                            <Select value={inherentLikelihood} onValueChange={setInherentLikelihood}>
-                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-popover border border-border z-50">
-                                {ratingOptions.map(opt => (
-                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                        </tr>
-                        <tr className="border-b border-border/50 hover:bg-muted/20">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                              <span className="font-medium">Impact</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-muted-foreground">Potential impact on business operations</td>
-                          <td className="py-4 px-4">
-                            <Select value={inherentImpact} onValueChange={setInherentImpact}>
-                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-popover border border-border z-50">
-                                {ratingOptions.map(opt => (
-                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-muted/20">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-red-500"></span>
-                              <span className="font-medium">Velocity</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-muted-foreground">Speed at which risk can materialize</td>
-                          <td className="py-4 px-4">
-                            <Select value={inherentVelocity} onValueChange={setInherentVelocity}>
-                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-popover border border-border z-50">
-                                {ratingOptions.map(opt => (
-                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    {!commonReferenceValues.hasAnyInherent && checkedRisks.size > 0 ? (
+                      <div className="py-8 px-4 text-center">
+                        <Info className="w-6 h-6 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">
+                          No shared reference details are available for the current selection.
+                        </p>
+                      </div>
+                    ) : checkedRisks.size === 0 ? (
+                      <div className="py-8 px-4 text-center">
+                        <Info className="w-6 h-6 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">
+                          Select at least one risk to view reference details.
+                        </p>
+                      </div>
+                    ) : (
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/30">
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Factor</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Description</th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Common Value</th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">
+                              Rating (Bulk) <span className="text-destructive">*</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-border/50 hover:bg-muted/20">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                <span className="font-medium">Likelihood</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-muted-foreground">Probability of risk event occurring</td>
+                            <td className="py-4 px-4 text-center">
+                              {commonReferenceValues.inherent.likelihood ? (
+                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.inherent.likelihood)?.label || commonReferenceValues.inherent.likelihood}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Varies</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <Select value={inherentLikelihood} onValueChange={setInherentLikelihood}>
+                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {ratingOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-border/50 hover:bg-muted/20">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                <span className="font-medium">Impact</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-muted-foreground">Potential impact on business operations</td>
+                            <td className="py-4 px-4 text-center">
+                              {commonReferenceValues.inherent.impact ? (
+                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.inherent.impact)?.label || commonReferenceValues.inherent.impact}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Varies</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <Select value={inherentImpact} onValueChange={setInherentImpact}>
+                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {ratingOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-muted/20">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-red-500"></span>
+                                <span className="font-medium">Velocity</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-muted-foreground">Speed at which risk can materialize</td>
+                            <td className="py-4 px-4 text-center">
+                              {commonReferenceValues.inherent.velocity ? (
+                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.inherent.velocity)?.label || commonReferenceValues.inherent.velocity}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Varies</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <Select value={inherentVelocity} onValueChange={setInherentVelocity}>
+                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {ratingOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    )}
                   </div>
                 </section>
 
@@ -450,86 +591,114 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                     </div>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border bg-muted/30">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Control ID</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Control Name</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Control Type</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Owner</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
-                            Design <span className="text-destructive">*</span>
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
-                            Operating <span className="text-destructive">*</span>
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
-                            Testing <span className="text-destructive">*</span>
-                          </th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[80px]">Avg Score</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {mockControls.map((control) => (
-                          <tr key={control.id} className="border-b border-border/50 hover:bg-muted/20">
-                            <td className="py-3 px-4">
-                              <Badge variant="outline" className="font-mono text-xs">{control.id}</Badge>
-                            </td>
-                            <td className="py-3 px-4 font-medium text-sm">{control.name}</td>
-                            <td className="py-3 px-4">{getControlTypeBadge(control.type)}</td>
-                            <td className="py-3 px-4 text-sm text-muted-foreground">{control.owner}</td>
-                            <td className="py-3 px-4">
-                              <Select 
-                                value={controlRatings[control.id]?.design || ""} 
-                                onValueChange={(v) => updateControlRating(control.id, "design", v)}
-                              >
-                                <SelectTrigger className="h-9 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {[1, 2, 3, 4, 5].map(n => (
-                                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                            <td className="py-3 px-4">
-                              <Select 
-                                value={controlRatings[control.id]?.operating || ""} 
-                                onValueChange={(v) => updateControlRating(control.id, "operating", v)}
-                              >
-                                <SelectTrigger className="h-9 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {[1, 2, 3, 4, 5].map(n => (
-                                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                            <td className="py-3 px-4">
-                              <Select 
-                                value={controlRatings[control.id]?.testing || ""} 
-                                onValueChange={(v) => updateControlRating(control.id, "testing", v)}
-                              >
-                                <SelectTrigger className="h-9 bg-muted/50 border-border/50">
-                                  <SelectValue placeholder="" />
-                                </SelectTrigger>
-                                <SelectContent className="bg-popover border border-border z-50">
-                                  {[1, 2, 3, 4, 5].map(n => (
-                                    <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </td>
-                            <td className="py-3 px-4 text-center text-sm font-medium text-muted-foreground">
-                              {calculateAvgScore(control.id)}
-                            </td>
+                    {!commonReferenceValues.hasAnyControls && checkedRisks.size > 0 ? (
+                      <div className="py-8 px-4 text-center">
+                        <Info className="w-6 h-6 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">
+                          No shared reference details are available for the current selection.
+                        </p>
+                      </div>
+                    ) : checkedRisks.size === 0 ? (
+                      <div className="py-8 px-4 text-center">
+                        <Info className="w-6 h-6 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">
+                          Select at least one risk to view reference details.
+                        </p>
+                      </div>
+                    ) : (
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/30">
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Control ID</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">Control Name</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">Type</th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[80px]">Common</th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
+                              Design <span className="text-destructive">*</span>
+                            </th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
+                              Operating <span className="text-destructive">*</span>
+                            </th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[100px]">
+                              Testing <span className="text-destructive">*</span>
+                            </th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[80px]">Avg</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                        </thead>
+                        <tbody>
+                          {mockControls.map((control) => {
+                            const commonCtrl = commonReferenceValues.controls[control.id];
+                            const hasCommon = commonCtrl?.design || commonCtrl?.operating || commonCtrl?.testing;
+                            return (
+                              <tr key={control.id} className="border-b border-border/50 hover:bg-muted/20">
+                                <td className="py-3 px-4">
+                                  <Badge variant="outline" className="font-mono text-xs">{control.id}</Badge>
+                                </td>
+                                <td className="py-3 px-4 font-medium text-sm">{control.name}</td>
+                                <td className="py-3 px-4">{getControlTypeBadge(control.type)}</td>
+                                <td className="py-3 px-4 text-center">
+                                  {hasCommon ? (
+                                    <span className="text-xs text-muted-foreground">
+                                      {commonCtrl?.design || "-"}/{commonCtrl?.operating || "-"}/{commonCtrl?.testing || "-"}
+                                    </span>
+                                  ) : (
+                                    <span className="text-xs text-muted-foreground italic">Varies</span>
+                                  )}
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Select 
+                                    value={controlRatings[control.id]?.design || ""} 
+                                    onValueChange={(v) => updateControlRating(control.id, "design", v)}
+                                  >
+                                    <SelectTrigger className="h-9 bg-muted/50 border-border/50">
+                                      <SelectValue placeholder="" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-popover border border-border z-50">
+                                      {[1, 2, 3, 4, 5].map(n => (
+                                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Select 
+                                    value={controlRatings[control.id]?.operating || ""} 
+                                    onValueChange={(v) => updateControlRating(control.id, "operating", v)}
+                                  >
+                                    <SelectTrigger className="h-9 bg-muted/50 border-border/50">
+                                      <SelectValue placeholder="" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-popover border border-border z-50">
+                                      {[1, 2, 3, 4, 5].map(n => (
+                                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </td>
+                                <td className="py-3 px-4">
+                                  <Select 
+                                    value={controlRatings[control.id]?.testing || ""} 
+                                    onValueChange={(v) => updateControlRating(control.id, "testing", v)}
+                                  >
+                                    <SelectTrigger className="h-9 bg-muted/50 border-border/50">
+                                      <SelectValue placeholder="" />
+                                    </SelectTrigger>
+                                    <SelectContent className="bg-popover border border-border z-50">
+                                      {[1, 2, 3, 4, 5].map(n => (
+                                        <SelectItem key={n} value={n.toString()}>{n}</SelectItem>
+                                      ))}
+                                    </SelectContent>
+                                  </Select>
+                                </td>
+                                <td className="py-3 px-4 text-center text-sm font-medium text-muted-foreground">
+                                  {calculateAvgScore(control.id)}
+                                </td>
+                              </tr>
+                            );
+                          })}
+                        </tbody>
+                      </table>
+                    )}
                   </div>
                 </section>
 
@@ -544,86 +713,124 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                       <span className="font-medium">Residual Risk Assessment - Rate each factor from 1 (Low) to 5 (Critical) after control mitigation</span>
                     </div>
                     <Badge variant="outline" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
-                      Applies to all {selectedRisks.length} selected risks
+                      Applies to all {checkedRisks.size} selected risks
                     </Badge>
                   </div>
                   <div className="overflow-x-auto">
-                    <table className="w-full">
-                      <thead>
-                        <tr className="border-b border-border bg-muted/30">
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Factor</th>
-                          <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Description</th>
-                          <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">
-                            Rating (Bulk) <span className="text-destructive">*</span>
-                          </th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        <tr className="border-b border-border/50 hover:bg-muted/20">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                              <span className="font-medium">Likelihood</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-muted-foreground">Probability after control mitigation</td>
-                          <td className="py-4 px-4">
-                            <Select value={residualLikelihood} onValueChange={setResidualLikelihood}>
-                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-popover border border-border z-50">
-                                {ratingOptions.map(opt => (
-                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                        </tr>
-                        <tr className="border-b border-border/50 hover:bg-muted/20">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                              <span className="font-medium">Impact</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-muted-foreground">Remaining impact after controls</td>
-                          <td className="py-4 px-4">
-                            <Select value={residualImpact} onValueChange={setResidualImpact}>
-                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-popover border border-border z-50">
-                                {ratingOptions.map(opt => (
-                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                        </tr>
-                        <tr className="hover:bg-muted/20">
-                          <td className="py-4 px-4">
-                            <div className="flex items-center gap-2">
-                              <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                              <span className="font-medium">Velocity</span>
-                            </div>
-                          </td>
-                          <td className="py-4 px-4 text-muted-foreground">Risk velocity after mitigation</td>
-                          <td className="py-4 px-4">
-                            <Select value={residualVelocity} onValueChange={setResidualVelocity}>
-                              <SelectTrigger className="h-10 bg-muted/50 border-border/50">
-                                <SelectValue placeholder="Select" />
-                              </SelectTrigger>
-                              <SelectContent className="bg-popover border border-border z-50">
-                                {ratingOptions.map(opt => (
-                                  <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
+                    {!commonReferenceValues.hasAnyResidual && checkedRisks.size > 0 ? (
+                      <div className="py-8 px-4 text-center">
+                        <Info className="w-6 h-6 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">
+                          No shared reference details are available for the current selection.
+                        </p>
+                      </div>
+                    ) : checkedRisks.size === 0 ? (
+                      <div className="py-8 px-4 text-center">
+                        <Info className="w-6 h-6 mx-auto mb-2 text-muted-foreground/60" />
+                        <p className="text-sm text-muted-foreground">
+                          Select at least one risk to view reference details.
+                        </p>
+                      </div>
+                    ) : (
+                      <table className="w-full">
+                        <thead>
+                          <tr className="border-b border-border bg-muted/30">
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground w-[200px]">Factor</th>
+                            <th className="text-left py-3 px-4 text-sm font-medium text-muted-foreground">Description</th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[120px]">Common Value</th>
+                            <th className="text-center py-3 px-4 text-sm font-medium text-muted-foreground w-[180px]">
+                              Rating (Bulk) <span className="text-destructive">*</span>
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <tr className="border-b border-border/50 hover:bg-muted/20">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span className="font-medium">Likelihood</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-muted-foreground">Probability after control mitigation</td>
+                            <td className="py-4 px-4 text-center">
+                              {commonReferenceValues.residual.likelihood ? (
+                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.residual.likelihood)?.label || commonReferenceValues.residual.likelihood}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Varies</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <Select value={residualLikelihood} onValueChange={setResidualLikelihood}>
+                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {ratingOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                          </tr>
+                          <tr className="border-b border-border/50 hover:bg-muted/20">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span className="font-medium">Impact</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-muted-foreground">Remaining impact after controls</td>
+                            <td className="py-4 px-4 text-center">
+                              {commonReferenceValues.residual.impact ? (
+                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.residual.impact)?.label || commonReferenceValues.residual.impact}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Varies</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <Select value={residualImpact} onValueChange={setResidualImpact}>
+                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {ratingOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                          </tr>
+                          <tr className="hover:bg-muted/20">
+                            <td className="py-4 px-4">
+                              <div className="flex items-center gap-2">
+                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                <span className="font-medium">Velocity</span>
+                              </div>
+                            </td>
+                            <td className="py-4 px-4 text-muted-foreground">Risk velocity after mitigation</td>
+                            <td className="py-4 px-4 text-center">
+                              {commonReferenceValues.residual.velocity ? (
+                                <Badge variant="outline" className="text-xs">{ratingOptions.find(o => o.value === commonReferenceValues.residual.velocity)?.label || commonReferenceValues.residual.velocity}</Badge>
+                              ) : (
+                                <span className="text-xs text-muted-foreground italic">Varies</span>
+                              )}
+                            </td>
+                            <td className="py-4 px-4">
+                              <Select value={residualVelocity} onValueChange={setResidualVelocity}>
+                                <SelectTrigger className="h-10 bg-muted/50 border-border/50">
+                                  <SelectValue placeholder="Select" />
+                                </SelectTrigger>
+                                <SelectContent className="bg-popover border border-border z-50">
+                                  {ratingOptions.map(opt => (
+                                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                                  ))}
+                                </SelectContent>
+                              </Select>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    )}
                   </div>
                 </section>
               </div>
