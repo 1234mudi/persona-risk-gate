@@ -672,11 +672,8 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                         1
                       </div>
                       <AlertTriangle className="w-5 h-5 text-orange-500" />
-                      <span className="font-medium">Inherent Risk Assessment - Rate each factor from 1 (Low) to 5 (Critical)</span>
+                      <span className="font-medium">Inherent Risk Assessment</span>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
-                      Applies to all {selectedRisks.length} selected risks
-                    </Badge>
                   </div>
                   <div className="overflow-x-auto">
                     {!commonReferenceValues.hasAnyInherent && checkedRisks.size > 0 ? (
@@ -757,7 +754,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                       <div className="w-5 h-5 rounded-full border-2 border-green-500 flex items-center justify-center">
                         <div className="w-2 h-2 rounded-full bg-green-500"></div>
                       </div>
-                      <span className="font-medium">Control Effectiveness Assessment - Evaluate design, operating effectiveness, and testing results</span>
+                      <span className="font-medium">Control Effectiveness Assessment</span>
                     </div>
                   </div>
                   <div className="overflow-x-auto">
@@ -848,11 +845,8 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                         3
                       </div>
                       <CheckCircle className="w-5 h-5 text-green-500" />
-                      <span className="font-medium">Residual Risk Assessment - Rate each factor from 1 (Low) to 5 (Critical) after control mitigation</span>
+                      <span className="font-medium">Residual Risk Assessment</span>
                     </div>
-                    <Badge variant="outline" className="bg-green-50 dark:bg-green-950/30 text-green-700 dark:text-green-400 border-green-200 dark:border-green-800 text-xs">
-                      Applies to all {checkedRisks.size} selected risks
-                    </Badge>
                   </div>
                   <div className="overflow-x-auto">
                     {!commonReferenceValues.hasAnyResidual && checkedRisks.size > 0 ? (
