@@ -51,7 +51,98 @@ const mockRiskReferenceData: Record<string, {
   residual: { likelihood: string; impact: string; velocity: string };
   controls: Record<string, { design: string; operating: string; testing: string }>;
 }> = {
-  "RSK-001": {
+  "R-001": {
+    inherent: { likelihood: "3", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "3", testing: "4" },
+      "CTRL-002": { design: "3", operating: "4", testing: "3" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "R-001-A": {
+    inherent: { likelihood: "4", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "3", testing: "4" },
+      "CTRL-002": { design: "4", operating: "4", testing: "3" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "R-001-A-1": {
+    inherent: { likelihood: "3", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "3", testing: "4" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "4", operating: "3", testing: "3" },
+      "CTRL-004": { design: "4", operating: "4", testing: "4" },
+    }
+  },
+  "R-002": {
+    inherent: { likelihood: "4", impact: "4", velocity: "3" },
+    residual: { likelihood: "3", impact: "2", velocity: "2" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "4", testing: "4" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "4", operating: "4", testing: "3" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "R-002-A": {
+    inherent: { likelihood: "4", impact: "4", velocity: "3" },
+    residual: { likelihood: "3", impact: "2", velocity: "2" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "4", testing: "4" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "4", operating: "4", testing: "3" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "R-003": {
+    inherent: { likelihood: "3", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "3", operating: "3", testing: "3" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "4", operating: "3", testing: "3" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "R-003-A": {
+    inherent: { likelihood: "3", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "3", operating: "3", testing: "3" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "4", operating: "3", testing: "3" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  "R-004": {
+    inherent: { likelihood: "5", impact: "4", velocity: "3" },
+    residual: { likelihood: "3", impact: "3", velocity: "2" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "4", testing: "4" },
+      "CTRL-002": { design: "4", operating: "4", testing: "4" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "4", operating: "4", testing: "4" },
+    }
+  },
+  "R-005": {
+    inherent: { likelihood: "3", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "3", operating: "3", testing: "3" },
+      "CTRL-002": { design: "3", operating: "3", testing: "3" },
+      "CTRL-003": { design: "3", operating: "3", testing: "3" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  // 1st Line risks
+  "R-1L-001": {
     inherent: { likelihood: "4", impact: "3", velocity: "2" },
     residual: { likelihood: "2", impact: "2", velocity: "1" },
     controls: {
@@ -61,33 +152,54 @@ const mockRiskReferenceData: Record<string, {
       "CTRL-004": { design: "3", operating: "3", testing: "3" },
     }
   },
-  "RSK-002": {
+  "R-1L-001-A": {
     inherent: { likelihood: "4", impact: "3", velocity: "2" },
-    residual: { likelihood: "2", impact: "3", velocity: "1" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
     controls: {
       "CTRL-001": { design: "4", operating: "3", testing: "4" },
-      "CTRL-002": { design: "4", operating: "4", testing: "3" },
+      "CTRL-002": { design: "3", operating: "4", testing: "3" },
       "CTRL-003": { design: "5", operating: "4", testing: "4" },
       "CTRL-004": { design: "3", operating: "3", testing: "3" },
     }
   },
-  "RSK-003": {
+  "R-1L-002": {
     inherent: { likelihood: "3", impact: "4", velocity: "3" },
-    residual: { likelihood: "2", impact: "2", velocity: "2" },
+    residual: { likelihood: "2", impact: "3", velocity: "2" },
+    controls: {
+      "CTRL-001": { design: "3", operating: "3", testing: "3" },
+      "CTRL-002": { design: "4", operating: "4", testing: "4" },
+      "CTRL-003": { design: "4", operating: "4", testing: "4" },
+      "CTRL-004": { design: "3", operating: "3", testing: "3" },
+    }
+  },
+  // Risk Owner risks
+  "R-RO-001": {
+    inherent: { likelihood: "4", impact: "4", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "4", testing: "4" },
+      "CTRL-002": { design: "4", operating: "4", testing: "4" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "4", operating: "4", testing: "4" },
+    }
+  },
+  "R-RO-001-A": {
+    inherent: { likelihood: "4", impact: "4", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
+    controls: {
+      "CTRL-001": { design: "4", operating: "4", testing: "4" },
+      "CTRL-002": { design: "4", operating: "4", testing: "4" },
+      "CTRL-003": { design: "5", operating: "4", testing: "4" },
+      "CTRL-004": { design: "4", operating: "4", testing: "4" },
+    }
+  },
+  "R-RO-002": {
+    inherent: { likelihood: "3", impact: "3", velocity: "2" },
+    residual: { likelihood: "2", impact: "2", velocity: "1" },
     controls: {
       "CTRL-001": { design: "3", operating: "3", testing: "3" },
       "CTRL-002": { design: "3", operating: "3", testing: "3" },
       "CTRL-003": { design: "4", operating: "3", testing: "3" },
-      "CTRL-004": { design: "4", operating: "4", testing: "4" },
-    }
-  },
-  "RSK-004": {
-    inherent: { likelihood: "5", impact: "4", velocity: "3" },
-    residual: { likelihood: "3", impact: "2", velocity: "2" },
-    controls: {
-      "CTRL-001": { design: "4", operating: "4", testing: "4" },
-      "CTRL-002": { design: "3", operating: "3", testing: "3" },
-      "CTRL-003": { design: "4", operating: "4", testing: "3" },
       "CTRL-004": { design: "3", operating: "3", testing: "3" },
     }
   },
