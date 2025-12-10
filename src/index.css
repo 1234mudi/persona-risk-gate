@@ -99,8 +99,8 @@ All colors MUST be HSL.
     --destructive: 0 72% 51%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 215 20% 20%;
-    --input: 215 20% 20%;
+    --border: 215 20% 32%;
+    --input: 215 20% 32%;
     --ring: 215 70% 55%;
     
     --first-line: 200 75% 50%;
@@ -290,8 +290,8 @@ All colors MUST be HSL.
     --destructive: 15 100% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 220 15% 22%;
-    --input: 220 15% 22%;
+    --border: 220 15% 35%;
+    --input: 220 15% 35%;
     --ring: 210 100% 60%;
 
     --first-line: 210 100% 60%;
