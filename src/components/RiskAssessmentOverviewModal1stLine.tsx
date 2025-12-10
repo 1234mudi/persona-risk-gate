@@ -248,6 +248,42 @@ const AssessmentCard = ({
                   {primaryCta.icon}
                   <span className="ml-1">{primaryCta.label}</span>
                 </Button>
+                
+                {/* Assess with AI Button */}
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm"
+                        variant="outline"
+                        className="text-[11px] h-7 px-2.5 bg-primary/5 hover:bg-primary/10 border-primary/30"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onAIAssess();
+                        }}
+                        disabled={isAIAssessing}
+                      >
+                        {isAIAssessing ? (
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        ) : (
+                          <Sparkles className="w-3.5 h-3.5 text-primary" />
+                        )}
+                        <span className="ml-1">
+                          {isAIAssessing ? "Assessing..." : "Assess with AI"}
+                        </span>
+                        {hasManualEdits && !isAIAssessing && (
+                          <AlertCircle className="w-3 h-3 text-amber-500 ml-1" />
+                        )}
+                      </Button>
+                    </TooltipTrigger>
+                    {hasManualEdits && (
+                      <TooltipContent>
+                        <p className="text-xs">Manual edits exist - AI may override</p>
+                      </TooltipContent>
+                    )}
+                  </Tooltip>
+                </TooltipProvider>
+                
                 <Button 
                   size="sm"
                   variant="outline"
