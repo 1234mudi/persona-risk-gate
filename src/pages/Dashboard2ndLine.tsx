@@ -516,33 +516,35 @@ const Dashboard2ndLine = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {/* Quick Links Card */}
           <Card className="lg:col-span-2 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card sm:col-span-1">
-            <CardHeader className="pb-2 px-3 sm:px-6">
+            <CardHeader className="pb-1 pt-3 px-4">
               <CardTitle className="text-base sm:text-lg font-semibold flex items-center gap-2">
                 <Link className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
                 Quick Links
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2 px-3 sm:px-6">
-              <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[36px] touch-manipulation">
-                <ClipboardCheck className="w-4 h-4 flex-shrink-0" />
-                <span>View Risks to be Assessed</span>
-              </button>
-              <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[36px] touch-manipulation">
-                <CheckCircle className="w-4 h-4 flex-shrink-0" />
-                <span>View Risks to be Approved</span>
-              </button>
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[36px] touch-manipulation">
-                <AlertTriangle className="w-4 h-4 flex-shrink-0" />
-                <span>View Open Challenges</span>
-              </a>
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[36px] touch-manipulation">
-                <CheckSquare className="w-4 h-4 flex-shrink-0" />
-                <span>View Completed Challenges</span>
-              </a>
-              <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[36px] touch-manipulation">
-                <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                <span>View Open Risk Events</span>
-              </a>
+            <CardContent className="px-4 pb-3">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-1">
+                <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[28px] touch-manipulation">
+                  <ClipboardCheck className="w-4 h-4 flex-shrink-0" />
+                  <span>View Risks to be Assessed</span>
+                </button>
+                <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[28px] touch-manipulation">
+                  <CheckCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>View Risks to be Approved</span>
+                </button>
+                <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[28px] touch-manipulation">
+                  <AlertTriangle className="w-4 h-4 flex-shrink-0" />
+                  <span>View Open Challenges</span>
+                </a>
+                <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[28px] touch-manipulation">
+                  <CheckSquare className="w-4 h-4 flex-shrink-0" />
+                  <span>View Completed Challenges</span>
+                </a>
+                <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[28px] touch-manipulation">
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  <span>View Open Risk Events</span>
+                </a>
+              </div>
             </CardContent>
           </Card>
 
