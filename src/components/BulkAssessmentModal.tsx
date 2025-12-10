@@ -665,7 +665,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
             <ScrollArea className="flex-1">
               <div className="p-6 space-y-6">
                 {/* Section 1: Inherent Risk Assessment */}
-                <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+                <section className="rounded-xl border border-border border-l-4 border-l-orange-500 bg-card overflow-hidden shadow-sm">
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-orange-50 to-orange-100/50 dark:from-orange-950/20 dark:to-orange-900/10 border-b border-border">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center text-white font-semibold text-sm shadow">
@@ -745,7 +745,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                 </section>
 
                 {/* Section 2: Control Effectiveness Assessment */}
-                <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+                <section className="rounded-xl border border-border border-l-4 border-l-blue-500 bg-card overflow-hidden shadow-sm">
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-blue-50 to-cyan-50/50 dark:from-blue-950/20 dark:to-cyan-900/10 border-b border-border">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-semibold text-sm shadow">
@@ -838,7 +838,7 @@ export const BulkAssessmentModal = ({ open, onOpenChange, selectedRisks, onCompl
                 </section>
 
                 {/* Section 3: Residual Risk Assessment */}
-                <section className="rounded-xl border border-border bg-card overflow-hidden shadow-sm">
+                <section className="rounded-xl border border-border border-l-4 border-l-emerald-500 bg-card overflow-hidden shadow-sm">
                   <div className="flex items-center justify-between p-4 bg-gradient-to-r from-green-50 to-emerald-50/50 dark:from-green-950/20 dark:to-emerald-900/10 border-b border-border">
                     <div className="flex items-center gap-3">
                       <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-emerald-500 flex items-center justify-center text-white font-semibold text-sm shadow">
