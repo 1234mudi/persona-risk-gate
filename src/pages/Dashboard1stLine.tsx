@@ -2,6 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload } from "lucide-react";
+import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
 import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
@@ -961,10 +962,13 @@ const Dashboard1stLine = () => {
                   <Sparkles className="w-4 h-4" />
                   Assess Documents with AI
                 </button>
-                <a href="/downloads/risk-events-final.docx" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
+                <button 
+                  onClick={downloadRiskDocx} 
+                  className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]"
+                >
                   <FileText className="w-4 h-4" />
                   Download Risk Events (Word)
-                </a>
+                </button>
                 <a href="/downloads/risk-events-final.csv" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
                   <FileText className="w-4 h-4" />
                   Download Risk Events (CSV)
