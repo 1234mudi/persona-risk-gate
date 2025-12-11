@@ -336,10 +336,10 @@ export function AIDocumentAssessmentModal({
       let dataStartIndex = lastHeaderIndex + 1;
       
       if (dataStartIndex <= 0) {
-        console.log("Could not find headers, trying to find R-001 pattern");
-        // Fallback: find first R-XXX pattern
+        console.log("Could not find headers, trying to find R-XX or Event pattern");
+        // Fallback: find first R-XX, R-XXX, Event, or number pattern
         for (let i = 0; i < lines.length; i++) {
-          if (/^R-\d{3}$/.test(lines[i])) {
+          if (/^(R-\d{2,3}|Event\s*\d+|\d{1,3})$/i.test(lines[i])) {
             dataStartIndex = i;
             break;
           }
@@ -357,18 +357,26 @@ export function AIDocumentAssessmentModal({
       const numFields = headerMap.length > 0 ? headerMap.length : 19;
       console.log("Expected fields per record:", numFields);
       
-      // Group lines into records - each record starts with R-XXX pattern
-      const riskIdPattern = /^R-\d{3}$/;
+      // Group lines into records - accept R-XX, R-XXX, Event numbers, or just numbers
+      const riskIdPattern = /^(R-\d{2,3}|Event\s*\d+|\d{1,3})$/i;
       let currentRecord: string[] = [];
+      let eventCounter = 1;
       
       for (let i = dataStartIndex; i < lines.length; i++) {
         const line = lines[i];
         
-        // If we hit a new Risk ID and we have a current record, save it
+        // If we hit a new Risk ID/Event and we have a current record, save it
         if (riskIdPattern.test(line) && currentRecord.length > 0) {
           // Process the completed record
           const risk = parseRecordToRisk(currentRecord, headerMap);
-          if (risk) risks.push(risk);
+          if (risk) {
+            // Generate unique ID if duplicate or generic
+            if (!risk.id || risk.id === 'R-00' || risks.some(r => r.id === risk.id)) {
+              risk.id = `EVENT-${String(eventCounter).padStart(3, '0')}`;
+            }
+            risks.push(risk);
+            eventCounter++;
+          }
           currentRecord = [line];
         } else {
           currentRecord.push(line);
@@ -378,10 +386,16 @@ export function AIDocumentAssessmentModal({
       // Don't forget the last record
       if (currentRecord.length > 0) {
         const risk = parseRecordToRisk(currentRecord, headerMap);
-        if (risk) risks.push(risk);
+        if (risk) {
+          if (!risk.id || risk.id === 'R-00' || risks.some(r => r.id === risk.id)) {
+            risk.id = `EVENT-${String(eventCounter).padStart(3, '0')}`;
+          }
+          risks.push(risk);
+        }
       }
       
       console.log("Total DOCX risks parsed:", risks.length);
+      console.log("Sample parsed risks:", risks.slice(0, 5).map(r => ({ id: r.id, title: r.title })));
       return risks;
     } catch (error) {
       console.error("Error parsing DOCX:", error);
