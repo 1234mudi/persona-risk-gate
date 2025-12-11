@@ -1006,13 +1006,20 @@ const Dashboard1stLine = () => {
                   <AlertCircle className="w-4 h-4" />
                   View My Action Plans
                 </a>
-                <button 
-                  onClick={() => setAiDocumentModalOpen(true)} 
-                  className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]"
-                >
-                  <Sparkles className="w-4 h-4" />
-                  Assess Documents with AI
-                </button>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <button 
+                      onClick={() => setAiDocumentModalOpen(true)} 
+                      className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]"
+                    >
+                      <Sparkles className="w-4 h-4" />
+                      Assess Documents with AI
+                    </button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Upload CSV/DOCX files to automatically create risk assessments using AI analysis</p>
+                  </TooltipContent>
+                </Tooltip>
                 <button 
                   onClick={downloadRiskDocx} 
                   className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]"
