@@ -225,6 +225,10 @@ const Dashboard1stLine = () => {
     const level1Risks = filtered.filter(r => r.riskLevel === "Level 1");
     const level2Risks = filtered.filter(r => r.riskLevel === "Level 2");
     const level3Risks = filtered.filter(r => r.riskLevel === "Level 3");
+    // Catch any risks that don't match Level 1/2/3 exactly
+    const otherRisks = filtered.filter(r => 
+      r.riskLevel !== "Level 1" && r.riskLevel !== "Level 2" && r.riskLevel !== "Level 3"
+    );
     
     // Track which Level 2/3 risks are shown in hierarchy
     const shownInHierarchy = new Set<string>();
@@ -255,6 +259,11 @@ const Dashboard1stLine = () => {
       if (!shownInHierarchy.has(r.id) && !r.parentRisk) {
         visible.push(r);
       }
+    });
+    
+    // Add any other risks that don't fit the Level 1/2/3 hierarchy
+    otherRisks.forEach(r => {
+      visible.push(r);
     });
     
     return visible;
