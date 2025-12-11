@@ -210,9 +210,20 @@ const Dashboard1stLine = () => {
   const visibleRisks = useMemo(() => {
     let filtered = getFilteredByTab(riskData, activeTab);
     
-    // Apply org level filter
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(risk => 
+        risk.title.toLowerCase().includes(query)
+      );
+    }
+    
+    // Apply org level filter - but don't filter out risks with empty orgLevel
     if (orgLevelFilter !== "all") {
       filtered = filtered.filter(risk => {
+        // If risk has no orgLevel data (imported), show it in "all" mode only
+        const hasOrgLevel = risk.orgLevel.level1 || risk.orgLevel.level2 || risk.orgLevel.level3;
+        if (!hasOrgLevel) return false; // Hide when filtering by specific level
         if (orgLevelFilter === "level1") return risk.orgLevel.level1 !== "";
         if (orgLevelFilter === "level2") return risk.orgLevel.level2 !== "";
         if (orgLevelFilter === "level3") return risk.orgLevel.level3 !== "";
@@ -220,9 +231,14 @@ const Dashboard1stLine = () => {
       });
     }
     
+    // Apply assessor filter (only on assess tab)
+    if (activeTab === "assess" && assessorFilter !== "all") {
+      filtered = filtered.filter(risk => risk.assessors.includes(assessorFilter));
+    }
+    
     // Show all risks flat - Level 1, Level 2, Level 3, and any other
     return filtered;
-  }, [riskData, activeTab, orgLevelFilter]);
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter, searchQuery]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
