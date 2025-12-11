@@ -983,7 +983,7 @@ const Dashboard1stLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
         {/* Scorecards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
           {/* Quick Links Card */}
           <Card className="lg:col-span-1 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-card dark:to-card">
             <CardHeader className="pb-1 pt-3 px-4">
