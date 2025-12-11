@@ -1006,20 +1006,22 @@ const Dashboard1stLine = () => {
                   <AlertCircle className="w-4 h-4" />
                   View My Action Plans
                 </a>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button 
-                      onClick={() => setAiDocumentModalOpen(true)} 
-                      className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]"
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      Assess Documents with AI
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Upload CSV/DOCX files to automatically create risk assessments using AI analysis</p>
-                  </TooltipContent>
-                </Tooltip>
+                <TooltipProvider>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button 
+                        onClick={() => setAiDocumentModalOpen(true)} 
+                        className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px] cursor-help"
+                      >
+                        <Sparkles className="w-4 h-4" />
+                        Assess Documents with AI
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>Upload CSV/DOCX files to automatically create risk assessments using AI analysis</p>
+                    </TooltipContent>
+                  </Tooltip>
+                </TooltipProvider>
                 <button 
                   onClick={downloadRiskDocx} 
                   className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]"
@@ -1247,7 +1249,7 @@ const Dashboard1stLine = () => {
                     <TooltipTrigger asChild>
                       <Button 
                         size="sm" 
-                        className="h-7 bg-gradient-to-r from-first-line to-emerald-600 hover:from-first-line/90 hover:to-emerald-600/90 text-white"
+                        className="h-7 bg-gradient-to-r from-first-line to-emerald-600 hover:from-first-line/90 hover:to-emerald-600/90 text-white cursor-help"
                         onClick={() => setAiDocumentModalOpen(true)}
                       >
                         <Sparkles className="h-3.5 w-3.5 mr-1" />
