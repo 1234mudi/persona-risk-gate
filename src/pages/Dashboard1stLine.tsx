@@ -249,15 +249,24 @@ const Dashboard1stLine = () => {
       }
     });
     
-    // Add standalone Level 2/3 risks (imported or without parent)
+    // Add standalone Level 2/3 risks (imported, without parent, or parent doesn't exist)
+    const level1Titles = new Set(level1Risks.map(r => r.title));
+    const level2Titles = new Set(level2Risks.map(r => r.title));
+    
     level2Risks.forEach(r => {
-      if (!shownInHierarchy.has(r.id) && !r.parentRisk) {
-        visible.push(r);
+      if (!shownInHierarchy.has(r.id)) {
+        // Show if no parent, or parent doesn't exist in current dataset
+        if (!r.parentRisk || !level1Titles.has(r.parentRisk)) {
+          visible.push(r);
+        }
       }
     });
     level3Risks.forEach(r => {
-      if (!shownInHierarchy.has(r.id) && !r.parentRisk) {
-        visible.push(r);
+      if (!shownInHierarchy.has(r.id)) {
+        // Show if no parent, or parent doesn't exist in current dataset
+        if (!r.parentRisk || (!level1Titles.has(r.parentRisk) && !level2Titles.has(r.parentRisk))) {
+          visible.push(r);
+        }
       }
     });
     
