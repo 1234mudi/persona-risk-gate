@@ -1450,7 +1450,10 @@ const Dashboard1stLine = () => {
                           )}
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-start gap-2">
+                          <div className={`flex items-start gap-2 ${
+                            risk.riskLevel === "Level 2" ? "pl-6" : 
+                            risk.riskLevel === "Level 3" ? "pl-12" : ""
+                          }`}>
                             {isLevel1 && canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
@@ -1464,24 +1467,35 @@ const Dashboard1stLine = () => {
                               </button>
                             )}
                             {isLevel1 && !canExpand && <div className="w-6" />}
-                            {isLevel3 && <div className="w-6 ml-4" />}
                             
                             <div className="flex flex-col gap-2">
-                              {/* Level 1 Title */}
+                              {/* Risk Title with hierarchy indicator */}
                               <div className="flex flex-col gap-1">
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <button 
-                                      onClick={() => handleRiskNameClick(risk)}
-                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                                    >
-                                      {risk.title}
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Click to open the risk assessment overview</p>
-                                  </TooltipContent>
-                                </Tooltip>
+                                <div className="flex items-center gap-2">
+                                  {risk.riskLevel === "Level 2" && (
+                                    <span className="text-purple-500 dark:text-purple-400">└</span>
+                                  )}
+                                  {risk.riskLevel === "Level 3" && (
+                                    <span className="text-orange-500 dark:text-orange-400">└</span>
+                                  )}
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button 
+                                        onClick={() => handleRiskNameClick(risk)}
+                                        className={`text-left hover:text-primary transition-colors font-medium hover:underline cursor-pointer ${
+                                          risk.riskLevel === "Level 1" ? "text-blue-600 dark:text-blue-400" :
+                                          risk.riskLevel === "Level 2" ? "text-purple-600 dark:text-purple-400 text-sm" :
+                                          "text-orange-600 dark:text-orange-400 text-sm"
+                                        }`}
+                                      >
+                                        {risk.title}
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Click to open the risk assessment overview</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </div>
                                 <span className="text-xs text-muted-foreground">{risk.owner}</span>
                               </div>
                               
