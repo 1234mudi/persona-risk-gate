@@ -97,6 +97,7 @@ const Dashboard1stLine = () => {
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [assessorFilter, setAssessorFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
+  const [searchQuery, setSearchQuery] = useState<string>("");
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
@@ -774,6 +775,14 @@ const Dashboard1stLine = () => {
   const filteredRiskData = useMemo(() => {
     let filtered = getFilteredByTab(riskData, activeTab);
     
+    // Apply search filter
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase().trim();
+      filtered = filtered.filter(risk => 
+        risk.title.toLowerCase().includes(query)
+      );
+    }
+    
     // Apply org level filter
     if (orgLevelFilter !== "all") {
       filtered = filtered.filter(risk => {
@@ -790,7 +799,7 @@ const Dashboard1stLine = () => {
     }
     
     return filtered;
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter]);
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter, searchQuery]);
 
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
@@ -1257,7 +1266,12 @@ const Dashboard1stLine = () => {
 
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <div className="relative flex-1 min-w-[200px]">
-                <Input placeholder="Search risks..." className="pl-10 h-8" />
+                <Input 
+                  placeholder="Search risks by title..." 
+                  className="pl-10 h-8" 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
                 <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
 
