@@ -682,306 +682,299 @@ export function AIDocumentAssessmentModal({
                     </Badge>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
-                    <div className="w-2 h-2 bg-amber-500 rounded-full animate-pulse" />
-                    <span>Changed field (hover for details)</span>
-                  </div>
-                  <Badge variant="outline">
-                    Click row to expand all fields
-                  </Badge>
-                </div>
+                <Badge variant="outline">
+                  Click row to expand and edit
+                </Badge>
               </div>
 
-              {/* Editable Table */}
-              <div className="border rounded-lg overflow-hidden">
-                <ScrollArea className="h-[400px]">
-                <Table>
-                  <TableHeader className="sticky top-0 bg-background z-10">
-                    <TableRow>
-                      <TableHead className="w-[70px]">Status</TableHead>
-                      <TableHead className="w-[90px] whitespace-nowrap">Risk ID</TableHead>
-                      <TableHead className="min-w-[280px]">Title</TableHead>
-                      <TableHead className="w-[140px]">Business Unit</TableHead>
-                      <TableHead className="w-[120px]">Category</TableHead>
-                      <TableHead className="w-[120px]">Owner</TableHead>
-                      <TableHead className="w-[110px]">Inherent Risk</TableHead>
-                      <TableHead className="w-[110px]">Residual Risk</TableHead>
-                      <TableHead className="w-[130px]">Status</TableHead>
-                      <TableHead className="w-[50px]"></TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {parsedRisks.map((risk, index) => {
-                      const riskStatus = getRiskStatus(risk);
-                      const isExpanded = expandedIndex === index;
-                      
-                      return (
-                        <>
-                          <TableRow 
-                            key={index}
-                            className={`cursor-pointer
-                              ${riskStatus === "new" ? "bg-green-500/5 hover:bg-green-500/10" : ""}
-                              ${riskStatus === "modified" ? "bg-blue-500/5 hover:bg-blue-500/10" : ""}
-                              ${isExpanded ? "border-b-0" : ""}
-                            `}
-                            onClick={() => setExpandedIndex(isExpanded ? null : index)}
+              {/* Clean List View */}
+              <ScrollArea className="flex-1 border rounded-lg">
+                <div className="divide-y">
+                  {parsedRisks.map((risk, index) => {
+                    const riskStatus = getRiskStatus(risk);
+                    const isExpanded = expandedIndex === index;
+                    
+                    return (
+                      <div key={index}>
+                        {/* Collapsed Row - Clean Summary */}
+                        <div 
+                          className={`flex items-center gap-4 p-4 cursor-pointer transition-colors
+                            ${riskStatus === "new" ? "bg-green-500/5 hover:bg-green-500/10" : ""}
+                            ${riskStatus === "modified" ? "bg-blue-500/5 hover:bg-blue-500/10" : ""}
+                            ${riskStatus === "unchanged" ? "hover:bg-muted/50" : ""}
+                            ${isExpanded ? "bg-muted/30" : ""}
+                          `}
+                          onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                        >
+                          {/* Data Type Badge */}
+                          <div className="w-24 flex-shrink-0">
+                            {getStatusBadge(riskStatus)}
+                          </div>
+                          
+                          {/* Risk ID */}
+                          <div className="w-20 flex-shrink-0">
+                            <span className="font-mono text-sm text-muted-foreground">{risk.id}</span>
+                          </div>
+                          
+                          {/* Title */}
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium truncate">{risk.title}</p>
+                          </div>
+                          
+                          {/* Status */}
+                          <div className="w-36 flex-shrink-0">
+                            <Badge variant="outline" className="text-xs">
+                              {risk.status}
+                            </Badge>
+                          </div>
+                          
+                          {/* Delete Button */}
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10 flex-shrink-0"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              deleteRisk(index);
+                            }}
                           >
-                            <TableCell className="py-2">
-                              {getStatusBadge(riskStatus)}
-                            </TableCell>
-                            <TableCell className="py-2 font-mono text-xs whitespace-nowrap" onClick={(e) => e.stopPropagation()}>
-                              <Input
-                                value={risk.id}
-                                onChange={(e) => updateRisk(index, 'id', e.target.value)}
-                                className="h-7 text-xs px-2 w-[75px]"
-                              />
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              {renderModifiedField(risk, 'title',
+                            <Trash2 className="w-4 h-4" />
+                          </Button>
+                        </div>
+                        
+                        {/* Expanded Section - All Editable Fields */}
+                        {isExpanded && (
+                          <div className="px-4 py-6 bg-muted/20 border-t" onClick={(e) => e.stopPropagation()}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                              {/* Risk ID */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Risk ID</label>
                                 <Input
-                                  value={risk.title}
-                                  onChange={(e) => updateRisk(index, 'title', e.target.value)}
-                                  className={`h-7 text-xs px-2 ${isFieldModified(risk, 'title') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                                  value={risk.id}
+                                  onChange={(e) => updateRisk(index, 'id', e.target.value)}
+                                  className="h-9"
                                 />
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              {renderModifiedField(risk, 'businessUnit',
+                              </div>
+                              
+                              {/* Title */}
+                              <div className="space-y-1.5 lg:col-span-2">
+                                <label className="text-xs font-medium text-muted-foreground">Title</label>
+                                {renderModifiedField(risk, 'title',
+                                  <Input
+                                    value={risk.title}
+                                    onChange={(e) => updateRisk(index, 'title', e.target.value)}
+                                    className={`h-9 ${isFieldModified(risk, 'title') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                                  />
+                                )}
+                              </div>
+                              
+                              {/* Level */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Level</label>
                                 <Input
-                                  value={risk.businessUnit}
-                                  onChange={(e) => updateRisk(index, 'businessUnit', e.target.value)}
-                                  className={`h-7 text-xs px-2 ${isFieldModified(risk, 'businessUnit') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                                  value={risk.level}
+                                  onChange={(e) => updateRisk(index, 'level', e.target.value)}
+                                  className="h-9"
                                 />
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              {renderModifiedField(risk, 'category',
+                              </div>
+                              
+                              {/* Category */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Category</label>
+                                {renderModifiedField(risk, 'category',
+                                  <Input
+                                    value={risk.category}
+                                    onChange={(e) => updateRisk(index, 'category', e.target.value)}
+                                    className={`h-9 ${isFieldModified(risk, 'category') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                                  />
+                                )}
+                              </div>
+                              
+                              {/* Owner */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Owner</label>
+                                {renderModifiedField(risk, 'owner',
+                                  <Input
+                                    value={risk.owner}
+                                    onChange={(e) => updateRisk(index, 'owner', e.target.value)}
+                                    className={`h-9 ${isFieldModified(risk, 'owner') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                                  />
+                                )}
+                              </div>
+                              
+                              {/* Assessor */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Assessor</label>
                                 <Input
-                                  value={risk.category}
-                                  onChange={(e) => updateRisk(index, 'category', e.target.value)}
-                                  className={`h-7 text-xs px-2 ${isFieldModified(risk, 'category') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
+                                  value={risk.assessor}
+                                  onChange={(e) => updateRisk(index, 'assessor', e.target.value)}
+                                  className="h-9"
                                 />
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              {renderModifiedField(risk, 'owner',
-                                <Input
-                                  value={risk.owner}
-                                  onChange={(e) => updateRisk(index, 'owner', e.target.value)}
-                                  className={`h-7 text-xs px-2 ${isFieldModified(risk, 'owner') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                                />
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              {renderModifiedField(risk, 'inherentRisk',
+                              </div>
+                              
+                              {/* Inherent Risk */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Inherent Risk</label>
+                                {renderModifiedField(risk, 'inherentRisk',
+                                  <Select
+                                    value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
+                                           risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                                    onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
+                                  >
+                                    <SelectTrigger className={`h-9 ${isFieldModified(risk, 'inherentRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="High">High</SelectItem>
+                                      <SelectItem value="Medium">Medium</SelectItem>
+                                      <SelectItem value="Low">Low</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                              </div>
+                              
+                              {/* Inherent Trend */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Inherent Trend</label>
                                 <Select
-                                  value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
-                                         risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                                  onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
+                                  value={risk.inherentTrend || 'Stable'}
+                                  onValueChange={(value) => updateRisk(index, 'inherentTrend', value)}
                                 >
-                                  <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'inherentRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                  <SelectTrigger className="h-9">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="High">High</SelectItem>
-                                    <SelectItem value="Medium">Medium</SelectItem>
-                                    <SelectItem value="Low">Low</SelectItem>
+                                    <SelectItem value="Increasing">Increasing</SelectItem>
+                                    <SelectItem value="Stable">Stable</SelectItem>
+                                    <SelectItem value="Decreasing">Decreasing</SelectItem>
                                   </SelectContent>
                                 </Select>
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              {renderModifiedField(risk, 'residualRisk',
+                              </div>
+                              
+                              {/* Controls */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Controls</label>
+                                <Input
+                                  value={risk.controls}
+                                  onChange={(e) => updateRisk(index, 'controls', e.target.value)}
+                                  className="h-9"
+                                />
+                              </div>
+                              
+                              {/* Effectiveness */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Effectiveness</label>
                                 <Select
-                                  value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
-                                         risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                                  onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
+                                  value={risk.effectiveness || 'Effective'}
+                                  onValueChange={(value) => updateRisk(index, 'effectiveness', value)}
                                 >
-                                  <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'residualRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                  <SelectTrigger className="h-9">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="High">High</SelectItem>
-                                    <SelectItem value="Medium">Medium</SelectItem>
-                                    <SelectItem value="Low">Low</SelectItem>
+                                    <SelectItem value="Effective">Effective</SelectItem>
+                                    <SelectItem value="Partially Effective">Partially Effective</SelectItem>
+                                    <SelectItem value="Ineffective">Ineffective</SelectItem>
                                   </SelectContent>
                                 </Select>
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              {renderModifiedField(risk, 'status',
+                              </div>
+                              
+                              {/* Test Results */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Test Results</label>
                                 <Select
-                                  value={risk.status}
-                                  onValueChange={(value) => updateRisk(index, 'status', value)}
+                                  value={risk.testResults || 'Pass'}
+                                  onValueChange={(value) => updateRisk(index, 'testResults', value)}
                                 >
-                                  <SelectTrigger className={`h-7 text-xs ${isFieldModified(risk, 'status') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                  <SelectTrigger className="h-9">
                                     <SelectValue />
                                   </SelectTrigger>
                                   <SelectContent>
-                                    <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
-                                    <SelectItem value="In Progress">In Progress</SelectItem>
-                                    <SelectItem value="Completed">Completed</SelectItem>
-                                    <SelectItem value="Overdue">Overdue</SelectItem>
+                                    <SelectItem value="Pass">Pass</SelectItem>
+                                    <SelectItem value="Fail">Fail</SelectItem>
+                                    <SelectItem value="Not Tested">Not Tested</SelectItem>
                                   </SelectContent>
                                 </Select>
-                              )}
-                            </TableCell>
-                            <TableCell className="py-2" onClick={(e) => e.stopPropagation()}>
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-7 w-7 text-destructive hover:text-destructive hover:bg-destructive/10"
-                                onClick={() => deleteRisk(index)}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                          {/* Expanded row with all editable fields */}
-                          {isExpanded && (
-                            <TableRow className="bg-muted/30 hover:bg-muted/30">
-                              <TableCell colSpan={10} className="p-4">
-                                <div className="grid grid-cols-4 gap-4">
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Risk Level 1</label>
-                                    <Input
-                                      value={risk.riskLevel1}
-                                      onChange={(e) => updateRisk(index, 'riskLevel1', e.target.value)}
-                                      className="h-8 text-xs"
-                                      placeholder="Risk Level 1"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Risk Level 2</label>
-                                    <Input
-                                      value={risk.riskLevel2}
-                                      onChange={(e) => updateRisk(index, 'riskLevel2', e.target.value)}
-                                      className="h-8 text-xs"
-                                      placeholder="Risk Level 2"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Risk Level 3</label>
-                                    <Input
-                                      value={risk.riskLevel3}
-                                      onChange={(e) => updateRisk(index, 'riskLevel3', e.target.value)}
-                                      className="h-8 text-xs"
-                                      placeholder="Risk Level 3"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Level</label>
-                                    <Input
-                                      value={risk.level}
-                                      onChange={(e) => updateRisk(index, 'level', e.target.value)}
-                                      className="h-8 text-xs"
-                                      placeholder="Level"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Assessor</label>
-                                    <Input
-                                      value={risk.assessor}
-                                      onChange={(e) => updateRisk(index, 'assessor', e.target.value)}
-                                      className="h-8 text-xs"
-                                      placeholder="Assessor"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Inherent Trend</label>
-                                    <Select
-                                      value={risk.inherentTrend || 'Stable'}
-                                      onValueChange={(value) => updateRisk(index, 'inherentTrend', value)}
-                                    >
-                                      <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="Increasing">Increasing</SelectItem>
-                                        <SelectItem value="Stable">Stable</SelectItem>
-                                        <SelectItem value="Decreasing">Decreasing</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Residual Trend</label>
-                                    <Select
-                                      value={risk.residualTrend || 'Stable'}
-                                      onValueChange={(value) => updateRisk(index, 'residualTrend', value)}
-                                    >
-                                      <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="Increasing">Increasing</SelectItem>
-                                        <SelectItem value="Stable">Stable</SelectItem>
-                                        <SelectItem value="Decreasing">Decreasing</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Last Assessed</label>
-                                    <Input
-                                      value={risk.lastAssessed}
-                                      onChange={(e) => updateRisk(index, 'lastAssessed', e.target.value)}
-                                      className="h-8 text-xs"
-                                      placeholder="Last Assessed Date"
-                                    />
-                                  </div>
-                                  <div className="space-y-1 col-span-2">
-                                    <label className="text-xs font-medium text-muted-foreground">Controls</label>
-                                    <Input
-                                      value={risk.controls}
-                                      onChange={(e) => updateRisk(index, 'controls', e.target.value)}
-                                      className="h-8 text-xs"
-                                      placeholder="Controls"
-                                    />
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Effectiveness</label>
-                                    <Select
-                                      value={risk.effectiveness || 'Partially Effective'}
-                                      onValueChange={(value) => updateRisk(index, 'effectiveness', value)}
-                                    >
-                                      <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="Effective">Effective</SelectItem>
-                                        <SelectItem value="Partially Effective">Partially Effective</SelectItem>
-                                        <SelectItem value="Ineffective">Ineffective</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Test Results</label>
-                                    <Select
-                                      value={risk.testResults || 'Pass'}
-                                      onValueChange={(value) => updateRisk(index, 'testResults', value)}
-                                    >
-                                      <SelectTrigger className="h-8 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="Pass">Pass</SelectItem>
-                                        <SelectItem value="Fail">Fail</SelectItem>
-                                        <SelectItem value="Not Tested">Not Tested</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )}
-                        </>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
+                              </div>
+                              
+                              {/* Residual Risk */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Residual Risk</label>
+                                {renderModifiedField(risk, 'residualRisk',
+                                  <Select
+                                    value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
+                                           risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                                    onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
+                                  >
+                                    <SelectTrigger className={`h-9 ${isFieldModified(risk, 'residualRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="High">High</SelectItem>
+                                      <SelectItem value="Medium">Medium</SelectItem>
+                                      <SelectItem value="Low">Low</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                              </div>
+                              
+                              {/* Residual Trend */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Residual Trend</label>
+                                <Select
+                                  value={risk.residualTrend || 'Stable'}
+                                  onValueChange={(value) => updateRisk(index, 'residualTrend', value)}
+                                >
+                                  <SelectTrigger className="h-9">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    <SelectItem value="Increasing">Increasing</SelectItem>
+                                    <SelectItem value="Stable">Stable</SelectItem>
+                                    <SelectItem value="Decreasing">Decreasing</SelectItem>
+                                  </SelectContent>
+                                </Select>
+                              </div>
+                              
+                              {/* Status */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Status</label>
+                                {renderModifiedField(risk, 'status',
+                                  <Select
+                                    value={risk.status}
+                                    onValueChange={(value) => updateRisk(index, 'status', value)}
+                                  >
+                                    <SelectTrigger className={`h-9 ${isFieldModified(risk, 'status') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
+                                      <SelectValue />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                      <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
+                                      <SelectItem value="In Progress">In Progress</SelectItem>
+                                      <SelectItem value="Completed">Completed</SelectItem>
+                                      <SelectItem value="Overdue">Overdue</SelectItem>
+                                    </SelectContent>
+                                  </Select>
+                                )}
+                              </div>
+                              
+                              {/* Last Assessed */}
+                              <div className="space-y-1.5">
+                                <label className="text-xs font-medium text-muted-foreground">Last Assessed</label>
+                                <Input
+                                  value={risk.lastAssessed}
+                                  onChange={(e) => updateRisk(index, 'lastAssessed', e.target.value)}
+                                  className="h-9"
+                                />
+                              </div>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </ScrollArea>
             </div>
-          </div>
           </TooltipProvider>
         )}
 
