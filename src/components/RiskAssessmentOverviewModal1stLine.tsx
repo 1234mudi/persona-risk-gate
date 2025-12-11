@@ -701,14 +701,23 @@ This risk is currently being managed within established parameters. No immediate
                   <p className="text-[10px] text-muted-foreground">Overall</p>
                 </div>
               </div>
-              <Button 
-                size="sm"
-                className="h-8 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90"
-                onClick={() => setDocumentModalOpen(true)}
-              >
-                <Upload className="w-3.5 h-3.5" />
-                <span>Assess Documents with AI</span>
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="sm"
+                      className="h-8 text-xs gap-1.5 bg-primary text-primary-foreground hover:bg-primary/90 cursor-help"
+                      onClick={() => setDocumentModalOpen(true)}
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Assess Documents with AI</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Upload CSV/DOCX files to automatically create risk assessments using AI analysis</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
               <Button 
                 size="sm"
                 variant="outline"
