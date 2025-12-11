@@ -698,31 +698,31 @@ const Dashboard1stLine = () => {
     return { critical, high, medium, low, total: critical + high + medium + low };
   }, [riskData]);
 
-  // Calculate action plan counts from risk data status
-  const actionPlanCounts = useMemo(() => {
-    let completed = 0;
+  // Calculate assessment progress counts based on risk status
+  const assessmentProgressCounts = useMemo(() => {
+    let notStarted = 0;
     let inProgress = 0;
+    let pendingApproval = 0;
+    let completed = 0;
     
     riskData.forEach(risk => {
       const status = risk.status?.toLowerCase() || "";
       if (status === "completed" || status === "complete" || status === "closed") {
         completed++;
-      } else if (status === "in progress" || status === "pending" || status === "sent for assessment" || status === "under review") {
+      } else if (status === "pending approval" || status === "review & challenge" || status === "pending review") {
+        pendingApproval++;
+      } else if (status === "in progress" || status === "under review") {
         inProgress++;
+      } else if (status === "sent for assessment") {
+        notStarted++;
       } else {
-        // Default to in progress for any other status
-        inProgress++;
+        // Default to not started for any other status
+        notStarted++;
       }
     });
     
-    // Ensure we have some visual data - if all in progress, show a realistic split
-    // This simulates having some completed action plans
-    if (completed === 0 && inProgress > 0) {
-      completed = Math.floor(inProgress * 0.24); // ~24% completed
-      inProgress = inProgress - completed;
-    }
-    
-    return { completed, inProgress, total: completed + inProgress };
+    const total = notStarted + inProgress + pendingApproval + completed;
+    return { notStarted, inProgress, pendingApproval, completed, total };
   }, [riskData]);
 
   // Calculate control evidence status from controlEffectiveness
@@ -795,20 +795,21 @@ const Dashboard1stLine = () => {
       tooltip: "Control effectiveness ratings across your assigned risks. Focus on improving ineffective controls.",
     },
     {
-      title: "Action Plans",
-      value: actionPlanCounts.total,
-      trend: `${actionPlanCounts.inProgress} in progress`,
-      trendUp: actionPlanCounts.completed > actionPlanCounts.inProgress,
+      title: "Assessment Progress",
+      value: assessmentProgressCounts.total,
+      trend: `${assessmentProgressCounts.completed} completed`,
+      trendUp: assessmentProgressCounts.completed > 0,
       icon: CheckSquare,
-      chartType: "pie" as const,
       segments: [
-        { label: "In Progress", value: actionPlanCounts.inProgress, sublabel: `${actionPlanCounts.inProgress} In Progress`, color: "bg-amber-500", chartColor: "#f59e0b" },
-        { label: "Completed", value: actionPlanCounts.completed, sublabel: `${actionPlanCounts.completed} Completed`, color: "bg-green-600", chartColor: "#16a34a" },
+        { label: "Completed", value: assessmentProgressCounts.completed, sublabel: `${assessmentProgressCounts.completed} Completed`, color: "bg-green-600" },
+        { label: "Pending Approval", value: assessmentProgressCounts.pendingApproval, sublabel: `${assessmentProgressCounts.pendingApproval} Pending Approval`, color: "bg-purple-500" },
+        { label: "In Progress", value: assessmentProgressCounts.inProgress, sublabel: `${assessmentProgressCounts.inProgress} In Progress`, color: "bg-amber-500" },
+        { label: "Not Started", value: assessmentProgressCounts.notStarted, sublabel: `${assessmentProgressCounts.notStarted} Not Started`, color: "bg-gray-400" },
       ],
-      description: "Focus on in-progress action plans to reduce risk exposure.",
-      tooltip: "Remediation action plans assigned to you. In-progress items indicate control gaps requiring attention.",
+      description: "Track assessment completion based on risk status.",
+      tooltip: "Overall assessment progress based on the status of your assigned risks.",
     },
-  ], [assessmentDueCounts, inherentRiskCounts, controlEvidenceCounts, actionPlanCounts]);
+  ], [assessmentDueCounts, inherentRiskCounts, controlEvidenceCounts, assessmentProgressCounts]);
 
   // Get unique assessors for the filter dropdown (only from assess tab)
   const uniqueAssessors = useMemo(() => {
