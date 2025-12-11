@@ -1330,22 +1330,6 @@ const Dashboard1stLine = () => {
                 <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
 
-              <div className="flex flex-col gap-1">
-                <Label htmlFor="assessment-context" className="text-xs font-medium text-muted-foreground">
-                  Filter by Org Level
-                </Label>
-                <Select value={orgLevelFilter} onValueChange={(value: "all" | "level1" | "level2" | "level3") => setOrgLevelFilter(value)}>
-                  <SelectTrigger id="assessment-context" className="w-48 h-8 bg-first-line text-white border-first-line">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Levels</SelectItem>
-                    <SelectItem value="level1">Level 1</SelectItem>
-                    <SelectItem value="level2">Level 2</SelectItem>
-                    <SelectItem value="level3">Level 3</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
 
               {activeTab === "assess" && (
                 <Select value={assessorFilter} onValueChange={setAssessorFilter}>
@@ -1418,42 +1402,7 @@ const Dashboard1stLine = () => {
                       </TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border text-xs">Update Completed</TableHead>
                       <TableHead className="min-w-[220px] py-2 border-r border-b border-border">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="flex items-center gap-1.5 hover:text-first-line transition-colors">
-                              Risk Title
-                              <ChevronDown className="w-4 h-4" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start" className="bg-popover border border-border shadow-lg z-50">
-                            <DropdownMenuLabel className="text-xs text-muted-foreground">Filter by Org Level</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                              onClick={() => setOrgLevelFilter("all")}
-                              className={orgLevelFilter === "all" ? "bg-first-line/10 text-first-line" : ""}
-                            >
-                              All Levels
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => setOrgLevelFilter("level1")}
-                              className={orgLevelFilter === "level1" ? "bg-first-line/10 text-first-line" : ""}
-                            >
-                              Org Level 1 (Operational)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => setOrgLevelFilter("level2")}
-                              className={orgLevelFilter === "level2" ? "bg-first-line/10 text-first-line" : ""}
-                            >
-                              Org Level 2 (Retail Banking)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => setOrgLevelFilter("level3")}
-                              className={orgLevelFilter === "level3" ? "bg-first-line/10 text-first-line" : ""}
-                            >
-                              Org Level 3 (ATM)
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
+                        Risk Title
                       </TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
