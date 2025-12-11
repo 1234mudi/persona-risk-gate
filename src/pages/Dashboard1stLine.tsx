@@ -1471,31 +1471,19 @@ const Dashboard1stLine = () => {
                             <div className="flex flex-col gap-2">
                               {/* Risk Title with hierarchy indicator */}
                               <div className="flex flex-col gap-1">
-                                <div className="flex items-center gap-2">
-                                  {risk.riskLevel === "Level 2" && (
-                                    <span className="text-purple-500 dark:text-purple-400">└</span>
-                                  )}
-                                  {risk.riskLevel === "Level 3" && (
-                                    <span className="text-orange-500 dark:text-orange-400">└</span>
-                                  )}
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button 
-                                        onClick={() => handleRiskNameClick(risk)}
-                                        className={`text-left hover:text-primary transition-colors font-medium hover:underline cursor-pointer ${
-                                          risk.riskLevel === "Level 1" ? "text-blue-600 dark:text-blue-400" :
-                                          risk.riskLevel === "Level 2" ? "text-purple-600 dark:text-purple-400 text-sm" :
-                                          "text-orange-600 dark:text-orange-400 text-sm"
-                                        }`}
-                                      >
-                                        {risk.title}
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Click to open the risk assessment overview</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                </div>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button 
+                                      onClick={() => handleRiskNameClick(risk)}
+                                      className="text-left hover:text-primary transition-colors font-medium hover:underline cursor-pointer text-blue-600 dark:text-blue-400"
+                                    >
+                                      {risk.title}
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Click to open the risk assessment overview</p>
+                                  </TooltipContent>
+                                </Tooltip>
                                 <span className="text-xs text-muted-foreground">{risk.owner}</span>
                               </div>
                               
