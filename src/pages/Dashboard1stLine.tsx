@@ -1440,24 +1440,62 @@ const Dashboard1stLine = () => {
                           )}
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="space-y-1">
-                            {renderEditableCell(
-                              risk.id,
-                              'title',
-                              risk.title,
-                              <button 
-                                onClick={(e) => { e.stopPropagation(); handleRiskNameClick(risk); }}
-                                className="text-sm font-medium text-foreground hover:text-first-line hover:underline cursor-pointer text-left transition-colors"
+                          <div className="flex items-start gap-2">
+                            {isLevel1 && canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
                               >
-                                {risk.title}
+                                {isExpanded ? (
+                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                )}
                               </button>
                             )}
-                            {renderEditableCell(
-                              risk.id,
-                              'businessUnit',
-                              risk.businessUnit,
-                              <span className="text-xs text-muted-foreground">{risk.businessUnit}</span>
-                            )}
+                            {isLevel1 && !canExpand && <div className="w-6" />}
+                            {isLevel3 && <div className="w-6 ml-4" />}
+                            
+                            <div className="flex flex-col gap-2">
+                              {/* Level 1 Title */}
+                              <div className="flex flex-col gap-1">
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button 
+                                      onClick={() => handleRiskNameClick(risk)}
+                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                    >
+                                      {risk.title}
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Click to open the risk assessment overview</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                                <span className="text-xs text-muted-foreground">{risk.businessUnit}</span>
+                              </div>
+                              
+                              {/* Level 2 Children (displayed within Level 1 row) */}
+                              {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
+                                <div key={l2Risk.id} className="flex flex-col gap-1 pl-4 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button 
+                                        onClick={() => handleRiskNameClick(l2Risk)}
+                                        className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
+                                      >
+                                        └ {l2Risk.title}
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Click to open the risk assessment overview</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  <span className="text-xs text-muted-foreground">{l2Risk.owner}</span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
@@ -1498,18 +1536,8 @@ const Dashboard1stLine = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-center gap-2">
-                            {isLevel1 && canExpand && (
-                              <button
-                                onClick={() => toggleRow(risk.id)}
-                                className="p-0.5 hover:bg-muted rounded"
-                              >
-                                <ChevronRight className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                              </button>
-                            )}
-                            <span className="font-mono text-sm font-medium text-first-line">{risk.id}</span>
-                          </div>
+                        <TableCell className="font-medium py-2 border-r border-b border-border">
+                          <span className="font-mono text-sm font-medium text-first-line">{risk.id}</span>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
