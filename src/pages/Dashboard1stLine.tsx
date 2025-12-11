@@ -1,7 +1,7 @@
 import { useState, useRef, useMemo, useEffect } from "react";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -99,6 +99,7 @@ const Dashboard1stLine = () => {
   const [assessorFilter, setAssessorFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
@@ -236,9 +237,42 @@ const Dashboard1stLine = () => {
       filtered = filtered.filter(risk => risk.assessors.includes(assessorFilter));
     }
     
-    // Show all risks flat - Level 1, Level 2, Level 3, and any other
-    return filtered;
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter, searchQuery]);
+    // Apply hierarchy view mode filtering
+    if (hierarchyViewMode === "level3") {
+      // Show only Level 3 risks (flat list)
+      return filtered.filter(risk => risk.riskLevel === "Level 3");
+    } else if (hierarchyViewMode === "level2") {
+      // Show Level 2 risks as primary, with Level 3 children shown when expanded
+      const level2Risks = filtered.filter(risk => risk.riskLevel === "Level 2");
+      const visible: RiskData[] = [];
+      level2Risks.forEach(l2Risk => {
+        visible.push(l2Risk);
+        if (expandedRows.has(l2Risk.id)) {
+          const level3Children = filtered.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2Risk.title);
+          visible.push(...level3Children);
+        }
+      });
+      return visible;
+    } else {
+      // Level 1 mode: Show Level 1 risks as primary with Level 2 and Level 3 nested
+      const level1Risks = filtered.filter(risk => risk.riskLevel === "Level 1");
+      const visible: RiskData[] = [];
+      level1Risks.forEach(l1Risk => {
+        visible.push(l1Risk);
+        if (expandedRows.has(l1Risk.id)) {
+          const level2Children = filtered.filter(r => r.riskLevel === "Level 2" && r.parentRisk === l1Risk.title);
+          level2Children.forEach(l2Risk => {
+            visible.push(l2Risk);
+            if (expandedRows.has(l2Risk.id)) {
+              const level3Children = filtered.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2Risk.title);
+              visible.push(...level3Children);
+            }
+          });
+        }
+      });
+      return visible;
+    }
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter, searchQuery, hierarchyViewMode, expandedRows]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -817,12 +851,16 @@ const Dashboard1stLine = () => {
 
   const hasChildren = (risk: RiskData) => {
     if (risk.riskLevel === "Level 1") {
-      const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
-      return level2Risks.some(l2 => 
-        filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title)
-      );
+      return filteredRiskData.some(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+    }
+    if (risk.riskLevel === "Level 2") {
+      return filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === risk.title);
     }
     return false;
+  };
+
+  const getLevel3Children = (level2Risk: RiskData): RiskData[] => {
+    return filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === level2Risk.title);
   };
 
   const getRiskLevelColor = (level: string) => {
@@ -1399,7 +1437,41 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
-                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <button className="flex items-center gap-2 hover:text-primary transition-colors">
+                              <Menu className="w-4 h-4" />
+                              <span>Risk Hierarchy</span>
+                            </button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="start" className="bg-popover border border-border shadow-lg z-[100]">
+                            <DropdownMenuLabel>Group by Level</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem 
+                              onClick={() => setHierarchyViewMode("level1")}
+                              className={hierarchyViewMode === "level1" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level1" ? "opacity-100" : "opacity-0"}`} />
+                              Level 1 (with L2 → L3 dropdowns)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setHierarchyViewMode("level2")}
+                              className={hierarchyViewMode === "level2" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level2" ? "opacity-100" : "opacity-0"}`} />
+                              Level 2 (with L3 dropdown)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setHierarchyViewMode("level3")}
+                              className={hierarchyViewMode === "level3" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level3" ? "opacity-100" : "opacity-0"}`} />
+                              Level 3 only (flat list)
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
@@ -1419,8 +1491,9 @@ const Dashboard1stLine = () => {
                       
                       return (
                       <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
-                        isLevel1 ? 'bg-emerald-50/30 dark:bg-emerald-950/10' : 
-                        'bg-orange-50/10 dark:bg-orange-950/10'
+                        risk.riskLevel === "Level 1" ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
+                        risk.riskLevel === "Level 2" ? 'bg-purple-50/30 dark:bg-purple-950/10' :
+                        'bg-orange-50/30 dark:bg-orange-950/10'
                       }`}>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center justify-center">
@@ -1451,10 +1524,15 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className={`flex items-start gap-2 ${
-                            risk.riskLevel === "Level 2" ? "pl-6" : 
-                            risk.riskLevel === "Level 3" ? "pl-12" : ""
+                            hierarchyViewMode === "level1" ? (
+                              risk.riskLevel === "Level 2" ? "pl-6" : 
+                              risk.riskLevel === "Level 3" ? "pl-12" : ""
+                            ) : hierarchyViewMode === "level2" ? (
+                              risk.riskLevel === "Level 3" ? "pl-6" : ""
+                            ) : ""
                           }`}>
-                            {isLevel1 && canExpand && (
+                            {/* Expand/collapse button logic based on hierarchy view mode */}
+                            {hierarchyViewMode === "level1" && (risk.riskLevel === "Level 1" || risk.riskLevel === "Level 2") && canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
                                 className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
@@ -1466,46 +1544,38 @@ const Dashboard1stLine = () => {
                                 )}
                               </button>
                             )}
-                            {isLevel1 && !canExpand && <div className="w-6" />}
+                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 2" && canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </button>
+                            )}
+                            {/* Spacer for alignment when no expand button */}
+                            {hierarchyViewMode === "level1" && (risk.riskLevel === "Level 1" || risk.riskLevel === "Level 2") && !canExpand && <div className="w-6" />}
+                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 2" && !canExpand && <div className="w-6" />}
                             
-                            <div className="flex flex-col gap-2">
-                              {/* Risk Title with hierarchy indicator */}
-                              <div className="flex flex-col gap-1">
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <button 
-                                      onClick={() => handleRiskNameClick(risk)}
-                                      className="text-left hover:text-primary transition-colors font-medium hover:underline cursor-pointer text-blue-600 dark:text-blue-400"
-                                    >
-                                      {risk.title}
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Click to open the risk assessment overview</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                                <span className="text-xs text-muted-foreground">{risk.owner}</span>
-                              </div>
-                              
-                              {/* Level 2 Children (displayed within Level 1 row) */}
-                              {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                                <div key={l2Risk.id} className="flex flex-col gap-1 pl-4 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button 
-                                        onClick={() => handleRiskNameClick(l2Risk)}
-                                        className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
-                                      >
-                                        └ {l2Risk.title}
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Click to open the risk assessment overview</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                  <span className="text-xs text-muted-foreground">{l2Risk.owner}</span>
-                                </div>
-                              ))}
+                            <div className="flex flex-col gap-1">
+                              {/* Risk Title */}
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button 
+                                    onClick={() => handleRiskNameClick(risk)}
+                                    className="text-left hover:text-primary transition-colors font-medium hover:underline cursor-pointer text-blue-600 dark:text-blue-400"
+                                  >
+                                    {risk.title}
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Click to open the risk assessment overview</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <span className="text-xs text-muted-foreground">{risk.owner}</span>
                             </div>
                           </div>
                         </TableCell>
