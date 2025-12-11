@@ -208,7 +208,6 @@ const Dashboard1stLine = () => {
   };
 
   const visibleRisks = useMemo(() => {
-    const visible: RiskData[] = [];
     let filtered = getFilteredByTab(riskData, activeTab);
     
     // Apply org level filter
@@ -221,62 +220,9 @@ const Dashboard1stLine = () => {
       });
     }
     
-    // Separate risks into hierarchical and standalone
-    const level1Risks = filtered.filter(r => r.riskLevel === "Level 1");
-    const level2Risks = filtered.filter(r => r.riskLevel === "Level 2");
-    const level3Risks = filtered.filter(r => r.riskLevel === "Level 3");
-    // Catch any risks that don't match Level 1/2/3 exactly
-    const otherRisks = filtered.filter(r => 
-      r.riskLevel !== "Level 1" && r.riskLevel !== "Level 2" && r.riskLevel !== "Level 3"
-    );
-    
-    // Track which Level 2/3 risks are shown in hierarchy
-    const shownInHierarchy = new Set<string>();
-    
-    level1Risks.forEach(risk => {
-      visible.push(risk);
-      if (expandedRows.has(risk.id)) {
-        const childLevel2 = level2Risks.filter(r => r.parentRisk === risk.title);
-        childLevel2.forEach(l2 => {
-          visible.push(l2);
-          shownInHierarchy.add(l2.id);
-          const childLevel3 = level3Risks.filter(r => r.parentRisk === l2.title);
-          childLevel3.forEach(l3 => {
-            visible.push(l3);
-            shownInHierarchy.add(l3.id);
-          });
-        });
-      }
-    });
-    
-    // Add standalone Level 2/3 risks (imported, without parent, or parent doesn't exist)
-    const level1Titles = new Set(level1Risks.map(r => r.title));
-    const level2Titles = new Set(level2Risks.map(r => r.title));
-    
-    level2Risks.forEach(r => {
-      if (!shownInHierarchy.has(r.id)) {
-        // Show if no parent, or parent doesn't exist in current dataset
-        if (!r.parentRisk || !level1Titles.has(r.parentRisk)) {
-          visible.push(r);
-        }
-      }
-    });
-    level3Risks.forEach(r => {
-      if (!shownInHierarchy.has(r.id)) {
-        // Show if no parent, or parent doesn't exist in current dataset
-        if (!r.parentRisk || (!level1Titles.has(r.parentRisk) && !level2Titles.has(r.parentRisk))) {
-          visible.push(r);
-        }
-      }
-    });
-    
-    // Add any other risks that don't fit the Level 1/2/3 hierarchy
-    otherRisks.forEach(r => {
-      visible.push(r);
-    });
-    
-    return visible;
-  }, [riskData, activeTab, expandedRows, orgLevelFilter]);
+    // Show all risks flat - Level 1, Level 2, Level 3, and any other
+    return filtered;
+  }, [riskData, activeTab, orgLevelFilter]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
