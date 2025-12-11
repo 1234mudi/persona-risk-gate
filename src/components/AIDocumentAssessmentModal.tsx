@@ -285,24 +285,34 @@ export function AIDocumentAssessmentModal({
       
       console.log("DOCX lines found:", lines.length);
       
-      // The DOCX table is extracted with each cell on a separate line
-      // Find where data starts (after header row which has "Risk ID", "Title", etc.)
-      const headerFields = ['Risk ID', 'Title', 'Risk Level 1', 'Risk Level 2', 'Risk Level 3', 
-                           'Level', 'Business Unit', 'Category', 'Owner', 'Assessor',
-                           'Inherent Risk', 'Inherent Trend', 'Controls', 'Effectiveness',
-                           'Test Results', 'Residual Risk', 'Residual Trend', 'Status', 'Last Assessed'];
+      // Build header map - find all header names and their order
+      const possibleHeaders = [
+        'Risk ID', 'Title', 'Risk Hierarchy', 'Risk Level 1', 'Risk Level 2', 'Risk Level 3', 
+        'Level', 'Business Unit', 'Category', 'Owner', 'Assessor', 'Assessors/Collaborators',
+        'Inherent Risk', 'Inherent Trend', 'Controls', 'Effectiveness',
+        'Test Results', 'Residual Risk', 'Residual Trend', 'Status', 'Last Assessed'
+      ];
       
-      // Find the start of data (after "Last Assessed" header)
-      let dataStartIndex = -1;
-      for (let i = 0; i < lines.length; i++) {
-        if (lines[i] === 'Last Assessed') {
-          dataStartIndex = i + 1;
-          break;
+      // Find headers in the document and their positions
+      const headerMap: { name: string; index: number }[] = [];
+      let lastHeaderIndex = -1;
+      
+      for (let i = 0; i < Math.min(lines.length, 50); i++) {
+        const line = lines[i];
+        if (possibleHeaders.includes(line)) {
+          headerMap.push({ name: line, index: i });
+          lastHeaderIndex = i;
+          console.log(`Found header "${line}" at line ${i}`);
         }
       }
       
-      if (dataStartIndex === -1) {
-        console.log("Could not find header row, trying to find R-001 pattern");
+      console.log("Headers found:", headerMap.map(h => h.name));
+      
+      // Find the start of data (after the last header)
+      let dataStartIndex = lastHeaderIndex + 1;
+      
+      if (dataStartIndex <= 0) {
+        console.log("Could not find headers, trying to find R-001 pattern");
         // Fallback: find first R-XXX pattern
         for (let i = 0; i < lines.length; i++) {
           if (/^R-\d{3}$/.test(lines[i])) {
@@ -314,12 +324,15 @@ export function AIDocumentAssessmentModal({
       
       console.log("Data starts at line:", dataStartIndex);
       
-      if (dataStartIndex === -1) {
+      if (dataStartIndex <= 0) {
         console.log("Could not find data start");
         return [];
       }
       
-      // Each risk record has 19 fields, but controls might span multiple lines
+      // Determine number of fields per record based on headers found
+      const numFields = headerMap.length > 0 ? headerMap.length : 19;
+      console.log("Expected fields per record:", numFields);
+      
       // Group lines into records - each record starts with R-XXX pattern
       const riskIdPattern = /^R-\d{3}$/;
       let currentRecord: string[] = [];
@@ -330,7 +343,7 @@ export function AIDocumentAssessmentModal({
         // If we hit a new Risk ID and we have a current record, save it
         if (riskIdPattern.test(line) && currentRecord.length > 0) {
           // Process the completed record
-          const risk = parseRecordToRisk(currentRecord);
+          const risk = parseRecordToRisk(currentRecord, headerMap);
           if (risk) risks.push(risk);
           currentRecord = [line];
         } else {
@@ -340,7 +353,7 @@ export function AIDocumentAssessmentModal({
       
       // Don't forget the last record
       if (currentRecord.length > 0) {
-        const risk = parseRecordToRisk(currentRecord);
+        const risk = parseRecordToRisk(currentRecord, headerMap);
         if (risk) risks.push(risk);
       }
       
@@ -352,33 +365,79 @@ export function AIDocumentAssessmentModal({
     }
   };
 
-  const parseRecordToRisk = (lines: string[]): ParsedRisk | null => {
+  const parseRecordToRisk = (lines: string[], headerMap: { name: string; index: number }[] = []): ParsedRisk | null => {
     if (lines.length < 10) return null;
     
-    // Expected order: Risk ID, Title, Risk Level 1-3, Level, Business Unit, Category,
-    // Owner, Assessor, Inherent Risk, Inherent Trend, Controls, Effectiveness,
-    // Test Results, Residual Risk, Residual Trend, Status, Last Assessed
+    // Create a lookup for field positions based on header names
+    const headerNames = headerMap.map(h => h.name);
     
+    // Helper to get field value by header name or index
+    const getField = (primaryName: string, altName: string | null, defaultIndex: number): string => {
+      const primaryIdx = headerNames.indexOf(primaryName);
+      const altIdx = altName ? headerNames.indexOf(altName) : -1;
+      
+      if (primaryIdx !== -1 && lines[primaryIdx] !== undefined) {
+        return lines[primaryIdx];
+      }
+      if (altIdx !== -1 && lines[altIdx] !== undefined) {
+        return lines[altIdx];
+      }
+      return lines[defaultIndex] || '';
+    };
+    
+    // Parse Risk Hierarchy if present (format: "Level1 > Level2 > Level3")
+    const parseRiskHierarchy = (): { l1: string; l2: string; l3: string } => {
+      const hierarchyIdx = headerNames.indexOf('Risk Hierarchy');
+      if (hierarchyIdx !== -1 && lines[hierarchyIdx]) {
+        const parts = lines[hierarchyIdx].split('>').map(p => p.trim());
+        return {
+          l1: parts[0] || '',
+          l2: parts[1] || '',
+          l3: parts[2] || ''
+        };
+      }
+      return { l1: '', l2: '', l3: '' };
+    };
+    
+    // Check for Risk Hierarchy combined field
+    const hierarchy = parseRiskHierarchy();
+    const hasRiskHierarchy = headerNames.includes('Risk Hierarchy');
+    
+    // Parse Assessors/Collaborators - might have multiple values
+    const getAssessors = (): string => {
+      const assessorIdx = headerNames.indexOf('Assessor');
+      const collaboratorsIdx = headerNames.indexOf('Assessors/Collaborators');
+      
+      if (collaboratorsIdx !== -1 && lines[collaboratorsIdx]) {
+        return lines[collaboratorsIdx];
+      }
+      if (assessorIdx !== -1 && lines[assessorIdx]) {
+        return lines[assessorIdx];
+      }
+      return lines[9] || '';
+    };
+    
+    // Build risk object with dynamic field mapping
     return {
       id: lines[0] || '',
-      title: lines[1] || '',
-      riskLevel1: lines[2] || '',
-      riskLevel2: lines[3] || '',
-      riskLevel3: lines[4] || '',
-      level: lines[5] || '',
-      businessUnit: lines[6] || '',
-      category: lines[7] || '',
-      owner: lines[8] || '',
-      assessor: lines[9] || '',
-      inherentRisk: lines[10] || 'Medium',
-      inherentTrend: lines[11] || '',
-      controls: lines[12] || '',
-      effectiveness: lines[13] || '',
-      testResults: lines[14] || '',
-      residualRisk: lines[15] || 'Low',
-      residualTrend: lines[16] || '',
-      status: lines[17] || 'Sent for Assessment',
-      lastAssessed: lines[18] || new Date().toLocaleDateString(),
+      title: getField('Title', null, 1),
+      riskLevel1: hasRiskHierarchy ? hierarchy.l1 : getField('Risk Level 1', null, 2),
+      riskLevel2: hasRiskHierarchy ? hierarchy.l2 : getField('Risk Level 2', null, 3),
+      riskLevel3: hasRiskHierarchy ? hierarchy.l3 : getField('Risk Level 3', null, 4),
+      level: getField('Level', null, hasRiskHierarchy ? 3 : 5),
+      businessUnit: getField('Business Unit', null, hasRiskHierarchy ? 4 : 6),
+      category: getField('Category', null, hasRiskHierarchy ? 5 : 7),
+      owner: getField('Owner', null, hasRiskHierarchy ? 6 : 8),
+      assessor: getAssessors(),
+      inherentRisk: getField('Inherent Risk', null, hasRiskHierarchy ? 8 : 10) || 'Medium',
+      inherentTrend: getField('Inherent Trend', null, hasRiskHierarchy ? 9 : 11),
+      controls: getField('Controls', null, hasRiskHierarchy ? 10 : 12),
+      effectiveness: getField('Effectiveness', null, hasRiskHierarchy ? 11 : 13),
+      testResults: getField('Test Results', null, hasRiskHierarchy ? 12 : 14),
+      residualRisk: getField('Residual Risk', null, hasRiskHierarchy ? 13 : 15) || 'Low',
+      residualTrend: getField('Residual Trend', null, hasRiskHierarchy ? 14 : 16),
+      status: getField('Status', null, hasRiskHierarchy ? 15 : 17) || 'Sent for Assessment',
+      lastAssessed: getField('Last Assessed', null, hasRiskHierarchy ? 16 : 18) || new Date().toLocaleDateString(),
     };
   };
 
