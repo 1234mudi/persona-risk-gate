@@ -451,6 +451,9 @@ const Dashboard1stLine = () => {
   const [aiDocumentModalOpen, setAiDocumentModalOpen] = useState(false);
 
   const handleImportedRisks = (parsedRisks: any[]) => {
+    console.log("handleImportedRisks received:", parsedRisks.length, "risks");
+    console.log("Sample parsed:", parsedRisks.slice(0, 3));
+    
     // Convert parsed risks to RiskData format and add to the list
     const newRisks: RiskData[] = parsedRisks.map((parsed, index) => ({
       id: parsed.id || `IMPORT-${Date.now()}-${index}`,
@@ -517,13 +520,20 @@ const Dashboard1stLine = () => {
       tabCategory: "assess" as const,
     }));
 
+    console.log("Converted to RiskData:", newRisks.length);
+    console.log("Sample converted:", newRisks.slice(0, 3).map(r => ({ id: r.id, title: r.title, riskLevel: r.riskLevel })));
+
     setRiskData(prev => {
+      console.log("Previous riskData count:", prev.length);
       // Create a map of existing risk IDs for quick lookup
       const existingIds = new Set(prev.map(r => r.id));
       
       // Separate new risks from updates to existing risks
       const trulyNewRisks = newRisks.filter(r => !existingIds.has(r.id));
       const updatedRisks = newRisks.filter(r => existingIds.has(r.id));
+      
+      console.log("Truly new risks:", trulyNewRisks.length);
+      console.log("Updated risks:", updatedRisks.length);
       
       // Update existing risks with new data, or keep them unchanged
       const updatedExisting = prev.map(existingRisk => {
@@ -532,10 +542,12 @@ const Dashboard1stLine = () => {
       });
       
       // Return truly new risks prepended to the updated existing risks
-      return [...trulyNewRisks, ...updatedExisting];
+      const finalData = [...trulyNewRisks, ...updatedExisting];
+      console.log("Final riskData count:", finalData.length);
+      return finalData;
     });
     
-    toast.success(`${newRisks.length} risks imported and added to "Risks to Assess" tab`);
+    toast.success(`${newRisks.length} risks imported`);
   };
 
   const handleUpdateClosedAssessment = (riskId: string) => {
