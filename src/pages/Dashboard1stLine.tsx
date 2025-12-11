@@ -237,39 +237,57 @@ const Dashboard1stLine = () => {
       filtered = filtered.filter(risk => risk.assessors.includes(assessorFilter));
     }
     
-    // Apply hierarchy view mode filtering
+    // Apply hierarchy view mode filtering - group by level, not by parentRisk naming
+    const level1Risks = filtered.filter(risk => risk.riskLevel === "Level 1");
+    const level2Risks = filtered.filter(risk => risk.riskLevel === "Level 2");
+    const level3Risks = filtered.filter(risk => risk.riskLevel === "Level 3");
+    
     if (hierarchyViewMode === "level3") {
       // Show only Level 3 risks (flat list)
-      return filtered.filter(risk => risk.riskLevel === "Level 3");
+      return level3Risks;
     } else if (hierarchyViewMode === "level2") {
-      // Show Level 2 risks as primary, with Level 3 children shown when expanded
-      const level2Risks = filtered.filter(risk => risk.riskLevel === "Level 2");
+      // Show Level 2 risks as primary, with all Level 3 children shown when any Level 2 is expanded
       const visible: RiskData[] = [];
       level2Risks.forEach(l2Risk => {
         visible.push(l2Risk);
         if (expandedRows.has(l2Risk.id)) {
-          const level3Children = filtered.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2Risk.title);
-          visible.push(...level3Children);
+          // Show ALL Level 3 risks under this expanded Level 2
+          visible.push(...level3Risks);
         }
       });
+      // If no Level 2 risks but there are Level 3, show Level 3 directly
+      if (level2Risks.length === 0) {
+        return level3Risks;
+      }
       return visible;
     } else {
       // Level 1 mode: Show Level 1 risks as primary with Level 2 and Level 3 nested
-      const level1Risks = filtered.filter(risk => risk.riskLevel === "Level 1");
       const visible: RiskData[] = [];
       level1Risks.forEach(l1Risk => {
         visible.push(l1Risk);
         if (expandedRows.has(l1Risk.id)) {
-          const level2Children = filtered.filter(r => r.riskLevel === "Level 2" && r.parentRisk === l1Risk.title);
-          level2Children.forEach(l2Risk => {
+          // Show ALL Level 2 risks under this expanded Level 1
+          level2Risks.forEach(l2Risk => {
             visible.push(l2Risk);
             if (expandedRows.has(l2Risk.id)) {
-              const level3Children = filtered.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2Risk.title);
-              visible.push(...level3Children);
+              // Show ALL Level 3 risks under this expanded Level 2
+              visible.push(...level3Risks);
             }
           });
         }
       });
+      // If no Level 1 risks, fall back to showing Level 2 and Level 3
+      if (level1Risks.length === 0) {
+        level2Risks.forEach(l2Risk => {
+          visible.push(l2Risk);
+          if (expandedRows.has(l2Risk.id)) {
+            visible.push(...level3Risks);
+          }
+        });
+        if (level2Risks.length === 0) {
+          return level3Risks;
+        }
+      }
       return visible;
     }
   }, [riskData, activeTab, orgLevelFilter, assessorFilter, searchQuery, hierarchyViewMode, expandedRows]);
@@ -846,21 +864,24 @@ const Dashboard1stLine = () => {
   };
 
   const getLevel2Children = (level1Risk: RiskData): RiskData[] => {
-    return filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === level1Risk.title);
+    // Return ALL Level 2 risks (not filtered by parentRisk)
+    return filteredRiskData.filter(r => r.riskLevel === "Level 2");
   };
 
   const hasChildren = (risk: RiskData) => {
+    // Check if there are any risks at a lower level (regardless of parentRisk naming)
     if (risk.riskLevel === "Level 1") {
-      return filteredRiskData.some(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+      return filteredRiskData.some(r => r.riskLevel === "Level 2");
     }
     if (risk.riskLevel === "Level 2") {
-      return filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === risk.title);
+      return filteredRiskData.some(r => r.riskLevel === "Level 3");
     }
     return false;
   };
 
   const getLevel3Children = (level2Risk: RiskData): RiskData[] => {
-    return filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === level2Risk.title);
+    // Return ALL Level 3 risks (not filtered by parentRisk)
+    return filteredRiskData.filter(r => r.riskLevel === "Level 3");
   };
 
   const getRiskLevelColor = (level: string) => {
