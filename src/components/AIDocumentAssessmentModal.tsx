@@ -213,8 +213,28 @@ export function AIDocumentAssessmentModal({
       return [];
     }
     
-    // Log header to verify column structure
-    console.log("CSV Header:", lines[0]);
+    // Parse header to determine column positions dynamically
+    const headerLine = lines[0];
+    const headers: string[] = [];
+    let current = '';
+    let inQuotes = false;
+    for (let j = 0; j < headerLine.length; j++) {
+      const char = headerLine[j];
+      if (char === '"') {
+        inQuotes = !inQuotes;
+      } else if (char === ',' && !inQuotes) {
+        headers.push(current.trim());
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    headers.push(current.trim());
+    
+    console.log("CSV Headers:", headers);
+    
+    // Create a column index map
+    const colIndex = (name: string): number => headers.findIndex(h => h.toLowerCase() === name.toLowerCase());
     
     const risks: ParsedRisk[] = [];
     
@@ -224,8 +244,8 @@ export function AIDocumentAssessmentModal({
       
       // Handle CSV with quoted fields
       const values: string[] = [];
-      let current = '';
-      let inQuotes = false;
+      current = '';
+      inQuotes = false;
       
       for (let j = 0; j < line.length; j++) {
         const char = line[j];
@@ -240,30 +260,34 @@ export function AIDocumentAssessmentModal({
       }
       values.push(current.trim());
       
-      console.log(`Line ${i}: parsed ${values.length} columns`);
+      // Get value by column name or index fallback
+      const getVal = (name: string, fallbackIdx: number): string => {
+        const idx = colIndex(name);
+        return idx >= 0 ? (values[idx] || '') : (values[fallbackIdx] || '');
+      };
       
-      // Be more lenient - accept rows with at least 10 columns
+      // Accept rows with at least 10 columns
       if (values.length >= 10) {
         risks.push({
-          id: values[0] || `R-${String(i).padStart(3, '0')}`,
-          title: values[1] || '',
-          riskLevel1: values[2] || '',
-          riskLevel2: values[3] || '',
-          riskLevel3: values[4] || '',
-          level: values[5] || '',
-          businessUnit: values[6] || '',
-          category: values[7] || '',
-          owner: values[8] || '',
-          assessor: values[9] || '',
-          inherentRisk: values[10] || '',
-          inherentTrend: values[11] || '',
-          controls: values[12] || '',
-          effectiveness: values[13] || '',
-          testResults: values[14] || '',
-          residualRisk: values[15] || '',
-          residualTrend: values[16] || '',
-          status: values[17] || 'Sent for Assessment',
-          lastAssessed: values[18] || new Date().toLocaleDateString(),
+          id: getVal('Risk ID', 0) || `R-${String(i).padStart(3, '0')}`,
+          title: getVal('Title', 1),
+          riskLevel1: getVal('Risk Level 1', -1),
+          riskLevel2: getVal('Risk Level 2', -1),
+          riskLevel3: getVal('Risk Level 3', -1),
+          level: getVal('Level', 2),
+          businessUnit: getVal('Business Unit', -1),
+          category: getVal('Category', 3),
+          owner: getVal('Owner', 4),
+          assessor: getVal('Assessor', 5),
+          inherentRisk: getVal('Inherent Risk', 6),
+          inherentTrend: getVal('Inherent Trend', 7),
+          controls: getVal('Controls', 8),
+          effectiveness: getVal('Effectiveness', 9),
+          testResults: getVal('Test Results', 10),
+          residualRisk: getVal('Residual Risk', 11),
+          residualTrend: getVal('Residual Trend', 12),
+          status: getVal('Status', 13) || 'Sent for Assessment',
+          lastAssessed: getVal('Last Assessed', 14) || new Date().toLocaleDateString(),
         });
       }
     }
