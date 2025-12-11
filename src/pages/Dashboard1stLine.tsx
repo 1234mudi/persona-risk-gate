@@ -985,7 +985,7 @@ const Dashboard1stLine = () => {
         {/* Scorecards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
           {/* Quick Links Card */}
-          <Card className="lg:col-span-2 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-card dark:to-card">
+          <Card className="lg:col-span-1 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-card dark:to-card">
             <CardHeader className="pb-1 pt-3 px-4">
               <CardTitle className="text-lg font-semibold flex items-center gap-2">
                 <Link className="w-5 h-5 text-first-line" />
@@ -993,7 +993,7 @@ const Dashboard1stLine = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-3">
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-x-4 gap-y-1">
+              <div className="flex flex-col gap-y-1">
                 <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]">
                   <ClipboardCheck className="w-4 h-4" />
                   View My Pending Assessments
