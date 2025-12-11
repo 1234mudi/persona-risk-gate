@@ -1419,11 +1419,25 @@ const Dashboard1stLine = () => {
                             <DropdownMenuLabel>Group by Level</DropdownMenuLabel>
                             <DropdownMenuSeparator />
                             <DropdownMenuItem 
+                              onClick={() => setHierarchyViewMode("level1")}
+                              className={hierarchyViewMode === "level1" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level1" ? "opacity-100" : "opacity-0"}`} />
+                              Level 1 (with L2 → L3 dropdowns)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
                               onClick={() => setHierarchyViewMode("level2")}
                               className={hierarchyViewMode === "level2" ? "bg-first-line/10 text-first-line" : ""}
                             >
                               <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level2" ? "opacity-100" : "opacity-0"}`} />
                               Level 2 (with L3 dropdown)
+                            </DropdownMenuItem>
+                            <DropdownMenuItem 
+                              onClick={() => setHierarchyViewMode("level3")}
+                              className={hierarchyViewMode === "level3" ? "bg-first-line/10 text-first-line" : ""}
+                            >
+                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level3" ? "opacity-100" : "opacity-0"}`} />
+                              Level 3 only (flat list)
                             </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
