@@ -1401,8 +1401,8 @@ const Dashboard1stLine = () => {
                 <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
-                      <TableHead className="w-12 py-2 border-r border-b border-border">
-                        <div className="flex items-center justify-center">
+                      <TableHead className="w-14 min-w-[56px] py-2 border-r border-b border-border">
+                        <div className="flex items-center justify-center px-2">
                           <Checkbox 
                             checked={visibleRisks.length > 0 && selectedRisks.size === visibleRisks.length}
                             onCheckedChange={toggleSelectAll}
@@ -1474,8 +1474,8 @@ const Dashboard1stLine = () => {
                         risk.riskLevel === "Level 2" ? 'bg-purple-50/30 dark:bg-purple-950/10' :
                         'bg-orange-50/30 dark:bg-orange-950/10'
                       }`}>
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-center justify-center">
+                        <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
+                          <div className="flex items-center justify-center px-2">
                             <Checkbox 
                               checked={selectedRisks.has(risk.id)}
                               onCheckedChange={() => toggleRiskSelection(risk.id)}
