@@ -1473,7 +1473,6 @@ const Dashboard1stLine = () => {
                                   </TooltipContent>
                                 </Tooltip>
                                 <span className="text-xs text-muted-foreground">{risk.owner}</span>
-                                <span className="text-xs text-muted-foreground">{risk.businessUnit}</span>
                               </div>
                               
                               {/* Level 2 Children (displayed within Level 1 row) */}
