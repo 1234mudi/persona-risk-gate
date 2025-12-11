@@ -1449,7 +1449,7 @@ const Dashboard1stLine = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {getVisibleRisks().map((risk, index) => {
+                    {visibleRisks.map((risk, index) => {
                       const isLevel1 = risk.riskLevel === "Level 1";
                       const isLevel3 = risk.riskLevel === "Level 3";
                       const isExpanded = expandedRows.has(risk.id);
