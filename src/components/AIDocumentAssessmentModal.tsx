@@ -390,78 +390,49 @@ export function AIDocumentAssessmentModal({
   };
 
   const parseRecordToRisk = (lines: string[], headerMap: { name: string; index: number }[] = []): ParsedRisk | null => {
-    if (lines.length < 10) return null;
+    // Be more lenient - accept records with at least 5 fields
+    if (lines.length < 5) return null;
     
-    // Create a lookup for field positions based on header names
+    // Create a lookup for field positions based on header order
     const headerNames = headerMap.map(h => h.name);
     
-    // Helper to get field value by header name or index
-    const getField = (primaryName: string, altName: string | null, defaultIndex: number): string => {
+    // Helper to get field value by header name - use position in header array
+    const getField = (primaryName: string, altName: string | null = null): string => {
       const primaryIdx = headerNames.indexOf(primaryName);
-      const altIdx = altName ? headerNames.indexOf(altName) : -1;
-      
       if (primaryIdx !== -1 && lines[primaryIdx] !== undefined) {
         return lines[primaryIdx];
       }
-      if (altIdx !== -1 && lines[altIdx] !== undefined) {
-        return lines[altIdx];
+      if (altName) {
+        const altIdx = headerNames.indexOf(altName);
+        if (altIdx !== -1 && lines[altIdx] !== undefined) {
+          return lines[altIdx];
+        }
       }
-      return lines[defaultIndex] || '';
+      return '';
     };
     
-    // Parse Risk Hierarchy if present (format: "Level1 > Level2 > Level3")
-    const parseRiskHierarchy = (): { l1: string; l2: string; l3: string } => {
-      const hierarchyIdx = headerNames.indexOf('Risk Hierarchy');
-      if (hierarchyIdx !== -1 && lines[hierarchyIdx]) {
-        const parts = lines[hierarchyIdx].split('>').map(p => p.trim());
-        return {
-          l1: parts[0] || '',
-          l2: parts[1] || '',
-          l3: parts[2] || ''
-        };
-      }
-      return { l1: '', l2: '', l3: '' };
-    };
-    
-    // Check for Risk Hierarchy combined field
-    const hierarchy = parseRiskHierarchy();
-    const hasRiskHierarchy = headerNames.includes('Risk Hierarchy');
-    
-    // Parse Assessors/Collaborators - might have multiple values
-    const getAssessors = (): string => {
-      const assessorIdx = headerNames.indexOf('Assessor');
-      const collaboratorsIdx = headerNames.indexOf('Assessors/Collaborators');
-      
-      if (collaboratorsIdx !== -1 && lines[collaboratorsIdx]) {
-        return lines[collaboratorsIdx];
-      }
-      if (assessorIdx !== -1 && lines[assessorIdx]) {
-        return lines[assessorIdx];
-      }
-      return lines[9] || '';
-    };
-    
-    // Build risk object with dynamic field mapping
+    // Build risk object using header-based lookups
+    // Lines[0] is always the Risk ID
     return {
       id: lines[0] || '',
-      title: getField('Title', null, 1),
-      riskLevel1: hasRiskHierarchy ? hierarchy.l1 : getField('Risk Level 1', null, 2),
-      riskLevel2: hasRiskHierarchy ? hierarchy.l2 : getField('Risk Level 2', null, 3),
-      riskLevel3: hasRiskHierarchy ? hierarchy.l3 : getField('Risk Level 3', null, 4),
-      level: getField('Level', null, hasRiskHierarchy ? 3 : 5),
-      businessUnit: getField('Business Unit', null, hasRiskHierarchy ? 4 : 6),
-      category: getField('Category', null, hasRiskHierarchy ? 5 : 7),
-      owner: getField('Owner', null, hasRiskHierarchy ? 6 : 8),
-      assessor: getAssessors(),
-      inherentRisk: getField('Inherent Risk', null, hasRiskHierarchy ? 8 : 10) || 'Medium',
-      inherentTrend: getField('Inherent Trend', null, hasRiskHierarchy ? 9 : 11),
-      controls: getField('Controls', null, hasRiskHierarchy ? 10 : 12),
-      effectiveness: getField('Effectiveness', null, hasRiskHierarchy ? 11 : 13),
-      testResults: getField('Test Results', null, hasRiskHierarchy ? 12 : 14),
-      residualRisk: getField('Residual Risk', null, hasRiskHierarchy ? 13 : 15) || 'Low',
-      residualTrend: getField('Residual Trend', null, hasRiskHierarchy ? 14 : 16),
-      status: getField('Status', null, hasRiskHierarchy ? 15 : 17) || 'Sent for Assessment',
-      lastAssessed: getField('Last Assessed', null, hasRiskHierarchy ? 16 : 18) || new Date().toLocaleDateString(),
+      title: getField('Title') || lines[1] || '',
+      riskLevel1: getField('Risk Level 1'),
+      riskLevel2: getField('Risk Level 2'),
+      riskLevel3: getField('Risk Level 3'),
+      level: getField('Level') || '',
+      businessUnit: getField('Business Unit'),
+      category: getField('Category') || '',
+      owner: getField('Owner') || '',
+      assessor: getField('Assessor') || getField('Assessors/Collaborators') || '',
+      inherentRisk: getField('Inherent Risk') || 'Medium',
+      inherentTrend: getField('Inherent Trend') || '',
+      controls: getField('Controls') || '',
+      effectiveness: getField('Effectiveness') || '',
+      testResults: getField('Test Results') || '',
+      residualRisk: getField('Residual Risk') || 'Low',
+      residualTrend: getField('Residual Trend') || '',
+      status: getField('Status') || 'Sent for Assessment',
+      lastAssessed: getField('Last Assessed') || new Date().toLocaleDateString(),
     };
   };
 
