@@ -557,13 +557,18 @@ export function AIDocumentAssessmentModal({
   // State for showing field highlights
   const [showHighlights, setShowHighlights] = useState(true);
 
-  // Helper to get input styling based on field value
-  const getFieldInputClass = (value: string | undefined): string => {
+  // Helper to get input styling based on field value and modification status
+  const getFieldInputClass = (risk: ParsedRisk, field: keyof ParsedRisk, value: string | undefined): string => {
     if (!showHighlights) return '';
+    // Yellow for empty fields
     if (!value || value === '' || value === 'N/A' || value === 'Unknown') {
-      return 'ring-1 ring-amber-300/50 bg-amber-50/30 dark:bg-amber-900/10 border-amber-300/50';
+      return 'ring-1 ring-amber-400/60 bg-amber-50/40 dark:bg-amber-900/20 border-amber-400/60';
     }
-    return 'ring-1 ring-emerald-300/40 bg-emerald-50/20 dark:bg-emerald-900/10 border-emerald-300/40';
+    // Blue for modified fields
+    if (isFieldModified(risk, field)) {
+      return 'ring-1 ring-blue-400/60 bg-blue-50/40 dark:bg-blue-900/20 border-blue-400/60';
+    }
+    return '';
   };
 
   const deleteRisk = (index: number) => {
@@ -778,12 +783,12 @@ export function AIDocumentAssessmentModal({
                   {/* Highlight Toggle with Legend */}
                   <div className="flex items-center gap-3 text-xs">
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded border border-emerald-300/50 bg-emerald-50/30 dark:bg-emerald-900/20" />
-                      <span className="text-muted-foreground">Has data</span>
+                      <div className="w-3 h-3 rounded border border-amber-400/60 bg-amber-50/40 dark:bg-amber-900/20" />
+                      <span className="text-muted-foreground">Empty</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded border border-amber-300/50 bg-amber-50/30 dark:bg-amber-900/20" />
-                      <span className="text-muted-foreground">Missing</span>
+                      <div className="w-3 h-3 rounded border border-blue-400/60 bg-blue-50/40 dark:bg-blue-900/20" />
+                      <span className="text-muted-foreground">Modified</span>
                     </div>
                     <div className="flex items-center gap-2 ml-2">
                       <Switch 
@@ -993,7 +998,7 @@ export function AIDocumentAssessmentModal({
                                     <Input
                                       value={risk.id}
                                       onChange={(e) => updateRisk(originalIndex, 'id', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk.id)}`}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'id', risk.id)}`}
                                     />
                                   </div>
                                   
@@ -1003,7 +1008,7 @@ export function AIDocumentAssessmentModal({
                                     <Input
                                       value={risk.title}
                                       onChange={(e) => updateRisk(originalIndex, 'title', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk.title)}`}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'title', risk.title)}`}
                                     />
                                   </div>
                                   
@@ -1013,7 +1018,7 @@ export function AIDocumentAssessmentModal({
                                     <Input
                                       value={risk.owner}
                                       onChange={(e) => updateRisk(originalIndex, 'owner', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk.owner)}`}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'owner', risk.owner)}`}
                                     />
                                   </div>
                                   
@@ -1023,7 +1028,7 @@ export function AIDocumentAssessmentModal({
                                     <Input
                                       value={risk.category}
                                       onChange={(e) => updateRisk(originalIndex, 'category', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk.category)}`}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'category', risk.category)}`}
                                     />
                                   </div>
                                   
@@ -1033,7 +1038,7 @@ export function AIDocumentAssessmentModal({
                                     <Input
                                       value={risk.controls}
                                       onChange={(e) => updateRisk(originalIndex, 'controls', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk.controls)}`}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'controls', risk.controls)}`}
                                     />
                                   </div>
                                   
@@ -1045,7 +1050,7 @@ export function AIDocumentAssessmentModal({
                                              risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
                                       onValueChange={(value) => updateRisk(originalIndex, 'inherentRisk', value)}
                                     >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.inherentRisk)}`}>
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'inherentRisk', risk.inherentRisk)}`}>
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -1064,7 +1069,7 @@ export function AIDocumentAssessmentModal({
                                              risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
                                       onValueChange={(value) => updateRisk(originalIndex, 'residualRisk', value)}
                                     >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.residualRisk)}`}>
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'residualRisk', risk.residualRisk)}`}>
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -1082,7 +1087,7 @@ export function AIDocumentAssessmentModal({
                                       value={risk.status}
                                       onValueChange={(value) => updateRisk(originalIndex, 'status', value)}
                                     >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.status)}`}>
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'status', risk.status)}`}>
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -1100,7 +1105,7 @@ export function AIDocumentAssessmentModal({
                                     <Input
                                       value={risk.assessor}
                                       onChange={(e) => updateRisk(originalIndex, 'assessor', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk.assessor)}`}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'assessor', risk.assessor)}`}
                                     />
                                   </div>
                                   
@@ -1111,7 +1116,7 @@ export function AIDocumentAssessmentModal({
                                       value={risk.effectiveness || 'Effective'}
                                       onValueChange={(value) => updateRisk(originalIndex, 'effectiveness', value)}
                                     >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.effectiveness)}`}>
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'effectiveness', risk.effectiveness)}`}>
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent>
@@ -1128,7 +1133,7 @@ export function AIDocumentAssessmentModal({
                                     <Input
                                       value={risk.lastAssessed}
                                       onChange={(e) => updateRisk(originalIndex, 'lastAssessed', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk.lastAssessed)}`}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'lastAssessed', risk.lastAssessed)}`}
                                     />
                                   </div>
                                 </div>
