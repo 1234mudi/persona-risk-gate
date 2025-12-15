@@ -547,6 +547,14 @@ export function AIDocumentAssessmentModal({
     ));
   };
 
+  // Helper to get input styling based on field value
+  const getFieldInputClass = (value: string | undefined): string => {
+    if (!value || value === '' || value === 'N/A' || value === 'Unknown') {
+      return 'ring-2 ring-amber-400 bg-amber-500/20 border-amber-400';
+    }
+    return 'ring-2 ring-green-400 bg-green-500/20 border-green-400';
+  };
+
   const deleteRisk = (index: number) => {
     setParsedRisks(prev => prev.filter((_, i) => i !== index));
     toast.success("Risk removed from import list");
@@ -720,7 +728,7 @@ export function AIDocumentAssessmentModal({
               </div>
 
               {/* Table View matching main dashboard */}
-              <ScrollArea className="h-[50vh] border rounded-lg">
+              <ScrollArea className="flex-1 min-h-0 border rounded-lg">
                 <Table>
                   <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur-sm z-10">
                     <TableRow className="hover:bg-transparent">
@@ -848,20 +856,18 @@ export function AIDocumentAssessmentModal({
                         <Input
                           value={parsedRisks[expandedIndex].id}
                           onChange={(e) => updateRisk(expandedIndex, 'id', e.target.value)}
-                          className="h-9"
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].id)}`}
                         />
                       </div>
                       
                       {/* Title */}
                       <div className="space-y-1.5 lg:col-span-2">
                         <label className="text-xs font-medium text-muted-foreground">Title</label>
-                        {renderModifiedField(parsedRisks[expandedIndex], 'title',
-                          <Input
-                            value={parsedRisks[expandedIndex].title}
-                            onChange={(e) => updateRisk(expandedIndex, 'title', e.target.value)}
-                            className={`h-9 ${isFieldModified(parsedRisks[expandedIndex], 'title') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                          />
-                        )}
+                        <Input
+                          value={parsedRisks[expandedIndex].title}
+                          onChange={(e) => updateRisk(expandedIndex, 'title', e.target.value)}
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].title)}`}
+                        />
                       </div>
                       
                       {/* Level */}
@@ -870,32 +876,28 @@ export function AIDocumentAssessmentModal({
                         <Input
                           value={parsedRisks[expandedIndex].level}
                           onChange={(e) => updateRisk(expandedIndex, 'level', e.target.value)}
-                          className="h-9"
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].level)}`}
                         />
                       </div>
                       
                       {/* Category */}
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted-foreground">Category</label>
-                        {renderModifiedField(parsedRisks[expandedIndex], 'category',
-                          <Input
-                            value={parsedRisks[expandedIndex].category}
-                            onChange={(e) => updateRisk(expandedIndex, 'category', e.target.value)}
-                            className={`h-9 ${isFieldModified(parsedRisks[expandedIndex], 'category') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                          />
-                        )}
+                        <Input
+                          value={parsedRisks[expandedIndex].category}
+                          onChange={(e) => updateRisk(expandedIndex, 'category', e.target.value)}
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].category)}`}
+                        />
                       </div>
                       
                       {/* Owner */}
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted-foreground">Owner</label>
-                        {renderModifiedField(parsedRisks[expandedIndex], 'owner',
-                          <Input
-                            value={parsedRisks[expandedIndex].owner}
-                            onChange={(e) => updateRisk(expandedIndex, 'owner', e.target.value)}
-                            className={`h-9 ${isFieldModified(parsedRisks[expandedIndex], 'owner') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}
-                          />
-                        )}
+                        <Input
+                          value={parsedRisks[expandedIndex].owner}
+                          onChange={(e) => updateRisk(expandedIndex, 'owner', e.target.value)}
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].owner)}`}
+                        />
                       </div>
                       
                       {/* Assessor */}
@@ -904,29 +906,27 @@ export function AIDocumentAssessmentModal({
                         <Input
                           value={parsedRisks[expandedIndex].assessor}
                           onChange={(e) => updateRisk(expandedIndex, 'assessor', e.target.value)}
-                          className="h-9"
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].assessor)}`}
                         />
                       </div>
                       
                       {/* Inherent Risk */}
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted-foreground">Inherent Risk</label>
-                        {renderModifiedField(parsedRisks[expandedIndex], 'inherentRisk',
-                          <Select
-                            value={parsedRisks[expandedIndex].inherentRisk.toLowerCase().includes('high') ? 'High' : 
-                                   parsedRisks[expandedIndex].inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                            onValueChange={(value) => updateRisk(expandedIndex, 'inherentRisk', value)}
-                          >
-                            <SelectTrigger className={`h-9 ${isFieldModified(parsedRisks[expandedIndex], 'inherentRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="High">High</SelectItem>
-                              <SelectItem value="Medium">Medium</SelectItem>
-                              <SelectItem value="Low">Low</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
+                        <Select
+                          value={parsedRisks[expandedIndex].inherentRisk.toLowerCase().includes('high') ? 'High' : 
+                                 parsedRisks[expandedIndex].inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                          onValueChange={(value) => updateRisk(expandedIndex, 'inherentRisk', value)}
+                        >
+                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].inherentRisk)}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="High">High</SelectItem>
+                            <SelectItem value="Medium">Medium</SelectItem>
+                            <SelectItem value="Low">Low</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       
                       {/* Inherent Trend */}
@@ -936,7 +936,7 @@ export function AIDocumentAssessmentModal({
                           value={parsedRisks[expandedIndex].inherentTrend || 'Stable'}
                           onValueChange={(value) => updateRisk(expandedIndex, 'inherentTrend', value)}
                         >
-                          <SelectTrigger className="h-9">
+                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].inherentTrend)}`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -953,7 +953,7 @@ export function AIDocumentAssessmentModal({
                         <Input
                           value={parsedRisks[expandedIndex].controls}
                           onChange={(e) => updateRisk(expandedIndex, 'controls', e.target.value)}
-                          className="h-9"
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].controls)}`}
                         />
                       </div>
                       
@@ -964,7 +964,7 @@ export function AIDocumentAssessmentModal({
                           value={parsedRisks[expandedIndex].effectiveness || 'Effective'}
                           onValueChange={(value) => updateRisk(expandedIndex, 'effectiveness', value)}
                         >
-                          <SelectTrigger className="h-9">
+                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].effectiveness)}`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -982,7 +982,7 @@ export function AIDocumentAssessmentModal({
                           value={parsedRisks[expandedIndex].testResults || 'Pass'}
                           onValueChange={(value) => updateRisk(expandedIndex, 'testResults', value)}
                         >
-                          <SelectTrigger className="h-9">
+                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].testResults)}`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -996,22 +996,20 @@ export function AIDocumentAssessmentModal({
                       {/* Residual Risk */}
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted-foreground">Residual Risk</label>
-                        {renderModifiedField(parsedRisks[expandedIndex], 'residualRisk',
-                          <Select
-                            value={parsedRisks[expandedIndex].residualRisk.toLowerCase().includes('high') ? 'High' : 
-                                   parsedRisks[expandedIndex].residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                            onValueChange={(value) => updateRisk(expandedIndex, 'residualRisk', value)}
-                          >
-                            <SelectTrigger className={`h-9 ${isFieldModified(parsedRisks[expandedIndex], 'residualRisk') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="High">High</SelectItem>
-                              <SelectItem value="Medium">Medium</SelectItem>
-                              <SelectItem value="Low">Low</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
+                        <Select
+                          value={parsedRisks[expandedIndex].residualRisk.toLowerCase().includes('high') ? 'High' : 
+                                 parsedRisks[expandedIndex].residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                          onValueChange={(value) => updateRisk(expandedIndex, 'residualRisk', value)}
+                        >
+                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].residualRisk)}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="High">High</SelectItem>
+                            <SelectItem value="Medium">Medium</SelectItem>
+                            <SelectItem value="Low">Low</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       
                       {/* Residual Trend */}
@@ -1021,7 +1019,7 @@ export function AIDocumentAssessmentModal({
                           value={parsedRisks[expandedIndex].residualTrend || 'Stable'}
                           onValueChange={(value) => updateRisk(expandedIndex, 'residualTrend', value)}
                         >
-                          <SelectTrigger className="h-9">
+                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].residualTrend)}`}>
                             <SelectValue />
                           </SelectTrigger>
                           <SelectContent>
@@ -1035,22 +1033,20 @@ export function AIDocumentAssessmentModal({
                       {/* Status */}
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted-foreground">Status</label>
-                        {renderModifiedField(parsedRisks[expandedIndex], 'status',
-                          <Select
-                            value={parsedRisks[expandedIndex].status}
-                            onValueChange={(value) => updateRisk(expandedIndex, 'status', value)}
-                          >
-                            <SelectTrigger className={`h-9 ${isFieldModified(parsedRisks[expandedIndex], 'status') ? 'ring-2 ring-amber-500 bg-amber-500/10' : ''}`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
-                              <SelectItem value="In Progress">In Progress</SelectItem>
-                              <SelectItem value="Completed">Completed</SelectItem>
-                              <SelectItem value="Overdue">Overdue</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        )}
+                        <Select
+                          value={parsedRisks[expandedIndex].status}
+                          onValueChange={(value) => updateRisk(expandedIndex, 'status', value)}
+                        >
+                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].status)}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
+                            <SelectItem value="In Progress">In Progress</SelectItem>
+                            <SelectItem value="Completed">Completed</SelectItem>
+                            <SelectItem value="Overdue">Overdue</SelectItem>
+                          </SelectContent>
+                        </Select>
                       </div>
                       
                       {/* Last Assessed */}
@@ -1059,7 +1055,7 @@ export function AIDocumentAssessmentModal({
                         <Input
                           value={parsedRisks[expandedIndex].lastAssessed}
                           onChange={(e) => updateRisk(expandedIndex, 'lastAssessed', e.target.value)}
-                          className="h-9"
+                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].lastAssessed)}`}
                         />
                       </div>
                     </div>
