@@ -566,7 +566,7 @@ export function AIDocumentAssessmentModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-6xl w-[95vw] max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="sm:max-w-[95vw] w-[95vw] h-[90vh] max-h-[90vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-first-line" />
@@ -720,7 +720,7 @@ export function AIDocumentAssessmentModal({
               </div>
 
               {/* Table View matching main dashboard */}
-              <ScrollArea className="h-[300px] border rounded-lg">
+              <ScrollArea className="h-[50vh] border rounded-lg">
                 <Table>
                   <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur-sm z-10">
                     <TableRow className="hover:bg-transparent">
