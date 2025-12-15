@@ -622,7 +622,11 @@ export function AIDocumentAssessmentModal({
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col">
+      <DialogContent className={
+        step === "review" 
+          ? "w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col" 
+          : "sm:max-w-lg"
+      }>
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-first-line" />
