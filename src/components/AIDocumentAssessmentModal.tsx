@@ -1,5 +1,5 @@
-import { useState, useCallback, useMemo } from "react";
-import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight } from "lucide-react";
+import React, { useState, useCallback, useMemo } from "react";
+import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
 import mammoth from "mammoth";
 import {
   Dialog,
@@ -30,6 +30,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Switch } from "@/components/ui/switch";
 
 export interface ParsedRisk {
   id: string;
@@ -547,12 +548,16 @@ export function AIDocumentAssessmentModal({
     ));
   };
 
+  // State for showing field highlights
+  const [showHighlights, setShowHighlights] = useState(true);
+
   // Helper to get input styling based on field value
   const getFieldInputClass = (value: string | undefined): string => {
+    if (!showHighlights) return '';
     if (!value || value === '' || value === 'N/A' || value === 'Unknown') {
-      return 'ring-2 ring-amber-400 bg-amber-500/20 border-amber-400';
+      return 'ring-1 ring-amber-300/50 bg-amber-50/30 dark:bg-amber-900/10 border-amber-300/50';
     }
-    return 'ring-2 ring-green-400 bg-green-500/20 border-green-400';
+    return 'ring-1 ring-emerald-300/40 bg-emerald-50/20 dark:bg-emerald-900/10 border-emerald-300/40';
   };
 
   const deleteRisk = (index: number) => {
@@ -722,9 +727,27 @@ export function AIDocumentAssessmentModal({
                     </Badge>
                   </div>
                 </div>
-                <Badge variant="outline">
-                  Click row to expand and edit
-                </Badge>
+                <div className="flex items-center gap-4">
+                  {/* Highlight Toggle with Legend */}
+                  <div className="flex items-center gap-3 text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded border border-emerald-300/50 bg-emerald-50/30 dark:bg-emerald-900/20" />
+                      <span className="text-muted-foreground">Has data</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-3 h-3 rounded border border-amber-300/50 bg-amber-50/30 dark:bg-amber-900/20" />
+                      <span className="text-muted-foreground">Missing</span>
+                    </div>
+                    <div className="flex items-center gap-2 ml-2">
+                      <Switch 
+                        checked={showHighlights} 
+                        onCheckedChange={setShowHighlights}
+                        className="scale-75"
+                      />
+                      <span className="text-muted-foreground">Highlights</span>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               {/* Table View matching main dashboard */}
@@ -754,324 +777,249 @@ export function AIDocumentAssessmentModal({
                       const missingCount = missingFields.length;
                       
                       return (
-                        <TableRow 
-                          key={index}
-                          className={`cursor-pointer transition-colors
-                            ${riskStatus === "new" ? "bg-green-500/5 hover:bg-green-500/10" : ""}
-                            ${riskStatus === "modified" ? "bg-blue-500/5 hover:bg-blue-500/10" : ""}
-                            ${riskStatus === "unchanged" ? "hover:bg-muted/50" : ""}
-                            ${isExpanded ? "bg-muted/30" : ""}
-                          `}
-                          onClick={() => setExpandedIndex(isExpanded ? null : index)}
-                        >
-                          {/* Status Badge */}
-                          <TableCell className="py-2 border-r border-b border-border">
-                            {getStatusBadge(riskStatus)}
-                          </TableCell>
-                          
-                          {/* Risk ID */}
-                          <TableCell className="py-2 border-r border-b border-border">
-                            <span className="font-mono text-sm text-muted-foreground">{risk.id}</span>
-                          </TableCell>
-                          
-                          {/* Title and Owner */}
-                          <TableCell className="py-2 border-r border-b border-border">
-                            <div className="flex flex-col gap-0.5">
-                              <span className="font-medium text-foreground">{risk.title}</span>
-                              <span className="text-xs text-muted-foreground">{risk.owner || 'No owner'}</span>
-                            </div>
-                          </TableCell>
-                          
-                          {/* Status */}
-                          <TableCell className="py-2 border-r border-b border-border">
-                            <Badge variant="outline" className="text-xs">
-                              {risk.status}
-                            </Badge>
-                          </TableCell>
-                          
-                          {/* Missing Fields */}
-                          <TableCell className="py-2 border-r border-b border-border">
-                            {missingCount > 0 ? (
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Badge 
-                                    variant="outline" 
-                                    className="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 cursor-help"
-                                  >
-                                    <AlertCircle className="w-3 h-3 mr-1" />
-                                    {missingCount} missing
-                                  </Badge>
-                                </TooltipTrigger>
-                                <TooltipContent side="left" className="max-w-xs">
-                                  <p className="text-xs font-medium mb-1">Missing fields:</p>
-                                  <ul className="text-xs text-muted-foreground list-disc list-inside">
-                                    {missingFields.map(field => (
-                                      <li key={field} className="capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</li>
-                                    ))}
-                                  </ul>
-                                </TooltipContent>
-                              </Tooltip>
-                            ) : (
-                              <Badge variant="outline" className="text-xs bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30">
-                                <CheckCircle className="w-3 h-3 mr-1" />
-                                Complete
+                        <React.Fragment key={index}>
+                          <TableRow 
+                            className={`cursor-pointer transition-colors
+                              ${riskStatus === "new" ? "bg-green-500/5 hover:bg-green-500/10" : ""}
+                              ${riskStatus === "modified" ? "bg-blue-500/5 hover:bg-blue-500/10" : ""}
+                              ${riskStatus === "unchanged" ? "hover:bg-muted/50" : ""}
+                              ${isExpanded ? "bg-first-line/10 border-l-2 border-l-first-line" : ""}
+                            `}
+                            onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                          >
+                            {/* Status Badge */}
+                            <TableCell className="py-2 border-r border-b border-border">
+                              <div className="flex items-center gap-2">
+                                {isExpanded ? <ChevronUp className="w-4 h-4 text-first-line" /> : <ChevronDown className="w-4 h-4 text-muted-foreground" />}
+                                {getStatusBadge(riskStatus)}
+                              </div>
+                            </TableCell>
+                            
+                            {/* Risk ID */}
+                            <TableCell className="py-2 border-r border-b border-border">
+                              <span className="font-mono text-sm text-muted-foreground">{risk.id}</span>
+                            </TableCell>
+                            
+                            {/* Title and Owner */}
+                            <TableCell className="py-2 border-r border-b border-border">
+                              <div className="flex flex-col gap-0.5">
+                                <span className="font-medium text-foreground">{risk.title}</span>
+                                <span className="text-xs text-muted-foreground">{risk.owner || 'No owner'}</span>
+                              </div>
+                            </TableCell>
+                            
+                            {/* Status */}
+                            <TableCell className="py-2 border-r border-b border-border">
+                              <Badge variant="outline" className="text-xs">
+                                {risk.status}
                               </Badge>
-                            )}
-                          </TableCell>
+                            </TableCell>
+                            
+                            {/* Missing Fields */}
+                            <TableCell className="py-2 border-r border-b border-border">
+                              {missingCount > 0 ? (
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Badge 
+                                      variant="outline" 
+                                      className="text-xs bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/30 cursor-help"
+                                    >
+                                      <AlertCircle className="w-3 h-3 mr-1" />
+                                      {missingCount} missing
+                                    </Badge>
+                                  </TooltipTrigger>
+                                  <TooltipContent side="left" className="max-w-xs">
+                                    <p className="text-xs font-medium mb-1">Missing fields:</p>
+                                    <ul className="text-xs text-muted-foreground list-disc list-inside">
+                                      {missingFields.map(field => (
+                                        <li key={field} className="capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</li>
+                                      ))}
+                                    </ul>
+                                  </TooltipContent>
+                                </Tooltip>
+                              ) : (
+                                <Badge variant="outline" className="text-xs bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/30">
+                                  <CheckCircle className="w-3 h-3 mr-1" />
+                                  Complete
+                                </Badge>
+                              )}
+                            </TableCell>
+                            
+                            {/* Delete Button */}
+                            <TableCell className="py-2 border-b border-border">
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  deleteRisk(index);
+                                }}
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </TableCell>
+                          </TableRow>
                           
-                          {/* Delete Button */}
-                          <TableCell className="py-2 border-b border-border">
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                deleteRisk(index);
-                              }}
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </Button>
-                          </TableCell>
-                        </TableRow>
+                          {/* Inline Edit Row */}
+                          {isExpanded && (
+                            <TableRow className="bg-muted/30 border-l-2 border-l-first-line">
+                              <TableCell colSpan={6} className="p-4" onClick={(e) => e.stopPropagation()}>
+                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
+                                  {/* Risk ID */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Risk ID</label>
+                                    <Input
+                                      value={risk.id}
+                                      onChange={(e) => updateRisk(index, 'id', e.target.value)}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk.id)}`}
+                                    />
+                                  </div>
+                                  
+                                  {/* Title */}
+                                  <div className="space-y-1 col-span-2">
+                                    <label className="text-xs font-medium text-muted-foreground">Title</label>
+                                    <Input
+                                      value={risk.title}
+                                      onChange={(e) => updateRisk(index, 'title', e.target.value)}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk.title)}`}
+                                    />
+                                  </div>
+                                  
+                                  {/* Owner */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Owner</label>
+                                    <Input
+                                      value={risk.owner}
+                                      onChange={(e) => updateRisk(index, 'owner', e.target.value)}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk.owner)}`}
+                                    />
+                                  </div>
+                                  
+                                  {/* Category */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Category</label>
+                                    <Input
+                                      value={risk.category}
+                                      onChange={(e) => updateRisk(index, 'category', e.target.value)}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk.category)}`}
+                                    />
+                                  </div>
+                                  
+                                  {/* Controls */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Controls</label>
+                                    <Input
+                                      value={risk.controls}
+                                      onChange={(e) => updateRisk(index, 'controls', e.target.value)}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk.controls)}`}
+                                    />
+                                  </div>
+                                  
+                                  {/* Inherent Risk */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Inherent Risk</label>
+                                    <Select
+                                      value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
+                                             risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                                      onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
+                                    >
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.inherentRisk)}`}>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="High">High</SelectItem>
+                                        <SelectItem value="Medium">Medium</SelectItem>
+                                        <SelectItem value="Low">Low</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  
+                                  {/* Residual Risk */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Residual Risk</label>
+                                    <Select
+                                      value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
+                                             risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
+                                      onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
+                                    >
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.residualRisk)}`}>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="High">High</SelectItem>
+                                        <SelectItem value="Medium">Medium</SelectItem>
+                                        <SelectItem value="Low">Low</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  
+                                  {/* Status */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Status</label>
+                                    <Select
+                                      value={risk.status}
+                                      onValueChange={(value) => updateRisk(index, 'status', value)}
+                                    >
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.status)}`}>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
+                                        <SelectItem value="In Progress">In Progress</SelectItem>
+                                        <SelectItem value="Completed">Completed</SelectItem>
+                                        <SelectItem value="Overdue">Overdue</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  
+                                  {/* Assessor */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Assessor</label>
+                                    <Input
+                                      value={risk.assessor}
+                                      onChange={(e) => updateRisk(index, 'assessor', e.target.value)}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk.assessor)}`}
+                                    />
+                                  </div>
+                                  
+                                  {/* Effectiveness */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Effectiveness</label>
+                                    <Select
+                                      value={risk.effectiveness || 'Effective'}
+                                      onValueChange={(value) => updateRisk(index, 'effectiveness', value)}
+                                    >
+                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.effectiveness)}`}>
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent>
+                                        <SelectItem value="Effective">Effective</SelectItem>
+                                        <SelectItem value="Partially Effective">Partially Effective</SelectItem>
+                                        <SelectItem value="Ineffective">Ineffective</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </div>
+                                  
+                                  {/* Last Assessed */}
+                                  <div className="space-y-1">
+                                    <label className="text-xs font-medium text-muted-foreground">Last Assessed</label>
+                                    <Input
+                                      value={risk.lastAssessed}
+                                      onChange={(e) => updateRisk(index, 'lastAssessed', e.target.value)}
+                                      className={`h-8 text-sm ${getFieldInputClass(risk.lastAssessed)}`}
+                                    />
+                                  </div>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </React.Fragment>
                       );
                     })}
                   </TableBody>
                 </Table>
               </ScrollArea>
-                
-              {/* Expanded Section - Shown below table when a row is selected */}
-              <div 
-                className={`border rounded-lg bg-muted/20 overflow-hidden transition-all duration-300 ease-out ${
-                  expandedIndex !== null && parsedRisks[expandedIndex] 
-                    ? 'max-h-[400px] opacity-100 p-4 mt-4' 
-                    : 'max-h-0 opacity-0 p-0 mt-0'
-                }`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                {expandedIndex !== null && parsedRisks[expandedIndex] && (
-                  <>
-                    <div className="flex items-center justify-between mb-4">
-                      <h4 className="font-medium text-sm">Editing: {parsedRisks[expandedIndex].title}</h4>
-                      <Button variant="ghost" size="sm" onClick={() => setExpandedIndex(null)}>
-                        <X className="w-4 h-4 mr-1" /> Close
-                      </Button>
-                    </div>
-                    <ScrollArea className="h-[280px]">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pr-4">
-                      {/* Risk ID */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Risk ID</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].id}
-                          onChange={(e) => updateRisk(expandedIndex, 'id', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].id)}`}
-                        />
-                      </div>
-                      
-                      {/* Title */}
-                      <div className="space-y-1.5 lg:col-span-2">
-                        <label className="text-xs font-medium text-muted-foreground">Title</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].title}
-                          onChange={(e) => updateRisk(expandedIndex, 'title', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].title)}`}
-                        />
-                      </div>
-                      
-                      {/* Level */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Level</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].level}
-                          onChange={(e) => updateRisk(expandedIndex, 'level', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].level)}`}
-                        />
-                      </div>
-                      
-                      {/* Category */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Category</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].category}
-                          onChange={(e) => updateRisk(expandedIndex, 'category', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].category)}`}
-                        />
-                      </div>
-                      
-                      {/* Owner */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Owner</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].owner}
-                          onChange={(e) => updateRisk(expandedIndex, 'owner', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].owner)}`}
-                        />
-                      </div>
-                      
-                      {/* Assessor */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Assessor</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].assessor}
-                          onChange={(e) => updateRisk(expandedIndex, 'assessor', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].assessor)}`}
-                        />
-                      </div>
-                      
-                      {/* Inherent Risk */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Inherent Risk</label>
-                        <Select
-                          value={parsedRisks[expandedIndex].inherentRisk.toLowerCase().includes('high') ? 'High' : 
-                                 parsedRisks[expandedIndex].inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                          onValueChange={(value) => updateRisk(expandedIndex, 'inherentRisk', value)}
-                        >
-                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].inherentRisk)}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="High">High</SelectItem>
-                            <SelectItem value="Medium">Medium</SelectItem>
-                            <SelectItem value="Low">Low</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Inherent Trend */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Inherent Trend</label>
-                        <Select
-                          value={parsedRisks[expandedIndex].inherentTrend || 'Stable'}
-                          onValueChange={(value) => updateRisk(expandedIndex, 'inherentTrend', value)}
-                        >
-                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].inherentTrend)}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Increasing">Increasing</SelectItem>
-                            <SelectItem value="Stable">Stable</SelectItem>
-                            <SelectItem value="Decreasing">Decreasing</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Controls */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Controls</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].controls}
-                          onChange={(e) => updateRisk(expandedIndex, 'controls', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].controls)}`}
-                        />
-                      </div>
-                      
-                      {/* Effectiveness */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Effectiveness</label>
-                        <Select
-                          value={parsedRisks[expandedIndex].effectiveness || 'Effective'}
-                          onValueChange={(value) => updateRisk(expandedIndex, 'effectiveness', value)}
-                        >
-                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].effectiveness)}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Effective">Effective</SelectItem>
-                            <SelectItem value="Partially Effective">Partially Effective</SelectItem>
-                            <SelectItem value="Ineffective">Ineffective</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Test Results */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Test Results</label>
-                        <Select
-                          value={parsedRisks[expandedIndex].testResults || 'Pass'}
-                          onValueChange={(value) => updateRisk(expandedIndex, 'testResults', value)}
-                        >
-                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].testResults)}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Pass">Pass</SelectItem>
-                            <SelectItem value="Fail">Fail</SelectItem>
-                            <SelectItem value="Not Tested">Not Tested</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Residual Risk */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Residual Risk</label>
-                        <Select
-                          value={parsedRisks[expandedIndex].residualRisk.toLowerCase().includes('high') ? 'High' : 
-                                 parsedRisks[expandedIndex].residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                          onValueChange={(value) => updateRisk(expandedIndex, 'residualRisk', value)}
-                        >
-                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].residualRisk)}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="High">High</SelectItem>
-                            <SelectItem value="Medium">Medium</SelectItem>
-                            <SelectItem value="Low">Low</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Residual Trend */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Residual Trend</label>
-                        <Select
-                          value={parsedRisks[expandedIndex].residualTrend || 'Stable'}
-                          onValueChange={(value) => updateRisk(expandedIndex, 'residualTrend', value)}
-                        >
-                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].residualTrend)}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Increasing">Increasing</SelectItem>
-                            <SelectItem value="Stable">Stable</SelectItem>
-                            <SelectItem value="Decreasing">Decreasing</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Status */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Status</label>
-                        <Select
-                          value={parsedRisks[expandedIndex].status}
-                          onValueChange={(value) => updateRisk(expandedIndex, 'status', value)}
-                        >
-                          <SelectTrigger className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].status)}`}>
-                            <SelectValue />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
-                            <SelectItem value="In Progress">In Progress</SelectItem>
-                            <SelectItem value="Completed">Completed</SelectItem>
-                            <SelectItem value="Overdue">Overdue</SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      {/* Last Assessed */}
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium text-muted-foreground">Last Assessed</label>
-                        <Input
-                          value={parsedRisks[expandedIndex].lastAssessed}
-                          onChange={(e) => updateRisk(expandedIndex, 'lastAssessed', e.target.value)}
-                          className={`h-9 ${getFieldInputClass(parsedRisks[expandedIndex].lastAssessed)}`}
-                        />
-                      </div>
-                    </div>
-                  </ScrollArea>
-                  </>
-                )}
-              </div>
             </div>
           </TooltipProvider>
         )}
