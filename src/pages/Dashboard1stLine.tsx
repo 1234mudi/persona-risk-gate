@@ -1511,8 +1511,37 @@ const Dashboard1stLine = () => {
                               risk.riskLevel === "Level 3" ? "pl-6" : ""
                             ) : ""
                           }`}>
-                            {/* Expand/collapse button logic based on hierarchy view mode */}
-                            {hierarchyViewMode === "level1" && (risk.riskLevel === "Level 1" || risk.riskLevel === "Level 2") && canExpand && (
+                            {/* Tree line indicator for child risks */}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && (
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <div className="w-3 h-px bg-purple-400 dark:bg-purple-500" />
+                              </div>
+                            )}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 3" && (
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <div className="w-3 h-px bg-orange-400 dark:bg-orange-500" />
+                              </div>
+                            )}
+                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 3" && (
+                              <div className="flex items-center gap-1 flex-shrink-0">
+                                <div className="w-3 h-px bg-orange-400 dark:bg-orange-500" />
+                              </div>
+                            )}
+                            
+                            {/* Expand/collapse button - only show if risk has children */}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 1" && canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </button>
+                            )}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
                                 className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
@@ -1536,9 +1565,6 @@ const Dashboard1stLine = () => {
                                 )}
                               </button>
                             )}
-                            {/* Spacer for alignment when no expand button */}
-                            {hierarchyViewMode === "level1" && (risk.riskLevel === "Level 1" || risk.riskLevel === "Level 2") && !canExpand && <div className="w-6" />}
-                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 2" && !canExpand && <div className="w-6" />}
                             
                             <div className="flex flex-col gap-1">
                               {/* Risk Title */}
