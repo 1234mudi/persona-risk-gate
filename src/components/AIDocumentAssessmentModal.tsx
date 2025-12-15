@@ -579,48 +579,39 @@ export function AIDocumentAssessmentModal({
 
         {step === "upload" && (
           <div className="flex-1 space-y-4">
-            {/* Drop Zone */}
-            <div
-              onDragOver={handleDragOver}
-              onDragLeave={handleDragLeave}
-              onDrop={handleDrop}
-              className={`border-2 border-dashed rounded-lg text-center transition-colors ${
-                files.length > 0 ? 'p-3' : 'p-8'
-              } ${
-                isDragging 
-                  ? 'border-first-line bg-first-line/5' 
-                  : 'border-border hover:border-first-line/50'
-              }`}
-            >
-              {files.length === 0 ? (
-                <>
-                  <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                  <p className="text-lg font-medium mb-2">
-                    Drag and drop files here
-                  </p>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Supports CSV and DOCX files
-                  </p>
-                </>
-              ) : (
-                <div className="flex items-center justify-center gap-2">
-                  <Upload className="w-4 h-4 text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">Drop more files or</span>
-                </div>
-              )}
-              <label>
-                <input
-                  type="file"
-                  accept=".csv,.docx"
-                  multiple
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-                <Button variant="outline" size={files.length > 0 ? "sm" : "default"} className="cursor-pointer" asChild>
-                  <span>Browse Files</span>
-                </Button>
-              </label>
-            </div>
+            {/* Full Drop Zone - shown when no files */}
+            {files.length === 0 && (
+              <div
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
+                  isDragging 
+                    ? 'border-first-line bg-first-line/5' 
+                    : 'border-border hover:border-first-line/50'
+                }`}
+              >
+                <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
+                <p className="text-lg font-medium mb-2">
+                  Drag and drop files here
+                </p>
+                <p className="text-sm text-muted-foreground mb-4">
+                  Supports CSV and DOCX files
+                </p>
+                <label>
+                  <input
+                    type="file"
+                    accept=".csv,.docx"
+                    multiple
+                    onChange={handleFileSelect}
+                    className="hidden"
+                  />
+                  <Button variant="outline" className="cursor-pointer" asChild>
+                    <span>Browse Files</span>
+                  </Button>
+                </label>
+              </div>
+            )}
 
             {/* File List */}
             {files.length > 0 && (
@@ -651,6 +642,35 @@ export function AIDocumentAssessmentModal({
                       </Button>
                     </div>
                   ))}
+                </div>
+
+                {/* Compact Drop Zone - below file list */}
+                <div
+                  onDragOver={handleDragOver}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                  className={`border-2 border-dashed rounded-lg p-3 text-center transition-colors ${
+                    isDragging 
+                      ? 'border-first-line bg-first-line/5' 
+                      : 'border-border hover:border-first-line/50'
+                  }`}
+                >
+                  <div className="flex items-center justify-center gap-2">
+                    <Upload className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Drop more files or</span>
+                    <label>
+                      <input
+                        type="file"
+                        accept=".csv,.docx"
+                        multiple
+                        onChange={handleFileSelect}
+                        className="hidden"
+                      />
+                      <Button variant="outline" size="sm" className="cursor-pointer" asChild>
+                        <span>Browse Files</span>
+                      </Button>
+                    </label>
+                  </div>
                 </div>
               </div>
             )}
