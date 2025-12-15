@@ -841,15 +841,24 @@ export function AIDocumentAssessmentModal({
               </ScrollArea>
                 
               {/* Expanded Section - Shown below table when a row is selected */}
+              <div 
+                className={`border rounded-lg bg-muted/20 overflow-hidden transition-all duration-300 ease-out ${
+                  expandedIndex !== null && parsedRisks[expandedIndex] 
+                    ? 'max-h-[400px] opacity-100 p-4 mt-4' 
+                    : 'max-h-0 opacity-0 p-0 mt-0'
+                }`}
+                onClick={(e) => e.stopPropagation()}
+              >
                 {expandedIndex !== null && parsedRisks[expandedIndex] && (
-                  <div className="border-t bg-muted/20 p-6" onClick={(e) => e.stopPropagation()}>
+                  <>
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="font-medium text-sm">Editing: {parsedRisks[expandedIndex].title}</h4>
                       <Button variant="ghost" size="sm" onClick={() => setExpandedIndex(null)}>
                         <X className="w-4 h-4 mr-1" /> Close
                       </Button>
                     </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <ScrollArea className="h-[280px]">
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 pr-4">
                       {/* Risk ID */}
                       <div className="space-y-1.5">
                         <label className="text-xs font-medium text-muted-foreground">Risk ID</label>
@@ -1059,8 +1068,10 @@ export function AIDocumentAssessmentModal({
                         />
                       </div>
                     </div>
-                  </div>
+                  </ScrollArea>
+                  </>
                 )}
+              </div>
             </div>
           </TooltipProvider>
         )}
@@ -1082,19 +1093,14 @@ export function AIDocumentAssessmentModal({
             </>
           )}
           {step === "review" && (
-            <>
-              <Button variant="outline" onClick={() => setStep("upload")}>
-                Back
-              </Button>
-              <Button 
-                onClick={handleImport}
-                disabled={parsedRisks.length === 0}
-                className="bg-gradient-to-r from-first-line to-emerald-600 text-white"
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                Import {parsedRisks.length} Assessments
-              </Button>
-            </>
+            <Button 
+              onClick={handleImport}
+              disabled={parsedRisks.length === 0}
+              className="bg-gradient-to-r from-first-line to-emerald-600 text-white"
+            >
+              <CheckCircle className="w-4 h-4 mr-2" />
+              Import {parsedRisks.length} Assessments
+            </Button>
           )}
         </DialogFooter>
       </DialogContent>
