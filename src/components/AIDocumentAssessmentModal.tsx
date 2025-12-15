@@ -720,7 +720,7 @@ export function AIDocumentAssessmentModal({
               </div>
 
               {/* Table View matching main dashboard */}
-              <ScrollArea className="flex-1 border rounded-lg">
+              <ScrollArea className="h-[300px] border rounded-lg">
                 <Table>
                   <TableHeader className="sticky top-0 bg-muted/80 backdrop-blur-sm z-10">
                     <TableRow className="hover:bg-transparent">
@@ -830,8 +830,9 @@ export function AIDocumentAssessmentModal({
                     })}
                   </TableBody>
                 </Table>
+              </ScrollArea>
                 
-                {/* Expanded Section - Shown below table when a row is selected */}
+              {/* Expanded Section - Shown below table when a row is selected */}
                 {expandedIndex !== null && parsedRisks[expandedIndex] && (
                   <div className="border-t bg-muted/20 p-6" onClick={(e) => e.stopPropagation()}>
                     <div className="flex items-center justify-between mb-4">
@@ -1064,7 +1065,6 @@ export function AIDocumentAssessmentModal({
                     </div>
                   </div>
                 )}
-              </ScrollArea>
             </div>
           </TooltipProvider>
         )}
