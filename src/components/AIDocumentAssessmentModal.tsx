@@ -561,9 +561,10 @@ export function AIDocumentAssessmentModal({
   const getFieldInputClass = (risk: ParsedRisk, field: keyof ParsedRisk, value: string | undefined): string => {
     if (!showHighlights) return '';
     
-    // Yellow if empty
-    if (!value || value === '' || value === 'N/A' || value === 'Unknown') {
-      return 'ring-1 ring-amber-400/60 bg-amber-50/40 dark:bg-amber-900/20 border-amber-400/60';
+    // Yellow if empty - check for null, undefined, empty string, whitespace only, N/A, or Unknown
+    const trimmedValue = value?.trim() ?? '';
+    if (!trimmedValue || trimmedValue === '' || trimmedValue.toLowerCase() === 'n/a' || trimmedValue.toLowerCase() === 'unknown' || trimmedValue === '-') {
+      return 'ring-2 ring-amber-400 bg-amber-50/50 dark:bg-amber-900/30 border-amber-400';
     }
     
     const riskStatus = getRiskStatus(risk);
