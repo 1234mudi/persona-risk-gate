@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ChevronDown, ChevronUp } from "lucide-react";
+import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ChevronDown, ChevronUp, Search, Filter } from "lucide-react";
 import mammoth from "mammoth";
 import {
   Dialog,
@@ -52,6 +52,7 @@ export interface ParsedRisk {
   residualTrend: string;
   status: string;
   lastAssessed: string;
+  sourceFile?: string;
 }
 
 interface ExistingRisk {
@@ -86,6 +87,11 @@ export function AIDocumentAssessmentModal({
   const [step, setStep] = useState<"upload" | "processing" | "review">("upload");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  
+  // Search and filter state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"all" | "new" | "modified">("all");
+  const [sourceFilter, setSourceFilter] = useState<string>("all");
 
   // Create a map of existing risk IDs for quick lookup
   const existingRiskMap = useMemo(() => {
@@ -471,11 +477,11 @@ export function AIDocumentAssessmentModal({
       try {
         if (ext === 'csv') {
           const content = await file.text();
-          const risks = parseCSV(content);
+          const risks = parseCSV(content).map(r => ({ ...r, sourceFile: file.name }));
           allRisks.push(...risks);
         } else if (ext === 'docx') {
           toast.info(`Processing ${file.name}...`);
-          const risks = await parseDOCX(file);
+          const risks = (await parseDOCX(file)).map(r => ({ ...r, sourceFile: file.name }));
           allRisks.push(...risks);
           if (risks.length > 0) {
             toast.success(`Extracted ${risks.length} risks from ${file.name}`);
@@ -577,9 +583,46 @@ export function AIDocumentAssessmentModal({
     return { newCount, modifiedCount };
   }, [parsedRisks, existingRiskMap]);
 
+  // Get unique source files
+  const sourceFiles = useMemo(() => {
+    const files = new Set<string>();
+    parsedRisks.forEach(risk => {
+      if (risk.sourceFile) files.add(risk.sourceFile);
+    });
+    return Array.from(files);
+  }, [parsedRisks]);
+
+  // Filtered risks
+  const filteredRisks = useMemo(() => {
+    return parsedRisks.filter(risk => {
+      // Status filter
+      if (statusFilter !== "all") {
+        const riskStatus = getRiskStatus(risk);
+        if (statusFilter === "new" && riskStatus !== "new") return false;
+        if (statusFilter === "modified" && riskStatus !== "modified") return false;
+      }
+      
+      // Source filter
+      if (sourceFilter !== "all" && risk.sourceFile !== sourceFilter) return false;
+      
+      // Search query
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        return (
+          risk.id.toLowerCase().includes(query) ||
+          risk.title.toLowerCase().includes(query) ||
+          risk.owner.toLowerCase().includes(query) ||
+          risk.category.toLowerCase().includes(query)
+        );
+      }
+      
+      return true;
+    });
+  }, [parsedRisks, statusFilter, sourceFilter, searchQuery, existingRiskMap]);
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[95vw] w-[95vw] h-[90vh] max-h-[90vh] overflow-hidden flex flex-col">
+      <DialogContent className="w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-first-line" />
@@ -750,6 +793,71 @@ export function AIDocumentAssessmentModal({
                 </div>
               </div>
 
+              {/* Search and Filter Bar */}
+              <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+                {/* Search */}
+                <div className="relative flex-1 max-w-md">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search by ID, title, owner, or category..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-9 h-9"
+                  />
+                </div>
+
+                {/* Status Filter Buttons */}
+                <div className="flex items-center gap-1 border rounded-lg p-1">
+                  <Button
+                    variant={statusFilter === "all" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setStatusFilter("all")}
+                    className="h-7 px-3 text-xs"
+                  >
+                    All ({parsedRisks.length})
+                  </Button>
+                  <Button
+                    variant={statusFilter === "new" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setStatusFilter("new")}
+                    className="h-7 px-3 text-xs"
+                  >
+                    <Plus className="w-3 h-3 mr-1" />
+                    New ({riskCounts.newCount})
+                  </Button>
+                  <Button
+                    variant={statusFilter === "modified" ? "secondary" : "ghost"}
+                    size="sm"
+                    onClick={() => setStatusFilter("modified")}
+                    className="h-7 px-3 text-xs"
+                  >
+                    <Pencil className="w-3 h-3 mr-1" />
+                    Modified ({riskCounts.modifiedCount})
+                  </Button>
+                </div>
+
+                {/* Source File Filter */}
+                {sourceFiles.length > 1 && (
+                  <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                    <SelectTrigger className="w-[200px] h-9">
+                      <Filter className="w-4 h-4 mr-2" />
+                      <SelectValue placeholder="All Documents" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All Documents</SelectItem>
+                      {sourceFiles.map(file => (
+                        <SelectItem key={file} value={file}>{file}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                )}
+
+                {/* Results count */}
+                <span className="text-xs text-muted-foreground whitespace-nowrap">
+                  Showing {filteredRisks.length} of {parsedRisks.length}
+                </span>
+              </div>
+
               {/* Table View matching main dashboard */}
               <ScrollArea className="flex-1 min-h-0 border rounded-lg">
                 <Table>
@@ -758,15 +866,17 @@ export function AIDocumentAssessmentModal({
                       <TableHead className="w-16 py-2 border-r border-b border-border"></TableHead>
                       <TableHead className="w-20 py-2 border-r border-b border-border">Risk ID</TableHead>
                       <TableHead className="min-w-[250px] py-2 border-r border-b border-border">Risk Event/Owner</TableHead>
+                      <TableHead className="w-32 py-2 border-r border-b border-border">Source</TableHead>
                       <TableHead className="w-32 py-2 border-r border-b border-border">Status</TableHead>
                       <TableHead className="w-32 py-2 border-r border-b border-border">Missing</TableHead>
                       <TableHead className="w-12 py-2 border-b border-border"></TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {parsedRisks.map((risk, index) => {
+                    {filteredRisks.map((risk) => {
+                      const originalIndex = parsedRisks.findIndex(r => r.id === risk.id && r.sourceFile === risk.sourceFile);
                       const riskStatus = getRiskStatus(risk);
-                      const isExpanded = expandedIndex === index;
+                      const isExpanded = expandedIndex === originalIndex;
                       
                       // Calculate missing fields
                       const requiredFields = ['title', 'owner', 'category', 'inherentRisk', 'residualRisk', 'status', 'controls'];
@@ -777,7 +887,7 @@ export function AIDocumentAssessmentModal({
                       const missingCount = missingFields.length;
                       
                       return (
-                        <React.Fragment key={index}>
+                        <React.Fragment key={originalIndex}>
                           <TableRow 
                             className={`cursor-pointer transition-colors
                               ${riskStatus === "new" ? "bg-green-500/5 hover:bg-green-500/10" : ""}
@@ -785,7 +895,7 @@ export function AIDocumentAssessmentModal({
                               ${riskStatus === "unchanged" ? "hover:bg-muted/50" : ""}
                               ${isExpanded ? "bg-first-line/10 border-l-2 border-l-first-line" : ""}
                             `}
-                            onClick={() => setExpandedIndex(isExpanded ? null : index)}
+                            onClick={() => setExpandedIndex(isExpanded ? null : originalIndex)}
                           >
                             {/* Status Badge */}
                             <TableCell className="py-2 border-r border-b border-border">
@@ -806,6 +916,13 @@ export function AIDocumentAssessmentModal({
                                 <span className="font-medium text-foreground">{risk.title}</span>
                                 <span className="text-xs text-muted-foreground">{risk.owner || 'No owner'}</span>
                               </div>
+                            </TableCell>
+                            
+                            {/* Source File */}
+                            <TableCell className="py-2 border-r border-b border-border">
+                              <span className="text-xs text-muted-foreground truncate max-w-[120px] block" title={risk.sourceFile}>
+                                {risk.sourceFile || '-'}
+                              </span>
                             </TableCell>
                             
                             {/* Status */}
@@ -853,7 +970,7 @@ export function AIDocumentAssessmentModal({
                                 className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  deleteRisk(index);
+                                  deleteRisk(originalIndex);
                                 }}
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -864,14 +981,14 @@ export function AIDocumentAssessmentModal({
                           {/* Inline Edit Row */}
                           {isExpanded && (
                             <TableRow className="bg-muted/30 border-l-2 border-l-first-line">
-                              <TableCell colSpan={6} className="p-4" onClick={(e) => e.stopPropagation()}>
+                              <TableCell colSpan={7} className="p-4" onClick={(e) => e.stopPropagation()}>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                                   {/* Risk ID */}
                                   <div className="space-y-1">
                                     <label className="text-xs font-medium text-muted-foreground">Risk ID</label>
                                     <Input
                                       value={risk.id}
-                                      onChange={(e) => updateRisk(index, 'id', e.target.value)}
+                                      onChange={(e) => updateRisk(originalIndex, 'id', e.target.value)}
                                       className={`h-8 text-sm ${getFieldInputClass(risk.id)}`}
                                     />
                                   </div>
@@ -881,7 +998,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Title</label>
                                     <Input
                                       value={risk.title}
-                                      onChange={(e) => updateRisk(index, 'title', e.target.value)}
+                                      onChange={(e) => updateRisk(originalIndex, 'title', e.target.value)}
                                       className={`h-8 text-sm ${getFieldInputClass(risk.title)}`}
                                     />
                                   </div>
@@ -891,7 +1008,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Owner</label>
                                     <Input
                                       value={risk.owner}
-                                      onChange={(e) => updateRisk(index, 'owner', e.target.value)}
+                                      onChange={(e) => updateRisk(originalIndex, 'owner', e.target.value)}
                                       className={`h-8 text-sm ${getFieldInputClass(risk.owner)}`}
                                     />
                                   </div>
@@ -901,7 +1018,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Category</label>
                                     <Input
                                       value={risk.category}
-                                      onChange={(e) => updateRisk(index, 'category', e.target.value)}
+                                      onChange={(e) => updateRisk(originalIndex, 'category', e.target.value)}
                                       className={`h-8 text-sm ${getFieldInputClass(risk.category)}`}
                                     />
                                   </div>
@@ -911,7 +1028,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Controls</label>
                                     <Input
                                       value={risk.controls}
-                                      onChange={(e) => updateRisk(index, 'controls', e.target.value)}
+                                      onChange={(e) => updateRisk(originalIndex, 'controls', e.target.value)}
                                       className={`h-8 text-sm ${getFieldInputClass(risk.controls)}`}
                                     />
                                   </div>
@@ -922,7 +1039,7 @@ export function AIDocumentAssessmentModal({
                                     <Select
                                       value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
                                              risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                                      onValueChange={(value) => updateRisk(index, 'inherentRisk', value)}
+                                      onValueChange={(value) => updateRisk(originalIndex, 'inherentRisk', value)}
                                     >
                                       <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.inherentRisk)}`}>
                                         <SelectValue />
@@ -941,7 +1058,7 @@ export function AIDocumentAssessmentModal({
                                     <Select
                                       value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
                                              risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                                      onValueChange={(value) => updateRisk(index, 'residualRisk', value)}
+                                      onValueChange={(value) => updateRisk(originalIndex, 'residualRisk', value)}
                                     >
                                       <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.residualRisk)}`}>
                                         <SelectValue />
@@ -959,7 +1076,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Status</label>
                                     <Select
                                       value={risk.status}
-                                      onValueChange={(value) => updateRisk(index, 'status', value)}
+                                      onValueChange={(value) => updateRisk(originalIndex, 'status', value)}
                                     >
                                       <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.status)}`}>
                                         <SelectValue />
@@ -978,7 +1095,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Assessor</label>
                                     <Input
                                       value={risk.assessor}
-                                      onChange={(e) => updateRisk(index, 'assessor', e.target.value)}
+                                      onChange={(e) => updateRisk(originalIndex, 'assessor', e.target.value)}
                                       className={`h-8 text-sm ${getFieldInputClass(risk.assessor)}`}
                                     />
                                   </div>
@@ -988,7 +1105,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Effectiveness</label>
                                     <Select
                                       value={risk.effectiveness || 'Effective'}
-                                      onValueChange={(value) => updateRisk(index, 'effectiveness', value)}
+                                      onValueChange={(value) => updateRisk(originalIndex, 'effectiveness', value)}
                                     >
                                       <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk.effectiveness)}`}>
                                         <SelectValue />
@@ -1006,7 +1123,7 @@ export function AIDocumentAssessmentModal({
                                     <label className="text-xs font-medium text-muted-foreground">Last Assessed</label>
                                     <Input
                                       value={risk.lastAssessed}
-                                      onChange={(e) => updateRisk(index, 'lastAssessed', e.target.value)}
+                                      onChange={(e) => updateRisk(originalIndex, 'lastAssessed', e.target.value)}
                                       className={`h-8 text-sm ${getFieldInputClass(risk.lastAssessed)}`}
                                     />
                                   </div>
