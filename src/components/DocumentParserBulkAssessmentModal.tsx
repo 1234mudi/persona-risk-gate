@@ -426,61 +426,77 @@ export const DocumentParserBulkAssessmentModal = ({
                   {/* Risk List */}
                   <ScrollArea className="flex-1">
                     <div className="p-2 space-y-1">
-                      {filteredRisks.map((risk) => {
-                        const progress = calculateRiskProgress(risk.id);
-                        const isChecked = checkedRisks.has(risk.id);
-                        const hasMissing = hasRiskMissingFields(risk.id);
-                        
-                        return (
-                          <div
-                            key={risk.id}
-                            className={`p-3 rounded-lg border cursor-pointer transition-colors ${
-                              isChecked 
-                                ? "bg-primary/5 border-primary/30" 
-                                : "bg-background border-border hover:border-primary/20"
-                            }`}
-                            onClick={() => toggleRiskCheck(risk.id)}
-                          >
-                            <div className="flex items-start gap-3">
-                              <Checkbox
-                                checked={isChecked}
-                                onCheckedChange={() => toggleRiskCheck(risk.id)}
-                                onClick={(e) => e.stopPropagation()}
-                                className="mt-0.5"
-                              />
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <Badge variant="outline" className="text-xs font-mono shrink-0">
-                                    {risk.id}
-                                  </Badge>
-                                  {hasMissing ? (
-                                    <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs gap-1">
-                                      <AlertCircle className="w-3 h-3" />
-                                      Incomplete
+                      {selectedRisks.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
+                          <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                            <Search className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                          <p className="text-sm font-medium text-foreground mb-1">No Matching Risks Found</p>
+                          <p className="text-xs text-muted-foreground">
+                            The selected risks were not found in the uploaded documents.
+                          </p>
+                        </div>
+                      ) : filteredRisks.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center py-8 px-4 text-center">
+                          <p className="text-sm text-muted-foreground">No risks match your search</p>
+                        </div>
+                      ) : (
+                        filteredRisks.map((risk) => {
+                          const progress = calculateRiskProgress(risk.id);
+                          const isChecked = checkedRisks.has(risk.id);
+                          const hasMissing = hasRiskMissingFields(risk.id);
+                          
+                          return (
+                            <div
+                              key={risk.id}
+                              className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                                isChecked 
+                                  ? "bg-primary/5 border-primary/30" 
+                                  : "bg-background border-border hover:border-primary/20"
+                              }`}
+                              onClick={() => toggleRiskCheck(risk.id)}
+                            >
+                              <div className="flex items-start gap-3">
+                                <Checkbox
+                                  checked={isChecked}
+                                  onCheckedChange={() => toggleRiskCheck(risk.id)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="mt-0.5"
+                                />
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-1">
+                                    <Badge variant="outline" className="text-xs font-mono shrink-0">
+                                      {risk.id}
                                     </Badge>
-                                  ) : (
-                                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs gap-1">
-                                      <Plus className="w-3 h-3" />
-                                      Complete
-                                    </Badge>
+                                    {hasMissing ? (
+                                      <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs gap-1">
+                                        <AlertCircle className="w-3 h-3" />
+                                        Incomplete
+                                      </Badge>
+                                    ) : (
+                                      <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs gap-1">
+                                        <Plus className="w-3 h-3" />
+                                        Complete
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  <p className="text-sm font-medium text-foreground truncate">{risk.title}</p>
+                                  <p className="text-xs text-muted-foreground">{risk.category || 'Uncategorized'}</p>
+                                  {isChecked && (
+                                    <div className="mt-2 flex items-center gap-2">
+                                      <Progress 
+                                        value={progress} 
+                                        className={`h-1.5 flex-1 ${hasMissing ? '[&>div]:bg-red-500' : '[&>div]:bg-emerald-500'}`} 
+                                      />
+                                      <span className="text-xs text-muted-foreground w-8">{progress}%</span>
+                                    </div>
                                   )}
                                 </div>
-                                <p className="text-sm font-medium text-foreground truncate">{risk.title}</p>
-                                <p className="text-xs text-muted-foreground">{risk.category || 'Uncategorized'}</p>
-                                {isChecked && (
-                                  <div className="mt-2 flex items-center gap-2">
-                                    <Progress 
-                                      value={progress} 
-                                      className={`h-1.5 flex-1 ${hasMissing ? '[&>div]:bg-red-500' : '[&>div]:bg-emerald-500'}`} 
-                                    />
-                                    <span className="text-xs text-muted-foreground w-8">{progress}%</span>
-                                  </div>
-                                )}
                               </div>
                             </div>
-                          </div>
-                        );
-                      })}
+                          );
+                        })
+                      )}
                     </div>
                   </ScrollArea>
                 </>

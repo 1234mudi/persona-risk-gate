@@ -529,12 +529,10 @@ export function AIDocumentAssessmentModal({
       }
       
       if (risksToUse.length === 0 && (filterByTitles?.length || filterByRiskIds?.length)) {
-        toast.warning("No matching risks found for the selected items");
-        setStep("upload");
-        return;
+        toast.info("No matching risks found in the uploaded documents");
+      } else {
+        toast.success(`Found ${risksToUse.length} matching risk assessments`);
       }
-      
-      toast.success(`Found ${risksToUse.length} matching risk assessments`);
       
       setParsedRisks(risksToUse);
       
