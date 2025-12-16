@@ -75,6 +75,7 @@ interface AIDocumentAssessmentModalProps {
   existingRisks?: ExistingRisk[];
   skipReviewScreen?: boolean; // Skip review and go directly to bulk assessment
   filterByRiskIds?: string[]; // Only show risks that match these IDs (for selected risks flow)
+  filterByTitles?: string[]; // Only show risks that match these titles (for selected risks flow)
 }
 
 export function AIDocumentAssessmentModal({ 
@@ -83,7 +84,8 @@ export function AIDocumentAssessmentModal({
   onRisksImported,
   existingRisks = [],
   skipReviewScreen = false,
-  filterByRiskIds
+  filterByRiskIds,
+  filterByTitles
 }: AIDocumentAssessmentModalProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -512,19 +514,27 @@ export function AIDocumentAssessmentModal({
     setIsProcessing(false);
     
     if (allRisks.length > 0) {
-      // Filter risks if filterByRiskIds is provided
+      // Filter risks if filterByRiskIds or filterByTitles is provided
       let risksToUse = allRisks;
-      if (filterByRiskIds && filterByRiskIds.length > 0) {
+      if (filterByTitles && filterByTitles.length > 0) {
+        // Match by title (case-insensitive partial match)
+        risksToUse = allRisks.filter(r => 
+          filterByTitles.some(title => 
+            r.title.toLowerCase().includes(title.toLowerCase()) ||
+            title.toLowerCase().includes(r.title.toLowerCase())
+          )
+        );
+      } else if (filterByRiskIds && filterByRiskIds.length > 0) {
         risksToUse = allRisks.filter(r => filterByRiskIds.includes(r.id));
-        if (risksToUse.length === 0) {
-          toast.warning("No matching risks found for the selected items");
-          setStep("upload");
-          return;
-        }
-        toast.success(`Found ${risksToUse.length} matching risk assessments`);
-      } else {
-        toast.success(`Successfully parsed ${allRisks.length} risk assessments`);
       }
+      
+      if (risksToUse.length === 0 && (filterByTitles?.length || filterByRiskIds?.length)) {
+        toast.warning("No matching risks found for the selected items");
+        setStep("upload");
+        return;
+      }
+      
+      toast.success(`Found ${risksToUse.length} matching risk assessments`);
       
       setParsedRisks(risksToUse);
       

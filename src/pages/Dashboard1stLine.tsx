@@ -1833,7 +1833,7 @@ const Dashboard1stLine = () => {
           status: r.status
         }))}
         skipReviewScreen={true}
-        filterByRiskIds={Array.from(selectedRisks)}
+        filterByTitles={riskData.filter(r => selectedRisks.has(r.id)).map(r => r.title)}
       />
 
       <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ open: false, type: null, riskId: null, currentValue: "" })}>
