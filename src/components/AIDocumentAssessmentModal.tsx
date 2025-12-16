@@ -73,13 +73,15 @@ interface AIDocumentAssessmentModalProps {
   onOpenChange: (open: boolean) => void;
   onRisksImported: (risks: ParsedRisk[]) => void;
   existingRisks?: ExistingRisk[];
+  skipReviewScreen?: boolean; // Skip review and go directly to bulk assessment
 }
 
 export function AIDocumentAssessmentModal({ 
   open, 
   onOpenChange,
   onRisksImported,
-  existingRisks = []
+  existingRisks = [],
+  skipReviewScreen = false
 }: AIDocumentAssessmentModalProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -506,12 +508,21 @@ export function AIDocumentAssessmentModal({
     
     setParsedRisks(allRisks);
     setIsProcessing(false);
-    setStep("review");
-
+    
     if (allRisks.length > 0) {
       toast.success(`Successfully parsed ${allRisks.length} risk assessments`);
+      
+      // If skipReviewScreen is enabled, select all risks and open bulk assessment directly
+      if (skipReviewScreen) {
+        setSelectedRiskIds(new Set(allRisks.map(r => r.id)));
+        setShowBulkAssessmentModal(true);
+        setStep("review"); // Still set to review for the modal context
+      } else {
+        setStep("review");
+      }
     } else {
       toast.warning("No risks found in the uploaded files");
+      setStep("review");
     }
   };
 
