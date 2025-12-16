@@ -545,8 +545,18 @@ export function AIDocumentAssessmentModal({
         setStep("review");
       }
     } else {
-      toast.warning("No risks found in the uploaded files");
-      setStep("review");
+      // No risks found in uploaded files
+      if (skipReviewScreen) {
+        // Still open bulk assessment modal to show "no matching risks" message
+        toast.info("No matching risks found in the uploaded documents");
+        setParsedRisks([]);
+        setSelectedRiskIds(new Set());
+        setShowBulkAssessmentModal(true);
+        setStep("review");
+      } else {
+        toast.warning("No risks found in the uploaded files");
+        setStep("review");
+      }
     }
   };
 
@@ -732,8 +742,12 @@ export function AIDocumentAssessmentModal({
     });
   }, [parsedRisks, statusFilter, sourceFilter, searchQuery, existingRiskMap]);
 
+  // When skipReviewScreen is true and bulk assessment modal is open, hide the parent dialog
+  const shouldHideParentDialog = skipReviewScreen && showBulkAssessmentModal && step === "review";
+
   return (
-    <Dialog open={open} onOpenChange={handleClose}>
+    <>
+    <Dialog open={open && !shouldHideParentDialog} onOpenChange={handleClose}>
       <DialogContent className={
         step === "review" 
           ? "w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col bg-background p-0" 
@@ -1212,14 +1226,21 @@ export function AIDocumentAssessmentModal({
           </div>
         )}
       </DialogContent>
-
-      {/* Bulk Assessment Modal */}
-      <DocumentParserBulkAssessmentModal
-        open={showBulkAssessmentModal}
-        onOpenChange={setShowBulkAssessmentModal}
-        selectedRisks={selectedRisksForAssessment}
-        onApplyAssessments={handleBulkAssessmentApply}
-      />
     </Dialog>
+
+    {/* Bulk Assessment Modal - rendered outside the Dialog so it shows when parent is hidden */}
+    <DocumentParserBulkAssessmentModal
+      open={showBulkAssessmentModal}
+      onOpenChange={(open) => {
+        setShowBulkAssessmentModal(open);
+        // When closing bulk assessment in skipReviewScreen mode, close the whole flow
+        if (!open && skipReviewScreen) {
+          handleClose();
+        }
+      }}
+      selectedRisks={selectedRisksForAssessment}
+      onApplyAssessments={handleBulkAssessmentApply}
+    />
+    </>
   );
 }
