@@ -181,8 +181,6 @@ export const DocumentParserBulkAssessmentModal = ({
 
   // Calculate progress for each risk based on filled fields
   const calculateRiskProgress = (riskId: string): number => {
-    if (!checkedRisks.has(riskId)) return 0;
-    
     const risk = selectedRisks.find(r => r.id === riskId);
     if (!risk) return 0;
     
@@ -196,6 +194,20 @@ export const DocumentParserBulkAssessmentModal = ({
     });
     
     return Math.round((filledCount / allFields.length) * 100);
+  };
+
+  // Check if a risk has any missing (empty) fields
+  const hasRiskMissingFields = (riskId: string): boolean => {
+    const risk = selectedRisks.find(r => r.id === riskId);
+    if (!risk) return true;
+    
+    const edited = editedRiskData.get(riskId) || {};
+    const allFields = RISK_FIELD_CATEGORIES.flatMap(c => c.fields.map(f => f.key));
+    
+    return allFields.some(key => {
+      const value = (edited as any)[key] ?? (risk as any)[key];
+      return !value || String(value).trim() === '';
+    });
   };
 
   const handleApply = () => {
@@ -417,6 +429,7 @@ export const DocumentParserBulkAssessmentModal = ({
                       {filteredRisks.map((risk) => {
                         const progress = calculateRiskProgress(risk.id);
                         const isChecked = checkedRisks.has(risk.id);
+                        const hasMissing = hasRiskMissingFields(risk.id);
                         
                         return (
                           <div
@@ -440,12 +453,26 @@ export const DocumentParserBulkAssessmentModal = ({
                                   <Badge variant="outline" className="text-xs font-mono shrink-0">
                                     {risk.id}
                                   </Badge>
+                                  {hasMissing ? (
+                                    <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs gap-1">
+                                      <AlertCircle className="w-3 h-3" />
+                                      Incomplete
+                                    </Badge>
+                                  ) : (
+                                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs gap-1">
+                                      <Plus className="w-3 h-3" />
+                                      Complete
+                                    </Badge>
+                                  )}
                                 </div>
                                 <p className="text-sm font-medium text-foreground truncate">{risk.title}</p>
                                 <p className="text-xs text-muted-foreground">{risk.category || 'Uncategorized'}</p>
                                 {isChecked && (
                                   <div className="mt-2 flex items-center gap-2">
-                                    <Progress value={progress} className="h-1.5 flex-1" />
+                                    <Progress 
+                                      value={progress} 
+                                      className={`h-1.5 flex-1 ${hasMissing ? '[&>div]:bg-red-500' : '[&>div]:bg-emerald-500'}`} 
+                                    />
                                     <span className="text-xs text-muted-foreground w-8">{progress}%</span>
                                   </div>
                                 )}
