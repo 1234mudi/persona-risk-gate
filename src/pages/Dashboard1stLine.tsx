@@ -5,7 +5,8 @@ import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDo
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
-import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
+import { AIDocumentAssessmentModal, ParsedRisk } from "@/components/AIDocumentAssessmentModal";
+import { DocumentParserBulkAssessmentModal } from "@/components/DocumentParserBulkAssessmentModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -574,6 +575,60 @@ const Dashboard1stLine = () => {
     });
     
     toast.success(`${newRisks.length} risks imported`);
+  };
+
+  // Convert selected RiskData to ParsedRisk format for bulk assessment
+  const getSelectedRisksAsParsedRisks = (): ParsedRisk[] => {
+    return riskData
+      .filter(r => selectedRisks.has(r.id))
+      .map(r => ({
+        id: r.id,
+        title: r.title,
+        riskLevel1: r.orgLevel.level1,
+        riskLevel2: r.orgLevel.level2,
+        riskLevel3: r.orgLevel.level3,
+        level: r.riskLevel,
+        businessUnit: r.businessUnit,
+        category: r.category,
+        owner: r.owner,
+        assessor: r.assessors[0] || '',
+        inherentRisk: r.inherentRisk.level,
+        inherentTrend: r.inherentTrend.value,
+        controls: `${r.relatedControls.id}: ${r.relatedControls.name}`,
+        effectiveness: r.controlEffectiveness.label,
+        testResults: r.testResults.label,
+        residualRisk: r.residualRisk.level,
+        residualTrend: r.residualTrend.value,
+        status: r.status,
+        lastAssessed: r.lastAssessed,
+      }));
+  };
+
+  // Handle bulk assessment apply from direct modal
+  const handleDirectBulkAssessmentApply = (assessments: Map<string, any>) => {
+    setRiskData(prev => prev.map(risk => {
+      const assessment = assessments.get(risk.id);
+      if (!assessment) return risk;
+      
+      return {
+        ...risk,
+        title: assessment.inherent.title || risk.title,
+        category: assessment.inherent.category || risk.category,
+        owner: assessment.inherent.owner || risk.owner,
+        status: assessment.inherent.status || risk.status,
+        inherentRisk: {
+          level: assessment.inherent.inherentRisk || risk.inherentRisk.level,
+          color: (assessment.inherent.inherentRisk || risk.inherentRisk.level).toLowerCase().includes('high') ? 'red' : 
+                 (assessment.inherent.inherentRisk || risk.inherentRisk.level).toLowerCase().includes('low') ? 'green' : 'yellow'
+        },
+        residualRisk: {
+          level: assessment.inherent.residualRisk || risk.residualRisk.level,
+          color: (assessment.inherent.residualRisk || risk.residualRisk.level).toLowerCase().includes('high') ? 'red' : 
+                 (assessment.inherent.residualRisk || risk.residualRisk.level).toLowerCase().includes('low') ? 'green' : 'yellow'
+        },
+      };
+    }));
+    toast.success('Risk assessments updated');
   };
 
   const handleUpdateClosedAssessment = (riskId: string) => {
@@ -1382,10 +1437,16 @@ const Dashboard1stLine = () => {
                       size="sm" 
                       variant="outline"
                       className="h-8 border-blue-500/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                      onClick={() => setDirectAssessmentModalOpen(true)}
+                      onClick={() => {
+                        if (selectedRisks.size === 0) {
+                          toast.error("Please select at least one risk first");
+                          return;
+                        }
+                        setDirectAssessmentModalOpen(true);
+                      }}
                     >
-                      <Upload className="w-4 h-4 mr-1.5" />
-                      AI Risk Search/Upload
+                      <Sparkles className="w-4 h-4 mr-1.5" />
+                      AI Risk Search
                     </Button>
                     <Button 
                       size="sm" 
@@ -1811,22 +1872,12 @@ const Dashboard1stLine = () => {
         }))}
       />
 
-      {/* AI Risk Search/Upload Modal (skips review screen, goes directly to bulk assessment) */}
-      <AIDocumentAssessmentModal
+      {/* AI Risk Search Modal - directly opens bulk assessment with selected risks */}
+      <DocumentParserBulkAssessmentModal
         open={directAssessmentModalOpen}
         onOpenChange={setDirectAssessmentModalOpen}
-        onRisksImported={handleImportedRisks}
-        existingRisks={riskData.map(r => ({ 
-          id: r.id, 
-          title: r.title,
-          businessUnit: r.businessUnit,
-          category: r.category,
-          owner: r.owner,
-          inherentRisk: r.inherentRisk.level,
-          residualRisk: r.residualRisk.level,
-          status: r.status
-        }))}
-        skipReviewScreen={true}
+        selectedRisks={getSelectedRisksAsParsedRisks()}
+        onApplyAssessments={handleDirectBulkAssessmentApply}
       />
 
       <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ open: false, type: null, riskId: null, currentValue: "" })}>
