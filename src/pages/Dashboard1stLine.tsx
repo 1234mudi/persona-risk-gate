@@ -1377,6 +1377,15 @@ const Dashboard1stLine = () => {
                   <div className="flex items-center gap-2">
                     <Button 
                       size="sm" 
+                      variant="outline"
+                      className="h-8 border-blue-500/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      onClick={() => setAiDocumentModalOpen(true)}
+                    >
+                      <FileText className="w-4 h-4 mr-1.5" />
+                      Document Parser
+                    </Button>
+                    <Button 
+                      size="sm" 
                       className="h-8 bg-gradient-to-r from-first-line to-emerald-600 text-white shadow-md hover:shadow-lg transition-all"
                       onClick={() => setBulkAssessmentOpen(true)}
                     >
