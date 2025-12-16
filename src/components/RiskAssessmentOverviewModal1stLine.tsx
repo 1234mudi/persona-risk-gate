@@ -710,7 +710,7 @@ This risk is currently being managed within established parameters. No immediate
                       onClick={() => setDocumentModalOpen(true)}
                     >
                       <Upload className="w-3.5 h-3.5" />
-                      <span>Assess Documents with AI</span>
+                      <span>Document Parser</span>
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
