@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { Sparkles, AlertTriangle, CheckCircle, Info, Layers, X, Send, Loader2, Search } from "lucide-react";
+import { AlertTriangle, CheckCircle, Info, Layers, Send, Search } from "lucide-react";
 import { toast } from "sonner";
 import {
   Tooltip,
@@ -59,7 +59,6 @@ export const DocumentParserBulkAssessmentModal = ({
   selectedRisks, 
   onApplyAssessments 
 }: DocumentParserBulkAssessmentModalProps) => {
-  const [isGeneratingAI, setIsGeneratingAI] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
   const [checkedRisks, setCheckedRisks] = useState<Set<string>>(() => new Set(selectedRisks.map(r => r.id)));
@@ -159,27 +158,6 @@ export const DocumentParserBulkAssessmentModal = ({
     };
   }, [checkedRisks, selectedRisks]);
 
-  const handleAISuggest = async () => {
-    setIsGeneratingAI(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    
-    // Apply AI suggestions
-    setInherentRatings({
-      "1": "4", // Impact
-      "2": "3", // Likelihood
-    });
-    
-    setControlRatings({
-      "CTRL-001": { design: "4", operating: "3", overall: "4" },
-      "CTRL-002": { design: "3", operating: "4", overall: "3" },
-      "CTRL-003": { design: "5", operating: "4", overall: "4" },
-      "CTRL-004": { design: "3", operating: "3", overall: "3" },
-    });
-    
-    setIsGeneratingAI(false);
-    toast.success("AI suggestions applied to all sections");
-  };
-
   const updateInherentRating = (factorId: string, value: string) => {
     setInherentRatings(prev => ({ ...prev, [factorId]: value }));
   };
@@ -254,24 +232,23 @@ export const DocumentParserBulkAssessmentModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col bg-background p-0">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col bg-background p-0">
         <TooltipProvider delayDuration={100}>
           {/* Header */}
-          <div className="bg-gradient-to-r from-slate-900 to-slate-800 px-6 py-4 flex items-center justify-between border-b border-slate-700">
+          <div className="px-6 py-4 flex items-center justify-between border-b border-border bg-muted/30">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center">
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-white">Assess Selected Risks</h2>
-                <p className="text-sm text-slate-400">Apply common ratings across {selectedRisks.length} risks simultaneously</p>
+                <h2 className="text-lg font-semibold text-foreground">Assess Selected Risks</h2>
+                <p className="text-sm text-muted-foreground">Apply common ratings across {selectedRisks.length} risks simultaneously</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
-                className="border-slate-600 text-slate-300 hover:bg-slate-700 hover:text-white"
               >
                 Cancel
               </Button>
@@ -370,22 +347,10 @@ export const DocumentParserBulkAssessmentModal = ({
             {/* Right Content - Assessment Form */}
             <div className="flex-1 flex flex-col overflow-hidden">
               {/* Note Banner */}
-              <div className="px-6 py-3 bg-muted/50 border-b border-border flex items-center justify-between">
+              <div className="px-6 py-3 bg-muted/50 border-b border-border">
                 <p className="text-sm text-muted-foreground">
                   Note: The details shown here are common reference values applied across all selected risks.
                 </p>
-                <Button
-                  onClick={handleAISuggest}
-                  disabled={isGeneratingAI || checkedCount === 0}
-                  className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2"
-                >
-                  {isGeneratingAI ? (
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                  ) : (
-                    <Sparkles className="w-4 h-4" />
-                  )}
-                  Apply AI Suggestions
-                </Button>
               </div>
 
               <ScrollArea className="flex-1">
