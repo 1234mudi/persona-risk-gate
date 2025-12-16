@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ArrowLeft, ChevronDown, ChevronUp, Search, Filter } from "lucide-react";
+import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ArrowLeft, ChevronDown, ChevronUp, Search, Filter, Layers } from "lucide-react";
 import mammoth from "mammoth";
 import {
   Dialog,
@@ -31,6 +31,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
+import { DocumentParserBulkAssessmentModal } from "./DocumentParserBulkAssessmentModal";
 
 export interface ParsedRisk {
   id: string;
@@ -87,6 +89,10 @@ export function AIDocumentAssessmentModal({
   const [step, setStep] = useState<"upload" | "processing" | "review">("upload");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
+  
+  // Checkbox selection state for batch assessment
+  const [selectedRiskIds, setSelectedRiskIds] = useState<Set<string>>(new Set());
+  const [showBulkAssessmentModal, setShowBulkAssessmentModal] = useState(false);
   
   // Search and filter state
   const [searchQuery, setSearchQuery] = useState("");
@@ -587,6 +593,51 @@ export function AIDocumentAssessmentModal({
     toast.success("Risk removed from import list");
   };
 
+  // Checkbox selection handlers
+  const toggleRiskSelection = (riskId: string) => {
+    setSelectedRiskIds(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(riskId)) {
+        newSet.delete(riskId);
+      } else {
+        newSet.add(riskId);
+      }
+      return newSet;
+    });
+  };
+
+  const toggleAllRisks = (checked: boolean) => {
+    if (checked) {
+      setSelectedRiskIds(new Set(filteredRisks.map(r => r.id)));
+    } else {
+      setSelectedRiskIds(new Set());
+    }
+  };
+
+  const selectedRisksForAssessment = useMemo(() => {
+    return parsedRisks.filter(r => selectedRiskIds.has(r.id));
+  }, [parsedRisks, selectedRiskIds]);
+
+  const handleBulkAssessmentApply = (assessments: Map<string, any>) => {
+    // Update parsed risks with assessment data
+    setParsedRisks(prev => prev.map(risk => {
+      const assessment = assessments.get(risk.id);
+      if (!assessment) return risk;
+      
+      // Apply inherent risk rating if available
+      const inherentImpact = assessment.inherent?.["1"];
+      if (inherentImpact) {
+        const level = parseInt(inherentImpact);
+        const riskLevel = level >= 4 ? 'High' : level >= 3 ? 'Medium' : 'Low';
+        return { ...risk, inherentRisk: riskLevel };
+      }
+      return risk;
+    }));
+    
+    setSelectedRiskIds(new Set());
+    toast.success("Risk assessments updated");
+  };
+
   // Count new vs modified
   const riskCounts = useMemo(() => {
     let newCount = 0;
@@ -923,6 +974,17 @@ export function AIDocumentAssessmentModal({
                 <span className="text-sm text-muted-foreground whitespace-nowrap">
                   Showing {filteredRisks.length} of {parsedRisks.length}
                 </span>
+
+                {/* Assess Selected Button */}
+                {selectedRiskIds.size > 0 && (
+                  <Button
+                    onClick={() => setShowBulkAssessmentModal(true)}
+                    className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                  >
+                    <Layers className="w-4 h-4" />
+                    Assess Selected ({selectedRiskIds.size})
+                  </Button>
+                )}
               </div>
 
               {/* Table View matching main dashboard */}
@@ -930,13 +992,19 @@ export function AIDocumentAssessmentModal({
                 <Table>
                   <TableHeader className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
                     <TableRow className="hover:bg-transparent border-b border-gray-200 dark:border-gray-700">
+                      <TableHead className="w-12 py-3 px-4">
+                        <Checkbox
+                          checked={filteredRisks.length > 0 && filteredRisks.every(r => selectedRiskIds.has(r.id))}
+                          onCheckedChange={toggleAllRisks}
+                        />
+                      </TableHead>
                       <TableHead className="w-16 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"></TableHead>
                       <TableHead className="w-24 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Risk ID</TableHead>
                       <TableHead className="min-w-[280px] py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Risk Event / Owner</TableHead>
                       <TableHead className="w-36 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Source</TableHead>
                       <TableHead className="w-32 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Status</TableHead>
                       <TableHead className="w-36 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Completeness</TableHead>
-                      <TableHead className="w-12 py-3 px-4"></TableHead>
+                      <TableHead className="w-24 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -961,9 +1029,18 @@ export function AIDocumentAssessmentModal({
                               ${riskStatus === "modified" ? "bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20" : ""}
                               ${riskStatus === "unchanged" ? "hover:bg-gray-50 dark:hover:bg-gray-800/50" : ""}
                               ${isExpanded ? "bg-blue-50 dark:bg-blue-900/20 border-l-3 border-l-blue-500" : ""}
+                              ${selectedRiskIds.has(risk.id) ? "ring-1 ring-inset ring-emerald-500/50" : ""}
                             `}
                             onClick={() => setExpandedIndex(isExpanded ? null : originalIndex)}
                           >
+                            {/* Checkbox */}
+                            <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                              <Checkbox
+                                checked={selectedRiskIds.has(risk.id)}
+                                onCheckedChange={() => toggleRiskSelection(risk.id)}
+                              />
+                            </TableCell>
+                            
                             {/* Status Badge */}
                             <TableCell className="py-3 px-4">
                               <div className="flex items-center gap-2">
@@ -1037,26 +1114,36 @@ export function AIDocumentAssessmentModal({
                               )}
                             </TableCell>
                             
-                            {/* Delete Button */}
-                            <TableCell className="py-3 px-4">
-                              <Button
-                                variant="ghost"
-                                size="icon"
-                                className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  deleteRisk(originalIndex);
-                                }}
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </Button>
+                            {/* Actions */}
+                            <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                                  onClick={() => {
+                                    setSelectedRiskIds(new Set([risk.id]));
+                                    setShowBulkAssessmentModal(true);
+                                  }}
+                                >
+                                  <Pencil className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                  onClick={() => deleteRisk(originalIndex)}
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                           
                           {/* Inline Edit Row */}
                           {isExpanded && (
                             <TableRow className="bg-blue-50/50 dark:bg-blue-900/10 border-l-3 border-l-blue-500">
-                              <TableCell colSpan={7} className="p-5" onClick={(e) => e.stopPropagation()}>
+                              <TableCell colSpan={8} className="p-5" onClick={(e) => e.stopPropagation()}>
                                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                                   {/* Risk ID */}
                                   <div className="space-y-1">
@@ -1245,6 +1332,14 @@ export function AIDocumentAssessmentModal({
           </div>
         )}
       </DialogContent>
+
+      {/* Bulk Assessment Modal */}
+      <DocumentParserBulkAssessmentModal
+        open={showBulkAssessmentModal}
+        onOpenChange={setShowBulkAssessmentModal}
+        selectedRisks={selectedRisksForAssessment}
+        onApplyAssessments={handleBulkAssessmentApply}
+      />
     </Dialog>
   );
 }
