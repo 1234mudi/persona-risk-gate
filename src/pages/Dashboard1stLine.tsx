@@ -5,7 +5,8 @@ import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDo
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
-import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
+import { AIDocumentAssessmentModal, ParsedRisk } from "@/components/AIDocumentAssessmentModal";
+import { DocumentParserBulkAssessmentModal } from "@/components/DocumentParserBulkAssessmentModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -472,7 +473,36 @@ const Dashboard1stLine = () => {
   
   // AI Document Assessment modal state
   const [aiDocumentModalOpen, setAiDocumentModalOpen] = useState(false);
-
+  
+  // Direct AI Risk Assessment modal state (skips review screen)
+  const [directAssessmentModalOpen, setDirectAssessmentModalOpen] = useState(false);
+  
+  // Convert selected RiskData to ParsedRisk format for direct assessment
+  const getSelectedRisksAsParsedRisks = (): ParsedRisk[] => {
+    return riskData
+      .filter(r => selectedRisks.has(r.id))
+      .map(r => ({
+        id: r.id,
+        title: r.title,
+        riskLevel1: r.orgLevel.level1,
+        riskLevel2: r.orgLevel.level2,
+        riskLevel3: r.orgLevel.level3,
+        level: r.riskLevel,
+        businessUnit: r.businessUnit,
+        category: r.category,
+        owner: r.owner,
+        assessor: r.assessors.join(', '),
+        inherentRisk: r.inherentRisk.level,
+        inherentTrend: r.inherentTrend.value,
+        controls: r.relatedControls.name,
+        effectiveness: r.controlEffectiveness.label,
+        testResults: r.testResults.label,
+        residualRisk: r.residualRisk.level,
+        residualTrend: r.residualTrend.value,
+        status: r.status,
+        lastAssessed: r.lastAssessed,
+      }));
+  };
   const handleImportedRisks = (parsedRisks: any[]) => {
     console.log("handleImportedRisks received:", parsedRisks.length, "risks");
     console.log("Sample parsed:", parsedRisks.slice(0, 3));
@@ -1379,10 +1409,11 @@ const Dashboard1stLine = () => {
                       size="sm" 
                       variant="outline"
                       className="h-8 border-blue-500/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                      onClick={() => setAiDocumentModalOpen(true)}
+                      onClick={() => setDirectAssessmentModalOpen(true)}
+                      disabled={selectedRisks.size === 0}
                     >
-                      <FileText className="w-4 h-4 mr-1.5" />
-                      Document Parser
+                      <Upload className="w-4 h-4 mr-1.5" />
+                      AI Risk Search/Upload
                     </Button>
                     <Button 
                       size="sm" 
@@ -1808,7 +1839,39 @@ const Dashboard1stLine = () => {
         }))}
       />
 
-      {/* Edit Dialog */}
+      {/* Direct AI Risk Assessment Modal (skips review screen) */}
+      <DocumentParserBulkAssessmentModal
+        open={directAssessmentModalOpen}
+        onOpenChange={setDirectAssessmentModalOpen}
+        selectedRisks={getSelectedRisksAsParsedRisks()}
+        onApplyAssessments={(assessments) => {
+          // Update the risk data with the assessments
+          setRiskData(prev => prev.map(risk => {
+            const assessment = assessments.get(risk.id);
+            if (!assessment) return risk;
+            
+            const editedFields = assessment.inherent || {};
+            return {
+              ...risk,
+              title: (editedFields as any).title || risk.title,
+              category: (editedFields as any).category || risk.category,
+              owner: (editedFields as any).owner || risk.owner,
+              status: (editedFields as any).status || risk.status,
+              inherentRisk: {
+                ...risk.inherentRisk,
+                level: (editedFields as any).inherentRisk || risk.inherentRisk.level,
+              },
+              residualRisk: {
+                ...risk.residualRisk,
+                level: (editedFields as any).residualRisk || risk.residualRisk.level,
+              },
+            };
+          }));
+          clearSelection();
+          toast.success("Risk assessments updated successfully");
+        }}
+      />
+
       <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ open: false, type: null, riskId: null, currentValue: "" })}>
         <DialogContent>
           <DialogHeader>
