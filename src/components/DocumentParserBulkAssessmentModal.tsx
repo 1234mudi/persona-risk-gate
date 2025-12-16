@@ -236,26 +236,35 @@ export const DocumentParserBulkAssessmentModal = ({
   };
 
   // Get the status of a field (new, modified, missing)
+  // - "new": Field has original parsed data (auto-populated from document)
+  // - "missing": Field is empty/undefined and needs to be filled
+  // - "modified": User has changed the field from its original parsed value
   const getFieldStatus = (riskId: string, fieldKey: string): 'new' | 'modified' | 'missing' | null => {
     const original = originalRiskData.get(riskId);
-    const originalValue = original ? (original as any)[fieldKey] : undefined;
-    const currentValue = getFieldValue(riskId, fieldKey);
+    const originalValue = original ? String((original as any)[fieldKey] || '').trim() : '';
+    const edited = editedRiskData.get(riskId);
+    const hasBeenEdited = edited && fieldKey in edited;
+    const currentValue = getFieldValue(riskId, fieldKey).trim();
     
-    // Missing: original value is empty/undefined
-    if (!originalValue || originalValue.trim() === '') {
-      if (currentValue && currentValue.trim() !== '') {
-        return 'new'; // Was empty, now has value
+    // Check if user has modified the field
+    if (hasBeenEdited) {
+      const editedValue = String((edited as any)[fieldKey] || '').trim();
+      if (editedValue !== originalValue) {
+        return 'modified';
       }
+    }
+    
+    // Check if field is missing (empty in both original and current)
+    if (!currentValue) {
       return 'missing';
     }
     
-    // Modified: current differs from original
-    const edited = editedRiskData.get(riskId);
-    if (edited && fieldKey in edited && (edited as any)[fieldKey] !== originalValue) {
-      return 'modified';
+    // Field has original parsed data (auto-populated from document parsing)
+    if (originalValue && !hasBeenEdited) {
+      return 'new';
     }
     
-    return null; // No special status
+    return null;
   };
 
   const getStatusBadge = (status: 'new' | 'modified' | 'missing' | null) => {
