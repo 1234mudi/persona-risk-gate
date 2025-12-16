@@ -974,17 +974,6 @@ export function AIDocumentAssessmentModal({
                 <span className="text-sm text-muted-foreground whitespace-nowrap">
                   Showing {filteredRisks.length} of {parsedRisks.length}
                 </span>
-
-                {/* Assess Selected Button */}
-                {selectedRiskIds.size > 0 && (
-                  <Button
-                    onClick={() => setShowBulkAssessmentModal(true)}
-                    className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
-                  >
-                    <Layers className="w-4 h-4" />
-                    Assess Selected ({selectedRiskIds.size})
-                  </Button>
-                )}
               </div>
 
               {/* Table View matching main dashboard */}
@@ -998,7 +987,7 @@ export function AIDocumentAssessmentModal({
                           onCheckedChange={toggleAllRisks}
                         />
                       </TableHead>
-                      <TableHead className="w-16 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"></TableHead>
+                      <TableHead className="w-20 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"></TableHead>
                       <TableHead className="w-24 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Risk ID</TableHead>
                       <TableHead className="min-w-[280px] py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Risk Event / Owner</TableHead>
                       <TableHead className="w-36 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Source</TableHead>
@@ -1024,29 +1013,45 @@ export function AIDocumentAssessmentModal({
                       return (
                         <React.Fragment key={originalIndex}>
                           <TableRow 
-                            className={`cursor-pointer transition-colors border-b border-gray-100 dark:border-gray-800
+                            className={`transition-colors border-b border-gray-100 dark:border-gray-800
                               ${riskStatus === "new" ? "bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-50 dark:hover:bg-emerald-900/20" : ""}
                               ${riskStatus === "modified" ? "bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20" : ""}
                               ${riskStatus === "unchanged" ? "hover:bg-gray-50 dark:hover:bg-gray-800/50" : ""}
-                              ${isExpanded ? "bg-blue-50 dark:bg-blue-900/20 border-l-3 border-l-blue-500" : ""}
                               ${selectedRiskIds.has(risk.id) ? "ring-1 ring-inset ring-emerald-500/50" : ""}
                             `}
-                            onClick={() => setExpandedIndex(isExpanded ? null : originalIndex)}
                           >
-                            {/* Checkbox */}
+                            {/* Checkbox + Actions */}
                             <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                              <Checkbox
-                                checked={selectedRiskIds.has(risk.id)}
-                                onCheckedChange={() => toggleRiskSelection(risk.id)}
-                              />
+                              <div className="flex items-center gap-2">
+                                <Checkbox
+                                  checked={selectedRiskIds.has(risk.id)}
+                                  onCheckedChange={() => toggleRiskSelection(risk.id)}
+                                />
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                                  onClick={() => {
+                                    setSelectedRiskIds(new Set([risk.id]));
+                                    setShowBulkAssessmentModal(true);
+                                  }}
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                  onClick={() => deleteRisk(originalIndex)}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
                             </TableCell>
                             
                             {/* Status Badge */}
                             <TableCell className="py-3 px-4">
-                              <div className="flex items-center gap-2">
-                                {isExpanded ? <ChevronUp className="w-4 h-4 text-blue-600" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-                                {getStatusBadge(riskStatus)}
-                              </div>
+                              {getStatusBadge(riskStatus)}
                             </TableCell>
                             
                             {/* Risk ID */}
@@ -1113,186 +1118,7 @@ export function AIDocumentAssessmentModal({
                                 </Badge>
                               )}
                             </TableCell>
-                            
-                            {/* Actions */}
-                            <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center gap-1">
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-                                  onClick={() => {
-                                    setSelectedRiskIds(new Set([risk.id]));
-                                    setShowBulkAssessmentModal(true);
-                                  }}
-                                >
-                                  <Pencil className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-8 w-8 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                  onClick={() => deleteRisk(originalIndex)}
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </Button>
-                              </div>
-                            </TableCell>
                           </TableRow>
-                          
-                          {/* Inline Edit Row */}
-                          {isExpanded && (
-                            <TableRow className="bg-blue-50/50 dark:bg-blue-900/10 border-l-3 border-l-blue-500">
-                              <TableCell colSpan={8} className="p-5" onClick={(e) => e.stopPropagation()}>
-                                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
-                                  {/* Risk ID */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Risk ID</label>
-                                    <Input
-                                      value={risk.id}
-                                      onChange={(e) => updateRisk(originalIndex, 'id', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'id', risk.id)}`}
-                                    />
-                                  </div>
-                                  
-                                  {/* Title */}
-                                  <div className="space-y-1 col-span-2">
-                                    <label className="text-xs font-medium text-muted-foreground">Title</label>
-                                    <Input
-                                      value={risk.title}
-                                      onChange={(e) => updateRisk(originalIndex, 'title', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'title', risk.title)}`}
-                                    />
-                                  </div>
-                                  
-                                  {/* Owner */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Owner</label>
-                                    <Input
-                                      value={risk.owner}
-                                      onChange={(e) => updateRisk(originalIndex, 'owner', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'owner', risk.owner)}`}
-                                    />
-                                  </div>
-                                  
-                                  {/* Category */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Category</label>
-                                    <Input
-                                      value={risk.category}
-                                      onChange={(e) => updateRisk(originalIndex, 'category', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'category', risk.category)}`}
-                                    />
-                                  </div>
-                                  
-                                  {/* Controls */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Controls</label>
-                                    <Input
-                                      value={risk.controls}
-                                      onChange={(e) => updateRisk(originalIndex, 'controls', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'controls', risk.controls)}`}
-                                    />
-                                  </div>
-                                  
-                                  {/* Inherent Risk */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Inherent Risk</label>
-                                    <Select
-                                      value={risk.inherentRisk.toLowerCase().includes('high') ? 'High' : 
-                                             risk.inherentRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                                      onValueChange={(value) => updateRisk(originalIndex, 'inherentRisk', value)}
-                                    >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'inherentRisk', risk.inherentRisk)}`}>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="High">High</SelectItem>
-                                        <SelectItem value="Medium">Medium</SelectItem>
-                                        <SelectItem value="Low">Low</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  
-                                  {/* Residual Risk */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Residual Risk</label>
-                                    <Select
-                                      value={risk.residualRisk.toLowerCase().includes('high') ? 'High' : 
-                                             risk.residualRisk.toLowerCase().includes('medium') ? 'Medium' : 'Low'}
-                                      onValueChange={(value) => updateRisk(originalIndex, 'residualRisk', value)}
-                                    >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'residualRisk', risk.residualRisk)}`}>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="High">High</SelectItem>
-                                        <SelectItem value="Medium">Medium</SelectItem>
-                                        <SelectItem value="Low">Low</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  
-                                  {/* Status */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Status</label>
-                                    <Select
-                                      value={risk.status}
-                                      onValueChange={(value) => updateRisk(originalIndex, 'status', value)}
-                                    >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'status', risk.status)}`}>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
-                                        <SelectItem value="In Progress">In Progress</SelectItem>
-                                        <SelectItem value="Completed">Completed</SelectItem>
-                                        <SelectItem value="Overdue">Overdue</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  
-                                  {/* Assessor */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Assessor</label>
-                                    <Input
-                                      value={risk.assessor}
-                                      onChange={(e) => updateRisk(originalIndex, 'assessor', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'assessor', risk.assessor)}`}
-                                    />
-                                  </div>
-                                  
-                                  {/* Effectiveness */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Effectiveness</label>
-                                    <Select
-                                      value={risk.effectiveness || 'Effective'}
-                                      onValueChange={(value) => updateRisk(originalIndex, 'effectiveness', value)}
-                                    >
-                                      <SelectTrigger className={`h-8 text-sm ${getFieldInputClass(risk, 'effectiveness', risk.effectiveness)}`}>
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent>
-                                        <SelectItem value="Effective">Effective</SelectItem>
-                                        <SelectItem value="Partially Effective">Partially Effective</SelectItem>
-                                        <SelectItem value="Ineffective">Ineffective</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </div>
-                                  
-                                  {/* Last Assessed */}
-                                  <div className="space-y-1">
-                                    <label className="text-xs font-medium text-muted-foreground">Last Assessed</label>
-                                    <Input
-                                      value={risk.lastAssessed}
-                                      onChange={(e) => updateRisk(originalIndex, 'lastAssessed', e.target.value)}
-                                      className={`h-8 text-sm ${getFieldInputClass(risk, 'lastAssessed', risk.lastAssessed)}`}
-                                    />
-                                  </div>
-                                </div>
-                              </TableCell>
-                            </TableRow>
-                          )}
                         </React.Fragment>
                       );
                     })}
@@ -1320,7 +1146,16 @@ export function AIDocumentAssessmentModal({
         )}
         
         {step === "review" && (
-          <div className="px-6 pb-6 pt-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end">
+          <div className="px-6 pb-6 pt-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
+            {selectedRiskIds.size > 0 && (
+              <Button
+                onClick={() => setShowBulkAssessmentModal(true)}
+                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+              >
+                <Layers className="w-4 h-4" />
+                Assess Selected ({selectedRiskIds.size})
+              </Button>
+            )}
             <Button 
               onClick={handleImport}
               disabled={parsedRisks.length === 0}
