@@ -74,6 +74,7 @@ interface AIDocumentAssessmentModalProps {
   onRisksImported: (risks: ParsedRisk[]) => void;
   existingRisks?: ExistingRisk[];
   skipReviewScreen?: boolean; // Skip review and go directly to bulk assessment
+  filterByRiskIds?: string[]; // Only show risks that match these IDs (for selected risks flow)
 }
 
 export function AIDocumentAssessmentModal({ 
@@ -81,7 +82,8 @@ export function AIDocumentAssessmentModal({
   onOpenChange,
   onRisksImported,
   existingRisks = [],
-  skipReviewScreen = false
+  skipReviewScreen = false,
+  filterByRiskIds
 }: AIDocumentAssessmentModalProps) {
   const [files, setFiles] = useState<File[]>([]);
   const [isDragging, setIsDragging] = useState(false);
@@ -510,11 +512,25 @@ export function AIDocumentAssessmentModal({
     setIsProcessing(false);
     
     if (allRisks.length > 0) {
-      toast.success(`Successfully parsed ${allRisks.length} risk assessments`);
+      // Filter risks if filterByRiskIds is provided
+      let risksToUse = allRisks;
+      if (filterByRiskIds && filterByRiskIds.length > 0) {
+        risksToUse = allRisks.filter(r => filterByRiskIds.includes(r.id));
+        if (risksToUse.length === 0) {
+          toast.warning("No matching risks found for the selected items");
+          setStep("upload");
+          return;
+        }
+        toast.success(`Found ${risksToUse.length} matching risk assessments`);
+      } else {
+        toast.success(`Successfully parsed ${allRisks.length} risk assessments`);
+      }
+      
+      setParsedRisks(risksToUse);
       
       // If skipReviewScreen is enabled, select all risks and open bulk assessment directly
       if (skipReviewScreen) {
-        setSelectedRiskIds(new Set(allRisks.map(r => r.id)));
+        setSelectedRiskIds(new Set(risksToUse.map(r => r.id)));
         setShowBulkAssessmentModal(true);
         setStep("review"); // Still set to review for the modal context
       } else {
