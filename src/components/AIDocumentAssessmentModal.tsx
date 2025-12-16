@@ -624,14 +624,24 @@ export function AIDocumentAssessmentModal({
       const assessment = assessments.get(risk.id);
       if (!assessment) return risk;
       
-      // Apply inherent risk rating if available
-      const inherentImpact = assessment.inherent?.["1"];
-      if (inherentImpact) {
-        const level = parseInt(inherentImpact);
-        const riskLevel = level >= 4 ? 'High' : level >= 3 ? 'Medium' : 'Low';
-        return { ...risk, inherentRisk: riskLevel };
-      }
-      return risk;
+      // Apply all edited fields from the inherent object (which now contains all edited fields)
+      const editedFields = assessment.inherent || {};
+      const updatedRisk = { ...risk };
+      
+      // Map all valid ParsedRisk fields
+      const validFields: (keyof ParsedRisk)[] = [
+        'title', 'id', 'status', 'category', 'riskLevel1', 'riskLevel2', 'riskLevel3',
+        'owner', 'assessor', 'businessUnit', 'inherentRisk', 'inherentTrend',
+        'controls', 'effectiveness', 'testResults', 'residualRisk', 'residualTrend', 'lastAssessed'
+      ];
+      
+      validFields.forEach(field => {
+        if (field in editedFields && editedFields[field] !== undefined) {
+          (updatedRisk as any)[field] = editedFields[field];
+        }
+      });
+      
+      return updatedRisk;
     }));
     
     setSelectedRiskIds(new Set());
