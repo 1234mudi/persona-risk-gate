@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ArrowLeft, ChevronDown, ChevronUp, Search, Filter, Layers } from "lucide-react";
+import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ChevronDown, ChevronUp, Search, Filter, Layers } from "lucide-react";
 import mammoth from "mammoth";
 import {
   Dialog,
@@ -695,30 +695,30 @@ export function AIDocumentAssessmentModal({
           : "sm:max-w-lg"
       }>
         {/* Header Bar */}
-        <div className={step === "review" ? "bg-gradient-to-r from-blue-600 to-blue-500 px-6 py-4 flex items-center justify-between" : "px-6 pt-6"}>
+        <div className={step === "review" ? "px-6 py-4 flex items-center justify-between border-b border-border bg-muted/30" : "px-6 pt-6"}>
           {step === "review" ? (
             <>
               <div className="flex items-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleClose}
-                  className="text-white hover:bg-white/20 gap-2"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  Back
-                </Button>
-                <div className="h-6 w-px bg-white/30" />
-                <div className="flex items-center gap-2">
+                <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
                   <FileText className="w-5 h-5 text-white" />
-                  <h2 className="text-lg font-semibold text-white">Document Parser</h2>
+                </div>
+                <div>
+                  <h2 className="text-lg font-semibold text-foreground">Document Parser</h2>
+                  <p className="text-sm text-muted-foreground">Review and import {parsedRisks.length} parsed risk assessments</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Badge className="bg-white/20 text-white border-white/30 hover:bg-white/30">
-                  <Sparkles className="w-3 h-3 mr-1" />
+                <Badge variant="secondary" className="gap-1">
+                  <Sparkles className="w-3 h-3" />
                   AI-Powered
                 </Badge>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClose}
+                >
+                  Cancel
+                </Button>
               </div>
             </>
           ) : (
