@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from "react";
 import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ChevronDown, ChevronUp, Search, Filter, Layers } from "lucide-react";
 import mammoth from "mammoth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -487,16 +488,36 @@ export function AIDocumentAssessmentModal({
       const ext = file.name.split('.').pop()?.toLowerCase();
 
       try {
+        let content = "";
+        
+        // Extract text content from the file
         if (ext === 'csv') {
-          const content = await file.text();
-          const risks = parseCSV(content).map(r => ({ ...r, sourceFile: file.name }));
-          allRisks.push(...risks);
+          content = await file.text();
         } else if (ext === 'docx') {
-          toast.info(`Processing ${file.name}...`);
-          const risks = (await parseDOCX(file)).map(r => ({ ...r, sourceFile: file.name }));
-          allRisks.push(...risks);
-          if (risks.length > 0) {
-            toast.success(`Extracted ${risks.length} risks from ${file.name}`);
+          const arrayBuffer = await file.arrayBuffer();
+          const result = await mammoth.extractRawText({ arrayBuffer });
+          content = result.value;
+        }
+
+        if (content.trim()) {
+          toast.info(`AI is analyzing ${file.name}...`);
+          
+          // Call AI to parse the document
+          const { data, error } = await supabase.functions.invoke('parse-risk-document', {
+            body: { content, fileName: file.name }
+          });
+
+          if (error) {
+            console.error(`Error calling AI for ${file.name}:`, error);
+            toast.error(`Failed to analyze ${file.name}: ${error.message}`);
+          } else if (data?.success && data.risks) {
+            const risks = data.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: file.name }));
+            allRisks.push(...risks);
+            toast.success(`AI extracted ${risks.length} risks from ${file.name}`);
+          } else if (data?.error) {
+            toast.error(`AI error for ${file.name}: ${data.error}`);
+          } else {
+            toast.warning(`No risks found in ${file.name}`);
           }
         }
       } catch (error) {
@@ -506,9 +527,6 @@ export function AIDocumentAssessmentModal({
 
       setProgress(((i + 1) / totalFiles) * 100);
     }
-
-    // Simulate AI enhancement delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
     
     setParsedRisks(allRisks);
     setIsProcessing(false);
