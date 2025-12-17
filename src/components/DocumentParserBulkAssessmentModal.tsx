@@ -352,7 +352,7 @@ export const DocumentParserBulkAssessmentModal = ({
                 className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
               >
                 <Send className="w-4 h-4" />
-                Apply to All Selected Risks
+                {selectedRisks.length > 1 ? 'Apply to All Selected Risks' : 'Apply'}
               </Button>
             </div>
           </div>
