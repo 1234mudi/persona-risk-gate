@@ -1,6 +1,7 @@
 import { useState, useCallback } from "react";
 import { Upload, FileText, X, AlertCircle, CheckCircle, Loader2, ArrowRight, Search, FileQuestion } from "lucide-react";
 import mammoth from "mammoth";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Dialog,
   DialogContent,
@@ -273,26 +274,42 @@ export function SingleRiskDocumentModal({
       const ext = file.name.split(".").pop()?.toLowerCase();
 
       try {
-        let allRisks: RiskData[] = [];
-
+        let content = "";
+        
+        // Extract text content from the file
         if (ext === "csv") {
-          const content = await file.text();
-          allRisks = parseCSV(content);
+          content = await file.text();
         } else if (ext === "docx") {
-          allRisks = await parseDOCX(file);
+          const arrayBuffer = await file.arrayBuffer();
+          const result = await mammoth.extractRawText({ arrayBuffer });
+          content = result.value;
         }
 
-        // Search by ID (case-insensitive) or by title (partial match)
-        const match = allRisks.find(
-          (r) =>
-            r.id.toLowerCase() === risk.id.toLowerCase() ||
-            r.title.toLowerCase().includes(risk.title.toLowerCase()) ||
-            risk.title.toLowerCase().includes(r.title.toLowerCase())
-        );
+        if (content.trim()) {
+          toast.info(`AI is analyzing ${file.name}...`);
+          
+          // Call AI to parse the document
+          const { data, error } = await supabase.functions.invoke('parse-risk-document', {
+            body: { content, fileName: file.name }
+          });
 
-        if (match) {
-          foundMatch = match;
-          break;
+          if (error) {
+            console.error(`Error calling AI for ${file.name}:`, error);
+            toast.error(`Failed to analyze ${file.name}`);
+          } else if (data?.success && data.risks) {
+            // Search by ID (case-insensitive) or by title (partial match)
+            const match = data.risks.find(
+              (r: RiskData) =>
+                r.id.toLowerCase() === risk.id.toLowerCase() ||
+                r.title.toLowerCase().includes(risk.title.toLowerCase()) ||
+                risk.title.toLowerCase().includes(r.title.toLowerCase())
+            );
+
+            if (match) {
+              foundMatch = match;
+              break;
+            }
+          }
         }
       } catch (error) {
         console.error(`Error processing ${file.name}:`, error);
@@ -300,8 +317,6 @@ export function SingleRiskDocumentModal({
 
       setProgress(((i + 1) / files.length) * 100);
     }
-
-    await new Promise((resolve) => setTimeout(resolve, 500));
 
     setSearchedFiles(fileNames);
     setFoundRisk(foundMatch);
