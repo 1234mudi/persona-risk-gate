@@ -20,9 +20,9 @@ serve(async (req) => {
       );
     }
 
-    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
-    if (!LOVABLE_API_KEY) {
-      throw new Error("LOVABLE_API_KEY is not configured");
+    const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
+    if (!PERPLEXITY_API_KEY) {
+      throw new Error("PERPLEXITY_API_KEY is not configured");
     }
 
     console.log(`Parsing document: ${fileName}, content length: ${content.length}`);
@@ -61,14 +61,14 @@ Important rules:
 
 Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+    const response = await fetch("https://api.perplexity.ai/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "sonar",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: `Parse the following document and extract all risk information:\n\n${content}` }
@@ -83,14 +83,8 @@ Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
           { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      if (response.status === 402) {
-        return new Response(
-          JSON.stringify({ success: false, error: "AI usage limit reached. Please add credits." }),
-          { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-      }
       const errorText = await response.text();
-      console.error("AI gateway error:", response.status, errorText);
+      console.error("Perplexity API error:", response.status, errorText);
       return new Response(
         JSON.stringify({ success: false, error: "AI processing error" }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
