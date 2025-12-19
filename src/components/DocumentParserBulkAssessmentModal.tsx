@@ -18,11 +18,23 @@ import {
 } from "@/components/ui/tooltip";
 import { ParsedRisk } from "./AIDocumentAssessmentModal";
 
+interface ExistingRisk {
+  id: string;
+  title: string;
+  businessUnit?: string;
+  category?: string;
+  owner?: string;
+  inherentRisk?: string;
+  residualRisk?: string;
+  status?: string;
+}
+
 interface DocumentParserBulkAssessmentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedRisks: ParsedRisk[];
   onApplyAssessments: (assessments: Map<string, RiskAssessmentData>) => void;
+  existingRisks?: ExistingRisk[];
 }
 
 interface RiskAssessmentData {
@@ -105,7 +117,8 @@ export const DocumentParserBulkAssessmentModal = ({
   open, 
   onOpenChange, 
   selectedRisks, 
-  onApplyAssessments 
+  onApplyAssessments,
+  existingRisks = []
 }: DocumentParserBulkAssessmentModalProps) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [categoryFilter, setCategoryFilter] = useState<string>("all");
@@ -116,12 +129,19 @@ export const DocumentParserBulkAssessmentModal = ({
   // Editable risk data - track modifications
   const [editedRiskData, setEditedRiskData] = useState<Map<string, Partial<ParsedRisk>>>(() => new Map());
   
-  // Original risk data for comparison (to detect modifications)
+  // Original risk data for comparison (document/parsed data)
   const originalRiskData = useMemo(() => {
     const map = new Map<string, ParsedRisk>();
     selectedRisks.forEach(r => map.set(r.id, { ...r }));
     return map;
   }, [selectedRisks]);
+
+  // Map of existing system data for comparison
+  const existingRiskMap = useMemo(() => {
+    const map = new Map<string, ExistingRisk>();
+    existingRisks.forEach(risk => map.set(risk.id, risk));
+    return map;
+  }, [existingRisks]);
 
   // Update checked risks when selectedRisks changes
   useMemo(() => {
@@ -227,7 +247,7 @@ export const DocumentParserBulkAssessmentModal = ({
     onOpenChange(false);
   };
 
-  // Get the current value of a field for a risk (edited or original)
+  // Get the current value of a field for a risk (edited or original document data)
   const getFieldValue = (riskId: string, fieldKey: string): string => {
     const edited = editedRiskData.get(riskId);
     if (edited && fieldKey in edited) {
@@ -235,6 +255,23 @@ export const DocumentParserBulkAssessmentModal = ({
     }
     const original = originalRiskData.get(riskId);
     return original ? (original as any)[fieldKey] || '' : '';
+  };
+
+  // Get the system (existing) value for a field
+  const getSystemValue = (riskId: string, fieldKey: string): string | undefined => {
+    const existing = existingRiskMap.get(riskId);
+    if (!existing) return undefined;
+    return (existing as any)[fieldKey];
+  };
+
+  // Check if a field differs between document and system
+  const isFieldDifferentFromSystem = (riskId: string, fieldKey: string): boolean => {
+    const documentValue = getFieldValue(riskId, fieldKey).trim();
+    const systemValue = getSystemValue(riskId, fieldKey)?.trim() || '';
+    const existing = existingRiskMap.get(riskId);
+    // Only show as different if the risk exists in the system
+    if (!existing) return false;
+    return documentValue !== systemValue && (documentValue !== '' || systemValue !== '');
   };
 
   // Update a field value for a risk
@@ -247,18 +284,20 @@ export const DocumentParserBulkAssessmentModal = ({
     });
   };
 
-  // Get the status of a field (new, modified, missing)
-  // - "new": Field has original parsed data (auto-populated from document)
-  // - "missing": Field is empty/undefined and needs to be filled
-  // - "modified": User has changed the field from its original parsed value
-  const getFieldStatus = (riskId: string, fieldKey: string): 'new' | 'modified' | 'missing' | null => {
+  // Get the status of a field (new, modified, missing, fromDocument)
+  // - "fromDocument": Field has data from document that differs from system
+  // - "new": Field has data from document (new risk, not in system)
+  // - "missing": Field is empty and needs to be filled
+  // - "modified": User has changed the field in this modal
+  const getFieldStatus = (riskId: string, fieldKey: string): 'new' | 'modified' | 'missing' | 'fromDocument' | null => {
     const original = originalRiskData.get(riskId);
     const originalValue = original ? String((original as any)[fieldKey] || '').trim() : '';
     const edited = editedRiskData.get(riskId);
     const hasBeenEdited = edited && fieldKey in edited;
     const currentValue = getFieldValue(riskId, fieldKey).trim();
+    const existing = existingRiskMap.get(riskId);
     
-    // Check if user has modified the field
+    // Check if user has modified the field in this modal
     if (hasBeenEdited) {
       const editedValue = String((edited as any)[fieldKey] || '').trim();
       if (editedValue !== originalValue) {
@@ -266,20 +305,28 @@ export const DocumentParserBulkAssessmentModal = ({
       }
     }
     
-    // Check if field is missing (empty in both original and current)
+    // Check if field is missing (empty)
     if (!currentValue) {
       return 'missing';
     }
     
-    // Field has original parsed data (auto-populated from document parsing)
-    if (originalValue && !hasBeenEdited) {
+    // If risk exists in system and document value differs, show as "fromDocument"
+    if (existing) {
+      const systemValue = String((existing as any)[fieldKey] || '').trim();
+      if (currentValue !== systemValue) {
+        return 'fromDocument';
+      }
+    }
+    
+    // Field has original parsed data (new risk not in system)
+    if (originalValue && !hasBeenEdited && !existing) {
       return 'new';
     }
     
     return null;
   };
 
-  const getStatusBadge = (status: 'new' | 'modified' | 'missing' | null) => {
+  const getStatusBadge = (status: 'new' | 'modified' | 'missing' | 'fromDocument' | null) => {
     if (!status) return null;
     
     switch (status) {
@@ -290,11 +337,18 @@ export const DocumentParserBulkAssessmentModal = ({
             New
           </Badge>
         );
+      case 'fromDocument':
+        return (
+          <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 gap-1 text-xs">
+            <FileText className="w-3 h-3" />
+            From File
+          </Badge>
+        );
       case 'modified':
         return (
           <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 gap-1 text-xs">
             <Pencil className="w-3 h-3" />
-            Modified
+            Edited
           </Badge>
         );
       case 'missing':
@@ -570,33 +624,47 @@ export const DocumentParserBulkAssessmentModal = ({
                                   {checkedFilteredRisks.map((risk) => {
                                     const status = getFieldStatus(risk.id, field.key);
                                     const value = getFieldValue(risk.id, field.key);
+                                    const systemValue = getSystemValue(risk.id, field.key);
+                                    const isDifferentFromSystem = isFieldDifferentFromSystem(risk.id, field.key);
                                     const isSingleRisk = selectedRisks.length === 1;
                                     
                                     return (
-                                      <div key={`${risk.id}-${field.key}`} className="flex items-start gap-3">
-                                        {/* Only show risk ID badge when multiple risks */}
-                                        {!isSingleRisk && (
-                                          <Badge variant="outline" className="font-mono text-xs shrink-0 mt-2">
-                                            {risk.id}
-                                          </Badge>
+                                      <div key={`${risk.id}-${field.key}`} className="space-y-1">
+                                        <div className="flex items-start gap-3">
+                                          {/* Only show risk ID badge when multiple risks */}
+                                          {!isSingleRisk && (
+                                            <Badge variant="outline" className="font-mono text-xs shrink-0 mt-2">
+                                              {risk.id}
+                                            </Badge>
+                                          )}
+                                          <div className="flex-1">
+                                            <Textarea
+                                              value={value}
+                                              onChange={(e) => updateFieldValue(risk.id, field.key, e.target.value)}
+                                              placeholder={`Enter ${field.label.toLowerCase()}...`}
+                                              className={`min-h-[40px] resize-none bg-background ${
+                                                status === 'missing' ? 'border-red-300 dark:border-red-800' :
+                                                status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
+                                                status === 'fromDocument' ? 'border-blue-300 dark:border-blue-800' :
+                                                status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
+                                                ''
+                                              }`}
+                                              rows={1}
+                                            />
+                                          </div>
+                                          <div className="shrink-0 w-24 mt-2">
+                                            {getStatusBadge(status)}
+                                          </div>
+                                        </div>
+                                        {/* Show system value comparison when different */}
+                                        {isDifferentFromSystem && systemValue !== undefined && (
+                                          <div className={`flex items-center gap-2 text-xs ${!isSingleRisk ? 'ml-20' : ''}`}>
+                                            <span className="text-muted-foreground">Current system value:</span>
+                                            <span className="text-muted-foreground line-through bg-muted/50 px-2 py-0.5 rounded">
+                                              {systemValue || '(empty)'}
+                                            </span>
+                                          </div>
                                         )}
-                                        <div className="flex-1">
-                                          <Textarea
-                                            value={value}
-                                            onChange={(e) => updateFieldValue(risk.id, field.key, e.target.value)}
-                                            placeholder={`Enter ${field.label.toLowerCase()}...`}
-                                            className={`min-h-[40px] resize-none bg-background ${
-                                              status === 'missing' ? 'border-red-300 dark:border-red-800' :
-                                              status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
-                                              status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
-                                              ''
-                                            }`}
-                                            rows={1}
-                                          />
-                                        </div>
-                                        <div className="shrink-0 w-20 mt-2">
-                                          {getStatusBadge(status)}
-                                        </div>
                                       </div>
                                     );
                                   })}
