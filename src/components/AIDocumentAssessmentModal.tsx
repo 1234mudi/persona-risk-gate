@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useMemo } from "react";
-import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ChevronDown, ChevronUp, Search, Filter, Layers } from "lucide-react";
+import { Upload, FileText, Sparkles, X, AlertCircle, CheckCircle, Loader2, Plus, Pencil, Trash2, ArrowRight, ChevronDown, ChevronUp, Search, Filter, Layers, AlertTriangle } from "lucide-react";
 import mammoth from "mammoth";
 import { supabase } from "@/integrations/supabase/client";
 import {
@@ -10,6 +10,15 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
@@ -105,6 +114,10 @@ export function AIDocumentAssessmentModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "new" | "modified">("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
+  
+  // Fallback alert state
+  const [showFallbackAlert, setShowFallbackAlert] = useState(false);
+  const [fallbackInfo, setFallbackInfo] = useState<{ reason: string; risksCount: number } | null>(null);
 
   // Create a map of existing risk IDs for quick lookup
   const existingRiskMap = useMemo(() => {
@@ -514,12 +527,10 @@ export function AIDocumentAssessmentModal({
             const risks = data.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: file.name }));
             allRisks.push(...risks);
             
-            // Show appropriate toast based on whether fallback was used
+            // Show alert dialog if fallback was used, otherwise show toast
             if (data.usedFallback && data.fallbackReason) {
-              toast.warning(
-                `Extracted ${risks.length} risks using Perplexity AI. Reason: ${data.fallbackReason}. Consider adding Lovable AI credits.`,
-                { duration: 8000 }
-              );
+              setFallbackInfo({ reason: data.fallbackReason, risksCount: risks.length });
+              setShowFallbackAlert(true);
             } else {
               toast.success(`AI extracted ${risks.length} risks from ${file.name}`);
             }
@@ -1268,6 +1279,39 @@ export function AIDocumentAssessmentModal({
       selectedRisks={selectedRisksForAssessment}
       onApplyAssessments={handleBulkAssessmentApply}
     />
+
+    {/* Fallback API Alert Dialog */}
+    <AlertDialog open={showFallbackAlert} onOpenChange={setShowFallbackAlert}>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <div className="flex items-center gap-3 mb-2">
+            <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/30">
+              <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+            </div>
+            <AlertDialogTitle>Using Backup AI Provider</AlertDialogTitle>
+          </div>
+          <AlertDialogDescription className="space-y-3">
+            <p>
+              Your document was successfully parsed using <strong>Perplexity AI</strong> as a backup provider.
+            </p>
+            <div className="p-3 rounded-lg bg-muted/50 border">
+              <p className="text-sm font-medium text-foreground">Reason: {fallbackInfo?.reason}</p>
+            </div>
+            <p className="text-sm">
+              {fallbackInfo?.risksCount} risk{fallbackInfo?.risksCount !== 1 ? 's' : ''} were extracted successfully.
+            </p>
+            <p className="text-sm text-muted-foreground">
+              To continue using Lovable AI, please add credits to your workspace in Settings → Workspace → Usage.
+            </p>
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogAction onClick={() => setShowFallbackAlert(false)}>
+            Got it
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
     </>
   );
 }
