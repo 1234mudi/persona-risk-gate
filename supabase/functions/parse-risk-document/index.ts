@@ -27,6 +27,14 @@ serve(async (req) => {
 
     console.log(`Parsing document: ${fileName}, content length: ${content.length}`);
 
+    // Truncate content if too large (Perplexity has context limits)
+    const maxContentLength = 15000;
+    const truncatedContent = content.length > maxContentLength 
+      ? content.substring(0, maxContentLength) + "\n\n[Content truncated...]"
+      : content;
+    
+    console.log(`Using content length: ${truncatedContent.length}`);
+
     const systemPrompt = `You are a risk assessment document parser. Your job is to extract risk information from documents in any format (CSV, tables, free text, etc).
 
 Extract ALL risks found in the document. For each risk, extract the following fields:
@@ -61,104 +69,130 @@ Important rules:
 
 Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
 
-    const response = await fetch("https://api.perplexity.ai/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "sonar",
-        messages: [
-          { role: "system", content: systemPrompt },
-          { role: "user", content: `Parse the following document and extract all risk information:\n\n${content}` }
-        ],
-      }),
-    });
+    // Create abort controller with timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 55000); // 55s timeout
 
-    if (!response.ok) {
-      if (response.status === 429) {
+    console.log("Calling Perplexity API...");
+
+    try {
+      const response = await fetch("https://api.perplexity.ai/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "sonar",
+          messages: [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: `Parse the following document and extract all risk information:\n\n${truncatedContent}` }
+          ],
+        }),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+      console.log("Perplexity API response status:", response.status);
+
+      if (!response.ok) {
+        if (response.status === 429) {
+          return new Response(
+            JSON.stringify({ success: false, error: "Rate limit exceeded. Please try again later." }),
+            { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        const errorText = await response.text();
+        console.error("Perplexity API error:", response.status, errorText);
         return new Response(
-          JSON.stringify({ success: false, error: "Rate limit exceeded. Please try again later." }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          JSON.stringify({ success: false, error: `AI processing error: ${response.status}` }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         );
       }
-      const errorText = await response.text();
-      console.error("Perplexity API error:", response.status, errorText);
-      return new Response(
-        JSON.stringify({ success: false, error: "AI processing error" }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
 
-    const data = await response.json();
-    const aiResponse = data.choices?.[0]?.message?.content;
-
-    if (!aiResponse) {
-      throw new Error("No response from AI");
-    }
-
-    console.log("AI response length:", aiResponse.length);
-
-    // Parse the JSON response - handle markdown code blocks
-    let risks = [];
-    try {
-      let jsonStr = aiResponse.trim();
-      // Remove markdown code blocks if present
-      if (jsonStr.startsWith("```json")) {
-        jsonStr = jsonStr.slice(7);
-      } else if (jsonStr.startsWith("```")) {
-        jsonStr = jsonStr.slice(3);
-      }
-      if (jsonStr.endsWith("```")) {
-        jsonStr = jsonStr.slice(0, -3);
-      }
-      jsonStr = jsonStr.trim();
+      const data = await response.json();
+      console.log("Perplexity response received");
       
-      risks = JSON.parse(jsonStr);
-      
-      // Ensure it's an array
-      if (!Array.isArray(risks)) {
-        risks = [risks];
+      const aiResponse = data.choices?.[0]?.message?.content;
+
+      if (!aiResponse) {
+        console.error("No content in AI response:", JSON.stringify(data));
+        throw new Error("No response from AI");
       }
-    } catch (parseError) {
-      console.error("Failed to parse AI response as JSON:", parseError);
-      console.log("Raw AI response:", aiResponse);
+
+      console.log("AI response length:", aiResponse.length);
+
+      // Parse the JSON response - handle markdown code blocks
+      let risks = [];
+      try {
+        let jsonStr = aiResponse.trim();
+        // Remove markdown code blocks if present
+        if (jsonStr.startsWith("```json")) {
+          jsonStr = jsonStr.slice(7);
+        } else if (jsonStr.startsWith("```")) {
+          jsonStr = jsonStr.slice(3);
+        }
+        if (jsonStr.endsWith("```")) {
+          jsonStr = jsonStr.slice(0, -3);
+        }
+        jsonStr = jsonStr.trim();
+        
+        risks = JSON.parse(jsonStr);
+        
+        // Ensure it's an array
+        if (!Array.isArray(risks)) {
+          risks = [risks];
+        }
+      } catch (parseError) {
+        console.error("Failed to parse AI response as JSON:", parseError);
+        console.log("Raw AI response:", aiResponse.substring(0, 500));
+        return new Response(
+          JSON.stringify({ success: false, error: "Failed to parse AI response", rawResponse: aiResponse.substring(0, 500) }),
+          { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // Validate and normalize each risk
+      const normalizedRisks = risks.map((risk: any, index: number) => ({
+        id: risk.id || `R-${String(index + 1).padStart(3, '0')}`,
+        title: risk.title || "",
+        riskLevel1: risk.riskLevel1 || "",
+        riskLevel2: risk.riskLevel2 || "",
+        riskLevel3: risk.riskLevel3 || "",
+        level: risk.level || "",
+        businessUnit: risk.businessUnit || "",
+        category: risk.category || "",
+        owner: risk.owner || "",
+        assessor: risk.assessor || "",
+        inherentRisk: risk.inherentRisk || "",
+        inherentTrend: risk.inherentTrend || "",
+        controls: risk.controls || "",
+        effectiveness: risk.effectiveness || "",
+        testResults: risk.testResults || "",
+        residualRisk: risk.residualRisk || "",
+        residualTrend: risk.residualTrend || "",
+        status: risk.status || "",
+        lastAssessed: risk.lastAssessed || "",
+      }));
+
+      console.log(`Successfully parsed ${normalizedRisks.length} risks`);
+
       return new Response(
-        JSON.stringify({ success: false, error: "Failed to parse AI response", rawResponse: aiResponse }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ success: true, risks: normalizedRisks }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
+
+    } catch (fetchError: unknown) {
+      clearTimeout(timeoutId);
+      if (fetchError instanceof Error && fetchError.name === 'AbortError') {
+        console.error("Request timed out");
+        return new Response(
+          JSON.stringify({ success: false, error: "Request timed out. Please try with a smaller document." }),
+          { status: 504, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      throw fetchError;
     }
-
-    // Validate and normalize each risk
-    const normalizedRisks = risks.map((risk: any, index: number) => ({
-      id: risk.id || `R-${String(index + 1).padStart(3, '0')}`,
-      title: risk.title || "",
-      riskLevel1: risk.riskLevel1 || "",
-      riskLevel2: risk.riskLevel2 || "",
-      riskLevel3: risk.riskLevel3 || "",
-      level: risk.level || "",
-      businessUnit: risk.businessUnit || "",
-      category: risk.category || "",
-      owner: risk.owner || "",
-      assessor: risk.assessor || "",
-      inherentRisk: risk.inherentRisk || "",
-      inherentTrend: risk.inherentTrend || "",
-      controls: risk.controls || "",
-      effectiveness: risk.effectiveness || "",
-      testResults: risk.testResults || "",
-      residualRisk: risk.residualRisk || "",
-      residualTrend: risk.residualTrend || "",
-      status: risk.status || "",
-      lastAssessed: risk.lastAssessed || "",
-    }));
-
-    console.log(`Successfully parsed ${normalizedRisks.length} risks`);
-
-    return new Response(
-      JSON.stringify({ success: true, risks: normalizedRisks }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-    );
 
   } catch (error) {
     console.error("Error parsing document:", error);
