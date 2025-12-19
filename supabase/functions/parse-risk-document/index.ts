@@ -129,7 +129,7 @@ serve(async (req) => {
   }
 
   try {
-    const { content, fileName } = await req.json();
+    const { content, fileName, usePerplexity } = await req.json();
 
     if (!content) {
       return new Response(
@@ -159,38 +159,65 @@ serve(async (req) => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 55000); // 55s timeout
 
-    let usedFallback = false;
-    let fallbackReason = "";
     let response: Response | null = null;
 
-    // Try Lovable AI first
-    if (LOVABLE_API_KEY) {
+    // If usePerplexity flag is set, skip Lovable AI and go directly to Perplexity
+    if (usePerplexity && PERPLEXITY_API_KEY) {
+      console.log("Using Perplexity AI (user confirmed fallback)...");
+      response = await callPerplexityAI(truncatedContent, PERPLEXITY_API_KEY, controller.signal);
+      console.log("Perplexity response status:", response.status);
+    } else if (LOVABLE_API_KEY) {
+      // Try Lovable AI first
       console.log("Calling Lovable AI Gateway...");
       try {
         response = await callLovableAI(truncatedContent, LOVABLE_API_KEY, controller.signal);
         console.log("Lovable AI response status:", response.status);
 
-        // If 402 (credits exhausted) or 429 (rate limit), try Perplexity fallback
-        if ((response.status === 402 || response.status === 429) && PERPLEXITY_API_KEY) {
+        // If 402 (credits exhausted) or 429 (rate limit), return immediately to show popup
+        if (response.status === 402 || response.status === 429) {
+          clearTimeout(timeoutId);
           const errorCode = response.status;
           const errorMessage = errorCode === 402 
             ? "Lovable AI credits exhausted" 
             : "Lovable AI rate limited";
           
-          console.log(`${errorMessage}, falling back to Perplexity...`);
-          usedFallback = true;
-          fallbackReason = `${errorCode}: ${errorMessage}`;
+          console.log(`${errorMessage}, requesting user confirmation for Perplexity fallback...`);
           
-          response = await callPerplexityAI(truncatedContent, PERPLEXITY_API_KEY, controller.signal);
-          console.log("Perplexity fallback response status:", response.status);
+          // Check if Perplexity is available
+          if (PERPLEXITY_API_KEY) {
+            return new Response(
+              JSON.stringify({ 
+                success: false, 
+                needsFallback: true,
+                fallbackReason: `${errorCode}: ${errorMessage}`,
+                hasPerplexityKey: true
+              }),
+              { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          } else {
+            // No Perplexity key available
+            return new Response(
+              JSON.stringify({ 
+                success: false, 
+                error: `${errorMessage}. No backup AI provider configured.`
+              }),
+              { status: errorCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
         }
       } catch (lovableError) {
         console.error("Lovable AI error:", lovableError);
+        clearTimeout(timeoutId);
         if (PERPLEXITY_API_KEY) {
-          console.log("Lovable AI failed, falling back to Perplexity...");
-          usedFallback = true;
-          fallbackReason = "Lovable AI connection error";
-          response = await callPerplexityAI(truncatedContent, PERPLEXITY_API_KEY, controller.signal);
+          return new Response(
+            JSON.stringify({ 
+              success: false, 
+              needsFallback: true,
+              fallbackReason: "Lovable AI connection error",
+              hasPerplexityKey: true
+            }),
+            { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
         } else {
           throw lovableError;
         }
@@ -259,9 +286,7 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true, 
-        risks: normalizedRisks,
-        usedFallback,
-        fallbackReason: usedFallback ? fallbackReason : undefined
+        risks: normalizedRisks
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

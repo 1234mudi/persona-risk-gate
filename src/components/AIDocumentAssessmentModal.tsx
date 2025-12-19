@@ -117,7 +117,14 @@ export function AIDocumentAssessmentModal({
   
   // Fallback alert state
   const [showFallbackAlert, setShowFallbackAlert] = useState(false);
-  const [fallbackInfo, setFallbackInfo] = useState<{ reason: string; risksCount: number } | null>(null);
+  const [fallbackInfo, setFallbackInfo] = useState<{ 
+    reason: string; 
+    pendingContent?: string;
+    pendingFileName?: string;
+    pendingFileIndex?: number;
+    totalFiles?: number;
+  } | null>(null);
+  const [pendingRisks, setPendingRisks] = useState<ParsedRisk[]>([]);
 
   // Create a map of existing risk IDs for quick lookup
   const existingRiskMap = useMemo(() => {
@@ -523,17 +530,22 @@ export function AIDocumentAssessmentModal({
           if (error) {
             console.error(`Error calling AI for ${file.name}:`, error);
             toast.error(`Failed to analyze ${file.name}: ${error.message}`);
+          } else if (data?.needsFallback && data?.hasPerplexityKey) {
+            // Lovable AI unavailable, show popup immediately and wait for user confirmation
+            setPendingRisks([...allRisks]); // Store risks collected so far
+            setFallbackInfo({ 
+              reason: data.fallbackReason, 
+              pendingContent: content,
+              pendingFileName: file.name,
+              pendingFileIndex: i,
+              totalFiles
+            });
+            setShowFallbackAlert(true);
+            return; // Stop processing, will resume after user confirms
           } else if (data?.success && data.risks) {
             const risks = data.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: file.name }));
             allRisks.push(...risks);
-            
-            // Show alert dialog if fallback was used, otherwise show toast
-            if (data.usedFallback && data.fallbackReason) {
-              setFallbackInfo({ reason: data.fallbackReason, risksCount: risks.length });
-              setShowFallbackAlert(true);
-            } else {
-              toast.success(`AI extracted ${risks.length} risks from ${file.name}`);
-            }
+            toast.success(`AI extracted ${risks.length} risks from ${file.name}`);
           } else if (data?.error) {
             toast.error(`AI error for ${file.name}: ${data.error}`);
           } else {
@@ -613,11 +625,105 @@ export function AIDocumentAssessmentModal({
   const handleClose = () => {
     setFiles([]);
     setParsedRisks([]);
+    setPendingRisks([]);
     setStep("upload");
     setProgress(0);
     setIsProcessing(false);
     setEditingIndex(null);
+    setFallbackInfo(null);
     onOpenChange(false);
+  };
+
+  // Handler for continuing with Perplexity after user confirms
+  const handleContinueWithPerplexity = async () => {
+    if (!fallbackInfo?.pendingContent || !fallbackInfo?.pendingFileName) return;
+    
+    setShowFallbackAlert(false);
+    toast.info(`Continuing with Perplexity AI for ${fallbackInfo.pendingFileName}...`);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('parse-risk-document', {
+        body: { 
+          content: fallbackInfo.pendingContent, 
+          fileName: fallbackInfo.pendingFileName,
+          usePerplexity: true 
+        }
+      });
+
+      if (error) {
+        console.error(`Error calling Perplexity for ${fallbackInfo.pendingFileName}:`, error);
+        toast.error(`Failed to analyze ${fallbackInfo.pendingFileName}: ${error.message}`);
+      } else if (data?.success && data.risks) {
+        const risks = data.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: fallbackInfo.pendingFileName }));
+        const allRisks = [...pendingRisks, ...risks];
+        
+        toast.success(`Perplexity AI extracted ${risks.length} risks from ${fallbackInfo.pendingFileName}`);
+        
+        // Continue with the rest of the files if there are more
+        const startIndex = (fallbackInfo.pendingFileIndex ?? 0) + 1;
+        const totalFiles = fallbackInfo.totalFiles ?? files.length;
+        
+        if (startIndex < totalFiles) {
+          // Process remaining files
+          for (let i = startIndex; i < files.length; i++) {
+            const file = files[i];
+            const ext = file.name.split('.').pop()?.toLowerCase();
+            
+            let content = "";
+            if (ext === 'csv') {
+              content = await file.text();
+            } else if (ext === 'docx') {
+              const arrayBuffer = await file.arrayBuffer();
+              const result = await mammoth.extractRawText({ arrayBuffer });
+              content = result.value;
+            }
+            
+            if (content.trim()) {
+              toast.info(`AI is analyzing ${file.name}...`);
+              const { data: fileData, error: fileError } = await supabase.functions.invoke('parse-risk-document', {
+                body: { content, fileName: file.name, usePerplexity: true }
+              });
+              
+              if (!fileError && fileData?.success && fileData.risks) {
+                const fileRisks = fileData.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: file.name }));
+                allRisks.push(...fileRisks);
+                toast.success(`AI extracted ${fileRisks.length} risks from ${file.name}`);
+              }
+            }
+            setProgress(((i + 1) / totalFiles) * 100);
+          }
+        }
+        
+        setParsedRisks(allRisks);
+        setIsProcessing(false);
+        
+        if (allRisks.length > 0) {
+          toast.success(`Found ${allRisks.length} risk assessments`);
+          setStep("review");
+        } else {
+          toast.warning("No risks found in the uploaded files");
+          setStep("review");
+        }
+      } else if (data?.error) {
+        toast.error(`AI error: ${data.error}`);
+        setIsProcessing(false);
+      }
+    } catch (error) {
+      console.error("Error with Perplexity fallback:", error);
+      toast.error("Failed to process with Perplexity AI");
+      setIsProcessing(false);
+    }
+    
+    setFallbackInfo(null);
+    setPendingRisks([]);
+  };
+
+  const handleCancelFallback = () => {
+    setShowFallbackAlert(false);
+    setFallbackInfo(null);
+    setPendingRisks([]);
+    setIsProcessing(false);
+    toast.info("Document parsing cancelled");
   };
 
   const getRiskLevelColor = (risk: string) => {
@@ -1281,33 +1387,35 @@ export function AIDocumentAssessmentModal({
     />
 
     {/* Fallback API Alert Dialog */}
-    <AlertDialog open={showFallbackAlert} onOpenChange={setShowFallbackAlert}>
+    <AlertDialog open={showFallbackAlert} onOpenChange={(open) => { if (!open) handleCancelFallback(); }}>
       <AlertDialogContent>
         <AlertDialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="p-2 rounded-full bg-amber-100 dark:bg-amber-900/30">
               <AlertTriangle className="h-6 w-6 text-amber-600 dark:text-amber-400" />
             </div>
-            <AlertDialogTitle>Using Backup AI Provider</AlertDialogTitle>
+            <AlertDialogTitle>Switching to Backup AI Provider</AlertDialogTitle>
           </div>
-          <AlertDialogDescription className="space-y-3">
-            <p>
-              Your document was successfully parsed using <strong>Perplexity AI</strong> as a backup provider.
-            </p>
-            <div className="p-3 rounded-lg bg-muted/50 border">
-              <p className="text-sm font-medium text-foreground">Reason: {fallbackInfo?.reason}</p>
+          <AlertDialogDescription asChild>
+            <div className="space-y-3">
+              <p>
+                Lovable AI is currently unavailable. Would you like to continue using <strong>Perplexity AI</strong> as a backup provider?
+              </p>
+              <div className="p-3 rounded-lg bg-muted/50 border">
+                <p className="text-sm font-medium text-foreground">Reason: {fallbackInfo?.reason}</p>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                To restore Lovable AI access, please add credits to your workspace in Settings → Workspace → Usage.
+              </p>
             </div>
-            <p className="text-sm">
-              {fallbackInfo?.risksCount} risk{fallbackInfo?.risksCount !== 1 ? 's' : ''} were extracted successfully.
-            </p>
-            <p className="text-sm text-muted-foreground">
-              To continue using Lovable AI, please add credits to your workspace in Settings → Workspace → Usage.
-            </p>
           </AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogAction onClick={() => setShowFallbackAlert(false)}>
-            Got it
+        <AlertDialogFooter className="gap-2">
+          <Button variant="outline" onClick={handleCancelFallback}>
+            Cancel
+          </Button>
+          <AlertDialogAction onClick={handleContinueWithPerplexity}>
+            Continue with Perplexity
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
