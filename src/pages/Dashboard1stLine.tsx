@@ -238,9 +238,29 @@ const Dashboard1stLine = () => {
     }
     
     // Apply hierarchy view mode filtering - group by level based on orgLevel hierarchy
+    // Deduplicate risks by their orgLevel to prevent showing the same parent multiple times
     const level1Risks = filtered.filter(risk => risk.riskLevel === "Level 1");
     const level2Risks = filtered.filter(risk => risk.riskLevel === "Level 2");
     const level3Risks = filtered.filter(risk => risk.riskLevel === "Level 3");
+    
+    // Deduplicate Level 1 risks by orgLevel.level1
+    const uniqueLevel1Map = new Map<string, RiskData>();
+    level1Risks.forEach(risk => {
+      if (!uniqueLevel1Map.has(risk.orgLevel.level1)) {
+        uniqueLevel1Map.set(risk.orgLevel.level1, risk);
+      }
+    });
+    const uniqueLevel1Risks = Array.from(uniqueLevel1Map.values());
+    
+    // Deduplicate Level 2 risks by orgLevel.level1 + level2 combination
+    const uniqueLevel2Map = new Map<string, RiskData>();
+    level2Risks.forEach(risk => {
+      const key = `${risk.orgLevel.level1}|${risk.orgLevel.level2}`;
+      if (!uniqueLevel2Map.has(key)) {
+        uniqueLevel2Map.set(key, risk);
+      }
+    });
+    const uniqueLevel2Risks = Array.from(uniqueLevel2Map.values());
     
     if (hierarchyViewMode === "level3") {
       // Show only Level 3 risks (flat list)
@@ -250,36 +270,36 @@ const Dashboard1stLine = () => {
       const visible: RiskData[] = [];
       const addedLevel3Ids = new Set<string>();
       
-      level2Risks.forEach(l2Risk => {
+      uniqueLevel2Risks.forEach(l2Risk => {
         visible.push(l2Risk);
         if (expandedRows.has(l2Risk.id)) {
           // Only show Level 3 risks that belong to this Level 2 (matching orgLevel.level2)
           const childLevel3Risks = level3Risks.filter(l3 => 
-            l3.orgLevel.level2 === l2Risk.orgLevel.level2 && !addedLevel3Ids.has(l3.id)
+            l3.orgLevel.level1 === l2Risk.orgLevel.level1 &&
+            l3.orgLevel.level2 === l2Risk.orgLevel.level2 && 
+            !addedLevel3Ids.has(l3.id)
           );
           childLevel3Risks.forEach(l3 => addedLevel3Ids.add(l3.id));
           visible.push(...childLevel3Risks);
         }
       });
       // If no Level 2 risks but there are Level 3, show Level 3 directly
-      if (level2Risks.length === 0) {
+      if (uniqueLevel2Risks.length === 0) {
         return level3Risks;
       }
       return visible;
     } else {
       // Level 1 mode: Show Level 1 risks as primary with Level 2 and Level 3 nested
       const visible: RiskData[] = [];
-      const addedLevel2Ids = new Set<string>();
       const addedLevel3Ids = new Set<string>();
       
-      level1Risks.forEach(l1Risk => {
+      uniqueLevel1Risks.forEach(l1Risk => {
         visible.push(l1Risk);
         if (expandedRows.has(l1Risk.id)) {
           // Only show Level 2 risks that belong to this Level 1 (matching orgLevel.level1)
-          const childLevel2Risks = level2Risks.filter(l2 => 
-            l2.orgLevel.level1 === l1Risk.orgLevel.level1 && !addedLevel2Ids.has(l2.id)
+          const childLevel2Risks = uniqueLevel2Risks.filter(l2 => 
+            l2.orgLevel.level1 === l1Risk.orgLevel.level1
           );
-          childLevel2Risks.forEach(l2 => addedLevel2Ids.add(l2.id));
           
           childLevel2Risks.forEach(l2Risk => {
             visible.push(l2Risk);
@@ -297,18 +317,20 @@ const Dashboard1stLine = () => {
         }
       });
       // If no Level 1 risks, fall back to showing Level 2 and Level 3
-      if (level1Risks.length === 0) {
-        level2Risks.forEach(l2Risk => {
+      if (uniqueLevel1Risks.length === 0) {
+        uniqueLevel2Risks.forEach(l2Risk => {
           visible.push(l2Risk);
           if (expandedRows.has(l2Risk.id)) {
             const childLevel3Risks = level3Risks.filter(l3 => 
-              l3.orgLevel.level2 === l2Risk.orgLevel.level2 && !addedLevel3Ids.has(l3.id)
+              l3.orgLevel.level1 === l2Risk.orgLevel.level1 &&
+              l3.orgLevel.level2 === l2Risk.orgLevel.level2 && 
+              !addedLevel3Ids.has(l3.id)
             );
             childLevel3Risks.forEach(l3 => addedLevel3Ids.add(l3.id));
             visible.push(...childLevel3Risks);
           }
         });
-        if (level2Risks.length === 0) {
+        if (uniqueLevel2Risks.length === 0) {
           return level3Risks;
         }
       }
