@@ -20,14 +20,14 @@ serve(async (req) => {
       );
     }
 
-    const PERPLEXITY_API_KEY = Deno.env.get("PERPLEXITY_API_KEY");
-    if (!PERPLEXITY_API_KEY) {
-      throw new Error("PERPLEXITY_API_KEY is not configured");
+    const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
+    if (!LOVABLE_API_KEY) {
+      throw new Error("LOVABLE_API_KEY is not configured");
     }
 
     console.log(`Parsing document: ${fileName}, content length: ${content.length}`);
 
-    // Truncate content if too large (Perplexity has context limits)
+    // Truncate content if too large
     const maxContentLength = 15000;
     const truncatedContent = content.length > maxContentLength 
       ? content.substring(0, maxContentLength) + "\n\n[Content truncated...]"
@@ -73,17 +73,17 @@ Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 55000); // 55s timeout
 
-    console.log("Calling Perplexity API...");
+    console.log("Calling Lovable AI Gateway...");
 
     try {
-      const response = await fetch("https://api.perplexity.ai/chat/completions", {
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
         method: "POST",
         headers: {
-          Authorization: `Bearer ${PERPLEXITY_API_KEY}`,
+          Authorization: `Bearer ${LOVABLE_API_KEY}`,
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          model: "sonar",
+          model: "google/gemini-2.5-flash",
           messages: [
             { role: "system", content: systemPrompt },
             { role: "user", content: `Parse the following document and extract all risk information:\n\n${truncatedContent}` }
@@ -93,7 +93,7 @@ Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
       });
 
       clearTimeout(timeoutId);
-      console.log("Perplexity API response status:", response.status);
+      console.log("Lovable AI response status:", response.status);
 
       if (!response.ok) {
         if (response.status === 429) {
@@ -102,8 +102,14 @@ Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
             { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
           );
         }
+        if (response.status === 402) {
+          return new Response(
+            JSON.stringify({ success: false, error: "AI usage limit reached. Please add credits to your workspace." }),
+            { status: 402, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         const errorText = await response.text();
-        console.error("Perplexity API error:", response.status, errorText);
+        console.error("Lovable AI error:", response.status, errorText);
         return new Response(
           JSON.stringify({ success: false, error: `AI processing error: ${response.status}` }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -111,7 +117,7 @@ Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
       }
 
       const data = await response.json();
-      console.log("Perplexity response received");
+      console.log("Lovable AI response received");
       
       const aiResponse = data.choices?.[0]?.message?.content;
 
