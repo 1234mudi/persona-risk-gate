@@ -1384,7 +1384,6 @@ export function AIDocumentAssessmentModal({
       }}
       selectedRisks={selectedRisksForAssessment}
       onApplyAssessments={handleBulkAssessmentApply}
-      existingRisks={existingRisks}
     />
 
     {/* Fallback API Alert Dialog */}
