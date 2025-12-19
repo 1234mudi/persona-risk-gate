@@ -514,14 +514,15 @@ export function AIDocumentAssessmentModal({
             const risks = data.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: file.name }));
             allRisks.push(...risks);
             
-            // Show fallback notification if alternate API was used
+            // Show appropriate toast based on whether fallback was used
             if (data.usedFallback && data.fallbackReason) {
-              toast.info(`Using backup AI provider (${data.fallbackReason}). Document parsed successfully.`, {
-                duration: 6000,
-              });
+              toast.warning(
+                `Extracted ${risks.length} risks using Perplexity AI. Reason: ${data.fallbackReason}. Consider adding Lovable AI credits.`,
+                { duration: 8000 }
+              );
+            } else {
+              toast.success(`AI extracted ${risks.length} risks from ${file.name}`);
             }
-            
-            toast.success(`AI extracted ${risks.length} risks from ${file.name}`);
           } else if (data?.error) {
             toast.error(`AI error for ${file.name}: ${data.error}`);
           } else {
