@@ -513,6 +513,14 @@ export function AIDocumentAssessmentModal({
           } else if (data?.success && data.risks) {
             const risks = data.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: file.name }));
             allRisks.push(...risks);
+            
+            // Show fallback notification if alternate API was used
+            if (data.usedFallback && data.fallbackReason) {
+              toast.info(`Using backup AI provider (${data.fallbackReason}). Document parsed successfully.`, {
+                duration: 6000,
+              });
+            }
+            
             toast.success(`AI extracted ${risks.length} risks from ${file.name}`);
           } else if (data?.error) {
             toast.error(`AI error for ${file.name}: ${data.error}`);
