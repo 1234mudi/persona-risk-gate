@@ -197,16 +197,7 @@ const Dashboard1stLine = () => {
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
   const getFilteredByTab = (data: RiskData[], tab: "own" | "assess" | "approve") => {
-    switch (tab) {
-      case "own":
-        return data; // All risks
-      case "assess":
-        return data.filter(risk => risk.status === "Sent for Assessment");
-      case "approve":
-        return data.filter(risk => risk.status === "Pending Approval");
-      default:
-        return data;
-    }
+    return data.filter(risk => risk.tabCategory === tab);
   };
 
   const visibleRisks = useMemo(() => {
