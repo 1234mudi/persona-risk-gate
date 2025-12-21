@@ -1331,7 +1331,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "own" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.length}
+                    {riskData.filter(r => r.tabCategory === "own").length}
                   </span>
                 </button>
                 <button
@@ -1346,7 +1346,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "assess" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.status === "Sent for Assessment").length}
+                    {riskData.filter(r => r.tabCategory === "assess").length}
                   </span>
                 </button>
                 <button
@@ -1361,7 +1361,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "approve" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.status === "Pending Approval").length}
+                    {riskData.filter(r => r.tabCategory === "approve").length}
                   </span>
                 </button>
               </div>
