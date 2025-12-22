@@ -55,6 +55,7 @@ async function callLovableAI(content: string, apiKey: string, signal: AbortSigna
         { role: "system", content: systemPrompt },
         { role: "user", content: `Parse the following document and extract all risk information:\n\n${content}` }
       ],
+      max_tokens: 16000,
     }),
     signal,
   });
@@ -69,11 +70,12 @@ async function callPerplexityAI(content: string, apiKey: string, signal: AbortSi
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      model: "sonar",
+      model: "sonar-pro",
       messages: [
         { role: "system", content: systemPrompt },
         { role: "user", content: `Parse the following document and extract all risk information:\n\n${content}` }
       ],
+      max_tokens: 16000,
     }),
     signal,
   });
@@ -93,13 +95,56 @@ function parseAIResponse(aiResponse: string): any[] {
   }
   jsonStr = jsonStr.trim();
   
-  let risks = JSON.parse(jsonStr);
-  
-  // Ensure it's an array
-  if (!Array.isArray(risks)) {
-    risks = [risks];
+  // Try to parse the JSON directly first
+  try {
+    let risks = JSON.parse(jsonStr);
+    if (!Array.isArray(risks)) {
+      risks = [risks];
+    }
+    return risks;
+  } catch (e) {
+    // If parsing fails, try to recover truncated JSON
+    console.log("Initial JSON parse failed, attempting recovery...");
+    
+    // Find the last complete object by looking for the pattern "},\n  {"
+    const lastCompleteObject = jsonStr.lastIndexOf('},');
+    if (lastCompleteObject > 0) {
+      // Try to close the array after the last complete object
+      const recoveredJson = jsonStr.substring(0, lastCompleteObject + 1) + ']';
+      console.log("Attempting to parse recovered JSON...");
+      try {
+        let risks = JSON.parse(recoveredJson);
+        if (!Array.isArray(risks)) {
+          risks = [risks];
+        }
+        console.log(`Recovered ${risks.length} risks from truncated response`);
+        return risks;
+      } catch (e2) {
+        console.log("Recovery failed, trying another approach...");
+      }
+    }
+    
+    // Last resort: try to find individual complete objects
+    const objectMatches = jsonStr.match(/\{[^{}]*"id"[^{}]*\}/g);
+    if (objectMatches && objectMatches.length > 0) {
+      console.log(`Found ${objectMatches.length} individual risk objects`);
+      const risks = objectMatches.map(match => {
+        try {
+          return JSON.parse(match);
+        } catch {
+          return null;
+        }
+      }).filter(r => r !== null);
+      
+      if (risks.length > 0) {
+        console.log(`Successfully parsed ${risks.length} risks from individual matches`);
+        return risks;
+      }
+    }
+    
+    // If all recovery attempts fail, throw the original error
+    throw e;
   }
-  return risks;
 }
 
 function normalizeRisks(risks: any[]): any[] {
