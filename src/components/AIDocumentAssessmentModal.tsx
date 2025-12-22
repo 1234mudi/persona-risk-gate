@@ -47,6 +47,7 @@ import { DocumentParserBulkAssessmentModal } from "./DocumentParserBulkAssessmen
 export interface ParsedRisk {
   id: string;
   title: string;
+  parentRisk?: string;
   riskLevel1: string;
   riskLevel2: string;
   riskLevel3: string;
@@ -311,6 +312,7 @@ export function AIDocumentAssessmentModal({
         risks.push({
           id: getVal('Risk ID', 0) || `R-${String(i).padStart(3, '0')}`,
           title: getVal('Title', 1),
+          parentRisk: getVal('Parent Risk', -1),
           riskLevel1: getVal('Risk Level 1', -1),
           riskLevel2: getVal('Risk Level 2', -1),
           riskLevel3: getVal('Risk Level 3', -1),
@@ -470,6 +472,7 @@ export function AIDocumentAssessmentModal({
     return {
       id: lines[0] || '',
       title: getField('Title') || lines[1] || '',
+      parentRisk: getField('Parent Risk') || '',
       riskLevel1: getField('Risk Level 1'),
       riskLevel2: getField('Risk Level 2'),
       riskLevel3: getField('Risk Level 3'),
