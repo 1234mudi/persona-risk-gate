@@ -101,7 +101,7 @@ const Dashboard1stLine = () => {
   const [assessorFilter, setAssessorFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level2");
+  const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
