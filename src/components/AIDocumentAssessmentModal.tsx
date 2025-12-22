@@ -1334,13 +1334,21 @@ export function AIDocumentAssessmentModal({
                       const riskStatus = getRiskStatus(risk);
                       const isExpanded = expandedIndex === originalIndex;
                       
-                      // Calculate missing fields
-                      const requiredFields = ['title', 'owner', 'category', 'inherentRisk', 'residualRisk', 'status', 'controls'];
+                      // Calculate completeness with expanded fields
+                      const requiredFields = [
+                        'title', 'owner', 'category', 'businessUnit', 'level',
+                        'inherentRisk', 'residualRisk', 'status', 'controls',
+                        'effectiveness', 'lastAssessed'
+                      ];
                       const missingFields = requiredFields.filter(field => {
                         const value = risk[field as keyof ParsedRisk];
-                        return !value || value === '' || value === 'N/A' || value === 'Unknown';
+                        if (value === undefined || value === null) return true;
+                        const strValue = String(value).trim().toLowerCase();
+                        return !strValue || strValue === 'n/a' || strValue === 'unknown' || strValue === '-' || strValue === 'none';
                       });
-                      const missingCount = missingFields.length;
+                      const totalFields = requiredFields.length;
+                      const completedFields = totalFields - missingFields.length;
+                      const completenessPercent = Math.round((completedFields / totalFields) * 100);
                       
                       return (
                         <React.Fragment key={originalIndex}>
@@ -1400,34 +1408,44 @@ export function AIDocumentAssessmentModal({
                               </Badge>
                             </TableCell>
                             
-                            {/* Missing Fields */}
+                            {/* Completeness */}
                             <TableCell className="py-3 px-4">
-                              {missingCount > 0 ? (
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <Badge 
-                                      variant="outline" 
-                                      className="text-xs bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-700 cursor-help"
-                                    >
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <Badge 
+                                    variant="outline" 
+                                    className={`text-xs cursor-help ${
+                                      completenessPercent === 100
+                                        ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700'
+                                        : completenessPercent >= 75
+                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-700'
+                                        : completenessPercent >= 50
+                                        ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-700'
+                                        : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-700'
+                                    }`}
+                                  >
+                                    {completenessPercent === 100 ? (
+                                      <CheckCircle className="w-3 h-3 mr-1" />
+                                    ) : (
                                       <AlertCircle className="w-3 h-3 mr-1" />
-                                      {missingCount} fields
-                                    </Badge>
-                                  </TooltipTrigger>
-                                  <TooltipContent side="left" className="max-w-xs">
-                                    <p className="text-xs font-medium mb-1">Missing fields:</p>
-                                    <ul className="text-xs text-muted-foreground list-disc list-inside">
-                                      {missingFields.map(field => (
-                                        <li key={field} className="capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</li>
-                                      ))}
-                                    </ul>
-                                  </TooltipContent>
-                                </Tooltip>
-                              ) : (
-                                <Badge variant="outline" className="text-xs bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700">
-                                  <CheckCircle className="w-3 h-3 mr-1" />
-                                  Complete
-                                </Badge>
-                              )}
+                                    )}
+                                    {completenessPercent}%
+                                  </Badge>
+                                </TooltipTrigger>
+                                <TooltipContent side="left" className="max-w-xs">
+                                  <p className="text-xs font-medium mb-1">{completedFields}/{totalFields} fields complete</p>
+                                  {missingFields.length > 0 && (
+                                    <>
+                                      <p className="text-xs text-muted-foreground mb-1">Missing:</p>
+                                      <ul className="text-xs text-muted-foreground list-disc list-inside">
+                                        {missingFields.map(field => (
+                                          <li key={field} className="capitalize">{field.replace(/([A-Z])/g, ' $1').trim()}</li>
+                                        ))}
+                                      </ul>
+                                    </>
+                                  )}
+                                </TooltipContent>
+                              </Tooltip>
                             </TableCell>
                             
                             {/* Actions */}
