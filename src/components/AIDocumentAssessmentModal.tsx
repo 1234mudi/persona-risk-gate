@@ -639,7 +639,13 @@ export function AIDocumentAssessmentModal({
 
   // Handler for continuing with Perplexity after user confirms
   const handleContinueWithPerplexity = async () => {
-    if (!fallbackInfo?.pendingContent || !fallbackInfo?.pendingFileName) return;
+    if (!fallbackInfo?.pendingContent || !fallbackInfo?.pendingFileName) {
+      console.error("No pending content or filename for Perplexity fallback");
+      setShowFallbackAlert(false);
+      setFallbackInfo(null);
+      setIsProcessing(false);
+      return;
+    }
     
     setShowFallbackAlert(false);
     toast.info(`Continuing with Perplexity AI for ${fallbackInfo.pendingFileName}...`);
@@ -653,10 +659,18 @@ export function AIDocumentAssessmentModal({
         }
       });
 
+      console.log("Perplexity response:", { data, error });
+
       if (error) {
         console.error(`Error calling Perplexity for ${fallbackInfo.pendingFileName}:`, error);
         toast.error(`Failed to analyze ${fallbackInfo.pendingFileName}: ${error.message}`);
-      } else if (data?.success && data.risks) {
+        setIsProcessing(false);
+        setFallbackInfo(null);
+        setPendingRisks([]);
+        return;
+      }
+      
+      if (data?.success && data.risks && data.risks.length > 0) {
         const risks = data.risks.map((r: ParsedRisk) => ({ ...r, sourceFile: fallbackInfo.pendingFileName }));
         const allRisks = [...pendingRisks, ...risks];
         
@@ -699,26 +713,37 @@ export function AIDocumentAssessmentModal({
         
         setParsedRisks(allRisks);
         setIsProcessing(false);
+        setFallbackInfo(null);
+        setPendingRisks([]);
         
         if (allRisks.length > 0) {
           toast.success(`Found ${allRisks.length} risk assessments`);
           setStep("review");
         } else {
           toast.warning("No risks found in the uploaded files");
-          setStep("review");
+          setStep("upload");
         }
       } else if (data?.error) {
+        console.error(`AI error from Perplexity: ${data.error}`);
         toast.error(`AI error: ${data.error}`);
         setIsProcessing(false);
+        setFallbackInfo(null);
+        setPendingRisks([]);
+      } else {
+        // Handle case where success is false or no risks returned
+        console.error("Perplexity returned no risks or failed:", data);
+        toast.error("AI could not extract any risks from the document. Try a smaller file.");
+        setIsProcessing(false);
+        setFallbackInfo(null);
+        setPendingRisks([]);
       }
     } catch (error) {
       console.error("Error with Perplexity fallback:", error);
       toast.error("Failed to process with Perplexity AI");
       setIsProcessing(false);
+      setFallbackInfo(null);
+      setPendingRisks([]);
     }
-    
-    setFallbackInfo(null);
-    setPendingRisks([]);
   };
 
   const handleCancelFallback = () => {
