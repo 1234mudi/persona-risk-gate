@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, Info, Layers, Send, Search, ChevronLeft, ChevronRight, Filter, FileText, Users, TrendingUp, Shield, Plus, Pencil, AlertCircle } from "lucide-react";
+import { AlertTriangle, Info, Layers, Send, Search, ChevronLeft, ChevronRight, Filter, FileText, Users, TrendingUp, Shield, Plus, Pencil, AlertCircle, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -18,10 +18,32 @@ import {
 } from "@/components/ui/tooltip";
 import { ParsedRisk } from "./AIDocumentAssessmentModal";
 
+interface ExistingRisk {
+  id: string;
+  title: string;
+  businessUnit?: string;
+  category?: string;
+  owner?: string;
+  inherentRisk?: string;
+  residualRisk?: string;
+  status?: string;
+  riskLevel1?: string;
+  riskLevel2?: string;
+  riskLevel3?: string;
+  assessor?: string;
+  inherentTrend?: string;
+  controls?: string;
+  effectiveness?: string;
+  testResults?: string;
+  residualTrend?: string;
+  lastAssessed?: string;
+}
+
 interface DocumentParserBulkAssessmentModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   selectedRisks: ParsedRisk[];
+  existingRisks?: ExistingRisk[];
   onApplyAssessments: (assessments: Map<string, RiskAssessmentData>) => void;
 }
 
@@ -104,7 +126,8 @@ const RISK_FIELD_CATEGORIES = [
 export const DocumentParserBulkAssessmentModal = ({ 
   open, 
   onOpenChange, 
-  selectedRisks, 
+  selectedRisks,
+  existingRisks = [],
   onApplyAssessments 
 }: DocumentParserBulkAssessmentModalProps) => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -116,12 +139,19 @@ export const DocumentParserBulkAssessmentModal = ({
   // Editable risk data - track modifications
   const [editedRiskData, setEditedRiskData] = useState<Map<string, Partial<ParsedRisk>>>(() => new Map());
   
-  // Original risk data for comparison (to detect modifications)
+  // Original risk data for comparison (document data - what was parsed from the file)
   const originalRiskData = useMemo(() => {
     const map = new Map<string, ParsedRisk>();
     selectedRisks.forEach(r => map.set(r.id, { ...r }));
     return map;
   }, [selectedRisks]);
+
+  // Map of existing system risks (what exists in the app before import)
+  const existingRiskMap = useMemo(() => {
+    const map = new Map<string, ExistingRisk>();
+    existingRisks.forEach(r => map.set(r.id, r));
+    return map;
+  }, [existingRisks]);
 
   // Update checked risks when selectedRisks changes
   useMemo(() => {
@@ -248,35 +278,80 @@ export const DocumentParserBulkAssessmentModal = ({
   };
 
   // Get the status of a field (new, modified, missing)
-  // - "new": Field has original parsed data (auto-populated from document)
+  // Compares: system data (existing in app) vs document data (parsed) vs current value (may be edited)
+  // - "new": Field has data from document but doesn't exist in system (or was empty in system)
+  // - "modified": Field value differs from what exists in the system
   // - "missing": Field is empty/undefined and needs to be filled
-  // - "modified": User has changed the field from its original parsed value
   const getFieldStatus = (riskId: string, fieldKey: string): 'new' | 'modified' | 'missing' | null => {
-    const original = originalRiskData.get(riskId);
-    const originalValue = original ? String((original as any)[fieldKey] || '').trim() : '';
-    const edited = editedRiskData.get(riskId);
-    const hasBeenEdited = edited && fieldKey in edited;
+    // Get system data (what exists in the app before import)
+    const systemRisk = existingRiskMap.get(riskId);
+    const systemValue = systemRisk ? String((systemRisk as any)[fieldKey] || '').trim() : '';
+    
+    // Get document data (what was parsed from the uploaded file)
+    const documentRisk = originalRiskData.get(riskId);
+    const documentValue = documentRisk ? String((documentRisk as any)[fieldKey] || '').trim() : '';
+    
+    // Get current value (may be edited by user)
     const currentValue = getFieldValue(riskId, fieldKey).trim();
     
-    // Check if user has modified the field
-    if (hasBeenEdited) {
-      const editedValue = String((edited as any)[fieldKey] || '').trim();
-      if (editedValue !== originalValue) {
-        return 'modified';
-      }
-    }
+    // Check if user has edited this field from document value
+    const edited = editedRiskData.get(riskId);
+    const hasBeenEdited = edited && fieldKey in edited;
     
-    // Check if field is missing (empty in both original and current)
+    // MISSING: Current value is empty
     if (!currentValue) {
       return 'missing';
     }
     
-    // Field has original parsed data (auto-populated from document parsing)
-    if (originalValue && !hasBeenEdited) {
+    // MODIFIED: User has changed the field from document value
+    if (hasBeenEdited && currentValue !== documentValue) {
+      return 'modified';
+    }
+    
+    // If risk exists in system...
+    if (systemRisk) {
+      // MODIFIED: Document value differs from system value
+      if (documentValue && documentValue !== systemValue) {
+        return 'modified';
+      }
+      // Unchanged from system - no badge
+      return null;
+    }
+    
+    // NEW: Risk doesn't exist in system AND field has data from document
+    if (documentValue) {
       return 'new';
     }
     
     return null;
+  };
+
+  // Get the overall status of a risk (new, modified, or unchanged)
+  const getRiskOverallStatus = (riskId: string): 'new' | 'modified' | 'unchanged' => {
+    const systemRisk = existingRiskMap.get(riskId);
+    
+    // If risk doesn't exist in system, it's new
+    if (!systemRisk) return 'new';
+    
+    // Check if any fields are modified from system values
+    const allFields = RISK_FIELD_CATEGORIES.flatMap(c => c.fields.map(f => f.key));
+    const documentRisk = originalRiskData.get(riskId);
+    const edited = editedRiskData.get(riskId) || {};
+    
+    for (const key of allFields) {
+      const systemValue = String((systemRisk as any)[key] || '').trim();
+      const documentValue = documentRisk ? String((documentRisk as any)[key] || '').trim() : '';
+      const currentValue = (edited as any)[key] !== undefined 
+        ? String((edited as any)[key] || '').trim() 
+        : documentValue;
+      
+      // If current/document value differs from system, it's modified
+      if (currentValue && currentValue !== systemValue) {
+        return 'modified';
+      }
+    }
+    
+    return 'unchanged';
   };
 
   const getStatusBadge = (status: 'new' | 'modified' | 'missing' | null) => {
@@ -446,6 +521,45 @@ export const DocumentParserBulkAssessmentModal = ({
                             const progress = calculateRiskProgress(risk.id);
                             const isChecked = checkedRisks.has(risk.id);
                             const hasMissing = hasRiskMissingFields(risk.id);
+                            const overallStatus = getRiskOverallStatus(risk.id);
+                            
+                            // Determine which badge to show
+                            const getRiskBadge = () => {
+                              if (hasMissing) {
+                                return (
+                                  <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs gap-1">
+                                    <AlertCircle className="w-3 h-3" />
+                                    Incomplete
+                                  </Badge>
+                                );
+                              }
+                              
+                              if (overallStatus === 'new') {
+                                return (
+                                  <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs gap-1">
+                                    <Plus className="w-3 h-3" />
+                                    New
+                                  </Badge>
+                                );
+                              }
+                              
+                              if (overallStatus === 'modified') {
+                                return (
+                                  <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 text-xs gap-1">
+                                    <Pencil className="w-3 h-3" />
+                                    Modified
+                                  </Badge>
+                                );
+                              }
+                              
+                              // unchanged and complete
+                              return (
+                                <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-xs gap-1">
+                                  <CheckCircle className="w-3 h-3" />
+                                  Unchanged
+                                </Badge>
+                              );
+                            };
                             
                             return (
                               <div
@@ -469,17 +583,7 @@ export const DocumentParserBulkAssessmentModal = ({
                                       <Badge variant="outline" className="text-xs font-mono shrink-0">
                                         {risk.id}
                                       </Badge>
-                                      {hasMissing ? (
-                                        <Badge className="bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs gap-1">
-                                          <AlertCircle className="w-3 h-3" />
-                                          Incomplete
-                                        </Badge>
-                                      ) : (
-                                        <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 text-xs gap-1">
-                                          <Plus className="w-3 h-3" />
-                                          Complete
-                                        </Badge>
-                                      )}
+                                      {getRiskBadge()}
                                     </div>
                                     <p className="text-sm font-medium text-foreground truncate">{risk.title}</p>
                                     <p className="text-xs text-muted-foreground">{risk.category || 'Uncategorized'}</p>

@@ -1512,6 +1512,7 @@ export function AIDocumentAssessmentModal({
         }
       }}
       selectedRisks={selectedRisksForAssessment}
+      existingRisks={existingRisks}
       onApplyAssessments={handleBulkAssessmentApply}
     />
 
