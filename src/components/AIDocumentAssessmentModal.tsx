@@ -717,8 +717,37 @@ export function AIDocumentAssessmentModal({
         setPendingRisks([]);
         
         if (allRisks.length > 0) {
-          toast.success(`Found ${allRisks.length} risk assessments`);
-          setStep("review");
+          // Apply the same filtering logic as processFiles
+          let risksToUse = allRisks;
+          
+          if (filterByTitles && filterByTitles.length > 0) {
+            setSearchedTitles(filterByTitles);
+            risksToUse = allRisks.filter(r => 
+              filterByTitles.some(title => 
+                r.title.toLowerCase().includes(title.toLowerCase()) ||
+                title.toLowerCase().includes(r.title.toLowerCase())
+              )
+            );
+          } else if (filterByRiskIds && filterByRiskIds.length > 0) {
+            risksToUse = allRisks.filter(r => filterByRiskIds.includes(r.id));
+          }
+          
+          if (risksToUse.length === 0 && (filterByTitles?.length || filterByRiskIds?.length)) {
+            toast.warning("Selected risks were not found in the uploaded documents");
+            setParsedRisks([]);
+            setStep("not-found");
+          } else {
+            toast.success(`Found ${risksToUse.length} matching risk assessments`);
+            setParsedRisks(risksToUse);
+            
+            if (skipReviewScreen) {
+              setSelectedRiskIds(new Set(risksToUse.map(r => r.id)));
+              setShowBulkAssessmentModal(true);
+              setStep("bulk-assessment");
+            } else {
+              setStep("review");
+            }
+          }
         } else {
           toast.warning("No risks found in the uploaded files");
           setStep("upload");
