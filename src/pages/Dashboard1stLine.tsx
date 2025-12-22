@@ -1063,6 +1063,10 @@ const Dashboard1stLine = () => {
                   <FileText className="w-4 h-4" />
                   Download Risk Events (CSV)
                 </a>
+                <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
+                  <FileText className="w-4 h-4" />
+                  Download Sample Hierarchy (CSV)
+                </a>
               </div>
             </CardContent>
           </Card>
