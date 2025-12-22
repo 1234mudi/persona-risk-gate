@@ -1544,20 +1544,21 @@ const Dashboard1stLine = () => {
                               risk.riskLevel === "Level 3" ? "pl-6" : ""
                             ) : ""
                           }`}>
-                            {/* Tree line indicator for child risks */}
+                          {/* Tree line indicator for child risks - L-shaped connectors */}
                             {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && (
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                <div className="w-3 h-px bg-purple-400 dark:bg-purple-500" />
+                              <div className="flex items-center flex-shrink-0 text-purple-500 dark:text-purple-400 font-light text-lg leading-none mr-1">
+                                └
                               </div>
                             )}
                             {hierarchyViewMode === "level1" && risk.riskLevel === "Level 3" && (
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                <div className="w-3 h-px bg-orange-400 dark:bg-orange-500" />
+                              <div className="flex items-center flex-shrink-0 text-orange-500 dark:text-orange-400 font-light text-lg leading-none mr-1">
+                                <span className="text-muted-foreground/50 mr-0.5">│</span>
+                                └
                               </div>
                             )}
                             {hierarchyViewMode === "level2" && risk.riskLevel === "Level 3" && (
-                              <div className="flex items-center gap-1 flex-shrink-0">
-                                <div className="w-3 h-px bg-orange-400 dark:bg-orange-500" />
+                              <div className="flex items-center flex-shrink-0 text-orange-500 dark:text-orange-400 font-light text-lg leading-none mr-1">
+                                └
                               </div>
                             )}
                             
