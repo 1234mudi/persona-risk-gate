@@ -8,34 +8,37 @@ const corsHeaders = {
 const systemPrompt = `You are a risk assessment document parser. Your job is to extract risk information from documents in any format (CSV, tables, free text, etc).
 
 Extract ALL risks found in the document. For each risk, extract the following fields:
-- id: A unique identifier (e.g., "R-001", "RISK-1", or generate one like "R-001" if not present)
+- id: A unique identifier (e.g., "R-001", "R-100-A", "RISK-1", or generate one like "R-001" if not present)
 - title: The name/title of the risk
-- riskLevel1: Top-level risk category (e.g., "Operational", "Financial", "Strategic", "Compliance")
-- riskLevel2: Second-level risk category (subcategory)
-- riskLevel3: Third-level risk category (more specific subcategory)
-- level: Risk level or tier
+- parentRisk: The parent risk title or ID if this is a child risk (for hierarchical risks). Leave empty for top-level/Level 1 risks.
+- riskLevel1: Top-level risk category (e.g., "Operational", "Financial", "Strategic", "Compliance", "Technology", "Credit")
+- riskLevel2: Second-level risk category (subcategory like "Process Management", "IT Security", "Lending Operations")
+- riskLevel3: Third-level risk category (more specific subcategory like "Data Quality", "Malware Defense")
+- level: Risk hierarchy level (e.g., "Level 1", "Level 2", "Level 3")
 - businessUnit: The business unit or department
 - category: Risk category
 - owner: The risk owner's name
 - assessor: The person who assessed the risk
-- inherentRisk: Inherent risk level (e.g., "High", "Medium", "Low", or a number)
+- inherentRisk: Inherent risk level (e.g., "Critical", "High", "Medium", "Low")
 - inherentTrend: Trend direction (e.g., "↑", "↓", "→", "Increasing", "Decreasing", "Stable")
 - controls: Description of controls in place
-- effectiveness: Control effectiveness (e.g., "Effective", "Partially Effective", "Ineffective")
+- effectiveness: Control effectiveness (e.g., "Design Effective", "Operating Effective", "Partially Effective", "Ineffective")
 - testResults: Results of control testing
 - residualRisk: Residual risk level after controls
 - residualTrend: Residual risk trend direction
-- status: Current status (e.g., "Active", "Under Review", "Closed", "Open")
+- status: Current status (e.g., "Sent for Assessment", "In Progress", "Completed", "Overdue")
 - lastAssessed: Last assessment date
 
 Important rules:
 1. Extract ALL risks you can find, even if some fields are missing
 2. Use empty string "" for any field you cannot determine
-3. Be flexible with field names - documents may use different column names
+3. Be flexible with field names - documents may use different column names (e.g., "Parent Risk" for parentRisk)
 4. If the document has tables, parse all rows as separate risks
 5. Generate sequential IDs if none are present (R-001, R-002, etc.)
-6. Normalize risk levels to "High", "Medium", "Low" when possible
+6. Normalize risk levels to "Critical", "High", "Medium", "Low" when possible
 7. For trends, use symbols (↑, ↓, →) or words (Increasing, Decreasing, Stable)
+8. For hierarchical risks, correctly identify parent-child relationships from the "Parent Risk" column or ID patterns (e.g., R-100-A is child of R-100)
+9. The "Level" field indicates hierarchy: "Level 1" = top parent, "Level 2" = child, "Level 3" = grandchild
 
 Return ONLY valid JSON array of risk objects, no markdown, no explanation.`;
 
@@ -103,23 +106,24 @@ function normalizeRisks(risks: any[]): any[] {
   return risks.map((risk: any, index: number) => ({
     id: risk.id || `R-${String(index + 1).padStart(3, '0')}`,
     title: risk.title || "",
-    riskLevel1: risk.riskLevel1 || "",
-    riskLevel2: risk.riskLevel2 || "",
-    riskLevel3: risk.riskLevel3 || "",
-    level: risk.level || "",
-    businessUnit: risk.businessUnit || "",
-    category: risk.category || "",
-    owner: risk.owner || "",
-    assessor: risk.assessor || "",
-    inherentRisk: risk.inherentRisk || "",
-    inherentTrend: risk.inherentTrend || "",
-    controls: risk.controls || "",
-    effectiveness: risk.effectiveness || "",
-    testResults: risk.testResults || "",
-    residualRisk: risk.residualRisk || "",
-    residualTrend: risk.residualTrend || "",
-    status: risk.status || "",
-    lastAssessed: risk.lastAssessed || "",
+    parentRisk: risk.parentRisk || risk.parent_risk || risk["Parent Risk"] || "",
+    riskLevel1: risk.riskLevel1 || risk["Risk Level 1"] || "",
+    riskLevel2: risk.riskLevel2 || risk["Risk Level 2"] || "",
+    riskLevel3: risk.riskLevel3 || risk["Risk Level 3"] || "",
+    level: risk.level || risk.Level || "",
+    businessUnit: risk.businessUnit || risk["Business Unit"] || "",
+    category: risk.category || risk.Category || "",
+    owner: risk.owner || risk.Owner || "",
+    assessor: risk.assessor || risk.Assessor || "",
+    inherentRisk: risk.inherentRisk || risk["Inherent Risk"] || "",
+    inherentTrend: risk.inherentTrend || risk["Inherent Trend"] || "",
+    controls: risk.controls || risk.Controls || "",
+    effectiveness: risk.effectiveness || risk.Effectiveness || "",
+    testResults: risk.testResults || risk["Test Results"] || "",
+    residualRisk: risk.residualRisk || risk["Residual Risk"] || "",
+    residualTrend: risk.residualTrend || risk["Residual Trend"] || "",
+    status: risk.status || risk.Status || "",
+    lastAssessed: risk.lastAssessed || risk["Last Assessed"] || "",
   }));
 }
 
