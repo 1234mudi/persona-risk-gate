@@ -662,7 +662,9 @@ export const DocumentParserBulkAssessmentModal = ({
                                 {/* Show each selected risk's field value */}
                                 <div className="space-y-2">
                                   {checkedFilteredRisks.map((risk) => {
-                                    const status = getFieldStatus(risk.id, field.key);
+                                    // Skip status badges for classification section
+                                    const isClassificationSection = category.id === 'classification';
+                                    const status = isClassificationSection ? null : getFieldStatus(risk.id, field.key);
                                     const value = getFieldValue(risk.id, field.key);
                                     const isSingleRisk = selectedRisks.length === 1;
                                     
@@ -688,9 +690,11 @@ export const DocumentParserBulkAssessmentModal = ({
                                             rows={1}
                                           />
                                         </div>
-                                        <div className="shrink-0 w-20 mt-2">
-                                          {getStatusBadge(status)}
-                                        </div>
+                                        {!isClassificationSection && (
+                                          <div className="shrink-0 w-20 mt-2">
+                                            {getStatusBadge(status)}
+                                          </div>
+                                        )}
                                       </div>
                                     );
                                   })}
