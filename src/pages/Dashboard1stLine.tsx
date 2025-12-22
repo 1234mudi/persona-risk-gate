@@ -511,6 +511,7 @@ const Dashboard1stLine = () => {
       title: parsed.title || parsed.riskLevel3 || 'Imported Risk',
       dueDate: parsed.lastAssessed || new Date().toISOString().split('T')[0],
       riskLevel: parsed.level || 'Level 3',
+      parentRisk: parsed.parentRisk || '',
       businessUnit: parsed.businessUnit || 'Unknown',
       category: parsed.category || 'Operational',
       owner: parsed.owner || 'Unassigned',
