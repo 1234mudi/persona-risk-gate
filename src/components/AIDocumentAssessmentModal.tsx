@@ -103,7 +103,7 @@ export function AIDocumentAssessmentModal({
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [parsedRisks, setParsedRisks] = useState<ParsedRisk[]>([]);
-  const [step, setStep] = useState<"upload" | "processing" | "review">("upload");
+  const [step, setStep] = useState<"upload" | "processing" | "review" | "not-found">("upload");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
@@ -115,6 +115,9 @@ export function AIDocumentAssessmentModal({
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "new" | "modified">("all");
   const [sourceFilter, setSourceFilter] = useState<string>("all");
+  
+  // Track search context for not-found message
+  const [searchedTitles, setSearchedTitles] = useState<string[]>([]);
   
   // Fallback alert state
   const [showFallbackAlert, setShowFallbackAlert] = useState(false);
@@ -570,6 +573,7 @@ export function AIDocumentAssessmentModal({
       // Filter risks if filterByRiskIds or filterByTitles is provided
       let risksToUse = allRisks;
       if (filterByTitles && filterByTitles.length > 0) {
+        setSearchedTitles(filterByTitles); // Store for not-found message
         // Match by title (case-insensitive partial match)
         risksToUse = allRisks.filter(r => 
           filterByTitles.some(title => 
@@ -582,34 +586,29 @@ export function AIDocumentAssessmentModal({
       }
       
       if (risksToUse.length === 0 && (filterByTitles?.length || filterByRiskIds?.length)) {
-        toast.info("No matching risks found in the uploaded documents");
+        // Show not-found screen with clear message
+        toast.warning("Selected risks were not found in the uploaded documents");
+        setParsedRisks([]);
+        setStep("not-found");
       } else {
         toast.success(`Found ${risksToUse.length} matching risk assessments`);
-      }
-      
-      setParsedRisks(risksToUse);
-      
-      // If skipReviewScreen is enabled, select all risks and open bulk assessment directly
-      if (skipReviewScreen) {
-        setSelectedRiskIds(new Set(risksToUse.map(r => r.id)));
-        setShowBulkAssessmentModal(true);
-        setStep("review"); // Still set to review for the modal context
-      } else {
-        setStep("review");
+        setParsedRisks(risksToUse);
+        
+        // If skipReviewScreen is enabled, select all risks and open bulk assessment directly
+        if (skipReviewScreen) {
+          setSelectedRiskIds(new Set(risksToUse.map(r => r.id)));
+          setShowBulkAssessmentModal(true);
+          setStep("review"); // Still set to review for the modal context
+        } else {
+          setStep("review");
+        }
       }
     } else {
-      // No risks found in uploaded files
-      if (skipReviewScreen) {
-        // Still open bulk assessment modal to show "no matching risks" message
-        toast.info("No matching risks found in the uploaded documents");
-        setParsedRisks([]);
-        setSelectedRiskIds(new Set());
-        setShowBulkAssessmentModal(true);
-        setStep("review");
-      } else {
-        toast.warning("No risks found in the uploaded files");
-        setStep("review");
-      }
+      // No risks found in uploaded files at all
+      setSearchedTitles(filterByTitles || []);
+      toast.warning("No risk data found in the uploaded documents");
+      setParsedRisks([]);
+      setStep("not-found");
     }
   };
 
@@ -629,6 +628,7 @@ export function AIDocumentAssessmentModal({
     setFiles([]);
     setParsedRisks([]);
     setPendingRisks([]);
+    setSearchedTitles([]);
     setStep("upload");
     setProgress(0);
     setIsProcessing(false);
@@ -923,6 +923,8 @@ export function AIDocumentAssessmentModal({
       <DialogContent className={
         step === "review" 
           ? "w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col bg-background p-0" 
+          : step === "not-found"
+          ? "sm:max-w-md"
           : "sm:max-w-lg"
       }>
         {/* Header Bar */}
@@ -952,6 +954,16 @@ export function AIDocumentAssessmentModal({
                 </Button>
               </div>
             </>
+          ) : step === "not-found" ? (
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Search className="w-5 h-5 text-amber-500" />
+                AI Risk Search
+              </DialogTitle>
+              <DialogDescription>
+                Search results for selected risks
+              </DialogDescription>
+            </DialogHeader>
           ) : (
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
@@ -1077,6 +1089,54 @@ export function AIDocumentAssessmentModal({
               <p className="text-xs text-center text-muted-foreground mt-2">
                 {Math.round(progress)}% complete
               </p>
+            </div>
+          </div>
+        )}
+
+        {step === "not-found" && (
+          <div className="flex-1 flex flex-col items-center justify-center py-12 px-6">
+            <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4">
+              <AlertCircle className="w-8 h-8 text-amber-600 dark:text-amber-400" />
+            </div>
+            <p className="text-lg font-semibold mb-2 text-foreground">No Matching Risks Found</p>
+            <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
+              The uploaded documents were analyzed, but none of the selected risks were found in them.
+            </p>
+            
+            {searchedTitles.length > 0 && (
+              <div className="w-full max-w-md mb-6">
+                <p className="text-xs font-medium text-muted-foreground mb-2">Searched for:</p>
+                <div className="bg-muted/50 rounded-lg p-3 max-h-32 overflow-y-auto">
+                  <div className="flex flex-wrap gap-2">
+                    {searchedTitles.slice(0, 5).map((title, index) => (
+                      <Badge key={index} variant="outline" className="text-xs truncate max-w-[200px]">
+                        {title}
+                      </Badge>
+                    ))}
+                    {searchedTitles.length > 5 && (
+                      <Badge variant="secondary" className="text-xs">
+                        +{searchedTitles.length - 5} more
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            <div className="flex items-center gap-3">
+              <Button variant="outline" onClick={handleClose}>
+                Close
+              </Button>
+              <Button 
+                onClick={() => {
+                  setStep("upload");
+                  setFiles([]);
+                }}
+                className="bg-first-line hover:bg-first-line/90 text-white"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Try Different Files
+              </Button>
             </div>
           </div>
         )}
