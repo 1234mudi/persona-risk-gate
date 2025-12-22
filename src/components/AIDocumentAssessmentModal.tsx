@@ -967,11 +967,23 @@ export function AIDocumentAssessmentModal({
           ) : (
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-blue-500" />
-                Document Parser
+                {skipReviewScreen ? (
+                  <>
+                    <Search className="w-5 h-5 text-blue-500" />
+                    AI Risk Search
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5 text-blue-500" />
+                    Document Parser
+                  </>
+                )}
               </DialogTitle>
               <DialogDescription>
-                Upload CSV or DOCX files containing risk data. AI will parse and create risk assessments automatically.
+                {skipReviewScreen 
+                  ? `Upload documents to search for ${filterByTitles?.length || 0} selected risk(s). AI will find and extract matching assessments.`
+                  : "Upload CSV or DOCX files containing risk data. AI will parse and create risk assessments automatically."
+                }
               </DialogDescription>
             </DialogHeader>
           )}
