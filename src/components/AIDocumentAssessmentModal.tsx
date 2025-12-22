@@ -1352,33 +1352,12 @@ export function AIDocumentAssessmentModal({
                               ${selectedRiskIds.has(risk.id) ? "ring-1 ring-inset ring-emerald-500/50" : ""}
                             `}
                           >
-                            {/* Checkbox + Actions */}
+                            {/* Checkbox */}
                             <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center gap-2">
-                                <Checkbox
-                                  checked={selectedRiskIds.has(risk.id)}
-                                  onCheckedChange={() => toggleRiskSelection(risk.id)}
-                                />
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
-                                  onClick={() => {
-                                    setSelectedRiskIds(new Set([risk.id]));
-                                    setShowBulkAssessmentModal(true);
-                                  }}
-                                >
-                                  <Pencil className="w-3.5 h-3.5" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="icon"
-                                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
-                                  onClick={() => deleteRisk(originalIndex)}
-                                >
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </Button>
-                              </div>
+                              <Checkbox
+                                checked={selectedRiskIds.has(risk.id)}
+                                onCheckedChange={() => toggleRiskSelection(risk.id)}
+                              />
                             </TableCell>
                             
                             {/* Status Badge */}
@@ -1449,6 +1428,31 @@ export function AIDocumentAssessmentModal({
                                   Complete
                                 </Badge>
                               )}
+                            </TableCell>
+                            
+                            {/* Actions */}
+                            <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center gap-1">
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                                  onClick={() => {
+                                    setSelectedRiskIds(new Set([risk.id]));
+                                    setShowBulkAssessmentModal(true);
+                                  }}
+                                >
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                  onClick={() => deleteRisk(originalIndex)}
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         </React.Fragment>
