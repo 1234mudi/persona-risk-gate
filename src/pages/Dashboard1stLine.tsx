@@ -1419,15 +1419,7 @@ const Dashboard1stLine = () => {
                       <Sparkles className="w-4 h-4 mr-1.5" />
                       AI Risk Search
                     </Button>
-                    <Button 
-                      size="sm" 
-                      className="h-8 bg-gradient-to-r from-first-line to-emerald-600 text-white shadow-md hover:shadow-lg transition-all"
-                      onClick={() => setBulkAssessmentOpen(true)}
-                    >
-                      <Sparkles className="w-4 h-4 mr-1.5" />
-                      Assess Selected Risks
-                    </Button>
-                    <Button 
+                    <Button
                       size="sm" 
                       className="h-8 bg-indigo-500 hover:bg-indigo-600 text-white"
                       onClick={handleSubmitForReview}
