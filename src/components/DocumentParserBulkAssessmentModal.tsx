@@ -278,14 +278,13 @@ export const DocumentParserBulkAssessmentModal = ({
   };
 
   // Get the status of a field (new, modified, missing)
-  // Compares: system data (existing in app) vs document data (parsed) vs current value (may be edited)
-  // - "new": Field has data from document but doesn't exist in system (or was empty in system)
-  // - "modified": User manually edited the field from document value
+  // - "new": The entire RISK is new to the system (doesn't exist yet)
+  // - "modified": User manually edited the field from what was in the document
   // - "missing": Field is empty/undefined and needs to be filled
+  // - null: No badge needed (risk exists in system, field has value)
   const getFieldStatus = (riskId: string, fieldKey: string): 'new' | 'modified' | 'missing' | null => {
     // Get system data (what exists in the app before import)
     const systemRisk = existingRiskMap.get(riskId);
-    const systemValue = systemRisk ? String((systemRisk as any)[fieldKey] || '').trim() : '';
     
     // Get document data (what was parsed from the uploaded file)
     const documentRisk = originalRiskData.get(riskId);
@@ -308,24 +307,12 @@ export const DocumentParserBulkAssessmentModal = ({
       return 'modified';
     }
     
-    // If risk exists in system with a value for this field, no badge needed
-    // (data came from system or document matches system)
-    if (systemRisk && systemValue) {
-      return null;
-    }
-    
-    // NEW: Risk doesn't exist in system OR system field was empty, and we have data
-    if (!systemRisk || !systemValue) {
+    // NEW: The entire risk doesn't exist in the system yet
+    if (!systemRisk) {
       return 'new';
     }
     
-    return null;
-    
-    // NEW: Risk doesn't exist in system AND field has data from document
-    if (documentValue) {
-      return 'new';
-    }
-    
+    // Risk exists in system - no badge needed for any field
     return null;
   };
 
