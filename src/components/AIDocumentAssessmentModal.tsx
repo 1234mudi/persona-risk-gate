@@ -103,7 +103,7 @@ export function AIDocumentAssessmentModal({
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
   const [parsedRisks, setParsedRisks] = useState<ParsedRisk[]>([]);
-  const [step, setStep] = useState<"upload" | "processing" | "review" | "not-found">("upload");
+  const [step, setStep] = useState<"upload" | "processing" | "review" | "not-found" | "bulk-assessment">("upload");
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [expandedIndex, setExpandedIndex] = useState<number | null>(null);
   
@@ -598,7 +598,7 @@ export function AIDocumentAssessmentModal({
         if (skipReviewScreen) {
           setSelectedRiskIds(new Set(risksToUse.map(r => r.id)));
           setShowBulkAssessmentModal(true);
-          setStep("review"); // Still set to review for the modal context
+          setStep("bulk-assessment"); // Hide parent dialog and show bulk assessment
         } else {
           setStep("review");
         }
@@ -914,8 +914,8 @@ export function AIDocumentAssessmentModal({
     });
   }, [parsedRisks, statusFilter, sourceFilter, searchQuery, existingRiskMap]);
 
-  // When skipReviewScreen is true and bulk assessment modal is open, hide the parent dialog
-  const shouldHideParentDialog = skipReviewScreen && showBulkAssessmentModal && step === "review";
+  // When in bulk-assessment mode, hide the parent dialog completely
+  const shouldHideParentDialog = step === "bulk-assessment";
 
   return (
     <>
