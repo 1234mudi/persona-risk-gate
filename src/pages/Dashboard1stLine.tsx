@@ -94,7 +94,11 @@ const Dashboard1stLine = () => {
   const reportSectionRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set(["R-001", "R-002", "R-003"]));
+  // Initialize expanded rows with all Level 1 risks by default
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(() => {
+    const level1Ids = riskData.filter(r => r.riskLevel === "Level 1").map(r => r.id);
+    return new Set(level1Ids);
+  });
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [assessorFilter, setAssessorFilter] = useState<string>("all");
