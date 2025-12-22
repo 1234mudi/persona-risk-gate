@@ -94,11 +94,8 @@ const Dashboard1stLine = () => {
   const reportSectionRef = useRef<HTMLDivElement>(null);
   const [activeTab, setActiveTab] = useState<"own" | "assess" | "approve">("assess");
   const [highlightedTab, setHighlightedTab] = useState<string | null>(null);
-  // Initialize expanded rows with all Level 1 risks by default
-  const [expandedRows, setExpandedRows] = useState<Set<string>>(() => {
-    const level1Ids = riskData.filter(r => r.riskLevel === "Level 1").map(r => r.id);
-    return new Set(level1Ids);
-  });
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
+  const [expandedRowsInitialized, setExpandedRowsInitialized] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [assessorFilter, setAssessorFilter] = useState<string>("all");
@@ -199,6 +196,15 @@ const Dashboard1stLine = () => {
   });
 
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
+
+  // Initialize expanded rows with all Level 1 risks by default (only once)
+  useEffect(() => {
+    if (!expandedRowsInitialized && riskData.length > 0) {
+      const level1Ids = riskData.filter(r => r.riskLevel === "Level 1").map(r => r.id);
+      setExpandedRows(new Set(level1Ids));
+      setExpandedRowsInitialized(true);
+    }
+  }, [riskData, expandedRowsInitialized]);
 
   const getFilteredByTab = (data: RiskData[], tab: "own" | "assess" | "approve") => {
     return data.filter(risk => risk.tabCategory === tab);
