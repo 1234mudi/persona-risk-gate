@@ -1352,7 +1352,7 @@ const Dashboard1stLine = () => {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-emerald-800 dark:text-emerald-200">
-                  {activeTab === "own" && "These assessments have been completed. Review your historical risk assessments and their outcomes."}
+                  {activeTab === "own" && "These completed risk assessments can be edited. Click the edit icon to update any field values as needed."}
                   {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
                   {activeTab === "approve" && "These assessments have been submitted and are awaiting review by the 2nd Line team. Monitor status for any feedback or challenges."}
                 </p>
@@ -1439,21 +1439,25 @@ const Dashboard1stLine = () => {
                 <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
-                      <TableHead className="w-14 min-w-[56px] py-2 border-r border-b border-border">
-                        <div className="flex items-center justify-center px-2">
-                          <Checkbox 
-                            checked={visibleRisks.length > 0 && selectedRisks.size === visibleRisks.length}
-                            onCheckedChange={toggleSelectAll}
-                          />
-                        </div>
-                      </TableHead>
-                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border text-xs">Update Completed</TableHead>
-                      <TableHead className="min-w-[220px] py-2 border-r border-b border-border">
-                        Risk Title
+                      {activeTab !== "own" && (
+                        <TableHead className="w-14 min-w-[56px] py-2 border-r border-b border-border">
+                          <div className="flex items-center justify-center px-2">
+                            <Checkbox 
+                              checked={visibleRisks.length > 0 && selectedRisks.size === visibleRisks.length}
+                              onCheckedChange={toggleSelectAll}
+                            />
+                          </div>
+                        </TableHead>
+                      )}
+                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border text-xs">Update Completed Assessments</TableHead>
+                      <TableHead className="min-w-[280px] py-2 border-r border-b border-border">
+                        {activeTab === "own" ? "Risk ID / Title" : "Risk Title"}
                       </TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
-                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
+                      {activeTab !== "own" && (
+                        <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
+                      )}
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1515,28 +1519,30 @@ const Dashboard1stLine = () => {
                         risk.riskLevel === "Level 2" ? 'bg-purple-50/30 dark:bg-purple-950/10' :
                         'bg-orange-50/30 dark:bg-orange-950/10'
                       }`}>
-                        <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
-                          <div className="flex items-center justify-center px-2">
-                            <Checkbox 
-                              checked={selectedRisks.has(risk.id)}
-                              onCheckedChange={() => toggleRiskSelection(risk.id)}
-                            />
-                          </div>
-                        </TableCell>
+                        {activeTab !== "own" && (
+                          <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
+                            <div className="flex items-center justify-center px-2">
+                              <Checkbox 
+                                checked={selectedRisks.has(risk.id)}
+                                onCheckedChange={() => toggleRiskSelection(risk.id)}
+                              />
+                            </div>
+                          </TableCell>
+                        )}
                         <TableCell className="py-2 border-r border-b border-border">
                           {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <button
-                                    className="p-1.5 rounded-md bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 transition-colors"
+                                    className="p-1.5 rounded-md bg-blue-100 hover:bg-blue-200 dark:bg-blue-900/30 dark:hover:bg-blue-900/50 transition-colors"
                                     onClick={() => handleUpdateClosedAssessment(risk.id)}
                                   >
-                                    <RefreshCw className="w-4 h-4 text-amber-600 dark:text-amber-400" />
+                                    <Edit2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                                   </button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>Update this closed assessment</p>
+                                  <p>Edit completed assessment</p>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
@@ -1608,6 +1614,10 @@ const Dashboard1stLine = () => {
                             )}
                             
                             <div className="flex flex-col gap-1">
+                              {/* Risk ID - only show in combined column for "own" tab */}
+                              {activeTab === "own" && (
+                                <span className="font-mono text-xs text-first-line">{risk.id}</span>
+                              )}
                               {/* Risk Title */}
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -1664,9 +1674,11 @@ const Dashboard1stLine = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="font-medium py-2 border-r border-b border-border">
-                          <span className="font-mono text-sm font-medium text-first-line">{risk.id}</span>
-                        </TableCell>
+                        {activeTab !== "own" && (
+                          <TableCell className="font-medium py-2 border-r border-b border-border">
+                            <span className="font-mono text-sm font-medium text-first-line">{risk.id}</span>
+                          </TableCell>
+                        )}
                         <TableCell className="py-2 border-r border-b border-border">
                           <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
                             {risk.riskLevel}
