@@ -973,6 +973,68 @@ const Dashboard1stLine = () => {
     };
   };
 
+  // Calculate comprehensive aggregations for Level 1 parents
+  const calculateLevel1Aggregations = (parentRisk: RiskData) => {
+    if (parentRisk.riskLevel !== "Level 1") return null;
+    
+    // Get all Level 2 children that belong to this parent
+    const level2Children = riskData.filter(r => 
+      r.riskLevel === "Level 2" && r.parentRisk === parentRisk.title
+    );
+    
+    // Get all Level 3 children of those Level 2 risks
+    const level3Children = riskData.filter(r => 
+      r.riskLevel === "Level 3" && level2Children.some(l2 => l2.title === r.parentRisk)
+    );
+    
+    const allChildren = [...level2Children, ...level3Children];
+    
+    if (allChildren.length === 0) return null;
+    
+    // Controls aggregation
+    const totalControls = allChildren.reduce((sum, r) => sum + r.relatedControls.length, 0);
+    const automatedControls = allChildren.reduce((sum, r) => 
+      sum + r.relatedControls.filter(c => c.type === 'Automated').length, 0
+    );
+    const manualControls = totalControls - automatedControls;
+    
+    // Control Effectiveness aggregation
+    const effectivenessBreakdown = {
+      effective: allChildren.filter(r => r.controlEffectiveness.label === 'Effective').length,
+      partiallyEffective: allChildren.filter(r => r.controlEffectiveness.label === 'Partially Effective').length,
+      ineffective: allChildren.filter(r => r.controlEffectiveness.label === 'Ineffective').length,
+      notAssessed: allChildren.filter(r => r.controlEffectiveness.label === 'Not Assessed' || !r.controlEffectiveness.label).length,
+    };
+    
+    // Assessment Progress aggregation
+    const progressBreakdown = {
+      completed: allChildren.filter(r => r.assessmentProgress?.assess === 'completed').length,
+      inProgress: allChildren.filter(r => r.assessmentProgress?.assess === 'in-progress').length,
+      notStarted: allChildren.filter(r => r.assessmentProgress?.assess === 'not-started' || !r.assessmentProgress?.assess).length,
+    };
+    
+    // Status aggregation
+    const statusBreakdown = {
+      completed: allChildren.filter(r => r.status === 'Completed' || r.status === 'Complete').length,
+      overdue: allChildren.filter(r => r.status === 'Overdue').length,
+      inProgress: allChildren.filter(r => r.status === 'In Progress').length,
+      pendingApproval: allChildren.filter(r => r.status === 'Pending Approval').length,
+      other: allChildren.filter(r => !['Completed', 'Complete', 'Overdue', 'In Progress', 'Pending Approval'].includes(r.status)).length,
+    };
+    
+    return {
+      childCount: allChildren.length,
+      level2Count: level2Children.length,
+      level3Count: level3Children.length,
+      totalControls,
+      automatedControls,
+      manualControls,
+      effectivenessBreakdown,
+      progressBreakdown,
+      statusBreakdown,
+    };
+  };
+
   // Get risk level label based on score
   const getRiskLevelFromScore = (score: number): { level: string; color: string } => {
     if (score >= 15) return { level: 'Critical', color: 'red' };
@@ -1608,6 +1670,7 @@ const Dashboard1stLine = () => {
                       const canExpand = hasChildren(risk);
                       const inherentAgg = calculateAggregatedRisk(risk, 'inherent');
                       const residualAgg = calculateAggregatedRisk(risk, 'residual');
+                      const level1Agg = calculateLevel1Aggregations(risk);
                       
                       return (
                       <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
@@ -1800,6 +1863,37 @@ const Dashboard1stLine = () => {
                               <span>Review</span>
                               <span>Approve</span>
                             </div>
+                            {level1Agg && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded mt-1">
+                                      <span className="text-green-600 font-medium">{level1Agg.progressBreakdown.completed}</span>
+                                      <span>/</span>
+                                      <span>{level1Agg.childCount}</span>
+                                      <span className="ml-1">completed</span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <div className="text-xs space-y-1">
+                                      <p className="font-medium">Assessment Progress Summary ({level1Agg.childCount} risks)</p>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-green-500 rounded-sm"></span>
+                                        <span>Completed: {level1Agg.progressBreakdown.completed}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-amber-500 rounded-sm"></span>
+                                        <span>In Progress: {level1Agg.progressBreakdown.inProgress}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-gray-400 rounded-sm"></span>
+                                        <span>Not Started: {level1Agg.progressBreakdown.notStarted}</span>
+                                      </div>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
                           </div>
                         </TableCell>
                         {/* Risk ID - only for non-own tabs */}
@@ -1954,7 +2048,7 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Related Controls - now showing multiple */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="text-xs space-y-1 max-h-20 overflow-y-auto">
+                          <div className="text-xs space-y-1 max-h-24 overflow-y-auto">
                             {risk.relatedControls.slice(0, 2).map((control, idx) => (
                               <div key={idx} className={idx > 0 ? "pt-1 border-t border-border/50" : ""}>
                                 <div className="font-medium text-first-line">{control.id}</div>
@@ -1968,18 +2062,79 @@ const Dashboard1stLine = () => {
                             {risk.relatedControls.length > 2 && (
                               <div className="text-muted-foreground text-[10px]">+{risk.relatedControls.length - 2} more</div>
                             )}
+                            {level1Agg && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded mt-1">
+                                      <span className="font-medium">Σ {level1Agg.totalControls}</span>
+                                      <span>controls</span>
+                                      <span className="text-muted-foreground/60">({level1Agg.childCount} risks)</span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <div className="text-xs space-y-1">
+                                      <p className="font-medium">Controls Summary ({level1Agg.childCount} child risks)</p>
+                                      <p>Total Controls: {level1Agg.totalControls}</p>
+                                      <p>Automated: {level1Agg.automatedControls}</p>
+                                      <p>Manual: {level1Agg.manualControls}</p>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
                           </div>
                         </TableCell>
                         {/* Control Effectiveness */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          {renderEditableCell(
-                            risk.id,
-                            'controlEffectiveness',
-                            risk.controlEffectiveness.label,
-                            getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color),
-                            'select',
-                            ['Effective', 'Partially Effective', 'Ineffective', 'Not Assessed']
-                          )}
+                          <div className="space-y-1">
+                            {renderEditableCell(
+                              risk.id,
+                              'controlEffectiveness',
+                              risk.controlEffectiveness.label,
+                              getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color),
+                              'select',
+                              ['Effective', 'Partially Effective', 'Ineffective', 'Not Assessed']
+                            )}
+                            {level1Agg && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 text-[10px] bg-muted/50 px-1.5 py-0.5 rounded mt-1">
+                                      <span className="text-green-600">{level1Agg.effectivenessBreakdown.effective}</span>
+                                      <span className="text-muted-foreground/40">|</span>
+                                      <span className="text-amber-600">{level1Agg.effectivenessBreakdown.partiallyEffective}</span>
+                                      <span className="text-muted-foreground/40">|</span>
+                                      <span className="text-red-600">{level1Agg.effectivenessBreakdown.ineffective}</span>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <div className="text-xs space-y-1">
+                                      <p className="font-medium">Effectiveness Summary ({level1Agg.childCount} risks)</p>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        <span>Effective: {level1Agg.effectivenessBreakdown.effective}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                                        <span>Partially Effective: {level1Agg.effectivenessBreakdown.partiallyEffective}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                        <span>Ineffective: {level1Agg.effectivenessBreakdown.ineffective}</span>
+                                      </div>
+                                      {level1Agg.effectivenessBreakdown.notAssessed > 0 && (
+                                        <div className="flex items-center gap-2">
+                                          <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                                          <span>Not Assessed: {level1Agg.effectivenessBreakdown.notAssessed}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </div>
                         </TableCell>
                         {/* Test Results */}
                         <TableCell className="py-2 border-r border-b border-border">
@@ -1992,14 +2147,64 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Status */}
                         <TableCell className="py-2 border-b border-border">
-                          {renderEditableCell(
-                            risk.id,
-                            'status',
-                            risk.status,
-                            <Badge className={getStatusColor(risk.status)}>{risk.status}</Badge>,
-                            'select',
-                            ['Sent for Assessment', 'In Progress', 'Pending Approval', 'Completed', 'Closed']
-                          )}
+                          <div className="space-y-1">
+                            {renderEditableCell(
+                              risk.id,
+                              'status',
+                              risk.status,
+                              <Badge className={getStatusColor(risk.status)}>{risk.status}</Badge>,
+                              'select',
+                              ['Sent for Assessment', 'In Progress', 'Pending Approval', 'Completed', 'Closed']
+                            )}
+                            {level1Agg && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 text-[10px] bg-muted/50 px-1.5 py-0.5 rounded mt-1 flex-wrap">
+                                      {level1Agg.statusBreakdown.completed > 0 && (
+                                        <span className="text-green-600">{level1Agg.statusBreakdown.completed} ✓</span>
+                                      )}
+                                      {level1Agg.statusBreakdown.inProgress > 0 && (
+                                        <span className="text-amber-600">{level1Agg.statusBreakdown.inProgress} ◐</span>
+                                      )}
+                                      {level1Agg.statusBreakdown.overdue > 0 && (
+                                        <span className="text-red-600">{level1Agg.statusBreakdown.overdue} !</span>
+                                      )}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <div className="text-xs space-y-1">
+                                      <p className="font-medium">Status Summary ({level1Agg.childCount} risks)</p>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        <span>Completed: {level1Agg.statusBreakdown.completed}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                                        <span>In Progress: {level1Agg.statusBreakdown.inProgress}</span>
+                                      </div>
+                                      <div className="flex items-center gap-2">
+                                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                        <span>Overdue: {level1Agg.statusBreakdown.overdue}</span>
+                                      </div>
+                                      {level1Agg.statusBreakdown.pendingApproval > 0 && (
+                                        <div className="flex items-center gap-2">
+                                          <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                                          <span>Pending Approval: {level1Agg.statusBreakdown.pendingApproval}</span>
+                                        </div>
+                                      )}
+                                      {level1Agg.statusBreakdown.other > 0 && (
+                                        <div className="flex items-center gap-2">
+                                          <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                                          <span>Other: {level1Agg.statusBreakdown.other}</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </div>
                         </TableCell>
                       </TableRow>
                       );
