@@ -1593,10 +1593,10 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Residual Risk</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Related Controls</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Residual Risk</TableHead>
                       <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -1810,26 +1810,29 @@ const Dashboard1stLine = () => {
                         )}
                         {/* Assessors */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-center gap-1">
-                            <div className="flex -space-x-2">
-                              {risk.assessors.slice(0, 2).map((assessor, idx) => (
+                          <div className="flex flex-col gap-1">
+                            {risk.assessors.slice(0, 2).map((assessor, idx) => {
+                              const initials = assessor.split(' ').map(n => n[0]).join('');
+                              return (
                                 <TooltipProvider key={idx}>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
-                                      <div className="relative">
-                                        <div className={`w-7 h-7 rounded-full border-2 border-background flex items-center justify-center text-xs font-medium text-white ${
-                                          idx === 0 ? 'bg-first-line' : 'bg-emerald-500'
-                                        }`}>
-                                          {assessor.split(' ').map(n => n[0]).join('')}
+                                      <div className="flex items-center gap-2">
+                                        <div className="relative">
+                                          <div className={`w-6 h-6 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-medium text-white ${
+                                            idx === 0 ? 'bg-first-line' : 'bg-emerald-500'
+                                          }`}>
+                                            {initials}
+                                          </div>
+                                          {risk.currentEditor === assessor && (
+                                            <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-background" />
+                                          )}
                                         </div>
-                                        {risk.currentEditor === assessor && (
-                                          <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-background" />
-                                        )}
+                                        <span className="text-sm">{assessor} ({initials})</span>
                                       </div>
                                     </TooltipTrigger>
                                     <TooltipContent>
                                       <div className="text-sm">
-                                        <p className="font-medium">{assessor}</p>
                                         <p className="text-xs text-muted-foreground">{assessorEmails[assessor]}</p>
                                         {risk.currentEditor === assessor && (
                                           <p className="text-xs text-green-500 mt-1">Currently editing</p>
@@ -1838,10 +1841,10 @@ const Dashboard1stLine = () => {
                                     </TooltipContent>
                                   </Tooltip>
                                 </TooltipProvider>
-                              ))}
-                            </div>
+                              );
+                            })}
                             {risk.assessors.length > 2 && (
-                              <span className="text-xs text-muted-foreground">+{risk.assessors.length - 2}</span>
+                              <span className="text-xs text-muted-foreground">+{risk.assessors.length - 2} more</span>
                             )}
                           </div>
                         </TableCell>
@@ -1906,44 +1909,6 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
-                        {/* Related Controls - now showing multiple */}
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <div className="text-xs space-y-1 max-h-20 overflow-y-auto">
-                            {risk.relatedControls.slice(0, 2).map((control, idx) => (
-                              <div key={idx} className={idx > 0 ? "pt-1 border-t border-border/50" : ""}>
-                                <div className="font-medium text-first-line">{control.id}</div>
-                                <div className="text-muted-foreground truncate max-w-[150px]">{control.name}</div>
-                                <div className="flex gap-1 mt-0.5">
-                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.type}</Badge>
-                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.nature}</Badge>
-                                </div>
-                              </div>
-                            ))}
-                            {risk.relatedControls.length > 2 && (
-                              <div className="text-muted-foreground text-[10px]">+{risk.relatedControls.length - 2} more</div>
-                            )}
-                          </div>
-                        </TableCell>
-                        {/* Control Effectiveness */}
-                        <TableCell className="py-2 border-r border-b border-border">
-                          {renderEditableCell(
-                            risk.id,
-                            'controlEffectiveness',
-                            risk.controlEffectiveness.label,
-                            getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color),
-                            'select',
-                            ['Effective', 'Partially Effective', 'Ineffective', 'Not Assessed']
-                          )}
-                        </TableCell>
-                        {/* Test Results */}
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <div className="space-y-1">
-                            <Badge className="bg-green-500 text-white text-xs">{risk.testResults.label}</Badge>
-                            {risk.testResults.sublabel && (
-                              <div className="text-xs text-muted-foreground">{risk.testResults.sublabel}</div>
-                            )}
-                          </div>
-                        </TableCell>
                         {/* Residual Risk - enhanced with score + rating + trend + aggregation */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex flex-col gap-1">
@@ -1984,6 +1949,44 @@ const Dashboard1stLine = () => {
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
+                            )}
+                          </div>
+                        </TableCell>
+                        {/* Related Controls - now showing multiple */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="text-xs space-y-1 max-h-20 overflow-y-auto">
+                            {risk.relatedControls.slice(0, 2).map((control, idx) => (
+                              <div key={idx} className={idx > 0 ? "pt-1 border-t border-border/50" : ""}>
+                                <div className="font-medium text-first-line">{control.id}</div>
+                                <div className="text-muted-foreground truncate max-w-[150px]">{control.name}</div>
+                                <div className="flex gap-1 mt-0.5">
+                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.type}</Badge>
+                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.nature}</Badge>
+                                </div>
+                              </div>
+                            ))}
+                            {risk.relatedControls.length > 2 && (
+                              <div className="text-muted-foreground text-[10px]">+{risk.relatedControls.length - 2} more</div>
+                            )}
+                          </div>
+                        </TableCell>
+                        {/* Control Effectiveness */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          {renderEditableCell(
+                            risk.id,
+                            'controlEffectiveness',
+                            risk.controlEffectiveness.label,
+                            getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color),
+                            'select',
+                            ['Effective', 'Partially Effective', 'Ineffective', 'Not Assessed']
+                          )}
+                        </TableCell>
+                        {/* Test Results */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="space-y-1">
+                            <Badge className="bg-green-500 text-white text-xs">{risk.testResults.label}</Badge>
+                            {risk.testResults.sublabel && (
+                              <div className="text-xs text-muted-foreground">{risk.testResults.sublabel}</div>
                             )}
                           </div>
                         </TableCell>
