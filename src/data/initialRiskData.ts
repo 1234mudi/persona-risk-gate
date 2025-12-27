@@ -1,6 +1,19 @@
 // Shared initial risk data for both 1st Line and 2nd Line dashboards
 // Each dashboard should deep-copy this data to maintain independence
 
+export interface ControlAssessed {
+  id: string;
+  name: string;
+  designEffectiveness: string;
+  operatingEffectiveness: string;
+  overallScore: number;
+}
+
+export interface TrendRationale {
+  inherent?: string;
+  residual?: string;
+}
+
 export interface HistoricalAssessment {
   date: string;
   assessor: string;
@@ -9,6 +22,8 @@ export interface HistoricalAssessment {
   controlEffectiveness: string;
   status: string;
   notes?: string;
+  controlsAssessed?: ControlAssessed[];
+  trendRationale?: TrendRationale;
 }
 
 export interface ControlRecord {
@@ -99,11 +114,83 @@ export const initialRiskData: SharedRiskData[] = [
     previousAssessments: 5,
     tabCategory: "assess",
     historicalAssessments: [
-      { date: "2025-10-20", assessor: "Sarah Johnson", inherentRisk: { level: "Medium", score: 8 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Design Effective", status: "Completed", notes: "Annual review completed. Controls operating as expected." },
-      { date: "2025-07-15", assessor: "David Kim", inherentRisk: { level: "Medium", score: 9 }, residualRisk: { level: "Medium", score: 5 }, controlEffectiveness: "Partially Effective", status: "Completed", notes: "Control gaps identified in documentation process." },
-      { date: "2025-04-10", assessor: "Sarah Johnson", inherentRisk: { level: "High", score: 11 }, residualRisk: { level: "Medium", score: 6 }, controlEffectiveness: "Partially Effective", status: "Completed" },
-      { date: "2025-01-20", assessor: "David Kim", inherentRisk: { level: "High", score: 12 }, residualRisk: { level: "Medium", score: 7 }, controlEffectiveness: "Ineffective", status: "Completed" },
-      { date: "2024-10-18", assessor: "Sarah Johnson", inherentRisk: { level: "High", score: 13 }, residualRisk: { level: "High", score: 9 }, controlEffectiveness: "Ineffective", status: "Completed" }
+      { 
+        date: "2025-10-20", 
+        assessor: "Sarah Johnson", 
+        inherentRisk: { level: "Medium", score: 8 }, 
+        residualRisk: { level: "Low", score: 4 }, 
+        controlEffectiveness: "Design Effective", 
+        status: "Completed", 
+        notes: "Annual review completed. Controls operating as expected.",
+        controlsAssessed: [
+          { id: "Control-003", name: "Quality Assurance", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-004", name: "Process Documentation", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 },
+          { id: "Control-005", name: "Staff Training Program", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 11% due to improved process standardization and reduced manual intervention points.",
+          residual: "Residual risk decreased by 20% as quality assurance controls were enhanced and staff training completed."
+        }
+      },
+      { 
+        date: "2025-07-15", 
+        assessor: "David Kim", 
+        inherentRisk: { level: "Medium", score: 9 }, 
+        residualRisk: { level: "Medium", score: 5 }, 
+        controlEffectiveness: "Partially Effective", 
+        status: "Completed", 
+        notes: "Control gaps identified in documentation process.",
+        controlsAssessed: [
+          { id: "Control-003", name: "Quality Assurance", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 },
+          { id: "Control-004", name: "Process Documentation", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 18% following process improvements implemented in Q2.",
+          residual: "Residual risk decreased by 17% despite control gaps, due to compensating manual reviews."
+        }
+      },
+      { 
+        date: "2025-04-10", 
+        assessor: "Sarah Johnson", 
+        inherentRisk: { level: "High", score: 11 }, 
+        residualRisk: { level: "Medium", score: 6 }, 
+        controlEffectiveness: "Partially Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-003", name: "Quality Assurance", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 },
+          { id: "Control-004", name: "Process Documentation", designEffectiveness: "Partially Effective", operatingEffectiveness: "Ineffective", overallScore: 2 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 8% as legacy systems were upgraded.",
+          residual: "Residual risk decreased by 14% with implementation of new quality checks."
+        }
+      },
+      { 
+        date: "2025-01-20", 
+        assessor: "David Kim", 
+        inherentRisk: { level: "High", score: 12 }, 
+        residualRisk: { level: "Medium", score: 7 }, 
+        controlEffectiveness: "Ineffective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-003", name: "Quality Assurance", designEffectiveness: "Ineffective", operatingEffectiveness: "Ineffective", overallScore: 1 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 8% due to reduced transaction volumes.",
+          residual: "Residual risk decreased by 22% despite ineffective controls, due to temporary manual oversight."
+        }
+      },
+      { 
+        date: "2024-10-18", 
+        assessor: "Sarah Johnson", 
+        inherentRisk: { level: "High", score: 13 }, 
+        residualRisk: { level: "High", score: 9 }, 
+        controlEffectiveness: "Ineffective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-003", name: "Quality Assurance", designEffectiveness: "Ineffective", operatingEffectiveness: "Ineffective", overallScore: 1 }
+        ]
+      }
     ]
   },
   {
@@ -143,9 +230,49 @@ export const initialRiskData: SharedRiskData[] = [
     previousAssessments: 6,
     tabCategory: "assess",
     historicalAssessments: [
-      { date: "2025-10-18", assessor: "Emily White", inherentRisk: { level: "High", score: 12 }, residualRisk: { level: "Medium", score: 6 }, controlEffectiveness: "Operating Effective", status: "Completed" },
-      { date: "2025-07-12", assessor: "Emily White", inherentRisk: { level: "High", score: 13 }, residualRisk: { level: "Medium", score: 7 }, controlEffectiveness: "Operating Effective", status: "Completed" },
-      { date: "2025-04-08", assessor: "Emily White", inherentRisk: { level: "High", score: 14 }, residualRisk: { level: "High", score: 8 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+      { 
+        date: "2025-10-18", 
+        assessor: "Emily White", 
+        inherentRisk: { level: "High", score: 12 }, 
+        residualRisk: { level: "Medium", score: 6 }, 
+        controlEffectiveness: "Operating Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-009", name: "Branch Audits", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-010", name: "Transaction Reconciliation", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 8% due to improved branch procedures and reduced error rates.",
+          residual: "Residual risk decreased by 14% as automated reconciliation caught more discrepancies."
+        }
+      },
+      { 
+        date: "2025-07-12", 
+        assessor: "Emily White", 
+        inherentRisk: { level: "High", score: 13 }, 
+        residualRisk: { level: "Medium", score: 7 }, 
+        controlEffectiveness: "Operating Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-009", name: "Branch Audits", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 },
+          { id: "Control-010", name: "Transaction Reconciliation", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 7% following staff training initiatives.",
+          residual: "Residual risk decreased by 12% with enhanced monitoring procedures."
+        }
+      },
+      { 
+        date: "2025-04-08", 
+        assessor: "Emily White", 
+        inherentRisk: { level: "High", score: 14 }, 
+        residualRisk: { level: "High", score: 8 }, 
+        controlEffectiveness: "Partially Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-009", name: "Branch Audits", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 }
+        ]
+      }
     ]
   },
   {
@@ -187,9 +314,50 @@ export const initialRiskData: SharedRiskData[] = [
     previousAssessments: 8,
     tabCategory: "assess",
     historicalAssessments: [
-      { date: "2025-10-15", assessor: "James Brown", inherentRisk: { level: "Medium", score: 7 }, residualRisk: { level: "Low", score: 3 }, controlEffectiveness: "Design Effective", status: "Completed" },
-      { date: "2025-07-10", assessor: "Lisa Martinez", inherentRisk: { level: "Medium", score: 8 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Design Effective", status: "Completed" },
-      { date: "2025-04-05", assessor: "Tom Wilson", inherentRisk: { level: "High", score: 10 }, residualRisk: { level: "Medium", score: 5 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+      { 
+        date: "2025-10-15", 
+        assessor: "James Brown", 
+        inherentRisk: { level: "Medium", score: 7 }, 
+        residualRisk: { level: "Low", score: 3 }, 
+        controlEffectiveness: "Design Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-012", name: "Dual Authorization", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-013", name: "Cash Count Verification", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-014", name: "Vault Access Controls", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 12% due to enhanced dual-authorization procedures.",
+          residual: "Residual risk decreased by 25% as all cash handling controls are now fully effective."
+        }
+      },
+      { 
+        date: "2025-07-10", 
+        assessor: "Lisa Martinez", 
+        inherentRisk: { level: "Medium", score: 8 }, 
+        residualRisk: { level: "Low", score: 4 }, 
+        controlEffectiveness: "Design Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-012", name: "Dual Authorization", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-013", name: "Cash Count Verification", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 20% following implementation of automated alerts.",
+          residual: "Residual risk decreased by 20% with improved verification processes."
+        }
+      },
+      { 
+        date: "2025-04-05", 
+        assessor: "Tom Wilson", 
+        inherentRisk: { level: "High", score: 10 }, 
+        residualRisk: { level: "Medium", score: 5 }, 
+        controlEffectiveness: "Partially Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-012", name: "Dual Authorization", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 }
+        ]
+      }
     ]
   },
   {
@@ -230,9 +398,50 @@ export const initialRiskData: SharedRiskData[] = [
     previousAssessments: 12,
     tabCategory: "approve",
     historicalAssessments: [
-      { date: "2025-10-22", assessor: "Alex Turner", inherentRisk: { level: "Critical", score: 16 }, residualRisk: { level: "High", score: 12 }, controlEffectiveness: "Operating Effective", status: "Completed" },
-      { date: "2025-07-18", assessor: "Maria Garcia", inherentRisk: { level: "Critical", score: 15 }, residualRisk: { level: "High", score: 11 }, controlEffectiveness: "Operating Effective", status: "Completed" },
-      { date: "2025-04-12", assessor: "Alex Turner", inherentRisk: { level: "High", score: 14 }, residualRisk: { level: "High", score: 10 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+      { 
+        date: "2025-10-22", 
+        assessor: "Alex Turner", 
+        inherentRisk: { level: "Critical", score: 16 }, 
+        residualRisk: { level: "High", score: 12 }, 
+        controlEffectiveness: "Operating Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-015", name: "Firewall & IDS", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-016", name: "Security Monitoring", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-017", name: "Penetration Testing", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk increased by 7% due to emerging threat landscape and new attack vectors identified.",
+          residual: "Residual risk increased by 9% as threat sophistication outpaces current control enhancements."
+        }
+      },
+      { 
+        date: "2025-07-18", 
+        assessor: "Maria Garcia", 
+        inherentRisk: { level: "Critical", score: 15 }, 
+        residualRisk: { level: "High", score: 11 }, 
+        controlEffectiveness: "Operating Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-015", name: "Firewall & IDS", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-016", name: "Security Monitoring", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk increased by 7% due to increased frequency of attempted breaches.",
+          residual: "Residual risk increased by 10% despite control improvements due to evolving threats."
+        }
+      },
+      { 
+        date: "2025-04-12", 
+        assessor: "Alex Turner", 
+        inherentRisk: { level: "High", score: 14 }, 
+        residualRisk: { level: "High", score: 10 }, 
+        controlEffectiveness: "Partially Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-015", name: "Firewall & IDS", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 }
+        ]
+      }
     ]
   },
   {
@@ -273,8 +482,33 @@ export const initialRiskData: SharedRiskData[] = [
     previousAssessments: 9,
     tabCategory: "approve",
     historicalAssessments: [
-      { date: "2025-10-21", assessor: "Nina Patel", inherentRisk: { level: "High", score: 14 }, residualRisk: { level: "Medium", score: 8 }, controlEffectiveness: "Design Effective", status: "Completed" },
-      { date: "2025-07-16", assessor: "Robert Chen", inherentRisk: { level: "High", score: 13 }, residualRisk: { level: "Medium", score: 7 }, controlEffectiveness: "Design Effective", status: "Completed" }
+      { 
+        date: "2025-10-21", 
+        assessor: "Nina Patel", 
+        inherentRisk: { level: "High", score: 14 }, 
+        residualRisk: { level: "Medium", score: 8 }, 
+        controlEffectiveness: "Design Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-018", name: "Email Filtering", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-019", name: "Phishing Awareness Training", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk increased by 8% due to more sophisticated phishing campaigns targeting employees.",
+          residual: "Residual risk increased by 14% as staff click-through rates on simulated phishing increased."
+        }
+      },
+      { 
+        date: "2025-07-16", 
+        assessor: "Robert Chen", 
+        inherentRisk: { level: "High", score: 13 }, 
+        residualRisk: { level: "Medium", score: 7 }, 
+        controlEffectiveness: "Design Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-018", name: "Email Filtering", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 }
+        ]
+      }
     ]
   },
   {
@@ -315,9 +549,51 @@ export const initialRiskData: SharedRiskData[] = [
     previousAssessments: 15,
     tabCategory: "own",
     historicalAssessments: [
-      { date: "2025-10-19", assessor: "Kevin Lee", inherentRisk: { level: "High", score: 12 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Design Effective", status: "Completed", notes: "All compliance requirements met for Q4." },
-      { date: "2025-07-14", assessor: "Kevin Lee", inherentRisk: { level: "High", score: 13 }, residualRisk: { level: "Low", score: 5 }, controlEffectiveness: "Design Effective", status: "Completed" },
-      { date: "2025-04-09", assessor: "Kevin Lee", inherentRisk: { level: "High", score: 14 }, residualRisk: { level: "Medium", score: 6 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+      { 
+        date: "2025-10-19", 
+        assessor: "Kevin Lee", 
+        inherentRisk: { level: "High", score: 12 }, 
+        residualRisk: { level: "Low", score: 4 }, 
+        controlEffectiveness: "Design Effective", 
+        status: "Completed", 
+        notes: "All compliance requirements met for Q4.",
+        controlsAssessed: [
+          { id: "Control-020", name: "Policy Framework", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-021", name: "Regulatory Monitoring", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-022", name: "Compliance Training", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 8% due to clarification of regulatory requirements and reduced compliance burden.",
+          residual: "Residual risk decreased by 20% as all compliance controls are now fully effective."
+        }
+      },
+      { 
+        date: "2025-07-14", 
+        assessor: "Kevin Lee", 
+        inherentRisk: { level: "High", score: 13 }, 
+        residualRisk: { level: "Low", score: 5 }, 
+        controlEffectiveness: "Design Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-020", name: "Policy Framework", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5 },
+          { id: "Control-021", name: "Regulatory Monitoring", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4 }
+        ],
+        trendRationale: {
+          inherent: "Inherent risk decreased by 7% following regulatory guidance updates.",
+          residual: "Residual risk decreased by 17% with enhanced monitoring procedures."
+        }
+      },
+      { 
+        date: "2025-04-09", 
+        assessor: "Kevin Lee", 
+        inherentRisk: { level: "High", score: 14 }, 
+        residualRisk: { level: "Medium", score: 6 }, 
+        controlEffectiveness: "Partially Effective", 
+        status: "Completed",
+        controlsAssessed: [
+          { id: "Control-020", name: "Policy Framework", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 }
+        ]
+      }
     ]
   },
   {
