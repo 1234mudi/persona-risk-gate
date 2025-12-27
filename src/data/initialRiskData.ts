@@ -37,6 +37,7 @@ export interface SharedRiskData {
   residualTrend: { value: string; up: boolean };
   status: string;
   lastAssessed: string;
+  completionDate?: string;
   previousAssessments: number;
   tabCategory: "own" | "assess" | "approve";
 }
@@ -244,6 +245,7 @@ export const initialRiskData: SharedRiskData[] = [
     residualTrend: { value: "6%", up: false },
     status: "Completed",
     lastAssessed: "2025-10-19",
+    completionDate: "2025-10-19",
     previousAssessments: 15,
     tabCategory: "own",
   },
@@ -279,6 +281,7 @@ export const initialRiskData: SharedRiskData[] = [
     residualTrend: { value: "19%", up: true },
     status: "Completed",
     lastAssessed: "2025-09-28",
+    completionDate: "2025-09-28",
     previousAssessments: 11,
     tabCategory: "own",
   },
@@ -379,6 +382,7 @@ export const initialRiskData: SharedRiskData[] = [
     residualTrend: { value: "11%", up: false },
     status: "Completed",
     lastAssessed: "2025-10-23",
+    completionDate: "2025-10-23",
     previousAssessments: 10,
     tabCategory: "own",
   },

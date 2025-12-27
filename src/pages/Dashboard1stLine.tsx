@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -84,6 +84,7 @@ interface RiskData {
   residualTrend: { value: string; up: boolean };
   status: string;
   lastAssessed: string;
+  completionDate?: string;
   previousAssessments: number;
   tabCategory: "own" | "assess" | "approve";
 }
@@ -1495,7 +1496,10 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
+                      <TableHead className="min-w-[160px] py-2 border-r border-b border-border">Status</TableHead>
+                      {activeTab === "own" && (
+                        <TableHead className="min-w-[140px] py-2 border-b border-border">Completion Date</TableHead>
+                      )}
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1772,7 +1776,7 @@ const Dashboard1stLine = () => {
                             </span>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2 border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border">
                           {renderEditableCell(
                             risk.id,
                             'status',
@@ -1782,6 +1786,18 @@ const Dashboard1stLine = () => {
                             ['Sent for Assessment', 'In Progress', 'Pending Approval', 'Completed', 'Closed']
                           )}
                         </TableCell>
+                        {activeTab === "own" && (
+                          <TableCell className="py-2 border-b border-border">
+                            {risk.completionDate ? (
+                              <div className="flex items-center gap-2">
+                                <CalendarCheck className="w-4 h-4 text-emerald-500" />
+                                <span className="text-sm">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
+                          </TableCell>
+                        )}
                       </TableRow>
                       );
                     })}
