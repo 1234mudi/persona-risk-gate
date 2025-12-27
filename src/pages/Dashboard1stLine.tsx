@@ -116,6 +116,7 @@ const Dashboard1stLine = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const [riskIdFilter, setRiskIdFilter] = useState<string>("all");
   const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
   
   // Historical assessments modal state
@@ -229,6 +230,17 @@ const Dashboard1stLine = () => {
     return data.filter(risk => risk.tabCategory === tab);
   };
 
+  // Unique Risk IDs for filter dropdown
+  const uniqueRiskIds = useMemo(() => {
+    const tabRisks = getFilteredByTab(riskData, activeTab);
+    return [...new Set(tabRisks.map(r => r.id))].sort();
+  }, [riskData, activeTab]);
+
+  // Total count for current tab (before filtering)
+  const totalTabRisks = useMemo(() => {
+    return riskData.filter(r => r.tabCategory === activeTab).length;
+  }, [riskData, activeTab]);
+
   const visibleRisks = useMemo(() => {
     let filtered = getFilteredByTab(riskData, activeTab);
     
@@ -238,6 +250,11 @@ const Dashboard1stLine = () => {
       filtered = filtered.filter(risk => 
         risk.title.toLowerCase().includes(query)
       );
+    }
+
+    // Apply risk ID filter
+    if (riskIdFilter !== "all") {
+      filtered = filtered.filter(risk => risk.id === riskIdFilter);
     }
     
     // Apply risk level filter
@@ -344,7 +361,7 @@ const Dashboard1stLine = () => {
       }
       return visible;
     }
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, hierarchyViewMode, expandedRows]);
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -1498,6 +1515,27 @@ const Dashboard1stLine = () => {
                 <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
 
+              {/* Risk ID Filter */}
+              <Select value={riskIdFilter} onValueChange={setRiskIdFilter}>
+                <SelectTrigger className="w-56 h-8">
+                  <SelectValue placeholder="Risk ID" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
+                  <SelectItem value="all">All Risk IDs</SelectItem>
+                  {uniqueRiskIds.map((id) => {
+                    const risk = riskData.find(r => r.id === id);
+                    const truncatedTitle = risk?.title && risk.title.length > 25 
+                      ? risk.title.substring(0, 25) + "..." 
+                      : risk?.title || "";
+                    return (
+                      <SelectItem key={id} value={id}>
+                        {id} - {truncatedTitle}
+                      </SelectItem>
+                    );
+                  })}
+                </SelectContent>
+              </Select>
+
               {/* Risk Level Filter */}
               <Select value={riskLevelFilter} onValueChange={setRiskLevelFilter}>
                 <SelectTrigger className="w-32 h-8">
@@ -1542,6 +1580,13 @@ const Dashboard1stLine = () => {
                   </SelectContent>
                 </Select>
               )}
+            </div>
+
+            {/* Row Count Display */}
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-sm text-muted-foreground">
+                Showing {visibleRisks.length} of {totalTabRisks} risk(s)
+              </span>
             </div>
 
             {/* Bulk Action Toolbar */}
@@ -1606,9 +1651,7 @@ const Dashboard1stLine = () => {
                         </TableHead>
                       )}
                       <TableHead className="w-16 min-w-[64px] py-2 border-r border-b border-border text-xs text-center">Edit</TableHead>
-                      <TableHead className="min-w-[280px] py-2 border-r border-b border-border">
-                        {activeTab === "own" ? "Risk ID / Title" : "Risk Title"}
-                      </TableHead>
+                      <TableHead className="min-w-[280px] py-2 border-r border-b border-border">Risk ID / Title</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1649,14 +1692,11 @@ const Dashboard1stLine = () => {
                         <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Completion Date</TableHead>
                       )}
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
-                      {activeTab !== "own" && (
-                        <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
-                      )}
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Related Controls</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Related Controls</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
                       <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
@@ -1773,10 +1813,8 @@ const Dashboard1stLine = () => {
                             )}
                             
                             <div className="flex flex-col gap-1">
-                              {/* Risk ID - only show in combined column for "own" tab */}
-                              {activeTab === "own" && (
-                                <span className="font-mono text-xs text-first-line">{risk.id}</span>
-                              )}
+                              {/* Risk ID - show for all tabs now */}
+                              <span className="font-mono text-xs text-first-line">{risk.id}</span>
                               {/* Risk Title */}
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -1896,12 +1934,6 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
-                        {/* Risk ID - only for non-own tabs */}
-                        {activeTab !== "own" && (
-                          <TableCell className="font-medium py-2 border-r border-b border-border">
-                            <span className="font-mono text-sm font-medium text-first-line">{risk.id}</span>
-                          </TableCell>
-                        )}
                         {/* Assessors */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex flex-col gap-1">
@@ -2046,21 +2078,37 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
-                        {/* Related Controls - now showing multiple */}
+                        {/* Related Controls - tabular layout */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="text-xs space-y-1 max-h-24 overflow-y-auto">
-                            {risk.relatedControls.slice(0, 2).map((control, idx) => (
-                              <div key={idx} className={idx > 0 ? "pt-1 border-t border-border/50" : ""}>
-                                <div className="font-medium text-first-line">{control.id}</div>
-                                <div className="text-muted-foreground truncate max-w-[150px]">{control.name}</div>
-                                <div className="flex gap-1 mt-0.5">
-                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.type}</Badge>
-                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.nature}</Badge>
-                                </div>
+                          <div className="text-xs max-h-32 overflow-y-auto">
+                            {risk.relatedControls.length > 0 ? (
+                              <table className="w-full text-left border-collapse">
+                                <thead>
+                                  <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                                    <th className="pb-1 pr-2 font-medium">ID</th>
+                                    <th className="pb-1 pr-2 font-medium">Name</th>
+                                    <th className="pb-1 pr-2 font-medium">Type</th>
+                                    <th className="pb-1 font-medium">Nature</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {risk.relatedControls.slice(0, 3).map((control, idx) => (
+                                    <tr key={idx} className="border-b border-border/30 last:border-0">
+                                      <td className="py-1 pr-2 font-medium text-first-line whitespace-nowrap">{control.id}</td>
+                                      <td className="py-1 pr-2 text-muted-foreground truncate max-w-[100px]" title={control.name}>{control.name}</td>
+                                      <td className="py-1 pr-2 whitespace-nowrap">{control.type}</td>
+                                      <td className="py-1 whitespace-nowrap">{control.nature}</td>
+                                    </tr>
+                                  ))}
+                                </tbody>
+                              </table>
+                            ) : (
+                              <span className="text-muted-foreground">No controls</span>
+                            )}
+                            {risk.relatedControls.length > 3 && (
+                              <div className="text-muted-foreground text-[10px] pt-1">
+                                +{risk.relatedControls.length - 3} more
                               </div>
-                            ))}
-                            {risk.relatedControls.length > 2 && (
-                              <div className="text-muted-foreground text-[10px]">+{risk.relatedControls.length - 2} more</div>
                             )}
                             {level1Agg && (
                               <TooltipProvider>
