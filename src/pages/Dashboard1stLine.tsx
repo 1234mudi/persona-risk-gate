@@ -344,7 +344,7 @@ const Dashboard1stLine = () => {
       }
       return visible;
     }
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter, searchQuery, hierarchyViewMode, expandedRows]);
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, hierarchyViewMode, expandedRows]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
