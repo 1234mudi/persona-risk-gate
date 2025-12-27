@@ -75,12 +75,12 @@ interface RiskData {
     residualRating: number;
     riskTreatment: number;
   };
-  inherentRisk: { level: string; color: string };
+  inherentRisk: { level: string; color: string; score?: number };
   inherentTrend: { value: string; up: boolean };
   relatedControls: { id: string; name: string; type: string; nature: string };
   controlEffectiveness: { label: string; color: string };
   testResults: { label: string; sublabel: string };
-  residualRisk: { level: string; color: string };
+  residualRisk: { level: string; color: string; score?: number };
   residualTrend: { value: string; up: boolean };
   status: string;
   lastAssessed: string;
@@ -915,6 +915,44 @@ const Dashboard1stLine = () => {
     return filteredRiskData.filter(r => r.riskLevel === "Level 3");
   };
 
+  // Calculate aggregated risk for Level 1 parents based on children
+  const calculateAggregatedRisk = (parentRisk: RiskData, type: 'inherent' | 'residual') => {
+    if (parentRisk.riskLevel !== "Level 1") return null;
+    
+    // Find all child risks (Level 2 that belong to this parent)
+    const childRisks = riskData.filter(r => 
+      r.riskLevel === "Level 2" && r.parentRisk === parentRisk.title
+    );
+    
+    if (childRisks.length === 0) return null;
+    
+    // Get scores from children
+    const scores = childRisks.map(r => {
+      const risk = type === 'inherent' ? r.inherentRisk : r.residualRisk;
+      return risk.score || 0;
+    }).filter(s => s > 0);
+    
+    if (scores.length === 0) return null;
+    
+    // Calculate average score
+    const avgScore = Math.round(scores.reduce((a, b) => a + b, 0) / scores.length);
+    const maxScore = Math.max(...scores);
+    
+    return {
+      avgScore,
+      maxScore,
+      childCount: childRisks.length
+    };
+  };
+
+  // Get risk level label based on score
+  const getRiskLevelFromScore = (score: number): { level: string; color: string } => {
+    if (score >= 15) return { level: 'Critical', color: 'red' };
+    if (score >= 10) return { level: 'High', color: 'red' };
+    if (score >= 5) return { level: 'Medium', color: 'yellow' };
+    return { level: 'Low', color: 'green' };
+  };
+
   const getRiskLevelColor = (level: string) => {
     switch(level) {
       case "Level 1": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400";
@@ -1453,11 +1491,6 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[280px] py-2 border-r border-b border-border">
                         {activeTab === "own" ? "Risk ID / Title" : "Risk Title"}
                       </TableHead>
-                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
-                      {activeTab !== "own" && (
-                        <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
-                      )}
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
@@ -1493,17 +1526,22 @@ const Dashboard1stLine = () => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableHead>
+                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
+                      {activeTab === "own" && (
+                        <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Completion Date</TableHead>
+                      )}
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
+                      {activeTab !== "own" && (
+                        <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
+                      )}
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
-                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Related Controls</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
-                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[160px] py-2 border-r border-b border-border">Status</TableHead>
-                      {activeTab === "own" && (
-                        <TableHead className="min-w-[140px] py-2 border-b border-border">Completion Date</TableHead>
-                      )}
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Residual Risk</TableHead>
+                      <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1512,6 +1550,8 @@ const Dashboard1stLine = () => {
                       const isLevel3 = risk.riskLevel === "Level 3";
                       const isExpanded = expandedRows.has(risk.id);
                       const canExpand = hasChildren(risk);
+                      const inherentAgg = calculateAggregatedRisk(risk, 'inherent');
+                      const residualAgg = calculateAggregatedRisk(risk, 'residual');
                       
                       return (
                       <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
@@ -1636,6 +1676,13 @@ const Dashboard1stLine = () => {
                             </div>
                           </div>
                         </TableCell>
+                        {/* Risk Hierarchy - moved next to Risk Title */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
+                            {risk.riskLevel}
+                          </Badge>
+                        </TableCell>
+                        {/* Due Date */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className={`text-sm font-medium ${
                             new Date(risk.dueDate) < new Date() 
@@ -1648,6 +1695,20 @@ const Dashboard1stLine = () => {
                             <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
                           )}
                         </TableCell>
+                        {/* Completion Date - moved next to Due Date, only for "own" tab */}
+                        {activeTab === "own" && (
+                          <TableCell className="py-2 border-r border-b border-border">
+                            {risk.completionDate ? (
+                              <div className="flex items-center gap-2">
+                                <CalendarCheck className="w-4 h-4 text-emerald-500" />
+                                <span className="text-sm">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
+                              </div>
+                            ) : (
+                              <span className="text-muted-foreground text-sm">-</span>
+                            )}
+                          </TableCell>
+                        )}
+                        {/* Assessment Progress */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
                             <div className="flex gap-1">
@@ -1674,16 +1735,13 @@ const Dashboard1stLine = () => {
                             </div>
                           </div>
                         </TableCell>
+                        {/* Risk ID - only for non-own tabs */}
                         {activeTab !== "own" && (
                           <TableCell className="font-medium py-2 border-r border-b border-border">
                             <span className="font-mono text-sm font-medium text-first-line">{risk.id}</span>
                           </TableCell>
                         )}
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
-                            {risk.riskLevel}
-                          </Badge>
-                        </TableCell>
+                        {/* Assessors */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center gap-1">
                             <div className="flex -space-x-2">
@@ -1720,28 +1778,55 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
+                        {/* Last Assessed Date */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="text-sm">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
                           <div className="text-xs text-muted-foreground">{risk.previousAssessments} previous</div>
                         </TableCell>
+                        {/* Inherent Risk - enhanced with score + rating + trend + aggregation */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-center gap-2">
-                            {renderEditableCell(
-                              risk.id,
-                              'inherentRisk',
-                              risk.inherentRisk.level,
-                              <Badge variant="outline" className={`${getRiskBadgeColor(risk.inherentRisk.color)}`}>
-                                {risk.inherentRisk.level}
-                              </Badge>,
-                              'select',
-                              ['Critical', 'High', 'Medium', 'Low']
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              {risk.inherentRisk.score && (
+                                <span className="font-bold text-sm min-w-[20px]">{risk.inherentRisk.score}</span>
+                              )}
+                              {renderEditableCell(
+                                risk.id,
+                                'inherentRisk',
+                                risk.inherentRisk.level,
+                                <Badge variant="outline" className={`${getRiskBadgeColor(risk.inherentRisk.color)}`}>
+                                  {risk.inherentRisk.level}
+                                </Badge>,
+                                'select',
+                                ['Critical', 'High', 'Medium', 'Low']
+                              )}
+                              <span className={`text-xs flex items-center gap-0.5 ${risk.inherentTrend.up ? 'text-red-600' : 'text-green-600'}`}>
+                                {risk.inherentTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                                {risk.inherentTrend.value}
+                              </span>
+                            </div>
+                            {inherentAgg && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
+                                      <span className="font-medium">Σ Avg: {inherentAgg.avgScore}</span>
+                                      <span>|</span>
+                                      <span>Max: {inherentAgg.maxScore}</span>
+                                      <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(inherentAgg.avgScore).color)}`}>
+                                        {getRiskLevelFromScore(inherentAgg.avgScore).level}
+                                      </Badge>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Aggregated from {inherentAgg.childCount} child risk(s)</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             )}
-                            <span className={`text-xs flex items-center gap-0.5 ${risk.inherentTrend.up ? 'text-red-600' : 'text-green-600'}`}>
-                              {risk.inherentTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-                              {risk.inherentTrend.value}
-                            </span>
                           </div>
                         </TableCell>
+                        {/* Related Controls */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="text-xs">
                             <div className="font-medium text-first-line">{risk.relatedControls.id}</div>
@@ -1752,6 +1837,7 @@ const Dashboard1stLine = () => {
                             </div>
                           </div>
                         </TableCell>
+                        {/* Control Effectiveness */}
                         <TableCell className="py-2 border-r border-b border-border">
                           {renderEditableCell(
                             risk.id,
@@ -1762,6 +1848,7 @@ const Dashboard1stLine = () => {
                             ['Effective', 'Partially Effective', 'Ineffective', 'Not Assessed']
                           )}
                         </TableCell>
+                        {/* Test Results */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
                             <Badge className="bg-green-500 text-white text-xs">{risk.testResults.label}</Badge>
@@ -1770,25 +1857,51 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
+                        {/* Residual Risk - enhanced with score + rating + trend + aggregation */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-center gap-2">
-                            {renderEditableCell(
-                              risk.id,
-                              'residualRisk',
-                              risk.residualRisk.level,
-                              <Badge variant="outline" className={`${getRiskBadgeColor(risk.residualRisk.color)}`}>
-                                {risk.residualRisk.level}
-                              </Badge>,
-                              'select',
-                              ['Critical', 'High', 'Medium', 'Low']
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              {risk.residualRisk.score && (
+                                <span className="font-bold text-sm min-w-[20px]">{risk.residualRisk.score}</span>
+                              )}
+                              {renderEditableCell(
+                                risk.id,
+                                'residualRisk',
+                                risk.residualRisk.level,
+                                <Badge variant="outline" className={`${getRiskBadgeColor(risk.residualRisk.color)}`}>
+                                  {risk.residualRisk.level}
+                                </Badge>,
+                                'select',
+                                ['Critical', 'High', 'Medium', 'Low']
+                              )}
+                              <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-red-600' : 'text-green-600'}`}>
+                                {risk.residualTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                                {risk.residualTrend.value}
+                              </span>
+                            </div>
+                            {residualAgg && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
+                                      <span className="font-medium">Σ Avg: {residualAgg.avgScore}</span>
+                                      <span>|</span>
+                                      <span>Max: {residualAgg.maxScore}</span>
+                                      <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(residualAgg.avgScore).color)}`}>
+                                        {getRiskLevelFromScore(residualAgg.avgScore).level}
+                                      </Badge>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Aggregated from {residualAgg.childCount} child risk(s)</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             )}
-                            <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-red-600' : 'text-green-600'}`}>
-                              {risk.residualTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-                              {risk.residualTrend.value}
-                            </span>
                           </div>
                         </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
+                        {/* Status */}
+                        <TableCell className="py-2 border-b border-border">
                           {renderEditableCell(
                             risk.id,
                             'status',
@@ -1798,18 +1911,6 @@ const Dashboard1stLine = () => {
                             ['Sent for Assessment', 'In Progress', 'Pending Approval', 'Completed', 'Closed']
                           )}
                         </TableCell>
-                        {activeTab === "own" && (
-                          <TableCell className="py-2 border-b border-border">
-                            {risk.completionDate ? (
-                              <div className="flex items-center gap-2">
-                                <CalendarCheck className="w-4 h-4 text-emerald-500" />
-                                <span className="text-sm">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
-                              </div>
-                            ) : (
-                              <span className="text-muted-foreground text-sm">-</span>
-                            )}
-                          </TableCell>
-                        )}
                       </TableRow>
                       );
                     })}
