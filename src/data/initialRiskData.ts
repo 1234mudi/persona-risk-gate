@@ -809,6 +809,132 @@ export const initialRiskData: SharedRiskData[] = [
     ]
   },
   {
+    id: "R-006-A",
+    title: "Personal Data Exposure",
+    dueDate: "2025-11-25",
+    riskLevel: "Level 2",
+    parentRisk: "Data Privacy Breach",
+    businessUnit: "Retail Banking",
+    category: "Technology",
+    owner: "Privacy Compliance Lead",
+    assessors: ["Angela Smith", "David Lee"],
+    orgLevel: { level1: "Technology", level2: "Data Protection", level3: "" },
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "in-progress",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 75,
+      residualRating: 50,
+      riskTreatment: 25,
+    },
+    inherentRisk: { level: "High", color: "red", score: 14 },
+    inherentTrend: { value: "18%", up: true },
+    relatedControls: [
+      { id: "Control-050", name: "PII Access Logging", type: "Automated", nature: "Detective" },
+      { id: "Control-051", name: "Data Anonymization", type: "Automated", nature: "Preventive" }
+    ],
+    controlEffectiveness: { label: "Partially Effective", color: "yellow" },
+    testResults: { label: "Design Effective", sublabel: "Operating Partially Effective" },
+    residualRisk: { level: "Medium", color: "yellow", score: 7 },
+    residualTrend: { value: "10%", up: false },
+    status: "In Progress",
+    lastAssessed: "2025-10-20",
+    previousAssessments: 5,
+    tabCategory: "assess",
+    historicalAssessments: [
+      { date: "2025-10-20", assessor: "Angela Smith", inherentRisk: { level: "High", score: 14 }, residualRisk: { level: "Medium", score: 7 }, controlEffectiveness: "Partially Effective", status: "Completed" },
+      { date: "2025-07-15", assessor: "David Lee", inherentRisk: { level: "High", score: 13 }, residualRisk: { level: "Medium", score: 8 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+    ]
+  },
+  {
+    id: "R-006-A-1",
+    title: "Customer PII Leakage",
+    dueDate: "2025-12-01",
+    riskLevel: "Level 3",
+    parentRisk: "Personal Data Exposure",
+    businessUnit: "Retail Banking",
+    category: "Technology",
+    owner: "Customer Data Manager",
+    assessors: ["David Lee", "Jennifer Chen"],
+    currentEditor: "David Lee",
+    orgLevel: { level1: "Technology", level2: "Data Protection", level3: "Customer Data" },
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "completed",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 100,
+      residualRating: 100,
+      riskTreatment: 100,
+    },
+    inherentRisk: { level: "High", color: "red", score: 12 },
+    inherentTrend: { value: "15%", up: false },
+    relatedControls: [
+      { id: "Control-052", name: "Customer Data Encryption", type: "Automated", nature: "Preventive" },
+      { id: "Control-053", name: "Access Control Lists", type: "Automated", nature: "Preventive" },
+      { id: "Control-054", name: "Audit Trail Monitoring", type: "Automated", nature: "Detective" }
+    ],
+    controlEffectiveness: { label: "Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "Low", color: "green", score: 4 },
+    residualTrend: { value: "8%", up: false },
+    status: "Completed",
+    lastAssessed: "2025-10-18",
+    completionDate: "2025-10-18",
+    previousAssessments: 6,
+    tabCategory: "own",
+    historicalAssessments: [
+      { date: "2025-10-18", assessor: "David Lee", inherentRisk: { level: "High", score: 12 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Effective", status: "Completed", notes: "All customer data controls verified and operating effectively." },
+      { date: "2025-07-12", assessor: "Jennifer Chen", inherentRisk: { level: "High", score: 13 }, residualRisk: { level: "Low", score: 5 }, controlEffectiveness: "Effective", status: "Completed" }
+    ]
+  },
+  {
+    id: "R-006-B",
+    title: "Data Retention Violations",
+    dueDate: "2025-11-30",
+    riskLevel: "Level 2",
+    parentRisk: "Data Privacy Breach",
+    businessUnit: "Retail Banking",
+    category: "Technology",
+    owner: "Records Manager",
+    assessors: ["Angela Smith", "Mark Thompson"],
+    orgLevel: { level1: "Technology", level2: "Data Protection", level3: "" },
+    assessmentProgress: {
+      assess: "completed",
+      reviewChallenge: "completed",
+      approve: "in-progress",
+    },
+    sectionCompletion: {
+      inherentRating: 100,
+      controlEffectiveness: 83,
+      residualRating: 67,
+      riskTreatment: 50,
+    },
+    inherentRisk: { level: "Medium", color: "yellow", score: 10 },
+    inherentTrend: { value: "12%", up: false },
+    relatedControls: [
+      { id: "Control-055", name: "Retention Policy Enforcement", type: "Automated", nature: "Preventive" },
+      { id: "Control-056", name: "Data Lifecycle Management", type: "Manual", nature: "Detective" }
+    ],
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Low", color: "green", score: 5 },
+    residualTrend: { value: "6%", up: false },
+    status: "Pending Approval",
+    lastAssessed: "2025-10-22",
+    previousAssessments: 4,
+    tabCategory: "approve",
+    historicalAssessments: [
+      { date: "2025-10-22", assessor: "Angela Smith", inherentRisk: { level: "Medium", score: 10 }, residualRisk: { level: "Low", score: 5 }, controlEffectiveness: "Operating Effective", status: "Completed" },
+      { date: "2025-07-17", assessor: "Mark Thompson", inherentRisk: { level: "Medium", score: 11 }, residualRisk: { level: "Medium", score: 6 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+    ]
+  },
+  {
     id: "R-007",
     title: "Credit Risk Management",
     dueDate: "2025-12-18",
