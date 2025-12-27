@@ -1306,7 +1306,7 @@ const Dashboard1stLine = () => {
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                   } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
                 >
-                  Risks I Own
+                  Completed Assessments
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "own" ? "bg-white/20" : "bg-muted"
                   }`}>
@@ -1351,7 +1351,7 @@ const Dashboard1stLine = () => {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-emerald-800 dark:text-emerald-200">
-                  {activeTab === "own" && "These are risks within your business area that you are responsible for managing day-to-day. Ensure controls are documented and effective."}
+                  {activeTab === "own" && "These assessments have been completed. Review your historical risk assessments and their outcomes."}
                   {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
                   {activeTab === "approve" && "These assessments have been submitted and are awaiting review by the 2nd Line team. Monitor status for any feedback or challenges."}
                 </p>
