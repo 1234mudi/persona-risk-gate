@@ -188,21 +188,21 @@ const Index = () => {
           </div>
 
           {/* Persona Cards Section */}
-          <div className="space-y-4 order-2 lg:order-2">
+          <div className="space-y-5 order-2 lg:order-2">
             <div className="space-y-1">
               <h2 className="text-lg sm:text-xl font-bold text-foreground">Quick Access</h2>
               <p className="text-xs sm:text-sm text-muted-foreground">
-                Click on a persona card below based on your role to access the test environment
+                Select your role to access the test environment
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {/* Column 1 - First Line Roles */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 pb-1 border-b border-first-line/30">
-                  <div className="w-2 h-2 rounded-full bg-first-line"></div>
-                  <h3 className="text-sm font-semibold text-first-line">1st Line</h3>
-                </div>
+            {/* 1st Line Defense Section */}
+            <div className="rounded-xl border border-first-line/20 bg-first-line/5 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-first-line"></div>
+                <h3 className="text-sm font-semibold text-first-line">1st Line Defense</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 {firstColumnPersonas.map((persona, index) => (
                   <PersonaCard
                     key={index}
@@ -214,13 +214,15 @@ const Index = () => {
                   />
                 ))}
               </div>
-              
-              {/* Column 2 - Second Line Roles */}
-              <div className="flex flex-col gap-3">
-                <div className="flex items-center gap-2 pb-1 border-b border-second-line/30">
-                  <div className="w-2 h-2 rounded-full bg-second-line"></div>
-                  <h3 className="text-sm font-semibold text-second-line">2nd Line</h3>
-                </div>
+            </div>
+
+            {/* 2nd Line Defense Section */}
+            <div className="rounded-xl border border-second-line/20 bg-second-line/5 p-4">
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-2.5 h-2.5 rounded-full bg-second-line"></div>
+                <h3 className="text-sm font-semibold text-second-line">2nd Line Defense</h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl">
                 {secondColumnPersonas.map((persona, index) => (
                   <PersonaCard
                     key={index}
