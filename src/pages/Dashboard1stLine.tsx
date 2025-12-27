@@ -48,6 +48,16 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
+interface HistoricalAssessment {
+  date: string;
+  assessor: string;
+  inherentRisk: { level: string; score: number };
+  residualRisk: { level: string; score: number };
+  controlEffectiveness: string;
+  status: string;
+  notes?: string;
+}
+
 interface RiskData {
   id: string;
   title: string;
@@ -77,7 +87,7 @@ interface RiskData {
   };
   inherentRisk: { level: string; color: string; score?: number };
   inherentTrend: { value: string; up: boolean };
-  relatedControls: { id: string; name: string; type: string; nature: string };
+  relatedControls: { id: string; name: string; type: string; nature: string }[];
   controlEffectiveness: { label: string; color: string };
   testResults: { label: string; sublabel: string };
   residualRisk: { level: string; color: string; score?: number };
@@ -87,6 +97,7 @@ interface RiskData {
   completionDate?: string;
   previousAssessments: number;
   tabCategory: "own" | "assess" | "approve";
+  historicalAssessments?: HistoricalAssessment[];
 }
 
 const Dashboard1stLine = () => {
@@ -543,12 +554,12 @@ const Dashboard1stLine = () => {
                parsed.inherentTrend?.includes('↓') ? '-5%' : '0%', 
         up: parsed.inherentTrend?.includes('↑') 
       },
-      relatedControls: { 
+      relatedControls: [{ 
         id: parsed.controls?.split(':')[0] || 'CTRL-NEW', 
         name: parsed.controls?.split(':')[1]?.trim() || 'New Control', 
         type: 'Preventive', 
         nature: 'Manual' 
-      },
+      }],
       controlEffectiveness: { 
         label: parsed.effectiveness || 'Not Assessed', 
         color: parsed.effectiveness?.toLowerCase().includes('effective') && !parsed.effectiveness?.toLowerCase().includes('in') ? 'green' : 'yellow' 
@@ -1826,15 +1837,22 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
-                        {/* Related Controls */}
+                        {/* Related Controls - now showing multiple */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="text-xs">
-                            <div className="font-medium text-first-line">{risk.relatedControls.id}</div>
-                            <div className="text-muted-foreground truncate max-w-[150px]">{risk.relatedControls.name}</div>
-                            <div className="flex gap-1 mt-1">
-                              <Badge variant="secondary" className="text-[10px] px-1 py-0">{risk.relatedControls.type}</Badge>
-                              <Badge variant="secondary" className="text-[10px] px-1 py-0">{risk.relatedControls.nature}</Badge>
-                            </div>
+                          <div className="text-xs space-y-1 max-h-20 overflow-y-auto">
+                            {risk.relatedControls.slice(0, 2).map((control, idx) => (
+                              <div key={idx} className={idx > 0 ? "pt-1 border-t border-border/50" : ""}>
+                                <div className="font-medium text-first-line">{control.id}</div>
+                                <div className="text-muted-foreground truncate max-w-[150px]">{control.name}</div>
+                                <div className="flex gap-1 mt-0.5">
+                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.type}</Badge>
+                                  <Badge variant="secondary" className="text-[10px] px-1 py-0">{control.nature}</Badge>
+                                </div>
+                              </div>
+                            ))}
+                            {risk.relatedControls.length > 2 && (
+                              <div className="text-muted-foreground text-[10px]">+{risk.relatedControls.length - 2} more</div>
+                            )}
                           </div>
                         </TableCell>
                         {/* Control Effectiveness */}

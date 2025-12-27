@@ -73,18 +73,18 @@ interface RiskData {
     residualRating: number;
     riskTreatment: number;
   };
-  inherentRisk: { level: string; color: string };
+  inherentRisk: { level: string; color: string; score?: number };
   inherentTrend: { value: string; up: boolean };
-  relatedControls: { id: string; name: string; type: string; nature: string };
+  relatedControls: { id: string; name: string; type: string; nature: string }[];
   controlEffectiveness: { label: string; color: string };
   testResults: { label: string; sublabel: string };
-  residualRisk: { level: string; color: string };
+  residualRisk: { level: string; color: string; score?: number };
   residualTrend: { value: string; up: boolean };
   status: string;
   lastAssessed: string;
   previousAssessments: number;
   tabCategory: "own" | "assess" | "approve";
-}
+  historicalAssessments?: any[];
 
 const Dashboard2ndLine = () => {
   const navigate = useNavigate();
