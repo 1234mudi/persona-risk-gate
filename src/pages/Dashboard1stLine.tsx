@@ -1740,16 +1740,27 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Due Date */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className={`text-sm font-medium ${
-                            new Date(risk.dueDate) < new Date() 
-                              ? 'text-destructive' 
-                              : 'text-foreground'
-                          }`}>
-                            {format(new Date(risk.dueDate), 'MMM dd, yyyy')}
-                          </div>
-                          {new Date(risk.dueDate) < new Date() && (
-                            <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
-                          )}
+                          {(() => {
+                            const dueDate = new Date(risk.dueDate);
+                            const completionDate = risk.completionDate ? new Date(risk.completionDate) : null;
+                            const today = new Date();
+                            
+                            // Overdue if: completed after due date, OR not completed and due date has passed
+                            const isOverdue = completionDate 
+                              ? completionDate > dueDate 
+                              : dueDate < today;
+                              
+                            return (
+                              <>
+                                <div className={`text-sm font-medium ${isOverdue ? 'text-destructive' : 'text-foreground'}`}>
+                                  {format(dueDate, 'MMM dd, yyyy')}
+                                </div>
+                                {isOverdue && (
+                                  <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
+                                )}
+                              </>
+                            );
+                          })()}
                         </TableCell>
                         {/* Completion Date - moved next to Due Date, only for "own" tab */}
                         {activeTab === "own" && (
