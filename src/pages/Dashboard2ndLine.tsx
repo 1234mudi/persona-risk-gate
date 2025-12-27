@@ -85,6 +85,7 @@ interface RiskData {
   previousAssessments: number;
   tabCategory: "own" | "assess" | "approve";
   historicalAssessments?: any[];
+}
 
 const Dashboard2ndLine = () => {
   const navigate = useNavigate();
@@ -1420,15 +1421,21 @@ const Dashboard2ndLine = () => {
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-center gap-2">
-                            <div className="space-y-0.5">
-                              <div className="text-xs text-muted-foreground">{risk.relatedControls.id}</div>
-                              <div className="text-sm font-medium text-blue-600 dark:text-blue-400">{risk.relatedControls.name}</div>
-                              <div className="flex gap-2 text-xs text-muted-foreground">
-                                <span>{risk.relatedControls.type}</span>
-                                <span>{risk.relatedControls.nature}</span>
-                              </div>
+                            <div className="space-y-0.5 max-h-16 overflow-y-auto">
+                              {risk.relatedControls.slice(0, 2).map((control, idx) => (
+                                <div key={idx}>
+                                  <div className="text-xs text-muted-foreground">{control.id}</div>
+                                  <div className="text-sm font-medium text-blue-600 dark:text-blue-400">{control.name}</div>
+                                  <div className="flex gap-2 text-xs text-muted-foreground">
+                                    <span>{control.type}</span>
+                                    <span>{control.nature}</span>
+                                  </div>
+                                </div>
+                              ))}
+                              {risk.relatedControls.length > 2 && (
+                                <div className="text-xs text-muted-foreground">+{risk.relatedControls.length - 2} more</div>
+                              )}
                             </div>
-...
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
@@ -1635,7 +1642,7 @@ const Dashboard2ndLine = () => {
                             </Badge>
                           </TableCell>
                           <TableCell className="py-2 border-r border-b border-border">
-                            <span className="text-sm">{risk.relatedControls.name}</span>
+                            <span className="text-sm">{risk.relatedControls[0]?.name || '-'}</span>
                           </TableCell>
                           <TableCell className="py-2 border-r border-b border-border">
                             <Badge className={`${getRiskBadgeColor(risk.controlEffectiveness.color)} border rounded-full px-2 text-xs`}>

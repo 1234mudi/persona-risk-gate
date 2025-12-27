@@ -7,6 +7,7 @@ import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
 import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
+import { HistoricalAssessmentsModal } from "@/components/HistoricalAssessmentsModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -111,9 +112,15 @@ const Dashboard1stLine = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [assessorFilter, setAssessorFilter] = useState<string>("all");
+  const [riskLevelFilter, setRiskLevelFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
+  
+  // Historical assessments modal state
+  const [historicalModalOpen, setHistoricalModalOpen] = useState(false);
+  const [selectedRiskForHistory, setSelectedRiskForHistory] = useState<RiskData | null>(null);
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
@@ -231,6 +238,16 @@ const Dashboard1stLine = () => {
       filtered = filtered.filter(risk => 
         risk.title.toLowerCase().includes(query)
       );
+    }
+    
+    // Apply risk level filter
+    if (riskLevelFilter !== "all") {
+      filtered = filtered.filter(risk => risk.riskLevel === riskLevelFilter);
+    }
+    
+    // Apply status filter
+    if (statusFilter !== "all") {
+      filtered = filtered.filter(risk => risk.status === statusFilter);
     }
     
     // Apply org level filter - but don't filter out risks with empty orgLevel
@@ -1419,6 +1436,34 @@ const Dashboard1stLine = () => {
                 <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
 
+              {/* Risk Level Filter */}
+              <Select value={riskLevelFilter} onValueChange={setRiskLevelFilter}>
+                <SelectTrigger className="w-32 h-8">
+                  <SelectValue placeholder="Risk Level" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                  <SelectItem value="all">All Levels</SelectItem>
+                  <SelectItem value="Level 1">Level 1</SelectItem>
+                  <SelectItem value="Level 2">Level 2</SelectItem>
+                  <SelectItem value="Level 3">Level 3</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Status Filter */}
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="w-40 h-8">
+                  <SelectValue placeholder="Status" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                  <SelectItem value="all">All Statuses</SelectItem>
+                  <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
+                  <SelectItem value="In Progress">In Progress</SelectItem>
+                  <SelectItem value="Pending Approval">Pending Approval</SelectItem>
+                  <SelectItem value="Review & Challenge">Review & Challenge</SelectItem>
+                  <SelectItem value="Completed">Completed</SelectItem>
+                  <SelectItem value="Overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
 
               {activeTab === "assess" && (
                 <Select value={assessorFilter} onValueChange={setAssessorFilter}>
@@ -1498,7 +1543,7 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableHead>
                       )}
-                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border text-xs">Update Completed Assessments</TableHead>
+                      <TableHead className="w-16 min-w-[64px] py-2 border-r border-b border-border text-xs text-center">Edit</TableHead>
                       <TableHead className="min-w-[280px] py-2 border-r border-b border-border">
                         {activeTab === "own" ? "Risk ID / Title" : "Risk Title"}
                       </TableHead>
@@ -1789,10 +1834,23 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
-                        {/* Last Assessed Date */}
+                        {/* Last Assessed Date - clickable drilldown */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="text-sm">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
-                          <div className="text-xs text-muted-foreground">{risk.previousAssessments} previous</div>
+                          {risk.previousAssessments > 0 && (
+                            <button 
+                              onClick={() => {
+                                setSelectedRiskForHistory(risk);
+                                setHistoricalModalOpen(true);
+                              }}
+                              className="text-xs text-blue-600 hover:underline cursor-pointer"
+                            >
+                              {risk.previousAssessments} previous
+                            </button>
+                          )}
+                          {risk.previousAssessments === 0 && (
+                            <div className="text-xs text-muted-foreground">No previous</div>
+                          )}
                         </TableCell>
                         {/* Inherent Risk - enhanced with score + rating + trend + aggregation */}
                         <TableCell className="py-2 border-r border-b border-border">
@@ -1965,6 +2023,15 @@ const Dashboard1stLine = () => {
           { id: "ISS-2024-022", title: "Delayed verification process", description: "Average verification time exceeds SLA by 40%", severity: "Medium", status: "Open", dateIdentified: "2024-09-10", owner: "Operations" },
           { id: "ISS-2024-028", title: "Missing audit trail records", description: "Transaction monitoring gaps identified during internal audit", severity: "High", status: "Open", dateIdentified: "2024-10-05", owner: "Compliance Team" },
         ]}
+      />
+
+      {/* Historical Assessments Drilldown Modal */}
+      <HistoricalAssessmentsModal
+        open={historicalModalOpen}
+        onOpenChange={setHistoricalModalOpen}
+        riskId={selectedRiskForHistory?.id || ""}
+        riskTitle={selectedRiskForHistory?.title || ""}
+        historicalAssessments={selectedRiskForHistory?.historicalAssessments || []}
       />
 
       <AIDocumentAssessmentModal
