@@ -848,30 +848,8 @@ const Dashboard2ndLine = () => {
           <CardHeader className="border-b border-border/50 space-y-0 py-1.5 sm:py-2 px-3 sm:px-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-0">
               <CardTitle className="text-sm sm:text-base font-semibold">Risk Coverage by Business Unit</CardTitle>
-              <TooltipProvider>
+                <TooltipProvider>
                 <div className="flex flex-wrap items-center gap-1 sm:gap-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <Plus className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
-                        <span className="hidden sm:inline">Add New Risk</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Create a new risk entry</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
-                        <UsersIcon className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
-                        <span className="hidden sm:inline">Collaborate</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Invite collaborators to work on risks</p>
-                    </TooltipContent>
-                  </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
@@ -911,8 +889,8 @@ const Dashboard2ndLine = () => {
                         : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                     } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                   >
-                    <span className="hidden sm:inline">Risks I Own</span>
-                    <span className="sm:hidden">Own</span>
+                    <span className="hidden sm:inline">Completed Assessments</span>
+                    <span className="sm:hidden">Completed</span>
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
                       activeTab === "own" ? "bg-white/20" : "bg-muted"
                     }`}>
@@ -1059,11 +1037,11 @@ const Dashboard2ndLine = () => {
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[120px] py-2 border-r border-b border-border text-xs">Revise Assessment</TableHead>
-                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
-                      <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk ID</TableHead>
-                      <TableHead className="min-w-[220px] py-2 border-r border-b border-border">Risk Title</TableHead>
+                      <TableHead className="min-w-[280px] py-2 border-r border-b border-border">Risk ID / Title</TableHead>
                       <TableHead className="min-w-[100px] py-2 border-r border-b border-border">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
+                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Completion Date</TableHead>
+                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">
                         <div className="flex items-center gap-2">
                           <span>Business Unit</span>
@@ -1087,7 +1065,6 @@ const Dashboard2ndLine = () => {
                         </div>
                       </TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
-                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Related Controls</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
@@ -1207,6 +1184,84 @@ const Dashboard2ndLine = () => {
                             </TooltipProvider>
                           )}
                         </TableCell>
+                        {/* Risk ID / Title (combined) */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex items-start gap-2">
+                            {isLevel1 && canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                ) : (
+                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                )}
+                              </button>
+                            )}
+                            {isLevel1 && !canExpand && <div className="w-6" />}
+                            {isLevel3 && <div className="w-6 ml-4" />}
+                            
+                            <div className="flex flex-col gap-2">
+                              {/* Level 1 Title */}
+                              <div className="flex flex-col gap-1">
+                                <span className="text-xs font-medium text-primary">{risk.id}</span>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button 
+                                      onClick={() => handleRiskNameClick(risk)}
+                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                    >
+                                      {risk.title}
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Click to open the risk assessment overview</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                                <span className={`text-xs px-2 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
+                                  {risk.category}
+                                </span>
+                              </div>
+                              
+                              {/* Level 2 Children (displayed within Level 1 row) */}
+                              {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
+                                <div key={l2Risk.id} className="flex flex-col gap-1 pl-4 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
+                                  <span className="text-xs font-medium text-purple-600 dark:text-purple-400">{l2Risk.id}</span>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button 
+                                        onClick={() => handleRiskNameClick(l2Risk)}
+                                        className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
+                                      >
+                                        └ {l2Risk.title}
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Click to open the risk assessment overview</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  <span className="text-xs text-muted-foreground">{l2Risk.owner}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </TableCell>
+                        {/* Risk Hierarchy */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex flex-col gap-1">
+                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs font-medium`}>
+                              {risk.riskLevel}
+                            </Badge>
+                            {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
+                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} border text-xs font-medium`}>
+                                {l2Risk.riskLevel}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        {/* Due Date */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className={`text-sm font-medium ${
                             new Date(risk.dueDate) < new Date() 
@@ -1219,6 +1274,13 @@ const Dashboard2ndLine = () => {
                             <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
                           )}
                         </TableCell>
+                        {/* Completion Date */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="text-sm font-medium text-foreground">
+                            {risk.lastAssessed}
+                          </div>
+                        </TableCell>
+                        {/* Assessment Progress */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
                             <div className="flex gap-1">
@@ -1245,80 +1307,7 @@ const Dashboard2ndLine = () => {
                             </div>
                           </div>
                         </TableCell>
-                        <TableCell className="font-medium py-2 border-r border-b border-border">{risk.id}</TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-start gap-2">
-                            {isLevel1 && canExpand && (
-                              <button
-                                onClick={() => toggleRow(risk.id)}
-                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
-                              >
-                                {isExpanded ? (
-                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                                ) : (
-                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                                )}
-                              </button>
-                            )}
-                            {isLevel1 && !canExpand && <div className="w-6" />}
-                            {isLevel3 && <div className="w-6 ml-4" />}
-                            
-                            <div className="flex flex-col gap-2">
-                              {/* Level 1 Title */}
-                              <div className="flex flex-col gap-1">
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <button 
-                                      onClick={() => handleRiskNameClick(risk)}
-                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
-                                    >
-                                      {risk.title}
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Click to open the risk assessment overview</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                                <span className="text-xs text-muted-foreground">{risk.owner}</span>
-                                <span className={`text-xs px-2 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
-                                  {risk.category}
-                                </span>
-                              </div>
-                              
-                              {/* Level 2 Children (displayed within Level 1 row) */}
-                              {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                                <div key={l2Risk.id} className="flex flex-col gap-1 pl-4 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button 
-                                        onClick={() => handleRiskNameClick(l2Risk)}
-                                        className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-sm"
-                                      >
-                                        └ {l2Risk.title}
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Click to open the risk assessment overview</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                  <span className="text-xs text-muted-foreground">{l2Risk.owner}</span>
-                                </div>
-                              ))}
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex flex-col gap-1">
-                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-xs font-medium`}>
-                              {risk.riskLevel}
-                            </Badge>
-                            {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} border text-xs font-medium`}>
-                                {l2Risk.riskLevel}
-                              </Badge>
-                            ))}
-                          </div>
-                        </TableCell>
+                        {/* Business Unit */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <Badge variant="outline" className="text-xs font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700">
                             {risk.businessUnit}
@@ -1375,14 +1364,6 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="space-y-0.5">
-                            <div className="text-sm">{risk.lastAssessed}</div>
-                            <button className="text-xs text-blue-600 dark:text-blue-400 hover:underline">
-                              View History ({risk.previousAssessments})
-                            </button>
-                          </div>
-                        </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
                             <div className="flex items-center gap-2">
                               <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-2`}>
@@ -1420,22 +1401,32 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex items-center gap-2">
-                            <div className="space-y-0.5 max-h-16 overflow-y-auto">
-                              {risk.relatedControls.slice(0, 2).map((control, idx) => (
-                                <div key={idx}>
-                                  <div className="text-xs text-muted-foreground">{control.id}</div>
-                                  <div className="text-sm font-medium text-blue-600 dark:text-blue-400">{control.name}</div>
-                                  <div className="flex gap-2 text-xs text-muted-foreground">
-                                    <span>{control.type}</span>
-                                    <span>{control.nature}</span>
-                                  </div>
-                                </div>
-                              ))}
-                              {risk.relatedControls.length > 2 && (
-                                <div className="text-xs text-muted-foreground">+{risk.relatedControls.length - 2} more</div>
-                              )}
-                            </div>
+                          <div className="text-xs max-h-24 overflow-y-auto">
+                            <table className="w-full text-left">
+                              <thead>
+                                <tr className="text-[10px] text-muted-foreground border-b border-border/50">
+                                  <th className="pb-1 pr-2">ID</th>
+                                  <th className="pb-1 pr-2">Name</th>
+                                  <th className="pb-1 pr-2">Type</th>
+                                  <th className="pb-1">Nature</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {risk.relatedControls.slice(0, 3).map((control, idx) => (
+                                  <tr key={idx} className="border-b border-border/30 last:border-0">
+                                    <td className="py-0.5 pr-2 text-primary font-medium">{control.id}</td>
+                                    <td className="py-0.5 pr-2 text-muted-foreground truncate max-w-[80px]">{control.name}</td>
+                                    <td className="py-0.5 pr-2">{control.type}</td>
+                                    <td className="py-0.5">{control.nature}</td>
+                                  </tr>
+                                ))}
+                              </tbody>
+                            </table>
+                            {risk.relatedControls.length > 3 && (
+                              <div className="text-muted-foreground text-[10px] pt-1">
+                                +{risk.relatedControls.length - 3} more
+                              </div>
+                            )}
                           </div>
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
