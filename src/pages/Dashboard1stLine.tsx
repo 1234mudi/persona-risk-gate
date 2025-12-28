@@ -2079,25 +2079,25 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         {/* Related Controls - tabular layout */}
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border min-w-[320px]">
                           <div className="text-xs max-h-32 overflow-y-auto">
                             {risk.relatedControls.length > 0 ? (
-                              <table className="w-full text-left border-collapse">
+                              <table className="w-full text-left table-fixed">
                                 <thead>
                                   <tr className="text-[10px] text-muted-foreground border-b border-border/50">
-                                    <th className="pb-1 pr-2 font-medium">ID</th>
-                                    <th className="pb-1 pr-2 font-medium">Name</th>
-                                    <th className="pb-1 pr-2 font-medium">Type</th>
-                                    <th className="pb-1 font-medium">Nature</th>
+                                    <th className="pb-1 pr-2 font-medium w-[75px]">ID</th>
+                                    <th className="pb-1 pr-2 font-medium w-[110px]">Name</th>
+                                    <th className="pb-1 pr-2 font-medium w-[70px]">Type</th>
+                                    <th className="pb-1 font-medium w-[65px]">Nature</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {risk.relatedControls.slice(0, 3).map((control, idx) => (
                                     <tr key={idx} className="border-b border-border/30 last:border-0">
-                                      <td className="py-1 pr-2 font-medium text-first-line whitespace-nowrap">{control.id}</td>
-                                      <td className="py-1 pr-2 text-muted-foreground truncate max-w-[100px]" title={control.name}>{control.name}</td>
-                                      <td className="py-1 pr-2 whitespace-nowrap">{control.type}</td>
-                                      <td className="py-1 whitespace-nowrap">{control.nature}</td>
+                                      <td className="py-1 pr-2 font-medium text-first-line overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
+                                      <td className="py-1 pr-2 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={control.name}>{control.name}</td>
+                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap" title={control.type}>{control.type}</td>
+                                      <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap" title={control.nature}>{control.nature}</td>
                                     </tr>
                                   ))}
                                 </tbody>
