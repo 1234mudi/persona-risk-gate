@@ -885,14 +885,14 @@ const Dashboard2ndLine = () => {
                     onClick={() => setActiveTab("own")}
                     className={`px-3 sm:px-4 py-1.5 rounded-l-md font-medium text-xs sm:text-sm transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
                       activeTab === "own"
-                        ? "bg-primary text-primary-foreground shadow-md"
+                        ? "bg-green-600 text-white shadow-md"
                         : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                     } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                   >
                     <span className="hidden sm:inline">Completed Assessments</span>
                     <span className="sm:hidden">Completed</span>
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
-                      activeTab === "own" ? "bg-white/20" : "bg-muted"
+                      activeTab === "own" ? "bg-green-800/30" : "bg-muted"
                     }`}>
                       {riskData.filter(r => r.tabCategory === "own").length}
                     </span>
@@ -938,7 +938,7 @@ const Dashboard2ndLine = () => {
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] sm:text-xs text-yellow-800 dark:text-yellow-200 leading-snug">
-                  {activeTab === "own" && "You are the owner of these risks. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin."}
+                  {activeTab === "own" && "These assessments have been completed by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to view details."}
                   {activeTab === "assess" && "These risks are assigned to you for assessment. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin."}
                   {activeTab === "approve" && "These risk assessments require your approval. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review."}
                 </p>
@@ -1274,10 +1274,10 @@ const Dashboard2ndLine = () => {
                             <Badge variant="destructive" className="text-xs mt-1">Overdue</Badge>
                           )}
                         </TableCell>
-                        {/* Completion Date */}
+                        {/* Completion Date - Only show if status is complete */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="text-sm font-medium text-foreground">
-                            {risk.lastAssessed}
+                            {risk.status.toLowerCase() === "complete" ? risk.lastAssessed : "-"}
                           </div>
                         </TableCell>
                         {/* Assessment Progress */}
