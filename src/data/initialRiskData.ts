@@ -1130,7 +1130,7 @@ export const initialRiskData: SharedRiskData[] = [
     testResults: { label: "Design Effective", sublabel: "" },
     residualRisk: { level: "Medium", color: "yellow", score: 7 },
     residualTrend: { value: "12%", up: true },
-    status: "Complete",
+    status: "Completed",
     lastAssessed: "2025-10-28",
     previousAssessments: 7,
     tabCategory: "assess",
