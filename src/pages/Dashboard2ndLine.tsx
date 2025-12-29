@@ -975,6 +975,7 @@ const Dashboard2ndLine = () => {
                   <SelectContent className="bg-popover border border-border shadow-lg z-50">
                     <SelectItem value="all">All Statuses</SelectItem>
                     <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
+                    <SelectItem value="review-challenge">Review & Challenge</SelectItem>
                     <SelectItem value="closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
