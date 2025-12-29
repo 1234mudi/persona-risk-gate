@@ -626,7 +626,7 @@ This risk is currently being managed within established parameters. No immediate
         </div>
         
         {/* Content - Vertical timeline layout */}
-        <div className="p-4 bg-gradient-to-b from-background to-muted/20">
+        <div className="flex-1 min-h-0 overflow-y-auto p-4 bg-gradient-to-b from-background to-muted/20">
           <div className="max-w-xl mx-auto">
             {cards.map((card, index) => (
               <AssessmentCard 
