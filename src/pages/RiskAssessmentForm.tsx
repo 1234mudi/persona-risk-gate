@@ -3180,7 +3180,7 @@ const RiskAssessmentForm = () => {
       <div className="fixed top-0 right-0 h-full w-auto bg-background border-l border-border z-[60] flex flex-col pt-14">
         {[
           { id: 'assessments', label: 'Previous Assessments', icon: History },
-          { id: 'review', label: 'Review & Challenge', icon: MessageSquare },
+          { id: 'review', label: 'Review/Challenge', icon: MessageSquare },
           { id: 'issues', label: 'Issues', icon: AlertTriangle },
           { id: 'metrics', label: 'Metrics & Losses', icon: BarChart3 },
           { id: 'details', label: 'Additional Details', icon: FileText },
@@ -4113,7 +4113,7 @@ const RiskAssessmentForm = () => {
         </DialogContent>
       </Dialog>
 
-      {/* Expanded Panel Dialog for Review & Challenge */}
+      {/* Expanded Panel Dialog for Review/Challenge */}
       <Dialog open={expandedPanel === 'review'} onOpenChange={(open) => !open && setExpandedPanel(null)}>
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden p-0 gap-0">
           {/* Colored Header Bar */}
@@ -4124,7 +4124,7 @@ const RiskAssessmentForm = () => {
                   <MessageSquare className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <DialogTitle className="text-white text-lg">Review & Challenge</DialogTitle>
+                  <DialogTitle className="text-white text-lg">Review/Challenge</DialogTitle>
                   <p className="text-indigo-100 text-sm">Full screen view • Discussion and activity</p>
                 </div>
               </div>
@@ -4240,7 +4240,7 @@ const RiskAssessmentForm = () => {
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
             <h3 className="font-semibold text-sm">
               {rightPanelTab === 'assessments' && getHistoryTitle()}
-              {rightPanelTab === 'review' && 'Review & Challenge'}
+              {rightPanelTab === 'review' && 'Review/Challenge'}
               {rightPanelTab === 'issues' && 'Related Issues'}
               {rightPanelTab === 'metrics' && 'Metrics & Losses'}
               {rightPanelTab === 'details' && 'Additional Details'}
@@ -4373,7 +4373,7 @@ const RiskAssessmentForm = () => {
             </ScrollArea>
           )}
 
-          {/* Review & Challenge Tab */}
+          {/* Review/Challenge Tab */}
           {rightPanelTab === 'review' && (
             <ScrollArea className="flex-1 overflow-hidden">
               <div className="space-y-4 p-4 pr-3">

@@ -784,7 +784,7 @@ const Dashboard1stLine = () => {
       const status = risk.status?.toLowerCase() || "";
       if (status === "completed" || status === "complete" || status === "closed") {
         completed++;
-      } else if (status === "pending approval" || status === "review & challenge" || status === "pending review") {
+      } else if (status === "pending approval" || status === "review/challenge" || status === "pending review") {
         pendingApproval++;
       } else if (status === "in progress" || status === "under review") {
         inProgress++;
@@ -1074,7 +1074,7 @@ const Dashboard1stLine = () => {
       case "Sent for Assessment": return "bg-cyan-500 text-white";
       case "In Progress": return "bg-amber-500 text-white";
       case "Pending Approval": return "bg-purple-500 text-white";
-      case "Review & Challenge": return "bg-orange-500 text-white";
+      case "Review/Challenge": return "bg-orange-500 text-white";
       case "Completed": return "bg-green-500 text-white";
       case "Complete": return "bg-green-500 text-white";
       case "Closed": return "bg-slate-500 text-white";
@@ -1559,7 +1559,7 @@ const Dashboard1stLine = () => {
                   <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
                   <SelectItem value="In Progress">In Progress</SelectItem>
                   <SelectItem value="Pending Approval">Pending Approval</SelectItem>
-                  <SelectItem value="Review & Challenge">Review & Challenge</SelectItem>
+                  <SelectItem value="Review/Challenge">Review/Challenge</SelectItem>
                   <SelectItem value="Completed">Completed</SelectItem>
                   <SelectItem value="Overdue">Overdue</SelectItem>
                 </SelectContent>

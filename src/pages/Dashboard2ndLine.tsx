@@ -192,8 +192,8 @@ const Dashboard2ndLine = () => {
 
   // Section mapping for assessors (based on index)
   const assessorSections: Record<number, string[]> = {
-    0: ["Assess", "Review & Challenge"],
-    1: ["Review & Challenge"],
+    0: ["Assess", "Review/Challenge"],
+    1: ["Review/Challenge"],
     2: ["Assess"],
   };
   const [editDialog, setEditDialog] = useState<{
@@ -401,7 +401,7 @@ const Dashboard2ndLine = () => {
       tooltip: "Displays risks that remain elevated even after controls are applied. Critical and High residual risks indicate areas where additional mitigation strategies may be needed.",
     },
     {
-      title: "RCSA Review & Challenge Process",
+      title: "RCSA Review/Challenge Process",
       value: 88,
       isPercentage: true,
       trend: "+7% since last month",
@@ -623,7 +623,7 @@ const Dashboard2ndLine = () => {
       case "Sent for Assessment": return "bg-cyan-500 text-white";
       case "In Progress": return "bg-amber-500 text-white";
       case "Pending Approval": return "bg-purple-500 text-white";
-      case "Review & Challenge": return "bg-orange-500 text-white";
+      case "Review/Challenge": return "bg-orange-500 text-white";
       case "Completed": return "bg-green-500 text-white";
       case "Complete": return "bg-green-500 text-white";
       case "Closed": return "bg-slate-500 text-white";
@@ -865,7 +865,7 @@ const Dashboard2ndLine = () => {
                     <TooltipTrigger asChild>
                       <Button size="sm" className="h-8 sm:h-7 text-xs sm:text-sm bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
                         <AlertTriangle className="h-3 w-3 sm:h-3.5 sm:w-3.5 sm:mr-1" />
-                        <span className="hidden sm:inline">Review & Challenge</span>
+                        <span className="hidden sm:inline">Review/Challenge</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -975,7 +975,7 @@ const Dashboard2ndLine = () => {
                   <SelectContent className="bg-popover border border-border shadow-lg z-50">
                     <SelectItem value="all">All Statuses</SelectItem>
                     <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
-                    <SelectItem value="review-challenge">Review & Challenge</SelectItem>
+                    <SelectItem value="review-challenge">Review/Challenge</SelectItem>
                     <SelectItem value="closed">Closed</SelectItem>
                   </SelectContent>
                 </Select>
