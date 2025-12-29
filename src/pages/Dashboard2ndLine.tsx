@@ -886,13 +886,13 @@ const Dashboard2ndLine = () => {
                     className={`px-3 sm:px-4 py-1.5 rounded-l-md font-medium text-xs sm:text-sm transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
                       activeTab === "own"
                         ? "bg-green-600 text-white shadow-md"
-                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                        : "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
                     } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
                   >
                     <span className="hidden sm:inline">Completed Assessments</span>
                     <span className="sm:hidden">Completed</span>
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
-                      activeTab === "own" ? "bg-green-800/30" : "bg-muted"
+                      activeTab === "own" ? "bg-green-800/30" : "bg-green-200 dark:bg-green-800/40"
                     }`}>
                       {riskData.filter(r => r.tabCategory === "own").length}
                     </span>
@@ -939,8 +939,8 @@ const Dashboard2ndLine = () => {
                 <AlertTriangle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <p className="text-[10px] sm:text-xs text-yellow-800 dark:text-yellow-200 leading-snug">
                   {activeTab === "own" && "These assessments have been completed by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to view details."}
-                  {activeTab === "assess" && "These risks are assigned to you for assessment. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin."}
-                  {activeTab === "approve" && "These risk assessments require your approval. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review."}
+                  {activeTab === "assess" && "These risks are pending assessment by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin."}
+                  {activeTab === "approve" && "These risk assessments require approval by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review."}
                 </p>
               </div>
             </div>
@@ -964,21 +964,26 @@ const Dashboard2ndLine = () => {
                 </Select>
               </div>
 
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
-                <SelectTrigger className="w-full sm:w-48 h-9 sm:h-8">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50">
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="pending-approval">Pending Approval</SelectItem>
-                  <SelectItem value="review-challenge">Review & Challenge</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="closed">Closed</SelectItem>
-                  <SelectItem value="overdue">Overdue</SelectItem>
-                </SelectContent>
-              </Select>
+              <div className="flex flex-col gap-1">
+                <Label htmlFor="status-filter" className="text-xs font-medium text-muted-foreground">
+                  Status
+                </Label>
+                <Select value={statusFilter} onValueChange={setStatusFilter}>
+                  <SelectTrigger id="status-filter" className="w-full sm:w-48 h-9 sm:h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
+                    <SelectItem value="in-progress">In Progress</SelectItem>
+                    <SelectItem value="pending-approval">Pending Approval</SelectItem>
+                    <SelectItem value="review-challenge">Review & Challenge</SelectItem>
+                    <SelectItem value="completed">Completed</SelectItem>
+                    <SelectItem value="closed">Closed</SelectItem>
+                    <SelectItem value="overdue">Overdue</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
               <div className="relative flex-1 min-w-0 sm:min-w-[200px]">
                 <Input 
