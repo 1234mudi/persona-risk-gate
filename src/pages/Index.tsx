@@ -109,11 +109,11 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 py-4 sm:py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-12 max-w-7xl mx-auto items-start">
+      <main className="container mx-auto px-4 sm:px-6 py-2 sm:py-4">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-7xl mx-auto items-start">
           {/* Login Form Section */}
           <div className="flex items-start justify-center lg:justify-end order-1 lg:order-1">
-            <Card className="w-full max-w-md p-4 sm:p-6 shadow-lg border-border/50">
+            <Card className="w-full max-w-md p-3 sm:p-5 shadow-lg border-border/50">
               <div className="space-y-4">
                 <div className="space-y-0.5 text-center">
                   <h2 className="text-lg sm:text-xl font-bold text-foreground">Welcome Back</h2>
@@ -188,7 +188,7 @@ const Index = () => {
           </div>
 
           {/* Persona Cards Section */}
-          <div className="space-y-5 order-2 lg:order-2">
+          <div className="space-y-3 order-2 lg:order-2">
             <div className="space-y-1">
               <h2 className="text-lg sm:text-xl font-bold text-foreground">Quick Access</h2>
               <p className="text-xs sm:text-sm text-muted-foreground">
@@ -197,8 +197,8 @@ const Index = () => {
             </div>
 
             {/* 1st Line Defense Section */}
-            <div className="rounded-xl border border-first-line/20 bg-first-line/5 p-4">
-              <div className="flex items-center gap-2 mb-3">
+            <div className="rounded-xl border border-first-line/20 bg-first-line/5 p-3">
+              <div className="flex items-center gap-2 mb-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-first-line"></div>
                 <h3 className="text-sm font-semibold text-first-line">1st Line Defense</h3>
               </div>
@@ -217,8 +217,8 @@ const Index = () => {
             </div>
 
             {/* 2nd Line Defense Section */}
-            <div className="rounded-xl border border-second-line/20 bg-second-line/5 p-4">
-              <div className="flex items-center gap-2 mb-3">
+            <div className="rounded-xl border border-second-line/20 bg-second-line/5 p-3">
+              <div className="flex items-center gap-2 mb-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-second-line"></div>
                 <h3 className="text-sm font-semibold text-second-line">2nd Line Defense</h3>
               </div>
