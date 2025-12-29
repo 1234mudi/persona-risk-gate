@@ -504,7 +504,7 @@ This risk is currently being managed within established parameters. No immediate
         icon: <GitCompare className="w-3.5 h-3.5" />,
       },
       secondaryCta: {
-        label: "Review & Challenge",
+        label: "Review/Challenge",
         icon: <Eye className="w-3.5 h-3.5" />,
       },
       reviewCommentsAddressed: 3,
@@ -523,7 +523,7 @@ This risk is currently being managed within established parameters. No immediate
         icon: <ClipboardList className="w-3.5 h-3.5" />,
       },
       secondaryCta: {
-        label: "Review & Challenge",
+        label: "Review/Challenge",
         icon: <Eye className="w-3.5 h-3.5" />,
       },
       reviewCommentsAddressed: 2,

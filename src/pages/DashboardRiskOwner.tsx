@@ -457,7 +457,7 @@ const DashboardRiskOwner = () => {
       case "Sent for Assessment": return "bg-cyan-500 text-white";
       case "In Progress": return "bg-amber-500 text-white";
       case "Pending Approval": return "bg-purple-500 text-white";
-      case "Review & Challenge": return "bg-orange-500 text-white";
+      case "Review/Challenge": return "bg-orange-500 text-white";
       case "Completed": return "bg-green-500 text-white";
       case "Complete": return "bg-green-500 text-white";
       case "Closed": return "bg-slate-500 text-white";
@@ -805,7 +805,7 @@ const DashboardRiskOwner = () => {
                   <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
                   <SelectItem value="in-progress">In Progress</SelectItem>
                   <SelectItem value="pending-approval">Pending Approval</SelectItem>
-                  <SelectItem value="review-challenge">Review & Challenge</SelectItem>
+                  <SelectItem value="review-challenge">Review/Challenge</SelectItem>
                   <SelectItem value="completed">Completed</SelectItem>
                   <SelectItem value="closed">Closed</SelectItem>
                   <SelectItem value="overdue">Overdue</SelectItem>
