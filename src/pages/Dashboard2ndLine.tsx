@@ -355,6 +355,16 @@ const Dashboard2ndLine = () => {
     }, 1500);
   };
 
+  const handleOpenChallengesClick = () => {
+    setStatusFilter("review-challenge");
+    setTimeout(() => {
+      reportSectionRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 100);
+  };
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -744,10 +754,10 @@ const Dashboard2ndLine = () => {
                   <CheckCircle className="w-4 h-4 flex-shrink-0" />
                   <span>View Risks to be Approved</span>
                 </button>
-                <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[28px] touch-manipulation">
+                <button onClick={handleOpenChallengesClick} className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm w-full text-left min-h-[28px] touch-manipulation">
                   <AlertTriangle className="w-4 h-4 flex-shrink-0" />
                   <span>View Open Challenges</span>
-                </a>
+                </button>
                 <a href="#" className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline text-xs sm:text-sm min-h-[28px] touch-manipulation">
                   <CheckSquare className="w-4 h-4 flex-shrink-0" />
                   <span>View Completed Challenges</span>
