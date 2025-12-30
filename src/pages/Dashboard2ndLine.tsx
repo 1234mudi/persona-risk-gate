@@ -356,6 +356,7 @@ const Dashboard2ndLine = () => {
   };
 
   const handleOpenChallengesClick = () => {
+    setActiveTab("assess");
     setStatusFilter("review-challenge");
     setTimeout(() => {
       reportSectionRef.current?.scrollIntoView({ 
@@ -452,7 +453,7 @@ const Dashboard2ndLine = () => {
       
       // Status filter
       if (statusFilter !== "all") {
-        const normalizedRiskStatus = risk.status.toLowerCase().replace(/\s+/g, '-').replace(/[&\/]/g, '').replace(/-+/g, '-');
+        const normalizedRiskStatus = risk.status.toLowerCase().replace(/\s+/g, '-').replace(/[&\/]/g, '-').replace(/-+/g, '-');
         if (normalizedRiskStatus !== statusFilter) return false;
       }
       
