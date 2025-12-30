@@ -443,6 +443,17 @@ const Dashboard2ndLine = () => {
     },
   ];
 
+  // Robust status normalization helper
+  const normalizeStatus = (status: string): string => {
+    return status
+      .trim()
+      .toLowerCase()
+      .replace(/[\u00A0\u2007\u202F]/g, ' ') // normalize non-breaking spaces
+      .replace(/[／⁄∕]/g, '/') // normalize unicode slashes to standard slash
+      .replace(/[^a-z0-9]+/g, '-') // replace any non-alphanumeric run with single dash
+      .replace(/^-+|-+$/g, ''); // trim leading/trailing dashes
+  };
+
   const filteredRiskData = useMemo(() => {
     return riskData.filter(risk => {
       // Tab filter
@@ -453,7 +464,7 @@ const Dashboard2ndLine = () => {
       
       // Status filter
       if (statusFilter !== "all") {
-        const normalizedRiskStatus = risk.status.toLowerCase().replace(/\s+/g, '-').replace(/[&\/]/g, '-').replace(/-+/g, '-');
+        const normalizedRiskStatus = normalizeStatus(risk.status ?? "");
         if (normalizedRiskStatus !== statusFilter) return false;
       }
       
@@ -1668,6 +1679,30 @@ const Dashboard2ndLine = () => {
                         </TableRow>
                       );
                     })
+                  )}
+                  {/* Empty state when no results match */}
+                  {filteredRiskData.length === 0 && (
+                    <TableRow>
+                      <TableCell colSpan={14} className="py-12 text-center">
+                        <div className="flex flex-col items-center gap-3">
+                          <AlertCircle className="w-10 h-10 text-muted-foreground/50" />
+                          <div className="text-muted-foreground">
+                            No records match the selected filters.
+                          </div>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              setBusinessUnitFilter("all");
+                              setStatusFilter("all");
+                              setSearchQuery("");
+                            }}
+                          >
+                            Clear all filters
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
                   )}
                   </TableBody>
                 </Table>
