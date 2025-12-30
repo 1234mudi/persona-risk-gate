@@ -3183,7 +3183,7 @@ const RiskAssessmentForm = () => {
       </div>
 
       {/* Right Vertical Tab Bar - Fixed on right edge */}
-      <div className="fixed top-0 right-0 h-full w-auto bg-background border-l border-border z-[60] flex flex-col pt-14">
+      <div className="fixed top-0 right-0 h-full w-auto bg-muted/30 border-l-2 border-l-primary/20 shadow-[-4px_0_12px_-2px_rgba(0,0,0,0.1)] z-[60] flex flex-col pt-14">
         {[
           { id: 'assessments', label: 'Previous Assessments', icon: History },
           { id: 'review', label: 'Review/Challenge', icon: MessageSquare },
