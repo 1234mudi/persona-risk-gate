@@ -183,6 +183,12 @@ const RiskAssessmentForm = () => {
   const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
   const [addControlModalOpen, setAddControlModalOpen] = useState(false);
   
+  // Review/Challenge panel state
+  const [resolvingItemId, setResolvingItemId] = useState<string | null>(null);
+  const [resolutionComment, setResolutionComment] = useState("");
+  const [challengeComment, setChallengeComment] = useState("");
+  const pendingReviewComments = 2; // Count of unresolved review comments
+  
   // AI field tracking - tracks which fields have been AI-filled and which have been manually edited
   const [aiFilledFields, setAiFilledFields] = useState<Set<string>>(new Set());
   const [editedFields, setEditedFields] = useState<Set<string>>(new Set());
@@ -3187,6 +3193,8 @@ const RiskAssessmentForm = () => {
         ].map((tab) => {
           const Icon = tab.icon;
           const isActive = rightPanelOpen && rightPanelTab === tab.id;
+          const hasReviewNotifications = tab.id === 'review' && pendingReviewComments > 0;
+          
           return (
             <button
               key={tab.id}
@@ -3199,23 +3207,34 @@ const RiskAssessmentForm = () => {
                   setSelectedHistoryDate(0);
                 }
               }}
-              className={`flex items-center gap-0 py-4 px-3 border-b border-border transition-colors ${
+              className={`relative flex items-center gap-0 py-4 px-3 border-b border-border transition-colors ${
                 isActive
                   ? 'bg-muted/50 text-primary' 
-                  : 'hover:bg-muted/30 text-muted-foreground hover:text-foreground'
+                  : hasReviewNotifications
+                    ? 'bg-blue-50 dark:bg-blue-950/30 border-l-2 border-l-blue-500 hover:bg-blue-100 dark:hover:bg-blue-950/50 text-blue-600'
+                    : 'hover:bg-muted/30 text-muted-foreground hover:text-foreground'
               }`}
             >
+              {/* Notification Badge for Review/Challenge */}
+              {hasReviewNotifications && (
+                <span className="absolute -top-0.5 right-1 w-5 h-5 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse shadow-lg">
+                  {pendingReviewComments}
+                </span>
+              )}
+              
               {/* Icon box */}
               <div className={`p-2.5 rounded-lg transition-colors ${
                 isActive 
                   ? 'bg-primary/10' 
-                  : 'bg-muted/80'
+                  : hasReviewNotifications
+                    ? 'bg-blue-100 dark:bg-blue-900/50'
+                    : 'bg-muted/80'
               }`}>
-                <Icon className="w-5 h-5" />
+                <Icon className={`w-5 h-5 ${hasReviewNotifications && !isActive ? 'text-blue-600' : ''}`} />
               </div>
               
               {/* Vertical text */}
-              <span className="text-xs font-medium [writing-mode:vertical-rl] rotate-180 ml-1">
+              <span className={`text-xs font-medium [writing-mode:vertical-rl] rotate-180 ml-1 ${hasReviewNotifications && !isActive ? 'text-blue-600 font-semibold' : ''}`}>
                 {tab.label}
               </span>
             </button>
@@ -4234,18 +4253,18 @@ const RiskAssessmentForm = () => {
 
       {/* Right Sliding Panel */}
       {rightPanelOpen && (
-        <div className="fixed top-0 right-[52px] h-full w-[550px] bg-background border-l border-border z-[55] shadow-xl overflow-hidden">
+        <div className="fixed top-0 right-[52px] h-full w-[480px] bg-background border-l border-border z-[55] shadow-xl overflow-hidden">
         <div className="flex flex-col h-full w-full overflow-hidden">
           {/* Panel Header */}
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
-            <h3 className="font-semibold text-sm">
+            <h3 className="font-semibold text-sm truncate flex-1 mr-2">
               {rightPanelTab === 'assessments' && getHistoryTitle()}
               {rightPanelTab === 'review' && 'Review/Challenge'}
               {rightPanelTab === 'issues' && 'Related Issues'}
               {rightPanelTab === 'metrics' && 'Metrics & Losses'}
               {rightPanelTab === 'details' && 'Additional Details'}
             </h3>
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-1 shrink-0">
               <Button 
                 variant="ghost" 
                 size="icon" 
@@ -4408,47 +4427,189 @@ const RiskAssessmentForm = () => {
                 </div>
 
                 {/* Notification Items */}
-                <div className="space-y-2">
-                  <div className="border rounded-lg p-3">
+                <div className="space-y-3">
+                  {/* First notification item */}
+                  <div className="border rounded-lg p-3 bg-card">
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                         <AtSign className="w-4 h-4 text-blue-600" />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <p className="text-sm">
-                          <span className="font-medium">Michael Chen</span> tagged you in a comment on <span className="font-medium">Impact rating</span>
+                          <span className="font-medium">Michael Chen</span> tagged you in a comment on <span className="font-medium text-primary">Impact rating</span>
                         </p>
-                        <div className="flex items-center gap-3 mt-2">
-                          <span className="text-xs text-muted-foreground">1 day ago</span>
-                          <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
-                            <Check className="w-3 h-3" />
-                            Resolve
-                          </Button>
+                        
+                        {/* Current Field Value Display */}
+                        <div className="mt-2 p-2 bg-muted/50 rounded border border-border/50">
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Current value:</span>
+                            <Badge variant="outline" className="bg-amber-100 text-amber-700 border-amber-200">
+                              Rating: 3 (Medium)
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 italic">
+                            "Please review the impact rating - I believe it should be higher given recent regulatory changes."
+                          </p>
                         </div>
+
+                        {/* Resolution mode for this item */}
+                        {resolvingItemId === 'item-1' ? (
+                          <div className="mt-3 space-y-2">
+                            <Textarea 
+                              placeholder="Enter resolution comments..."
+                              value={resolutionComment}
+                              onChange={(e) => setResolutionComment(e.target.value)}
+                              className="min-h-[60px] text-xs"
+                            />
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-7 text-xs"
+                                onClick={() => {
+                                  setResolvingItemId(null);
+                                  setResolutionComment("");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                className="h-7 text-xs gap-1"
+                                onClick={() => {
+                                  toast.success("Comment resolved successfully");
+                                  setResolvingItemId(null);
+                                  setResolutionComment("");
+                                }}
+                              >
+                                <Check className="w-3 h-3" />
+                                Confirm Resolution
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="text-xs text-muted-foreground">1 day ago</span>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-7 text-xs gap-1"
+                              onClick={() => setResolvingItemId('item-1')}
+                            >
+                              <Check className="w-3 h-3" />
+                              Resolve
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
                     </div>
                   </div>
 
-                  <div className="border rounded-lg p-3">
+                  {/* Second notification item */}
+                  <div className="border rounded-lg p-3 bg-card">
                     <div className="flex items-start gap-3">
-                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
                         <AtSign className="w-4 h-4 text-blue-600" />
                       </div>
-                      <div className="flex-1">
+                      <div className="flex-1 min-w-0">
                         <p className="text-sm">
-                          <span className="font-medium">Sarah Johnson</span> tagged you in a comment on <span className="font-medium">Control Effectiveness</span>
+                          <span className="font-medium">Sarah Johnson</span> tagged you in a comment on <span className="font-medium text-primary">Control Effectiveness</span>
                         </p>
-                        <div className="flex items-center gap-3 mt-2">
-                          <span className="text-xs text-muted-foreground">about 12 hours ago</span>
-                          <Button variant="outline" size="sm" className="h-7 text-xs gap-1">
-                            <Check className="w-3 h-3" />
-                            Resolve
-                          </Button>
+                        
+                        {/* Current Field Value Display */}
+                        <div className="mt-2 p-2 bg-muted/50 rounded border border-border/50">
+                          <div className="flex items-center gap-2 text-xs">
+                            <span className="text-muted-foreground">Current value:</span>
+                            <Badge variant="outline" className="bg-emerald-100 text-emerald-700 border-emerald-200">
+                              Design: 4 (Strong)
+                            </Badge>
+                          </div>
+                          <p className="text-xs text-muted-foreground mt-1 italic">
+                            "The control design rating seems too high. Recent testing revealed some gaps."
+                          </p>
                         </div>
+
+                        {/* Resolution mode for this item */}
+                        {resolvingItemId === 'item-2' ? (
+                          <div className="mt-3 space-y-2">
+                            <Textarea 
+                              placeholder="Enter resolution comments..."
+                              value={resolutionComment}
+                              onChange={(e) => setResolutionComment(e.target.value)}
+                              className="min-h-[60px] text-xs"
+                            />
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="h-7 text-xs"
+                                onClick={() => {
+                                  setResolvingItemId(null);
+                                  setResolutionComment("");
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                className="h-7 text-xs gap-1"
+                                onClick={() => {
+                                  toast.success("Comment resolved successfully");
+                                  setResolvingItemId(null);
+                                  setResolutionComment("");
+                                }}
+                              >
+                                <Check className="w-3 h-3" />
+                                Confirm Resolution
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="text-xs text-muted-foreground">about 12 hours ago</span>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="h-7 text-xs gap-1"
+                              onClick={() => setResolvingItemId('item-2')}
+                            >
+                              <Check className="w-3 h-3" />
+                              Resolve
+                            </Button>
+                          </div>
+                        )}
                       </div>
-                      <div className="w-2 h-2 rounded-full bg-blue-500" />
+                      <div className="w-2 h-2 rounded-full bg-blue-500 shrink-0" />
                     </div>
+                  </div>
+                </div>
+
+                {/* Add Challenge Comment Section */}
+                <div className="border-t pt-4 mt-4">
+                  <h4 className="text-sm font-medium mb-2 flex items-center gap-2">
+                    <MessageCircle className="w-4 h-4" />
+                    Add Challenge Comment
+                  </h4>
+                  <div className="space-y-2">
+                    <Textarea 
+                      placeholder="Enter your challenge comments... Describe why you believe a rating or value should be reconsidered."
+                      value={challengeComment}
+                      onChange={(e) => setChallengeComment(e.target.value)}
+                      className="min-h-[80px] text-xs"
+                    />
+                    <Button 
+                      size="sm" 
+                      className="h-8 text-xs gap-1.5"
+                      disabled={!challengeComment.trim()}
+                      onClick={() => {
+                        toast.success("Challenge submitted successfully");
+                        setChallengeComment("");
+                      }}
+                    >
+                      <Send className="w-3 h-3" />
+                      Submit Challenge
+                    </Button>
                   </div>
                 </div>
               </div>
