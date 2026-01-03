@@ -1181,6 +1181,278 @@ export const initialRiskData: SharedRiskData[] = [
       { date: "2025-07-24", assessor: "William Davis", inherentRisk: { level: "Medium", score: 8 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Operating Effective", status: "Completed" }
     ]
   },
+,
+  // Additional risks for Corporate Banking
+  {
+    id: "R-013",
+    title: "Anti-Money Laundering Gaps",
+    dueDate: "2025-12-10",
+    riskLevel: "Level 1",
+    businessUnit: "Corporate Banking",
+    category: "Compliance",
+    owner: "AML Compliance Officer",
+    assessors: ["Nina Patel", "David Lee"],
+    orgLevel: { level1: "Compliance", level2: "Corporate Banking", level3: "" },
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "High", color: "red", score: 14 },
+    inherentTrend: { value: "10%", up: true },
+    relatedControls: [
+      { id: "Control-047", name: "Transaction Screening", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-048", name: "Customer Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key" }
+    ],
+    controlEffectiveness: { label: "Partially Effective", color: "yellow" },
+    testResults: { label: "Partially Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Medium", color: "yellow", score: 8 },
+    residualTrend: { value: "5%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-09-15",
+    previousAssessments: 4,
+    tabCategory: "assess",
+    historicalAssessments: [
+      { date: "2025-09-15", assessor: "Nina Patel", inherentRisk: { level: "High", score: 14 }, residualRisk: { level: "Medium", score: 8 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+    ]
+  },
+  {
+    id: "R-013-A",
+    title: "Transaction Monitoring Delays",
+    dueDate: "2025-12-15",
+    riskLevel: "Level 2",
+    parentRisk: "Anti-Money Laundering Gaps",
+    businessUnit: "Corporate Banking",
+    category: "Compliance",
+    owner: "AML Operations Lead",
+    assessors: ["David Lee"],
+    orgLevel: { level1: "Compliance", level2: "Corporate Banking", level3: "AML Operations" },
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Medium", color: "yellow", score: 9 },
+    inherentTrend: { value: "8%", up: true },
+    relatedControls: [
+      { id: "Control-049", name: "Alert Queue Management", type: "Automated", nature: "Detective", keyControl: "Non-Key" }
+    ],
+    controlEffectiveness: { label: "Partially Effective", color: "yellow" },
+    testResults: { label: "Partially Effective", sublabel: "" },
+    residualRisk: { level: "Medium", color: "yellow", score: 6 },
+    residualTrend: { value: "3%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-09-20",
+    previousAssessments: 2,
+    tabCategory: "assess",
+    historicalAssessments: []
+  },
+  // Additional risks for Operations
+  {
+    id: "R-014",
+    title: "Operational Resilience",
+    dueDate: "2025-12-08",
+    riskLevel: "Level 1",
+    businessUnit: "Operations",
+    category: "Operational",
+    owner: "Business Continuity Manager",
+    assessors: ["Emma White", "Chris Anderson"],
+    orgLevel: { level1: "Operational", level2: "Operations", level3: "" },
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "High", color: "red", score: 12 },
+    inherentTrend: { value: "15%", up: true },
+    relatedControls: [
+      { id: "Control-050", name: "Business Continuity Plan", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-051", name: "Incident Response Procedures", type: "Manual", nature: "Detective", keyControl: "Key" }
+    ],
+    controlEffectiveness: { label: "Partially Effective", color: "yellow" },
+    testResults: { label: "Partially Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Medium", color: "yellow", score: 7 },
+    residualTrend: { value: "6%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-09-10",
+    previousAssessments: 5,
+    tabCategory: "assess",
+    historicalAssessments: [
+      { date: "2025-09-10", assessor: "Emma White", inherentRisk: { level: "High", score: 12 }, residualRisk: { level: "Medium", score: 7 }, controlEffectiveness: "Partially Effective", status: "Completed" }
+    ]
+  },
+  {
+    id: "R-014-A",
+    title: "Disaster Recovery Testing",
+    dueDate: "2025-12-12",
+    riskLevel: "Level 2",
+    parentRisk: "Operational Resilience",
+    businessUnit: "Operations",
+    category: "Operational",
+    owner: "DR Coordinator",
+    assessors: ["Chris Anderson"],
+    orgLevel: { level1: "Operational", level2: "Operations", level3: "DR" },
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Medium", color: "yellow", score: 8 },
+    inherentTrend: { value: "7%", up: false },
+    relatedControls: [
+      { id: "Control-052", name: "DR Test Schedule", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
+    ],
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "" },
+    residualRisk: { level: "Low", color: "green", score: 4 },
+    residualTrend: { value: "4%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-09-18",
+    previousAssessments: 3,
+    tabCategory: "assess",
+    historicalAssessments: []
+  },
+  // Additional risk for Treasury
+  {
+    id: "R-015",
+    title: "Investment Portfolio Risk",
+    dueDate: "2025-12-05",
+    riskLevel: "Level 1",
+    businessUnit: "Treasury",
+    category: "Financial",
+    owner: "Investment Manager",
+    assessors: ["Sophia Taylor", "Daniel Kim"],
+    orgLevel: { level1: "Financial", level2: "Treasury", level3: "" },
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Medium", color: "yellow", score: 9 },
+    inherentTrend: { value: "11%", up: true },
+    relatedControls: [
+      { id: "Control-053", name: "Portfolio Limits", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-054", name: "Daily Valuation", type: "Automated", nature: "Detective", keyControl: "Non-Key" }
+    ],
+    controlEffectiveness: { label: "Operating Effective", color: "green" },
+    testResults: { label: "Operating Effective", sublabel: "Design Effective" },
+    residualRisk: { level: "Low", color: "green", score: 4 },
+    residualTrend: { value: "3%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-09-25",
+    previousAssessments: 6,
+    tabCategory: "assess",
+    historicalAssessments: [
+      { date: "2025-09-25", assessor: "Sophia Taylor", inherentRisk: { level: "Medium", score: 9 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Operating Effective", status: "Completed" }
+    ]
+  },
+  // Additional risks for Risk Analytics
+  {
+    id: "R-016",
+    title: "Advanced Analytics Accuracy",
+    dueDate: "2025-12-18",
+    riskLevel: "Level 1",
+    businessUnit: "Risk Analytics",
+    category: "Operational",
+    owner: "Analytics Director",
+    assessors: ["George Harris", "Olivia Brown"],
+    orgLevel: { level1: "Operational", level2: "Risk Analytics", level3: "" },
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Medium", color: "yellow", score: 8 },
+    inherentTrend: { value: "9%", up: true },
+    relatedControls: [
+      { id: "Control-055", name: "Model Backtesting", type: "Automated", nature: "Detective", keyControl: "Key" },
+      { id: "Control-056", name: "Data Validation Rules", type: "Automated", nature: "Preventive", keyControl: "Key" }
+    ],
+    controlEffectiveness: { label: "Design Effective", color: "green" },
+    testResults: { label: "Design Effective", sublabel: "Operating Effective" },
+    residualRisk: { level: "Low", color: "green", score: 4 },
+    residualTrend: { value: "5%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-09-28",
+    previousAssessments: 4,
+    tabCategory: "assess",
+    historicalAssessments: [
+      { date: "2025-09-28", assessor: "George Harris", inherentRisk: { level: "Medium", score: 8 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Design Effective", status: "Completed" }
+    ]
+  },
+  {
+    id: "R-016-A",
+    title: "Data Quality Issues",
+    dueDate: "2025-12-20",
+    riskLevel: "Level 2",
+    parentRisk: "Advanced Analytics Accuracy",
+    businessUnit: "Risk Analytics",
+    category: "Operational",
+    owner: "Data Governance Lead",
+    assessors: ["Olivia Brown"],
+    orgLevel: { level1: "Operational", level2: "Risk Analytics", level3: "Data Governance" },
+    assessmentProgress: {
+      assess: "not-started",
+      reviewChallenge: "not-started",
+      approve: "not-started",
+    },
+    sectionCompletion: {
+      inherentRating: 0,
+      controlEffectiveness: 0,
+      residualRating: 0,
+      riskTreatment: 0,
+    },
+    inherentRisk: { level: "Medium", color: "yellow", score: 7 },
+    inherentTrend: { value: "6%", up: false },
+    relatedControls: [
+      { id: "Control-057", name: "Data Quality Checks", type: "Automated", nature: "Detective", keyControl: "Non-Key" }
+    ],
+    controlEffectiveness: { label: "Partially Effective", color: "yellow" },
+    testResults: { label: "Partially Effective", sublabel: "" },
+    residualRisk: { level: "Low-Medium", color: "cyan", score: 5 },
+    residualTrend: { value: "4%", up: false },
+    status: "Sent for Assessment",
+    lastAssessed: "2025-10-01",
+    previousAssessments: 2,
+    tabCategory: "assess",
+    historicalAssessments: []
+  }
 ];
 
 // Helper function to get a deep copy of the initial data for independent state
