@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, Shield } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -88,7 +88,20 @@ interface RiskData {
   };
   inherentRisk: { level: string; color: string; score?: number };
   inherentTrend: { value: string; up: boolean };
-  relatedControls: { id: string; name: string; type: string; nature: string; keyControl: "Key" | "Non-Key" }[];
+  relatedControls: { 
+    id: string; 
+    name: string; 
+    type: string; 
+    nature: string; 
+    keyControl: "Key" | "Non-Key";
+    description?: string;
+    designEffectiveness?: "Effective" | "Partially Effective" | "Ineffective";
+    operatingEffectiveness?: "Effective" | "Partially Effective" | "Ineffective";
+    overallScore?: number;
+    lastTestDate?: string;
+    testFrequency?: string;
+    testingStatus?: "Tested" | "Not Tested" | "Pending";
+  }[];
   controlEffectiveness: { label: string; color: string };
   testResults: { label: string; sublabel: string };
   residualRisk: { level: string; color: string; score?: number };
@@ -141,6 +154,10 @@ const Dashboard1stLine = () => {
     field: string;
     value: string;
   } | null>(null);
+
+  // Control details dialog state
+  const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
+  const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
@@ -2086,19 +2103,38 @@ const Dashboard1stLine = () => {
                               <table className="w-full text-left table-fixed">
                                 <thead>
                                   <tr className="text-[10px] text-muted-foreground border-b border-border/50">
-                                    <th className="pb-1 pr-2 font-medium w-[75px]">ID</th>
-                                    <th className="pb-1 pr-2 font-medium w-[110px]">Name</th>
-                                    <th className="pb-1 pr-2 font-medium w-[70px]">Key Control</th>
+                                    <th className="pb-1 pr-1 font-medium w-[55px]">ID</th>
+                                    <th className="pb-1 pr-1 font-medium w-[130px]">Name</th>
+                                    <th className="pb-1 pr-1 font-medium w-[70px]">Key Control</th>
                                     <th className="pb-1 font-medium w-[65px]">Nature</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {risk.relatedControls.slice(0, 3).map((control, idx) => (
                                     <tr key={idx} className="border-b border-border/30 last:border-0">
-                                      <td className="py-1 pr-2 font-medium text-first-line overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
-                                      <td className="py-1 pr-2 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={control.name}>{control.name}</td>
-                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap" title={control.keyControl}>{control.keyControl}</td>
-                                      <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap" title={control.nature}>{control.nature}</td>
+                                      <td className="py-0.5 pr-1 font-medium text-first-line overflow-hidden text-ellipsis whitespace-nowrap text-[10px]">C-{control.id.replace("Control-", "")}</td>
+                                      <td className="py-0.5 pr-1">
+                                        <TooltipProvider>
+                                          <Tooltip>
+                                            <TooltipTrigger asChild>
+                                              <button
+                                                className="text-muted-foreground hover:text-primary hover:underline text-left truncate max-w-full text-xs"
+                                                onClick={() => {
+                                                  setSelectedControl(control);
+                                                  setControlDetailsOpen(true);
+                                                }}
+                                              >
+                                                {control.name}
+                                              </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent side="top" className="max-w-[250px]">
+                                              <p className="font-medium">{control.name}</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        </TooltipProvider>
+                                      </td>
+                                      <td className="py-0.5 pr-1 overflow-hidden text-ellipsis whitespace-nowrap text-xs" title={control.keyControl}>{control.keyControl}</td>
+                                      <td className="py-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-xs" title={control.nature}>{control.nature}</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -2498,6 +2534,97 @@ const Dashboard1stLine = () => {
               Proceed
             </Button>
           </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Control Details Dialog */}
+      <Dialog open={controlDetailsOpen} onOpenChange={setControlDetailsOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              {selectedControl?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Control ID: {selectedControl?.id}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Description */}
+            <div>
+              <Label className="text-xs text-muted-foreground">Description</Label>
+              <p className="text-sm">{selectedControl?.description || "No description available."}</p>
+            </div>
+            
+            {/* Control Properties */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-muted-foreground">Type</Label>
+                <p className="text-sm font-medium">{selectedControl?.type}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Nature</Label>
+                <p className="text-sm font-medium">{selectedControl?.nature}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Key Control</Label>
+                <Badge variant={selectedControl?.keyControl === "Key" ? "default" : "secondary"}>
+                  {selectedControl?.keyControl}
+                </Badge>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Testing Status</Label>
+                <Badge variant={selectedControl?.testingStatus === "Tested" ? "default" : "outline"}>
+                  {selectedControl?.testingStatus || "Not Tested"}
+                </Badge>
+              </div>
+            </div>
+            
+            {/* Control Test Results Section */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-semibold mb-3">Control Test Results</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Design Effectiveness</Label>
+                  <Badge className={
+                    selectedControl?.designEffectiveness === "Effective" ? "bg-green-500 text-white" :
+                    selectedControl?.designEffectiveness === "Partially Effective" ? "bg-amber-500 text-white" :
+                    selectedControl?.designEffectiveness === "Ineffective" ? "bg-red-500 text-white" :
+                    "bg-muted text-muted-foreground"
+                  }>
+                    {selectedControl?.designEffectiveness || "N/A"}
+                  </Badge>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Operating Effectiveness</Label>
+                  <Badge className={
+                    selectedControl?.operatingEffectiveness === "Effective" ? "bg-green-500 text-white" :
+                    selectedControl?.operatingEffectiveness === "Partially Effective" ? "bg-amber-500 text-white" :
+                    selectedControl?.operatingEffectiveness === "Ineffective" ? "bg-red-500 text-white" :
+                    "bg-muted text-muted-foreground"
+                  }>
+                    {selectedControl?.operatingEffectiveness || "N/A"}
+                  </Badge>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Overall Score</Label>
+                  <div className="flex items-center gap-1">
+                    <span className="text-lg font-bold">{selectedControl?.overallScore || "—"}</span>
+                    <span className="text-xs text-muted-foreground">/5</span>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Test Frequency</Label>
+                  <p className="text-sm">{selectedControl?.testFrequency || "N/A"}</p>
+                </div>
+              </div>
+              {selectedControl?.lastTestDate && (
+                <p className="text-xs text-muted-foreground mt-2">
+                  Last tested: {selectedControl.lastTestDate}
+                </p>
+              )}
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
