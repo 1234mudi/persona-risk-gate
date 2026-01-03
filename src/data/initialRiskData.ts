@@ -31,6 +31,7 @@ export interface ControlRecord {
   name: string;
   type: string;
   nature: string;
+  keyControl: "Key" | "Non-Key";
 }
 
 export interface SharedRiskData {
@@ -101,9 +102,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 8 },
     inherentTrend: { value: "13%", up: false },
     relatedControls: [
-      { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective" },
-      { id: "Control-004", name: "Process Documentation", type: "Manual", nature: "Preventive" },
-      { id: "Control-005", name: "Staff Training Program", type: "Manual", nature: "Preventive" }
+      { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-004", name: "Process Documentation", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-005", name: "Staff Training Program", type: "Manual", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -218,8 +219,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 12 },
     inherentTrend: { value: "12%", up: false },
     relatedControls: [
-      { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective" },
-      { id: "Control-010", name: "Transaction Reconciliation", type: "Automated", nature: "Detective" }
+      { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-010", name: "Transaction Reconciliation", type: "Automated", nature: "Detective", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -301,9 +302,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 7 },
     inherentTrend: { value: "8%", up: true },
     relatedControls: [
-      { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive" },
-      { id: "Control-013", name: "Cash Count Verification", type: "Manual", nature: "Detective" },
-      { id: "Control-014", name: "Vault Access Controls", type: "Automated", nature: "Preventive" }
+      { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-013", name: "Cash Count Verification", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-014", name: "Vault Access Controls", type: "Automated", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -385,9 +386,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Critical", color: "red", score: 16 },
     inherentTrend: { value: "20%", up: true },
     relatedControls: [
-      { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive" },
-      { id: "Control-016", name: "Security Monitoring", type: "Automated", nature: "Detective" },
-      { id: "Control-017", name: "Penetration Testing", type: "Manual", nature: "Detective" }
+      { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-016", name: "Security Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" },
+      { id: "Control-017", name: "Penetration Testing", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
@@ -470,8 +471,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 14 },
     inherentTrend: { value: "15%", up: true },
     relatedControls: [
-      { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive" },
-      { id: "Control-019", name: "Phishing Awareness Training", type: "Manual", nature: "Preventive" }
+      { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-019", name: "Phishing Awareness Training", type: "Manual", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -535,9 +536,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 12 },
     inherentTrend: { value: "10%", up: false },
     relatedControls: [
-      { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive" },
-      { id: "Control-021", name: "Regulatory Monitoring", type: "Manual", nature: "Detective" },
-      { id: "Control-022", name: "Compliance Training", type: "Manual", nature: "Preventive" }
+      { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-021", name: "Regulatory Monitoring", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-022", name: "Compliance Training", type: "Manual", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -622,9 +623,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Critical", color: "red", score: 18 },
     inherentTrend: { value: "22%", up: true },
     relatedControls: [
-      { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective" },
-      { id: "Control-023A", name: "SAR Filing Process", type: "Manual", nature: "Detective" },
-      { id: "Control-023B", name: "Customer Due Diligence", type: "Manual", nature: "Preventive" }
+      { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" },
+      { id: "Control-023A", name: "SAR Filing Process", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-023B", name: "Customer Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "" },
@@ -665,9 +666,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 14 },
     inherentTrend: { value: "8%", up: false },
     relatedControls: [
-      { id: "Control-024", name: "Customer Verification", type: "Manual", nature: "Preventive" },
-      { id: "Control-024A", name: "Enhanced Due Diligence", type: "Manual", nature: "Preventive" },
-      { id: "Control-024B", name: "Identity Screening", type: "Automated", nature: "Detective" }
+      { id: "Control-024", name: "Customer Verification", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-024A", name: "Enhanced Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-024B", name: "Identity Screening", type: "Automated", nature: "Detective", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -708,9 +709,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 9 },
     inherentTrend: { value: "9%", up: false },
     relatedControls: [
-      { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive" },
-      { id: "Control-026", name: "VaR Monitoring", type: "Automated", nature: "Detective" },
-      { id: "Control-027", name: "Position Limits", type: "Automated", nature: "Preventive" }
+      { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-026", name: "VaR Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" },
+      { id: "Control-027", name: "Position Limits", type: "Automated", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -749,8 +750,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 13 },
     inherentTrend: { value: "16%", up: true },
     relatedControls: [
-      { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive" },
-      { id: "Control-029", name: "Contract Management", type: "Manual", nature: "Preventive" }
+      { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-029", name: "Contract Management", type: "Manual", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
@@ -789,9 +790,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Critical", color: "red", score: 17 },
     inherentTrend: { value: "25%", up: true },
     relatedControls: [
-      { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive" },
-      { id: "Control-031", name: "Data Classification", type: "Manual", nature: "Preventive" },
-      { id: "Control-031A", name: "Breach Response Plan", type: "Manual", nature: "Detective" }
+      { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-031", name: "Data Classification", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-031A", name: "Breach Response Plan", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "" },
@@ -833,8 +834,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 14 },
     inherentTrend: { value: "18%", up: true },
     relatedControls: [
-      { id: "Control-050", name: "PII Access Logging", type: "Automated", nature: "Detective" },
-      { id: "Control-051", name: "Data Anonymization", type: "Automated", nature: "Preventive" }
+      { id: "Control-050", name: "PII Access Logging", type: "Automated", nature: "Detective", keyControl: "Key" },
+      { id: "Control-051", name: "Data Anonymization", type: "Automated", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Partially Effective", color: "yellow" },
     testResults: { label: "Design Effective", sublabel: "Operating Partially Effective" },
@@ -875,9 +876,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 12 },
     inherentTrend: { value: "15%", up: false },
     relatedControls: [
-      { id: "Control-052", name: "Customer Data Encryption", type: "Automated", nature: "Preventive" },
-      { id: "Control-053", name: "Access Control Lists", type: "Automated", nature: "Preventive" },
-      { id: "Control-054", name: "Audit Trail Monitoring", type: "Automated", nature: "Detective" }
+      { id: "Control-052", name: "Customer Data Encryption", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-053", name: "Access Control Lists", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-054", name: "Audit Trail Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -918,8 +919,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 10 },
     inherentTrend: { value: "12%", up: false },
     relatedControls: [
-      { id: "Control-055", name: "Retention Policy Enforcement", type: "Automated", nature: "Preventive" },
-      { id: "Control-056", name: "Data Lifecycle Management", type: "Manual", nature: "Detective" }
+      { id: "Control-055", name: "Retention Policy Enforcement", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-056", name: "Data Lifecycle Management", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
@@ -959,9 +960,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 14 },
     inherentTrend: { value: "18%", up: true },
     relatedControls: [
-      { id: "Control-032", name: "Credit Scoring Model", type: "Automated", nature: "Preventive" },
-      { id: "Control-033", name: "Loan Approval Process", type: "Manual", nature: "Preventive" },
-      { id: "Control-034", name: "Portfolio Monitoring", type: "Automated", nature: "Detective" }
+      { id: "Control-032", name: "Credit Scoring Model", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-033", name: "Loan Approval Process", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-034", name: "Portfolio Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -1000,8 +1001,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 11 },
     inherentTrend: { value: "14%", up: false },
     relatedControls: [
-      { id: "Control-035", name: "Cash Flow Monitoring", type: "Manual", nature: "Detective" },
-      { id: "Control-036", name: "Liquidity Buffer", type: "Manual", nature: "Preventive" }
+      { id: "Control-035", name: "Cash Flow Monitoring", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-036", name: "Liquidity Buffer", type: "Manual", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "" },
@@ -1040,9 +1041,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 8 },
     inherentTrend: { value: "11%", up: true },
     relatedControls: [
-      { id: "Control-037", name: "Disaster Recovery Plan", type: "Manual", nature: "Preventive" },
-      { id: "Control-038", name: "Business Impact Analysis", type: "Manual", nature: "Detective" },
-      { id: "Control-039", name: "Recovery Testing", type: "Manual", nature: "Detective" }
+      { id: "Control-037", name: "Disaster Recovery Plan", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-038", name: "Business Impact Analysis", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-039", name: "Recovery Testing", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -1082,8 +1083,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Critical", color: "red", score: 19 },
     inherentTrend: { value: "23%", up: true },
     relatedControls: [
-      { id: "Control-040", name: "AI Fraud Detection", type: "Automated", nature: "Detective" },
-      { id: "Control-041", name: "Transaction Limits", type: "Automated", nature: "Preventive" }
+      { id: "Control-040", name: "AI Fraud Detection", type: "Automated", nature: "Detective", keyControl: "Key" },
+      { id: "Control-041", name: "Transaction Limits", type: "Automated", nature: "Preventive", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
@@ -1122,9 +1123,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 13 },
     inherentTrend: { value: "17%", up: false },
     relatedControls: [
-      { id: "Control-042", name: "Model Validation", type: "Manual", nature: "Detective" },
-      { id: "Control-043", name: "Model Governance", type: "Manual", nature: "Preventive" },
-      { id: "Control-044", name: "Model Performance Monitoring", type: "Automated", nature: "Detective" }
+      { id: "Control-042", name: "Model Validation", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
+      { id: "Control-043", name: "Model Governance", type: "Manual", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-044", name: "Model Performance Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "" },
@@ -1164,8 +1165,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 7 },
     inherentTrend: { value: "9%", up: false },
     relatedControls: [
-      { id: "Control-045", name: "Interest Rate Derivatives", type: "Automated", nature: "Preventive" },
-      { id: "Control-046", name: "Gap Analysis", type: "Manual", nature: "Detective" }
+      { id: "Control-045", name: "Interest Rate Derivatives", type: "Automated", nature: "Preventive", keyControl: "Key" },
+      { id: "Control-046", name: "Gap Analysis", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
