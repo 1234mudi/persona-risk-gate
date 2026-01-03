@@ -32,6 +32,13 @@ export interface ControlRecord {
   type: string;
   nature: string;
   keyControl: "Key" | "Non-Key";
+  description?: string;
+  designEffectiveness?: "Effective" | "Partially Effective" | "Ineffective";
+  operatingEffectiveness?: "Effective" | "Partially Effective" | "Ineffective";
+  overallScore?: number;
+  lastTestDate?: string;
+  testFrequency?: string;
+  testingStatus?: "Tested" | "Not Tested" | "Pending";
 }
 
 export interface SharedRiskData {
@@ -102,9 +109,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 8 },
     inherentTrend: { value: "13%", up: false },
     relatedControls: [
-      { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
-      { id: "Control-004", name: "Process Documentation", type: "Manual", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-005", name: "Staff Training Program", type: "Manual", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-003", name: "Quality Assurance", type: "Manual", nature: "Detective", keyControl: "Non-Key", description: "Comprehensive quality assurance program ensuring all operational processes meet established standards and compliance requirements.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-15", testFrequency: "Quarterly", testingStatus: "Tested" },
+      { id: "Control-004", name: "Process Documentation", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Standardized documentation of all critical operational processes including step-by-step procedures and escalation paths.", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4, lastTestDate: "2025-09-20", testFrequency: "Semi-Annual", testingStatus: "Tested" },
+      { id: "Control-005", name: "Staff Training Program", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Mandatory training program covering operational procedures, compliance requirements, and risk awareness for all staff.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-11-01", testFrequency: "Annual", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -219,8 +226,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 12 },
     inherentTrend: { value: "12%", up: false },
     relatedControls: [
-      { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
-      { id: "Control-010", name: "Transaction Reconciliation", type: "Automated", nature: "Detective", keyControl: "Key" }
+      { id: "Control-009", name: "Branch Audits", type: "Manual", nature: "Detective", keyControl: "Non-Key", description: "Regular audits of branch operations to identify process gaps and compliance issues.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-18", testFrequency: "Quarterly", testingStatus: "Tested" },
+      { id: "Control-010", name: "Transaction Reconciliation", type: "Automated", nature: "Detective", keyControl: "Key", description: "Automated daily reconciliation of all branch transactions against core banking system records.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-18", testFrequency: "Monthly", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -302,9 +309,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 7 },
     inherentTrend: { value: "8%", up: true },
     relatedControls: [
-      { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-013", name: "Cash Count Verification", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
-      { id: "Control-014", name: "Vault Access Controls", type: "Automated", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-012", name: "Dual Authorization", type: "Automated", nature: "Preventive", keyControl: "Key", description: "System-enforced dual authorization requirement for all cash transactions above threshold limits.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-15", testFrequency: "Monthly", testingStatus: "Tested" },
+      { id: "Control-013", name: "Cash Count Verification", type: "Manual", nature: "Detective", keyControl: "Non-Key", description: "End-of-day physical cash count verification with mandatory sign-off by supervisor.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-15", testFrequency: "Daily", testingStatus: "Tested" },
+      { id: "Control-014", name: "Vault Access Controls", type: "Automated", nature: "Preventive", keyControl: "Key", description: "Biometric and dual-key access controls for vault entry with complete audit logging.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-15", testFrequency: "Quarterly", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -386,9 +393,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Critical", color: "red", score: 16 },
     inherentTrend: { value: "20%", up: true },
     relatedControls: [
-      { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-016", name: "Security Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" },
-      { id: "Control-017", name: "Penetration Testing", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
+      { id: "Control-015", name: "Firewall & IDS", type: "Automated", nature: "Preventive", keyControl: "Key", description: "Enterprise-grade firewall and intrusion detection system protecting network perimeter with real-time threat analysis.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-22", testFrequency: "Continuous", testingStatus: "Tested" },
+      { id: "Control-016", name: "Security Monitoring", type: "Automated", nature: "Detective", keyControl: "Key", description: "24/7 Security Operations Center monitoring with automated alert correlation and incident response.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-22", testFrequency: "Continuous", testingStatus: "Tested" },
+      { id: "Control-017", name: "Penetration Testing", type: "Manual", nature: "Detective", keyControl: "Non-Key", description: "Regular penetration testing by certified third-party security firm to identify vulnerabilities.", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4, lastTestDate: "2025-09-15", testFrequency: "Quarterly", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
@@ -471,8 +478,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 14 },
     inherentTrend: { value: "15%", up: true },
     relatedControls: [
-      { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-019", name: "Phishing Awareness Training", type: "Manual", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-018", name: "Email Filtering", type: "Automated", nature: "Preventive", keyControl: "Key", description: "Advanced email filtering system with AI-powered threat detection and automatic quarantine of suspicious messages.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-21", testFrequency: "Monthly", testingStatus: "Tested" },
+      { id: "Control-019", name: "Phishing Awareness Training", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Mandatory quarterly phishing awareness training with simulated phishing exercises for all employees.", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4, lastTestDate: "2025-10-21", testFrequency: "Quarterly", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -536,9 +543,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 12 },
     inherentTrend: { value: "10%", up: false },
     relatedControls: [
-      { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-021", name: "Regulatory Monitoring", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
-      { id: "Control-022", name: "Compliance Training", type: "Manual", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-020", name: "Policy Framework", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Comprehensive policy framework covering all regulatory requirements with regular reviews and updates.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-01", testFrequency: "Annual", testingStatus: "Tested" },
+      { id: "Control-021", name: "Regulatory Monitoring", type: "Manual", nature: "Detective", keyControl: "Non-Key", description: "Ongoing monitoring of regulatory changes and impact assessment for business operations.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-01", testFrequency: "Continuous", testingStatus: "Tested" },
+      { id: "Control-022", name: "Compliance Training", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Annual compliance training program covering all regulatory requirements and ethical standards.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-01", testFrequency: "Annual", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -623,9 +630,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Critical", color: "red", score: 18 },
     inherentTrend: { value: "22%", up: true },
     relatedControls: [
-      { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" },
-      { id: "Control-023A", name: "SAR Filing Process", type: "Manual", nature: "Detective", keyControl: "Non-Key" },
-      { id: "Control-023B", name: "Customer Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-023", name: "Transaction Monitoring", type: "Automated", nature: "Detective", keyControl: "Key", description: "Real-time automated transaction monitoring system with risk-based thresholds and alert generation.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-09-28", testFrequency: "Continuous", testingStatus: "Tested" },
+      { id: "Control-023A", name: "SAR Filing Process", type: "Manual", nature: "Detective", keyControl: "Non-Key", description: "Standardized suspicious activity report filing process with regulatory deadline tracking.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-09-28", testFrequency: "Monthly", testingStatus: "Tested" },
+      { id: "Control-023B", name: "Customer Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Risk-based customer due diligence program with enhanced procedures for high-risk customers.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-09-28", testFrequency: "Quarterly", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "" },
@@ -666,9 +673,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 14 },
     inherentTrend: { value: "8%", up: false },
     relatedControls: [
-      { id: "Control-024", name: "Customer Verification", type: "Manual", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-024A", name: "Enhanced Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-024B", name: "Identity Screening", type: "Automated", nature: "Detective", keyControl: "Key" }
+      { id: "Control-024", name: "Customer Verification", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Multi-factor customer identity verification process at account opening and high-risk transactions.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-11-15", testFrequency: "Quarterly", testingStatus: "Tested" },
+      { id: "Control-024A", name: "Enhanced Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Enhanced due diligence procedures for high-risk customers including PEPs and high-value accounts.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-11-15", testFrequency: "Quarterly", testingStatus: "Tested" },
+      { id: "Control-024B", name: "Identity Screening", type: "Automated", nature: "Detective", keyControl: "Key", description: "Automated screening against sanctions lists and adverse media databases.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-11-15", testFrequency: "Continuous", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -709,9 +716,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Medium", color: "yellow", score: 9 },
     inherentTrend: { value: "9%", up: false },
     relatedControls: [
-      { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-026", name: "VaR Monitoring", type: "Automated", nature: "Detective", keyControl: "Key" },
-      { id: "Control-027", name: "Position Limits", type: "Automated", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-025", name: "Hedging Strategy", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Comprehensive hedging strategy to mitigate market exposure across all trading portfolios.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-17", testFrequency: "Quarterly", testingStatus: "Tested" },
+      { id: "Control-026", name: "VaR Monitoring", type: "Automated", nature: "Detective", keyControl: "Key", description: "Real-time Value at Risk monitoring with breach alerts and automated limit enforcement.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-17", testFrequency: "Daily", testingStatus: "Tested" },
+      { id: "Control-027", name: "Position Limits", type: "Automated", nature: "Preventive", keyControl: "Key", description: "Automated position limit enforcement with real-time monitoring and escalation.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-17", testFrequency: "Continuous", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "Operating Effective" },
@@ -750,8 +757,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 13 },
     inherentTrend: { value: "16%", up: true },
     relatedControls: [
-      { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-029", name: "Contract Management", type: "Manual", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-028", name: "Vendor Due Diligence", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Comprehensive due diligence process for all new and existing vendors including financial and operational assessments.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-16", testFrequency: "Annual", testingStatus: "Tested" },
+      { id: "Control-029", name: "Contract Management", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Centralized contract management system with standardized terms, SLAs, and compliance requirements.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-16", testFrequency: "Annual", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
@@ -790,9 +797,9 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "Critical", color: "red", score: 17 },
     inherentTrend: { value: "25%", up: true },
     relatedControls: [
-      { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-031", name: "Data Classification", type: "Manual", nature: "Preventive", keyControl: "Key" },
-      { id: "Control-031A", name: "Breach Response Plan", type: "Manual", nature: "Detective", keyControl: "Non-Key" }
+      { id: "Control-030", name: "Encryption & Access Controls", type: "Automated", nature: "Preventive", keyControl: "Key", description: "Enterprise-wide encryption standards and role-based access controls for all sensitive data.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-23", testFrequency: "Quarterly", testingStatus: "Tested" },
+      { id: "Control-031", name: "Data Classification", type: "Manual", nature: "Preventive", keyControl: "Key", description: "Data classification framework with automated tagging and handling requirements.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-23", testFrequency: "Annual", testingStatus: "Tested" },
+      { id: "Control-031A", name: "Breach Response Plan", type: "Manual", nature: "Detective", keyControl: "Non-Key", description: "Documented breach response plan with defined roles, communication protocols, and regulatory notification procedures.", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4, lastTestDate: "2025-10-23", testFrequency: "Annual", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Design Effective", color: "green" },
     testResults: { label: "Design Effective", sublabel: "" },
@@ -834,8 +841,8 @@ export const initialRiskData: SharedRiskData[] = [
     inherentRisk: { level: "High", color: "red", score: 14 },
     inherentTrend: { value: "18%", up: true },
     relatedControls: [
-      { id: "Control-050", name: "PII Access Logging", type: "Automated", nature: "Detective", keyControl: "Key" },
-      { id: "Control-051", name: "Data Anonymization", type: "Automated", nature: "Preventive", keyControl: "Key" }
+      { id: "Control-050", name: "PII Access Logging", type: "Automated", nature: "Detective", keyControl: "Key", description: "Comprehensive logging of all access to personally identifiable information with real-time alerts.", designEffectiveness: "Effective", operatingEffectiveness: "Partially Effective", overallScore: 4, lastTestDate: "2025-10-20", testFrequency: "Continuous", testingStatus: "Tested" },
+      { id: "Control-051", name: "Data Anonymization", type: "Automated", nature: "Preventive", keyControl: "Key", description: "Automated data anonymization for non-production environments and analytics use cases.", designEffectiveness: "Effective", operatingEffectiveness: "Effective", overallScore: 5, lastTestDate: "2025-10-20", testFrequency: "Quarterly", testingStatus: "Tested" }
     ],
     controlEffectiveness: { label: "Partially Effective", color: "yellow" },
     testResults: { label: "Design Effective", sublabel: "Operating Partially Effective" },

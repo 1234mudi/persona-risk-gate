@@ -75,7 +75,7 @@ interface RiskData {
   };
   inherentRisk: { level: string; color: string; score?: number };
   inherentTrend: { value: string; up: boolean };
-  relatedControls: { id: string; name: string; type: string; nature: string; keyControl: "Key" | "Non-Key" }[];
+  relatedControls: { id: string; name: string; type: string; nature: string; keyControl: "Key" | "Non-Key"; description?: string; designEffectiveness?: "Effective" | "Partially Effective" | "Ineffective"; operatingEffectiveness?: "Effective" | "Partially Effective" | "Ineffective"; overallScore?: number; lastTestDate?: string; testFrequency?: string; testingStatus?: "Tested" | "Not Tested" | "Pending" }[];
   controlEffectiveness: { label: string; color: string };
   testResults: { label: string; sublabel: string };
   residualRisk: { level: string; color: string; score?: number };
@@ -114,6 +114,10 @@ const Dashboard2ndLine = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [riskHierarchyFilter, setRiskHierarchyFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  
+  // Control details dialog state
+  const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
+  const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
   // Check URL params to auto-open modal on navigation back
   useEffect(() => {
@@ -1479,19 +1483,38 @@ const Dashboard2ndLine = () => {
                             <table className="w-full text-left table-fixed">
                               <thead>
                                 <tr className="text-[10px] text-muted-foreground border-b border-border/50">
-                                  <th className="pb-1 pr-2 font-medium w-[75px]">ID</th>
-                                  <th className="pb-1 pr-2 font-medium w-[110px]">Name</th>
-                                  <th className="pb-1 pr-2 font-medium w-[70px]">Key Control</th>
-                                  <th className="pb-1 font-medium w-[65px]">Nature</th>
+                                  <th className="pb-1 pr-1 font-medium w-[55px]">ID</th>
+                                  <th className="pb-1 pr-1 font-medium w-[130px]">Name</th>
+                                  <th className="pb-1 pr-1 font-medium w-[60px]">Key</th>
+                                  <th className="pb-1 font-medium w-[55px]">Nature</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 {risk.relatedControls.slice(0, 3).map((control, idx) => (
                                   <tr key={idx} className="border-b border-border/30 last:border-0">
-                                    <td className="py-0.5 pr-2 text-primary font-medium overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
-                                    <td className="py-0.5 pr-2 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={control.name}>{control.name}</td>
-                                    <td className="py-0.5 pr-2 overflow-hidden text-ellipsis whitespace-nowrap" title={control.keyControl}>{control.keyControl}</td>
-                                    <td className="py-0.5 overflow-hidden text-ellipsis whitespace-nowrap" title={control.nature}>{control.nature}</td>
+                                    <td className="py-0.5 pr-1 text-primary font-medium overflow-hidden text-ellipsis whitespace-nowrap text-[10px]">{control.id.replace("Control-", "C-")}</td>
+                                    <td className="py-0.5 pr-1 overflow-hidden text-ellipsis whitespace-nowrap">
+                                      <TooltipProvider>
+                                        <Tooltip>
+                                          <TooltipTrigger asChild>
+                                            <button
+                                              className="text-muted-foreground hover:text-primary hover:underline text-left truncate max-w-[120px] block text-[10px]"
+                                              onClick={() => {
+                                                setSelectedControl(control);
+                                                setControlDetailsOpen(true);
+                                              }}
+                                            >
+                                              {control.name}
+                                            </button>
+                                          </TooltipTrigger>
+                                          <TooltipContent side="top" className="max-w-[250px]">
+                                            <p className="font-medium text-xs">{control.name}</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      </TooltipProvider>
+                                    </td>
+                                    <td className="py-0.5 pr-1 overflow-hidden text-ellipsis whitespace-nowrap text-[10px]">{control.keyControl}</td>
+                                    <td className="py-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-[10px]">{control.nature}</td>
                                   </tr>
                                 ))}
                               </tbody>
@@ -1904,6 +1927,98 @@ const Dashboard2ndLine = () => {
           { id: "ISS-2024-028", title: "Missing audit trail records", description: "Transaction monitoring gaps identified during internal audit", severity: "High", status: "Open", dateIdentified: "2024-10-05", owner: "Compliance Team" },
         ]}
       />
+
+      {/* Control Details Dialog */}
+      <Dialog open={controlDetailsOpen} onOpenChange={setControlDetailsOpen}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              {selectedControl?.name}
+            </DialogTitle>
+            <DialogDescription>
+              Control ID: {selectedControl?.id}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="space-y-4">
+            {/* Description */}
+            <div>
+              <Label className="text-xs text-muted-foreground">Description</Label>
+              <p className="text-sm mt-1">{selectedControl?.description || "No description available."}</p>
+            </div>
+            
+            {/* Control Properties */}
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="text-xs text-muted-foreground">Type</Label>
+                <p className="text-sm font-medium">{selectedControl?.type}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Nature</Label>
+                <p className="text-sm font-medium">{selectedControl?.nature}</p>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Key Control</Label>
+                <Badge variant={selectedControl?.keyControl === "Key" ? "default" : "secondary"} className="mt-1">
+                  {selectedControl?.keyControl}
+                </Badge>
+              </div>
+              <div>
+                <Label className="text-xs text-muted-foreground">Testing Status</Label>
+                <Badge variant={selectedControl?.testingStatus === "Tested" ? "default" : "outline"} className="mt-1">
+                  {selectedControl?.testingStatus || "Not Tested"}
+                </Badge>
+              </div>
+            </div>
+            
+            {/* Control Test Results Section */}
+            <div className="border-t pt-4">
+              <h4 className="text-sm font-semibold mb-3">Control Test Results</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="text-xs text-muted-foreground">Design Effectiveness</Label>
+                  <Badge className={`mt-1 ${
+                    selectedControl?.designEffectiveness === "Effective" ? "bg-green-500 text-white" :
+                    selectedControl?.designEffectiveness === "Partially Effective" ? "bg-amber-500 text-white" :
+                    selectedControl?.designEffectiveness === "Ineffective" ? "bg-red-500 text-white" :
+                    "bg-muted text-muted-foreground"
+                  }`}>
+                    {selectedControl?.designEffectiveness || "N/A"}
+                  </Badge>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Operating Effectiveness</Label>
+                  <Badge className={`mt-1 ${
+                    selectedControl?.operatingEffectiveness === "Effective" ? "bg-green-500 text-white" :
+                    selectedControl?.operatingEffectiveness === "Partially Effective" ? "bg-amber-500 text-white" :
+                    selectedControl?.operatingEffectiveness === "Ineffective" ? "bg-red-500 text-white" :
+                    "bg-muted text-muted-foreground"
+                  }`}>
+                    {selectedControl?.operatingEffectiveness || "N/A"}
+                  </Badge>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Overall Score</Label>
+                  <div className="flex items-center gap-1 mt-1">
+                    <span className="text-lg font-bold">{selectedControl?.overallScore || "—"}</span>
+                    <span className="text-xs text-muted-foreground">/5</span>
+                  </div>
+                </div>
+                <div>
+                  <Label className="text-xs text-muted-foreground">Test Frequency</Label>
+                  <p className="text-sm mt-1">{selectedControl?.testFrequency || "N/A"}</p>
+                </div>
+              </div>
+              {selectedControl?.lastTestDate && (
+                <p className="text-xs text-muted-foreground mt-3">
+                  Last tested: {selectedControl.lastTestDate}
+                </p>
+              )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {/* Update Version Confirmation Dialog */}
       <Dialog open={updateVersionDialogOpen} onOpenChange={setUpdateVersionDialogOpen}>
