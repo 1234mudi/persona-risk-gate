@@ -88,7 +88,7 @@ interface RiskData {
   };
   inherentRisk: { level: string; color: string; score?: number };
   inherentTrend: { value: string; up: boolean };
-  relatedControls: { id: string; name: string; type: string; nature: string }[];
+  relatedControls: { id: string; name: string; type: string; nature: string; keyControl: "Key" | "Non-Key" }[];
   controlEffectiveness: { label: string; color: string };
   testResults: { label: string; sublabel: string };
   residualRisk: { level: string; color: string; score?: number };
@@ -592,7 +592,8 @@ const Dashboard1stLine = () => {
         id: parsed.controls?.split(':')[0] || 'CTRL-NEW', 
         name: parsed.controls?.split(':')[1]?.trim() || 'New Control', 
         type: 'Preventive', 
-        nature: 'Manual' 
+        nature: 'Manual',
+        keyControl: 'Key' as const
       }],
       controlEffectiveness: { 
         label: parsed.effectiveness || 'Not Assessed', 
@@ -2087,7 +2088,7 @@ const Dashboard1stLine = () => {
                                   <tr className="text-[10px] text-muted-foreground border-b border-border/50">
                                     <th className="pb-1 pr-2 font-medium w-[75px]">ID</th>
                                     <th className="pb-1 pr-2 font-medium w-[110px]">Name</th>
-                                    <th className="pb-1 pr-2 font-medium w-[70px]">Type</th>
+                                    <th className="pb-1 pr-2 font-medium w-[70px]">Key Control</th>
                                     <th className="pb-1 font-medium w-[65px]">Nature</th>
                                   </tr>
                                 </thead>
@@ -2096,7 +2097,7 @@ const Dashboard1stLine = () => {
                                     <tr key={idx} className="border-b border-border/30 last:border-0">
                                       <td className="py-1 pr-2 font-medium text-first-line overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
                                       <td className="py-1 pr-2 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={control.name}>{control.name}</td>
-                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap" title={control.type}>{control.type}</td>
+                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap" title={control.keyControl}>{control.keyControl}</td>
                                       <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap" title={control.nature}>{control.nature}</td>
                                     </tr>
                                   ))}
