@@ -119,6 +119,11 @@ const Dashboard2ndLine = () => {
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
+  // Reset status filter when switching tabs to avoid invalid filter values
+  useEffect(() => {
+    setStatusFilter("all");
+  }, [activeTab]);
+
   // Check URL params to auto-open modal on navigation back
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
@@ -1181,12 +1186,18 @@ const Dashboard2ndLine = () => {
                   <SelectTrigger id="status-filter" className="w-full sm:w-32 h-7 sm:h-6 text-[10px] sm:text-xs">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                <SelectContent className="bg-popover border border-border shadow-lg z-50">
                     <SelectItem value="all">All Statuses</SelectItem>
-                    <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
-                    <SelectItem value="review-challenge">Review/Challenge</SelectItem>
-                    <SelectItem value="overdue">Overdue</SelectItem>
-                    <SelectItem value="closed">Closed</SelectItem>
+                    {activeTab === "own" ? (
+                      <SelectItem value="completed">Completed</SelectItem>
+                    ) : (
+                      <>
+                        <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
+                        <SelectItem value="review-challenge">Review/Challenge</SelectItem>
+                        <SelectItem value="overdue">Overdue</SelectItem>
+                        <SelectItem value="closed">Closed</SelectItem>
+                      </>
+                    )}
                   </SelectContent>
                 </Select>
               </div>
