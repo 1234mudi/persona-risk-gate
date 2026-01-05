@@ -706,8 +706,9 @@ const Dashboard2ndLine = () => {
         if (expandedRows.has(risk.id)) {
           // Get Level 2 children
           const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
-          // For each Level 2, get its Level 3 children and add them directly
+          // For each Level 2, add it and its Level 3 children
           level2Risks.forEach(l2 => {
+            visible.push(l2);  // Add Level 2 risk
             const level3Risks = filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
             visible.push(...level3Risks);
           });
