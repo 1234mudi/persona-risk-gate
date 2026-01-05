@@ -137,7 +137,7 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[85vh] animate-scale-in">
+      <DialogContent className="max-w-3xl max-h-[90vh] flex flex-col animate-scale-in" fullScreenMobile>
         <DialogHeader className="pb-4 border-b">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center">
@@ -150,7 +150,8 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <ScrollArea className="flex-1 min-h-0">
+          <div className="space-y-6 py-4 pr-4">
           {/* Summary Stats */}
           <div className="flex items-center justify-between bg-muted/30 rounded-lg p-4">
             <div>
@@ -211,7 +212,7 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
           {/* Detailed Risk List per Segment */}
           <div className="space-y-4">
             <p className="text-sm font-medium text-muted-foreground">Detailed Breakdown</p>
-            <ScrollArea className="h-[250px] rounded-md border">
+            <div className="rounded-md border max-h-[200px] overflow-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
@@ -241,12 +242,13 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
                         No risks found
                       </TableCell>
                     </TableRow>
-                  )}
-                </TableBody>
-              </Table>
-            </ScrollArea>
+                )}
+              </TableBody>
+            </Table>
+            </div>
           </div>
         </div>
+        </ScrollArea>
       </DialogContent>
     </Dialog>
   );
