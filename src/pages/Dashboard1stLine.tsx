@@ -1893,7 +1893,7 @@ const Dashboard1stLine = () => {
                                   </button>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                  <p>Click to open the risk assessment overview</p>
+                                  <p>Click to open the risk assessment overview. Open challenges/issues can be viewed in the assessment form.</p>
                                 </TooltipContent>
                               </Tooltip>
                               <span className="text-xs text-muted-foreground">{risk.owner}</span>
