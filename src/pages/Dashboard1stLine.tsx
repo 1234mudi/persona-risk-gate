@@ -1290,61 +1290,45 @@ const Dashboard1stLine = () => {
 
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
-        {/* Scorecards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          {/* Quick Links Card */}
-          <Card className="lg:col-span-1 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-emerald-50 to-green-50/50 dark:from-card dark:to-card">
-            <CardHeader className="pb-1 pt-3 px-4">
-              <CardTitle className="text-lg font-semibold flex items-center gap-2">
-                <Link className="w-5 h-5 text-first-line" />
-                Quick Links
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="px-4 pb-3">
-              <div className="flex flex-col gap-y-1">
-                <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]">
-                  <ClipboardCheck className="w-4 h-4" />
-                  View My Pending Assessments
-                </button>
-                <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px]">
-                  <FileCheck className="w-4 h-4" />
-                  View Control Evidence Tasks
-                </button>
-                <a href="#" className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
-                  <AlertCircle className="w-4 h-4" />
-                  View My Action Plans
-                </a>
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button 
-                        onClick={() => setAiDocumentModalOpen(true)} 
-                        className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm w-full text-left min-h-[28px] cursor-help"
-                      >
-                        <Sparkles className="w-4 h-4" />
-                        Assess Documents with AI
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Upload CSV/DOCX files to automatically create risk assessments using AI analysis</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <button 
-                  onClick={downloadRiskDocx} 
-                  className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]"
-                >
-                  <FileText className="w-4 h-4" />
-                  Download Risk Events (Word)
-                </button>
-                <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 hover:underline text-sm min-h-[28px]">
-                  <FileText className="w-4 h-4" />
-                  Download Sample Hierarchy (CSV)
-                </a>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Quick Links - Horizontal Strip */}
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 px-1">
+          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
+            <Link className="w-4 h-4 text-first-line" />
+            Quick Links:
+          </div>
+          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+            <ClipboardCheck className="w-4 h-4" />
+            <span>View My Pending Assessments</span>
+          </button>
+          <span className="text-muted-foreground/50">|</span>
+          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+            <FileCheck className="w-4 h-4" />
+            <span>View Control Evidence Tasks</span>
+          </button>
+          <span className="text-muted-foreground/50">|</span>
+          <a href="#" className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+            <AlertCircle className="w-4 h-4" />
+            <span>View My Action Plans</span>
+          </a>
+          <span className="text-muted-foreground/50">|</span>
+          <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+            <Sparkles className="w-4 h-4" />
+            <span>Assess Documents with AI</span>
+          </button>
+          <span className="text-muted-foreground/50">|</span>
+          <button onClick={downloadRiskDocx} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+            <FileText className="w-4 h-4" />
+            <span>Download Risk Events</span>
+          </button>
+          <span className="text-muted-foreground/50">|</span>
+          <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+            <FileText className="w-4 h-4" />
+            <span>Download Sample Hierarchy</span>
+          </a>
+        </div>
 
+        {/* Scorecards - 3 columns */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
           {metrics.map((metric, index) => (
             <Card 
               key={index}
