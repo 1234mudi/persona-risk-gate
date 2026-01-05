@@ -498,7 +498,7 @@ const Dashboard2ndLine = () => {
 
   // Get unique business units for grouping
   const businessUnitsInView = useMemo(() => {
-    const units = [...new Set(filteredRiskData.map(r => r.businessUnit))];
+    const units = [...new Set(filteredRiskData.filter(r => r).map(r => r.businessUnit))];
     return units.sort();
   }, [filteredRiskData]);
 
@@ -509,6 +509,7 @@ const Dashboard2ndLine = () => {
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
     filteredRiskData.forEach(risk => {
+      if (!risk) return;
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
         if (expandedRows.has(risk.id)) {
@@ -531,6 +532,7 @@ const Dashboard2ndLine = () => {
     const grouped: { [key: string]: RiskData[] } = {};
     
     visibleRisks.forEach(risk => {
+      if (!risk) return;
       if (!grouped[risk.businessUnit]) {
         grouped[risk.businessUnit] = [];
       }
