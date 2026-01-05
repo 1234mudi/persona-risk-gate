@@ -119,21 +119,6 @@ const Dashboard2ndLine = () => {
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
-  // Risk data state - must be before useEffect that references it (null-safe initialization)
-  const [riskData, setRiskData] = useState<RiskData[]>(() => 
-    (getInitialRiskDataCopy() as any[]).filter(Boolean) as RiskData[]
-  );
-
-  // Null-safety: filter out any null/undefined entries to prevent crashes
-  const safeRiskData = useMemo(() => riskData.filter((r): r is RiskData => r != null), [riskData]);
-
-  // Auto-cleanup: remove nulls from state if they exist
-  useEffect(() => {
-    if (riskData.some(r => r == null)) {
-      setRiskData(prev => prev.filter((r): r is RiskData => r != null));
-    }
-  }, [riskData]);
-
   // Check URL params to auto-open modal on navigation back
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
@@ -142,7 +127,7 @@ const Dashboard2ndLine = () => {
     
     if (openOverview === "true" && riskId && riskName) {
       // Find the risk data to get sectionCompletion, fallback to defaults
-      const foundRisk = safeRiskData.find(r => r.id === riskId);
+      const foundRisk = riskData.find(r => r.id === riskId);
       setSelectedRiskForOverview({ 
         id: riskId, 
         title: riskName,
@@ -236,11 +221,12 @@ const Dashboard2ndLine = () => {
     type: null,
     riskId: null,
   });
+  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
   // Selection helpers
   const visibleRisks = useMemo(() => {
     const visible: RiskData[] = [];
-    const filtered = safeRiskData.filter(risk => risk.tabCategory === activeTab);
+    const filtered = riskData.filter(risk => risk.tabCategory === activeTab);
     filtered.forEach(risk => {
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
@@ -254,7 +240,7 @@ const Dashboard2ndLine = () => {
       }
     });
     return visible;
-  }, [safeRiskData, activeTab, expandedRows]);
+  }, [riskData, activeTab, expandedRows]);
 
   // Helper to check if a risk is completed/closed
   const isRiskCompleted = (risk: RiskData): boolean => {
@@ -269,7 +255,7 @@ const Dashboard2ndLine = () => {
   );
 
   const toggleRiskSelection = (riskId: string) => {
-    const risk = safeRiskData.find(r => r.id === riskId);
+    const risk = riskData.find(r => r.id === riskId);
     if (risk && isRiskCompleted(risk)) return; // Don't toggle completed/closed risks
     
     setSelectedRisks(prev => {
@@ -296,7 +282,7 @@ const Dashboard2ndLine = () => {
   };
 
   const getSelectedRiskData = () => {
-    return safeRiskData.filter(r => selectedRisks.has(r.id));
+    return riskData.filter(r => selectedRisks.has(r.id));
   };
 
   const toggleRow = (riskId: string) => {
@@ -329,7 +315,7 @@ const Dashboard2ndLine = () => {
   const [selectedRiskForUpdate, setSelectedRiskForUpdate] = useState<RiskData | null>(null);
 
   const handleUpdateClosedAssessment = (riskId: string) => {
-    const risk = safeRiskData.find(r => r.id === riskId);
+    const risk = riskData.find(r => r.id === riskId);
     if (risk) {
       setSelectedRiskForUpdate(risk);
       setUpdateVersionDialogOpen(true);
@@ -394,13 +380,13 @@ const Dashboard2ndLine = () => {
   };
 
   // Track scroll position for scroll button
-  useEffect(() => {
+  useState(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  });
   const metrics = [
     {
       title: "Assessments Pending Review",
@@ -475,8 +461,8 @@ const Dashboard2ndLine = () => {
 
   const filteredRiskData = useMemo(() => {
     return riskData.filter(risk => {
-      // Null check + Tab filter
-      if (!risk || risk.tabCategory !== activeTab) return false;
+      // Tab filter
+      if (risk.tabCategory !== activeTab) return false;
       
       // Business Unit filter
       if (businessUnitFilter !== "all" && risk.businessUnit !== businessUnitFilter) return false;
@@ -510,7 +496,7 @@ const Dashboard2ndLine = () => {
 
   // Get unique business units for grouping
   const businessUnitsInView = useMemo(() => {
-    const units = [...new Set(filteredRiskData.filter(r => r).map(r => r.businessUnit))];
+    const units = [...new Set(filteredRiskData.map(r => r.businessUnit))];
     return units.sort();
   }, [filteredRiskData]);
 
@@ -521,7 +507,6 @@ const Dashboard2ndLine = () => {
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
     filteredRiskData.forEach(risk => {
-      if (!risk) return;
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
         if (expandedRows.has(risk.id)) {
@@ -544,7 +529,6 @@ const Dashboard2ndLine = () => {
     const grouped: { [key: string]: RiskData[] } = {};
     
     visibleRisks.forEach(risk => {
-      if (!risk) return;
       if (!grouped[risk.businessUnit]) {
         grouped[risk.businessUnit] = [];
       }
@@ -943,7 +927,7 @@ const Dashboard2ndLine = () => {
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
                       activeTab === "own" ? "bg-green-800/30" : "bg-green-200 dark:bg-green-800/40"
                     }`}>
-                      {riskData.filter(r => r && r.tabCategory === "own").length}
+                      {riskData.filter(r => r.tabCategory === "own").length}
                     </span>
                   </button>
                   <button
@@ -959,7 +943,7 @@ const Dashboard2ndLine = () => {
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
                       activeTab === "assess" ? "bg-white/20" : "bg-muted"
                     }`}>
-                      {riskData.filter(r => r && r.tabCategory === "assess").length}
+                      {riskData.filter(r => r.tabCategory === "assess").length}
                     </span>
                   </button>
                   <button
@@ -975,7 +959,7 @@ const Dashboard2ndLine = () => {
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
                       activeTab === "approve" ? "bg-white/20" : "bg-muted"
                     }`}>
-                      {riskData.filter(r => r && r.tabCategory === "approve").length}
+                      {riskData.filter(r => r.tabCategory === "approve").length}
                     </span>
                   </button>
                 </div>
@@ -1011,7 +995,7 @@ const Dashboard2ndLine = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Business Units</SelectItem>
-                    {Array.from(new Set(safeRiskData.map(r => r.businessUnit).filter(Boolean))).sort().map(unit => (
+                    {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
                       <SelectItem key={unit} value={unit}>{unit}</SelectItem>
                     ))}
                   </SelectContent>

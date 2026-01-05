@@ -2,8 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, Shield } from "lucide-react";
-import { MetricDetailModal } from "@/components/MetricDetailModal";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -89,20 +88,7 @@ interface RiskData {
   };
   inherentRisk: { level: string; color: string; score?: number };
   inherentTrend: { value: string; up: boolean };
-  relatedControls: { 
-    id: string; 
-    name: string; 
-    type: string; 
-    nature: string; 
-    keyControl: "Key" | "Non-Key";
-    description?: string;
-    designEffectiveness?: "Effective" | "Partially Effective" | "Ineffective";
-    operatingEffectiveness?: "Effective" | "Partially Effective" | "Ineffective";
-    overallScore?: number;
-    lastTestDate?: string;
-    testFrequency?: string;
-    testingStatus?: "Tested" | "Not Tested" | "Pending";
-  }[];
+  relatedControls: { id: string; name: string; type: string; nature: string; keyControl: "Key" | "Non-Key" }[];
   controlEffectiveness: { label: string; color: string };
   testResults: { label: string; sublabel: string };
   residualRisk: { level: string; color: string; score?: number };
@@ -156,34 +142,13 @@ const Dashboard1stLine = () => {
     value: string;
   } | null>(null);
 
-  // Control details dialog state
-  const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
-  const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
-
-  // Metric detail modal state
-  const [metricDetailOpen, setMetricDetailOpen] = useState(false);
-  const [selectedMetric, setSelectedMetric] = useState<typeof metrics[0] | null>(null);
-
-  // Risk data state - must be before useEffect that references it
-  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
-
-  // IMPORTANT: Filter out any null/undefined entries to prevent runtime crashes
-  const safeRiskData = useMemo(() => riskData.filter((r): r is RiskData => r != null), [riskData]);
-
-  // Auto-cleanup nulls from riskData if any are detected
-  useEffect(() => {
-    if (riskData.some(r => r == null)) {
-      setRiskData(prev => prev.filter((r): r is RiskData => r != null));
-    }
-  }, [riskData]);
-
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
     const riskId = searchParams.get("riskId");
     const riskName = searchParams.get("riskName");
     
     if (openOverview === "true" && riskId && riskName) {
-      const foundRisk = safeRiskData.find(r => r.id === riskId);
+      const foundRisk = riskData.find(r => r.id === riskId);
       setSelectedRiskForOverview({ 
         id: riskId, 
         title: riskName,
@@ -250,33 +215,34 @@ const Dashboard1stLine = () => {
     riskId: null,
   });
 
+  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
   // Initialize expanded rows with all Level 1 risks by default (only once)
   useEffect(() => {
-    if (!expandedRowsInitialized && safeRiskData.length > 0) {
-      const level1Ids = safeRiskData.filter(r => r.riskLevel === "Level 1").map(r => r.id);
+    if (!expandedRowsInitialized && riskData.length > 0) {
+      const level1Ids = riskData.filter(r => r.riskLevel === "Level 1").map(r => r.id);
       setExpandedRows(new Set(level1Ids));
       setExpandedRowsInitialized(true);
     }
-  }, [safeRiskData, expandedRowsInitialized]);
+  }, [riskData, expandedRowsInitialized]);
 
   const getFilteredByTab = (data: RiskData[], tab: "own" | "assess" | "approve") => {
-    return data.filter(risk => risk && risk.tabCategory === tab);
+    return data.filter(risk => risk.tabCategory === tab);
   };
 
   // Unique Risk IDs for filter dropdown
   const uniqueRiskIds = useMemo(() => {
-    const tabRisks = getFilteredByTab(safeRiskData, activeTab);
+    const tabRisks = getFilteredByTab(riskData, activeTab);
     return [...new Set(tabRisks.map(r => r.id))].sort();
-  }, [safeRiskData, activeTab]);
+  }, [riskData, activeTab]);
 
   // Total count for current tab (before filtering)
   const totalTabRisks = useMemo(() => {
-    return safeRiskData.filter(r => r.tabCategory === activeTab).length;
-  }, [safeRiskData, activeTab]);
+    return riskData.filter(r => r.tabCategory === activeTab).length;
+  }, [riskData, activeTab]);
 
   const visibleRisks = useMemo(() => {
-    let filtered = getFilteredByTab(safeRiskData, activeTab);
+    let filtered = getFilteredByTab(riskData, activeTab);
     
     // Apply search filter
     if (searchQuery.trim()) {
@@ -395,7 +361,7 @@ const Dashboard1stLine = () => {
       }
       return visible;
     }
-  }, [safeRiskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows]);
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -422,7 +388,7 @@ const Dashboard1stLine = () => {
   };
 
   const getSelectedRiskData = () => {
-    return safeRiskData.filter(r => selectedRisks.has(r.id));
+    return riskData.filter(r => selectedRisks.has(r.id));
   };
 
   const toggleRow = (riskId: string) => {
@@ -657,10 +623,9 @@ const Dashboard1stLine = () => {
     console.log("Sample converted:", newRisks.slice(0, 3).map(r => ({ id: r.id, title: r.title, riskLevel: r.riskLevel })));
 
     setRiskData(prev => {
-      const safePrev = prev.filter((r): r is RiskData => r != null);
-      console.log("Previous riskData count:", safePrev.length);
+      console.log("Previous riskData count:", prev.length);
       // Create a map of existing risk IDs for quick lookup
-      const existingIds = new Set(safePrev.map(r => r.id));
+      const existingIds = new Set(prev.map(r => r.id));
       
       // Separate new risks from updates to existing risks
       const trulyNewRisks = newRisks.filter(r => !existingIds.has(r.id));
@@ -670,8 +635,8 @@ const Dashboard1stLine = () => {
       console.log("Updated risks:", updatedRisks.length);
       
       // Update existing risks with new data, or keep them unchanged
-      const updatedExisting = safePrev.map(existingRisk => {
-        const update = updatedRisks.find(r => r && r.id === existingRisk.id);
+      const updatedExisting = prev.map(existingRisk => {
+        const update = updatedRisks.find(r => r.id === existingRisk.id);
         return update ? { ...existingRisk, ...update } : existingRisk;
       });
       
@@ -685,7 +650,7 @@ const Dashboard1stLine = () => {
   };
 
   const handleUpdateClosedAssessment = (riskId: string) => {
-    const risk = safeRiskData.find(r => r.id === riskId);
+    const risk = riskData.find(r => r.id === riskId);
     if (risk) {
       setSelectedRiskForUpdate(risk);
       setUpdateVersionDialogOpen(true);
@@ -764,7 +729,7 @@ const Dashboard1stLine = () => {
     let dueThisMonth = 0;
     let future = 0;
     
-    safeRiskData.forEach(risk => {
+    riskData.forEach(risk => {
       try {
         const dueDate = parseISO(risk.dueDate);
         const dueDateStart = startOfDay(dueDate);
@@ -783,8 +748,8 @@ const Dashboard1stLine = () => {
       }
     });
     
-    return { overdue, dueThisWeek, dueThisMonth, future, total: safeRiskData.length };
-  }, [safeRiskData]);
+    return { overdue, dueThisWeek, dueThisMonth, future, total: riskData.length };
+  }, [riskData]);
 
   // Calculate inherent risk rating counts from risk data
   const inherentRiskCounts = useMemo(() => {
@@ -793,7 +758,7 @@ const Dashboard1stLine = () => {
     let medium = 0;
     let low = 0;
     
-    safeRiskData.forEach(risk => {
+    riskData.forEach(risk => {
       const level = risk.inherentRisk?.level?.toLowerCase() || "";
       if (level.includes("critical")) {
         critical++;
@@ -807,7 +772,7 @@ const Dashboard1stLine = () => {
     });
     
     return { critical, high, medium, low, total: critical + high + medium + low };
-  }, [safeRiskData]);
+  }, [riskData]);
 
   // Calculate assessment progress counts based on risk status
   const assessmentProgressCounts = useMemo(() => {
@@ -816,7 +781,7 @@ const Dashboard1stLine = () => {
     let pendingApproval = 0;
     let completed = 0;
     
-    safeRiskData.forEach(risk => {
+    riskData.forEach(risk => {
       const status = risk.status?.toLowerCase() || "";
       if (status === "completed" || status === "complete" || status === "closed") {
         completed++;
@@ -834,7 +799,7 @@ const Dashboard1stLine = () => {
     
     const total = notStarted + inProgress + pendingApproval + completed;
     return { notStarted, inProgress, pendingApproval, completed, total };
-  }, [safeRiskData]);
+  }, [riskData]);
 
   // Calculate control evidence status from controlEffectiveness
   const controlEvidenceCounts = useMemo(() => {
@@ -843,7 +808,7 @@ const Dashboard1stLine = () => {
     let ineffective = 0;
     let notAssessed = 0;
     
-    safeRiskData.forEach(risk => {
+    riskData.forEach(risk => {
       const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
       if (label === "effective" || label === "design effective") {
         effective++;
@@ -858,7 +823,7 @@ const Dashboard1stLine = () => {
     
     const total = effective + partiallyEffective + ineffective + notAssessed;
     return { effective, partiallyEffective, ineffective, notAssessed, total };
-  }, [safeRiskData]);
+  }, [riskData]);
 
   // 1st Line specific metrics
   const metrics = useMemo(() => [
@@ -924,7 +889,7 @@ const Dashboard1stLine = () => {
 
   // Get unique assessors for the filter dropdown (only from assess tab)
   const uniqueAssessors = useMemo(() => {
-    const assessRisks = safeRiskData.filter(risk => risk.tabCategory === "assess");
+    const assessRisks = riskData.filter(risk => risk.tabCategory === "assess");
     const allAssessors = assessRisks.flatMap(risk => risk.assessors);
     return [...new Set(allAssessors)].sort();
   }, [riskData]);
@@ -961,13 +926,12 @@ const Dashboard1stLine = () => {
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
     filteredRiskData.forEach(risk => {
-      if (!risk) return;
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
         if (expandedRows.has(risk.id)) {
-          const level2Risks = filteredRiskData.filter(r => r && r.riskLevel === "Level 2" && r.parentRisk === risk.title);
+          const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
           level2Risks.forEach(l2 => {
-            const level3Risks = filteredRiskData.filter(r => r && r.riskLevel === "Level 3" && r.parentRisk === l2.title);
+            const level3Risks = filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
             visible.push(...level3Risks);
           });
         }
@@ -978,23 +942,23 @@ const Dashboard1stLine = () => {
 
   const getLevel2Children = (level1Risk: RiskData): RiskData[] => {
     // Return ALL Level 2 risks (not filtered by parentRisk)
-    return filteredRiskData.filter(r => r && r.riskLevel === "Level 2");
+    return filteredRiskData.filter(r => r.riskLevel === "Level 2");
   };
 
   const hasChildren = (risk: RiskData) => {
     // Check if there are any risks at a lower level (regardless of parentRisk naming)
     if (risk.riskLevel === "Level 1") {
-      return filteredRiskData.some(r => r && r.riskLevel === "Level 2");
+      return filteredRiskData.some(r => r.riskLevel === "Level 2");
     }
     if (risk.riskLevel === "Level 2") {
-      return filteredRiskData.some(r => r && r.riskLevel === "Level 3");
+      return filteredRiskData.some(r => r.riskLevel === "Level 3");
     }
     return false;
   };
 
   const getLevel3Children = (level2Risk: RiskData): RiskData[] => {
     // Return ALL Level 3 risks (not filtered by parentRisk)
-    return filteredRiskData.filter(r => r && r.riskLevel === "Level 3");
+    return filteredRiskData.filter(r => r.riskLevel === "Level 3");
   };
 
   // Calculate aggregated risk for Level 1 parents based on children
@@ -1002,7 +966,7 @@ const Dashboard1stLine = () => {
     if (parentRisk.riskLevel !== "Level 1") return null;
     
     // Find all child risks (Level 2 that belong to this parent)
-    const childRisks = safeRiskData.filter(r => 
+    const childRisks = riskData.filter(r => 
       r.riskLevel === "Level 2" && r.parentRisk === parentRisk.title
     );
     
@@ -1032,12 +996,12 @@ const Dashboard1stLine = () => {
     if (parentRisk.riskLevel !== "Level 1") return null;
     
     // Get all Level 2 children that belong to this parent
-    const level2Children = safeRiskData.filter(r => 
+    const level2Children = riskData.filter(r => 
       r.riskLevel === "Level 2" && r.parentRisk === parentRisk.title
     );
     
     // Get all Level 3 children of those Level 2 risks
-    const level3Children = safeRiskData.filter(r => 
+    const level3Children = riskData.filter(r => 
       r.riskLevel === "Level 3" && level2Children.some(l2 => l2.title === r.parentRisk)
     );
     
@@ -1253,17 +1217,11 @@ const Dashboard1stLine = () => {
           {metrics.map((metric, index) => (
             <Tooltip key={index}>
               <TooltipTrigger asChild>
-                <Card 
-                  onClick={() => {
-                    setSelectedMetric(metric);
-                    setMetricDetailOpen(true);
-                  }}
-                  className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer group"
-                >
+                <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
-                      <div className="w-10 h-10 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center flex-shrink-0 group-hover:bg-first-line/20 transition-colors">
+                      <div className="w-10 h-10 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center flex-shrink-0">
                         <metric.icon className="w-5 h-5 text-first-line" />
                       </div>
                     </div>
@@ -1399,10 +1357,10 @@ const Dashboard1stLine = () => {
                   </p>
                 </div>
                 
-                {/* Click indicator */}
-                <div className="absolute bottom-3 right-3 opacity-50 group-hover:opacity-100 transition-opacity">
-                  <div className="w-8 h-8 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center group-hover:bg-first-line/20">
-                    <ChevronRight className="w-4 h-4 text-first-line" />
+                {/* AI Generated Icon */}
+                <div className="absolute bottom-3 right-3">
+                  <div className="w-8 h-8 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-first-line" />
                   </div>
                 </div>
               </CardContent>
@@ -1499,7 +1457,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "own" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {safeRiskData.filter(r => r.tabCategory === "own").length}
+                    {riskData.filter(r => r.tabCategory === "own").length}
                   </span>
                 </button>
                 <button
@@ -1514,7 +1472,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "assess" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {safeRiskData.filter(r => r.tabCategory === "assess").length}
+                    {riskData.filter(r => r.tabCategory === "assess").length}
                   </span>
                 </button>
                 <button
@@ -1529,7 +1487,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "approve" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {safeRiskData.filter(r => r.tabCategory === "approve").length}
+                    {riskData.filter(r => r.tabCategory === "approve").length}
                   </span>
                 </button>
               </div>
@@ -1566,7 +1524,7 @@ const Dashboard1stLine = () => {
                 <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
                   <SelectItem value="all">All Risk IDs</SelectItem>
                   {uniqueRiskIds.map((id) => {
-                    const risk = safeRiskData.find(r => r.id === id);
+                    const risk = riskData.find(r => r.id === id);
                     const truncatedTitle = risk?.title && risk.title.length > 25 
                       ? risk.title.substring(0, 25) + "..." 
                       : risk?.title || "";
@@ -2128,38 +2086,19 @@ const Dashboard1stLine = () => {
                               <table className="w-full text-left table-fixed">
                                 <thead>
                                   <tr className="text-[10px] text-muted-foreground border-b border-border/50">
-                                    <th className="pb-1 pr-1 font-medium w-[55px]">ID</th>
-                                    <th className="pb-1 pr-1 font-medium w-[130px]">Name</th>
-                                    <th className="pb-1 pr-1 font-medium w-[70px]">Key Control</th>
+                                    <th className="pb-1 pr-2 font-medium w-[75px]">ID</th>
+                                    <th className="pb-1 pr-2 font-medium w-[110px]">Name</th>
+                                    <th className="pb-1 pr-2 font-medium w-[70px]">Key Control</th>
                                     <th className="pb-1 font-medium w-[65px]">Nature</th>
                                   </tr>
                                 </thead>
                                 <tbody>
                                   {risk.relatedControls.slice(0, 3).map((control, idx) => (
                                     <tr key={idx} className="border-b border-border/30 last:border-0">
-                                      <td className="py-0.5 pr-1 font-medium text-first-line overflow-hidden text-ellipsis whitespace-nowrap text-[10px]">C-{control.id.replace("Control-", "")}</td>
-                                      <td className="py-0.5 pr-1">
-                                        <TooltipProvider>
-                                          <Tooltip>
-                                            <TooltipTrigger asChild>
-                                              <button
-                                                className="text-muted-foreground hover:text-primary hover:underline text-left truncate max-w-full text-xs"
-                                                onClick={() => {
-                                                  setSelectedControl(control);
-                                                  setControlDetailsOpen(true);
-                                                }}
-                                              >
-                                                {control.name}
-                                              </button>
-                                            </TooltipTrigger>
-                                            <TooltipContent side="top" className="max-w-[250px]">
-                                              <p className="font-medium">{control.name}</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        </TooltipProvider>
-                                      </td>
-                                      <td className="py-0.5 pr-1 overflow-hidden text-ellipsis whitespace-nowrap text-xs" title={control.keyControl}>{control.keyControl}</td>
-                                      <td className="py-0.5 overflow-hidden text-ellipsis whitespace-nowrap text-xs" title={control.nature}>{control.nature}</td>
+                                      <td className="py-1 pr-2 font-medium text-first-line overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
+                                      <td className="py-1 pr-2 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={control.name}>{control.name}</td>
+                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap" title={control.keyControl}>{control.keyControl}</td>
+                                      <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap" title={control.nature}>{control.nature}</td>
                                     </tr>
                                   ))}
                                 </tbody>
@@ -2367,7 +2306,7 @@ const Dashboard1stLine = () => {
         open={aiDocumentModalOpen}
         onOpenChange={setAiDocumentModalOpen}
         onRisksImported={handleImportedRisks}
-        existingRisks={safeRiskData.map(r => ({ 
+        existingRisks={riskData.map(r => ({ 
           id: r.id, 
           title: r.title,
           businessUnit: r.businessUnit,
@@ -2384,7 +2323,7 @@ const Dashboard1stLine = () => {
         open={directAssessmentModalOpen}
         onOpenChange={setDirectAssessmentModalOpen}
         onRisksImported={handleImportedRisks}
-        existingRisks={safeRiskData.map(r => ({ 
+        existingRisks={riskData.map(r => ({ 
           id: r.id, 
           title: r.title,
           businessUnit: r.businessUnit,
@@ -2395,7 +2334,7 @@ const Dashboard1stLine = () => {
           status: r.status
         }))}
         skipReviewScreen={true}
-        filterByTitles={safeRiskData.filter(r => selectedRisks.has(r.id)).map(r => r.title)}
+        filterByTitles={riskData.filter(r => selectedRisks.has(r.id)).map(r => r.title)}
       />
 
       <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ open: false, type: null, riskId: null, currentValue: "" })}>
@@ -2446,7 +2385,7 @@ const Dashboard1stLine = () => {
               </Label>
               <div className="mt-3 space-y-2">
                 {actionDialog.riskId?.split(",").slice(0, 3).map((riskId) => {
-                  const risk = safeRiskData.find(r => r.id === riskId.trim());
+                  const risk = riskData.find(r => r.id === riskId.trim());
                   if (!risk) return null;
                   return (
                     <div key={riskId} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
@@ -2561,105 +2500,6 @@ const Dashboard1stLine = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-      {/* Control Details Dialog */}
-      <Dialog open={controlDetailsOpen} onOpenChange={setControlDetailsOpen}>
-        <DialogContent className="sm:max-w-[500px]">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Shield className="h-5 w-5 text-primary" />
-              {selectedControl?.name}
-            </DialogTitle>
-            <DialogDescription>
-              Control ID: {selectedControl?.id}
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {/* Description */}
-            <div>
-              <Label className="text-xs text-muted-foreground">Description</Label>
-              <p className="text-sm">{selectedControl?.description || "No description available."}</p>
-            </div>
-            
-            {/* Control Properties */}
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label className="text-xs text-muted-foreground">Type</Label>
-                <p className="text-sm font-medium">{selectedControl?.type}</p>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Nature</Label>
-                <p className="text-sm font-medium">{selectedControl?.nature}</p>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Key Control</Label>
-                <Badge variant={selectedControl?.keyControl === "Key" ? "default" : "secondary"}>
-                  {selectedControl?.keyControl}
-                </Badge>
-              </div>
-              <div>
-                <Label className="text-xs text-muted-foreground">Testing Status</Label>
-                <Badge variant={selectedControl?.testingStatus === "Tested" ? "default" : "outline"}>
-                  {selectedControl?.testingStatus || "Not Tested"}
-                </Badge>
-              </div>
-            </div>
-            
-            {/* Control Test Results Section */}
-            <div className="border-t pt-4">
-              <h4 className="text-sm font-semibold mb-3">Control Test Results</h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-xs text-muted-foreground">Design Effectiveness</Label>
-                  <Badge className={
-                    selectedControl?.designEffectiveness === "Effective" ? "bg-green-500 text-white" :
-                    selectedControl?.designEffectiveness === "Partially Effective" ? "bg-amber-500 text-white" :
-                    selectedControl?.designEffectiveness === "Ineffective" ? "bg-red-500 text-white" :
-                    "bg-muted text-muted-foreground"
-                  }>
-                    {selectedControl?.designEffectiveness || "N/A"}
-                  </Badge>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Operating Effectiveness</Label>
-                  <Badge className={
-                    selectedControl?.operatingEffectiveness === "Effective" ? "bg-green-500 text-white" :
-                    selectedControl?.operatingEffectiveness === "Partially Effective" ? "bg-amber-500 text-white" :
-                    selectedControl?.operatingEffectiveness === "Ineffective" ? "bg-red-500 text-white" :
-                    "bg-muted text-muted-foreground"
-                  }>
-                    {selectedControl?.operatingEffectiveness || "N/A"}
-                  </Badge>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Overall Score</Label>
-                  <div className="flex items-center gap-1">
-                    <span className="text-lg font-bold">{selectedControl?.overallScore || "—"}</span>
-                    <span className="text-xs text-muted-foreground">/5</span>
-                  </div>
-                </div>
-                <div>
-                  <Label className="text-xs text-muted-foreground">Test Frequency</Label>
-                  <p className="text-sm">{selectedControl?.testFrequency || "N/A"}</p>
-                </div>
-              </div>
-              {selectedControl?.lastTestDate && (
-                <p className="text-xs text-muted-foreground mt-2">
-                  Last tested: {selectedControl.lastTestDate}
-                </p>
-              )}
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Metric Detail Modal */}
-      <MetricDetailModal
-        open={metricDetailOpen}
-        onOpenChange={setMetricDetailOpen}
-        metric={selectedMetric}
-        risks={safeRiskData}
-      />
     </div>
     </TooltipProvider>
   );
