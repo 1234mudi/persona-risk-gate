@@ -119,8 +119,10 @@ const Dashboard2ndLine = () => {
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
-  // Risk data state - must be before useEffect that references it
-  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
+  // Risk data state - must be before useEffect that references it (null-safe initialization)
+  const [riskData, setRiskData] = useState<RiskData[]>(() => 
+    (getInitialRiskDataCopy() as any[]).filter(Boolean) as RiskData[]
+  );
 
   // Null-safety: filter out any null/undefined entries to prevent crashes
   const safeRiskData = useMemo(() => riskData.filter((r): r is RiskData => r != null), [riskData]);
@@ -140,7 +142,7 @@ const Dashboard2ndLine = () => {
     
     if (openOverview === "true" && riskId && riskName) {
       // Find the risk data to get sectionCompletion, fallback to defaults
-      const foundRisk = riskData.find(r => r.id === riskId);
+      const foundRisk = safeRiskData.find(r => r.id === riskId);
       setSelectedRiskForOverview({ 
         id: riskId, 
         title: riskName,
@@ -238,7 +240,7 @@ const Dashboard2ndLine = () => {
   // Selection helpers
   const visibleRisks = useMemo(() => {
     const visible: RiskData[] = [];
-    const filtered = riskData.filter(risk => risk && risk.tabCategory === activeTab);
+    const filtered = safeRiskData.filter(risk => risk.tabCategory === activeTab);
     filtered.forEach(risk => {
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
@@ -252,7 +254,7 @@ const Dashboard2ndLine = () => {
       }
     });
     return visible;
-  }, [riskData, activeTab, expandedRows]);
+  }, [safeRiskData, activeTab, expandedRows]);
 
   // Helper to check if a risk is completed/closed
   const isRiskCompleted = (risk: RiskData): boolean => {
@@ -267,7 +269,7 @@ const Dashboard2ndLine = () => {
   );
 
   const toggleRiskSelection = (riskId: string) => {
-    const risk = riskData.find(r => r.id === riskId);
+    const risk = safeRiskData.find(r => r.id === riskId);
     if (risk && isRiskCompleted(risk)) return; // Don't toggle completed/closed risks
     
     setSelectedRisks(prev => {
@@ -294,7 +296,7 @@ const Dashboard2ndLine = () => {
   };
 
   const getSelectedRiskData = () => {
-    return riskData.filter(r => selectedRisks.has(r.id));
+    return safeRiskData.filter(r => selectedRisks.has(r.id));
   };
 
   const toggleRow = (riskId: string) => {
@@ -327,7 +329,7 @@ const Dashboard2ndLine = () => {
   const [selectedRiskForUpdate, setSelectedRiskForUpdate] = useState<RiskData | null>(null);
 
   const handleUpdateClosedAssessment = (riskId: string) => {
-    const risk = riskData.find(r => r.id === riskId);
+    const risk = safeRiskData.find(r => r.id === riskId);
     if (risk) {
       setSelectedRiskForUpdate(risk);
       setUpdateVersionDialogOpen(true);
