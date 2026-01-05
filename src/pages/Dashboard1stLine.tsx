@@ -1639,7 +1639,26 @@ const Dashboard1stLine = () => {
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
           <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
-            <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      size="sm" 
+                      className="h-7 bg-gradient-to-r from-first-line to-emerald-600 hover:from-first-line/90 hover:to-emerald-600/90 text-white"
+                      onClick={() => setAiDocumentModalOpen(true)}
+                    >
+                      <Sparkles className="h-3.5 w-3.5 mr-1" />
+                      AI Document Parser
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Upload CSV/DOCX files to create risk assessments with AI</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
           </CardHeader>
           <CardContent className="p-4">
             {/* Modern Segmented Tabs */}
