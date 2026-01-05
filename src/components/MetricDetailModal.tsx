@@ -71,10 +71,19 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
         });
       case "Control Evidence Status":
         return risks.filter(risk => {
-          if (segmentLabel === "Effective") return risk.controlEffectiveness.label === "Effective";
-          if (segmentLabel === "Partially Effective") return risk.controlEffectiveness.label === "Partially Effective";
-          if (segmentLabel === "Ineffective") return risk.controlEffectiveness.label === "Ineffective";
-          if (segmentLabel === "Not Assessed") return risk.controlEffectiveness.label === "Not Assessed";
+          const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
+          if (segmentLabel === "Effective") {
+            return label === "effective" || label === "design effective";
+          }
+          if (segmentLabel === "Partially Effective") {
+            return label === "partially effective";
+          }
+          if (segmentLabel === "Ineffective") {
+            return label === "ineffective";
+          }
+          if (segmentLabel === "Not Assessed") {
+            return !["effective", "design effective", "partially effective", "ineffective"].includes(label);
+          }
           return true;
         });
       case "Assessment Progress":
