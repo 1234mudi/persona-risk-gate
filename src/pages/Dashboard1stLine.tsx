@@ -1902,7 +1902,7 @@ const Dashboard1stLine = () => {
                       }}
                     >
                       <Sparkles className="w-4 h-4 mr-1.5" />
-                      AI Risk Search
+                      AI Document Scan
                     </Button>
                     <Button
                       size="sm" 

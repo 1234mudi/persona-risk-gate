@@ -987,7 +987,7 @@ export function AIDocumentAssessmentModal({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <Search className="w-5 h-5 text-amber-500" />
-                AI Risk Search
+                AI Document Scan
               </DialogTitle>
               <DialogDescription>
                 Search results for selected risks
@@ -999,7 +999,7 @@ export function AIDocumentAssessmentModal({
                 {skipReviewScreen ? (
                   <>
                     <Search className="w-5 h-5 text-blue-500" />
-                    AI Risk Search
+                    AI Document Scan
                   </>
                 ) : (
                   <>
