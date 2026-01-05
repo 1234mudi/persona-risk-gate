@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3 } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -387,6 +387,143 @@ const Dashboard2ndLine = () => {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   });
+  // Issues Velocity & Efficiency calculations
+  const velocityMetrics = useMemo(() => {
+    const today = new Date();
+    let totalRemediationDays = 0;
+    let completedCount = 0;
+    let completedOnTime = 0;
+    let completedLate = 0;
+    let stillOverdue = 0;
+    
+    const byBusinessUnit: Record<string, { onTime: number; late: number; overdue: number; totalDays: number; count: number }> = {};
+    const slowestRisks: { id: string; title: string; days: number }[] = [];
+    
+    riskData.forEach(risk => {
+      const dueDate = new Date(risk.dueDate);
+      const isCompleted = isRiskCompleted(risk);
+      
+      // Initialize business unit tracking
+      if (!byBusinessUnit[risk.businessUnit]) {
+        byBusinessUnit[risk.businessUnit] = { onTime: 0, late: 0, overdue: 0, totalDays: 0, count: 0 };
+      }
+      
+      if (isCompleted) {
+        // Calculate remediation time using lastAssessed as proxy for completion
+        const lastAssessDate = new Date(risk.lastAssessed);
+        const remediationDays = Math.max(0, Math.floor((lastAssessDate.getTime() - dueDate.getTime() + 30 * 24 * 60 * 60 * 1000) / (1000 * 60 * 60 * 24)));
+        totalRemediationDays += remediationDays;
+        completedCount++;
+        
+        slowestRisks.push({ id: risk.id, title: risk.title, days: remediationDays });
+        byBusinessUnit[risk.businessUnit].totalDays += remediationDays;
+        byBusinessUnit[risk.businessUnit].count++;
+        
+        if (lastAssessDate <= dueDate) {
+          completedOnTime++;
+          byBusinessUnit[risk.businessUnit].onTime++;
+        } else {
+          completedLate++;
+          byBusinessUnit[risk.businessUnit].late++;
+        }
+      } else if (dueDate < today) {
+        stillOverdue++;
+        byBusinessUnit[risk.businessUnit].overdue++;
+      }
+    });
+    
+    const avgRemediationDays = completedCount > 0 ? Math.round(totalRemediationDays / completedCount) : 0;
+    const completionRate = completedCount > 0 ? Math.round((completedOnTime / completedCount) * 100) : 0;
+    
+    // Sort to get slowest risks
+    slowestRisks.sort((a, b) => b.days - a.days);
+    
+    return {
+      avgRemediationDays,
+      completionRate,
+      completedOnTime,
+      completedLate,
+      stillOverdue,
+      totalCompleted: completedCount,
+      byBusinessUnit,
+      slowestRisks: slowestRisks.slice(0, 5)
+    };
+  }, [riskData]);
+
+  // Risk Exposure & Aging calculations
+  const agingMetrics = useMemo(() => {
+    const today = new Date();
+    const byCriticality = { critical: 0, high: 0, medium: 0, low: 0 };
+    const agingBuckets = {
+      critical: { '30': 0, '60': 0, '90+': 0 },
+      high: { '30': 0, '60': 0, '90+': 0 },
+      medium: { '30': 0, '60': 0, '90+': 0 },
+      low: { '30': 0, '60': 0, '90+': 0 }
+    };
+    
+    const overdueRisks90Plus: { id: string; title: string; daysOverdue: number; level: string }[] = [];
+    const byBusinessUnit: Record<string, number> = {};
+    const byCategory: Record<string, number> = { Operational: 0, Technology: 0, Compliance: 0, Financial: 0, Strategic: 0 };
+    
+    riskData.forEach(risk => {
+      const dueDate = new Date(risk.dueDate);
+      const isCompleted = isRiskCompleted(risk);
+      
+      if (!isCompleted && dueDate < today) {
+        const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+        const level = (risk.residualRisk?.level || risk.inherentRisk?.level || "Medium").toLowerCase();
+        
+        // Determine criticality bucket
+        const criticalityKey = level === "critical" ? "critical" : 
+                               level === "high" ? "high" : 
+                               level === "low" ? "low" : "medium";
+        
+        byCriticality[criticalityKey]++;
+        
+        // Bucket by age
+        if (daysOverdue > 90) {
+          agingBuckets[criticalityKey]['90+']++;
+          overdueRisks90Plus.push({ id: risk.id, title: risk.title, daysOverdue, level });
+        } else if (daysOverdue > 60) {
+          agingBuckets[criticalityKey]['60']++;
+        } else if (daysOverdue > 30) {
+          agingBuckets[criticalityKey]['30']++;
+        }
+        
+        // Aggregate by business unit
+        byBusinessUnit[risk.businessUnit] = (byBusinessUnit[risk.businessUnit] || 0) + 1;
+        
+        // Aggregate by category
+        if (risk.category in byCategory) {
+          byCategory[risk.category]++;
+        } else {
+          byCategory['Operational']++; // Default fallback
+        }
+      }
+    });
+    
+    // Sort business units by count
+    const sortedBusinessUnits = Object.entries(byBusinessUnit)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+    
+    // Sort categories by count
+    const sortedCategories = Object.entries(byCategory)
+      .filter(([_, count]) => count > 0)
+      .sort((a, b) => b[1] - a[1]);
+    
+    const totalOverdue = byCriticality.critical + byCriticality.high + byCriticality.medium + byCriticality.low;
+    
+    return {
+      totalOverdue,
+      overdueRisks90Plus: overdueRisks90Plus.sort((a, b) => b.daysOverdue - a.daysOverdue),
+      byBusinessUnit: sortedBusinessUnits,
+      byCategory: sortedCategories,
+      byCriticality,
+      agingBuckets
+    };
+  }, [riskData]);
+
   const metrics = [
     {
       title: "Assessments Pending Review",
@@ -445,6 +582,38 @@ const Dashboard2ndLine = () => {
       ],
       description: "Top 3 drivers caused over 90% of losses. Validate RCSA focus.",
       tooltip: "Summarizes financial losses from operational events across your risk portfolio. Use this to validate that your RCSA coverage aligns with actual loss drivers.",
+    },
+    {
+      title: "Issues Velocity & Efficiency",
+      value: velocityMetrics.avgRemediationDays,
+      valueSuffix: " days",
+      subLabel: "Avg Time to Remediate",
+      trend: `${velocityMetrics.completionRate}% on-time completion`,
+      trendUp: velocityMetrics.completionRate >= 70,
+      icon: Timer,
+      segments: [
+        { label: "On Time", value: velocityMetrics.completedOnTime || 1, sublabel: `${velocityMetrics.completedOnTime} On Time`, color: "bg-green-600" },
+        { label: "Late", value: velocityMetrics.completedLate || 1, sublabel: `${velocityMetrics.completedLate} Late`, color: "bg-amber-500" },
+        { label: "Still Overdue", value: velocityMetrics.stillOverdue || 1, sublabel: `${velocityMetrics.stillOverdue} Still Overdue`, color: "bg-red-600" },
+      ],
+      description: "High ATTR suggests resource gaps. Late completions indicate planning issues.",
+      tooltip: "Tracks remediation speed and discipline. Average Time to Remediate shows how quickly issues are resolved. On-time completion rate indicates accountability in business units.",
+    },
+    {
+      title: "Risk Exposure & Aging",
+      value: agingMetrics.totalOverdue,
+      subLabel: "Total Aged Issues",
+      trend: `${agingMetrics.overdueRisks90Plus.length} overdue 90+ days`,
+      trendUp: false,
+      icon: BarChart3,
+      segments: [
+        { label: "Critical", value: agingMetrics.byCriticality.critical || 1, sublabel: `${agingMetrics.byCriticality.critical} Critical`, color: "bg-red-800" },
+        { label: "High", value: agingMetrics.byCriticality.high || 1, sublabel: `${agingMetrics.byCriticality.high} High`, color: "bg-red-500" },
+        { label: "Medium", value: agingMetrics.byCriticality.medium || 1, sublabel: `${agingMetrics.byCriticality.medium} Medium`, color: "bg-amber-500" },
+        { label: "Low", value: agingMetrics.byCriticality.low || 1, sublabel: `${agingMetrics.byCriticality.low} Low`, color: "bg-green-600" },
+      ],
+      description: "Focus on Critical & High items past 30+ days. Escalate 90+ day items.",
+      tooltip: "Highlights backlog risks by criticality and age. Items overdue 90+ days are candidates for immediate escalation to Risk Committee or senior management.",
     },
   ];
 
@@ -758,7 +927,7 @@ const Dashboard2ndLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Scorecards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
           {/* Quick Links Card */}
           <Card className="lg:col-span-1 border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50/50 dark:from-card dark:to-card sm:col-span-1">
             <CardHeader className="pb-1 pt-3 px-4">
@@ -806,10 +975,13 @@ const Dashboard2ndLine = () => {
                     </div>
                 
                 <div className="space-y-2">
-                  <div className="flex items-baseline gap-2">
+                  <div className="flex items-baseline gap-1">
                     <span className="text-2xl sm:text-3xl font-bold text-foreground">
                       {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
                     </span>
+                    {metric.valueSuffix && (
+                      <span className="text-sm sm:text-base font-medium text-muted-foreground">{metric.valueSuffix}</span>
+                    )}
                   </div>
                   {metric.subLabel && (
                     <p className="text-xs sm:text-sm font-medium text-muted-foreground">{metric.subLabel}</p>
