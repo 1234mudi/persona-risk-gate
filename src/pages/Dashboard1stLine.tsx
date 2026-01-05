@@ -1639,70 +1639,7 @@ const Dashboard1stLine = () => {
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
           <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
-              <TooltipProvider>
-                <div className="flex items-center gap-2">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground"
-                        onClick={() => {
-                          if (selectedRisks.size === 0) {
-                            toast.error("Please select at least one risk assessment first");
-                          } else {
-                            setActionDialog({ open: true, type: "collaborate", riskId: Array.from(selectedRisks).join(",") });
-                          }
-                        }}
-                      >
-                        <UsersIcon className="h-3.5 w-3.5 mr-1" />
-                        Collaborate
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Invite collaborators to work on risks</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        className="h-7 bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground"
-                        onClick={() => {
-                          if (selectedRisks.size === 0) {
-                            toast.error("Please select at least one risk assessment first");
-                          } else {
-                            setActionDialog({ open: true, type: "reassign", riskId: Array.from(selectedRisks).join(",") });
-                          }
-                        }}
-                      >
-                        <UserPlus className="h-3.5 w-3.5 mr-1" />
-                        Reassign
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Reassign risks to another owner</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        className="h-7 bg-gradient-to-r from-first-line to-emerald-600 hover:from-first-line/90 hover:to-emerald-600/90 text-white cursor-help"
-                        onClick={() => setAiDocumentModalOpen(true)}
-                      >
-                        <Sparkles className="h-3.5 w-3.5 mr-1" />
-                        Assess Documents with AI
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>Upload CSV/DOCX files to create risk assessments with AI</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </TooltipProvider>
-            </div>
+            <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             {/* Modern Segmented Tabs */}
@@ -1892,14 +1829,26 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
+                      className="h-8"
+                      onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: Array.from(selectedRisks).join(",") })}
+                    >
+                      <UsersIcon className="w-4 h-4 mr-1.5" />
+                      Collaborate
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
+                      className="h-8"
+                      onClick={() => setActionDialog({ open: true, type: "reassign", riskId: Array.from(selectedRisks).join(",") })}
+                    >
+                      <UserPlus className="w-4 h-4 mr-1.5" />
+                      Reassign
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
                       className="h-8 border-blue-500/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                      onClick={() => {
-                        if (selectedRisks.size === 0) {
-                          toast.error("Please select at least one risk first");
-                          return;
-                        }
-                        setDirectAssessmentModalOpen(true);
-                      }}
+                      onClick={() => setDirectAssessmentModalOpen(true)}
                     >
                       <Sparkles className="w-4 h-4 mr-1.5" />
                       AI Document Scan
