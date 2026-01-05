@@ -1487,7 +1487,7 @@ const Dashboard2ndLine = () => {
                                     </button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Click to open the risk assessment overview. Open challenges/issues can be viewed in the assessment form.</p>
+                                    <p>Click to view risk assessment and open challenges/issues.</p>
                                   </TooltipContent>
                                 </Tooltip>
                                 <span className="text-[10px] text-muted-foreground">{risk.owner}</span>
@@ -1510,7 +1510,7 @@ const Dashboard2ndLine = () => {
                                     </button>
                                   </TooltipTrigger>
                                   <TooltipContent>
-                                    <p>Click to open the risk assessment overview. Open challenges/issues can be viewed in the assessment form.</p>
+                                    <p>Click to view risk assessment and open challenges/issues.</p>
                                   </TooltipContent>
                                 </Tooltip>
                                   <span className="text-[10px] text-muted-foreground">{l2Risk.owner}</span>
@@ -1897,7 +1897,7 @@ const Dashboard2ndLine = () => {
                                 </button>
                               </TooltipTrigger>
                               <TooltipContent>
-                                <p>Click to open the risk assessment overview. Open challenges/issues can be viewed in the assessment form.</p>
+                                <p>Click to view risk assessment and open challenges/issues.</p>
                               </TooltipContent>
                             </Tooltip>
                           </TableCell>
