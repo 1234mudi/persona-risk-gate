@@ -238,11 +238,10 @@ const Dashboard1stLine = () => {
 
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
-  // Initialize expanded rows with all Level 1 risks by default (only once)
+  // Initialize expanded rows as empty by default (all collapsed)
   useEffect(() => {
     if (!expandedRowsInitialized && riskData.length > 0) {
-      const level1Ids = riskData.filter(r => r.riskLevel === "Level 1").map(r => r.id);
-      setExpandedRows(new Set(level1Ids));
+      setExpandedRows(new Set());
       setExpandedRowsInitialized(true);
     }
   }, [riskData, expandedRowsInitialized]);
