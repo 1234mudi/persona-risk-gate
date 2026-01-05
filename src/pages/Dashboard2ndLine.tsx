@@ -964,41 +964,42 @@ const Dashboard2ndLine = () => {
             <Tooltip key={index}>
               <TooltipTrigger asChild>
                 <Card className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
-                  <CardContent className="p-2 sm:p-3">
-                    <div className="flex items-start justify-between mb-1.5 sm:mb-2">
-                      <h3 className="text-xs sm:text-sm font-bold text-foreground leading-tight">{metric.title}</h3>
-                      <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                        <metric.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
+                  <CardContent className="p-2 sm:p-2.5">
+                    <div className="flex items-start justify-between mb-0.5 sm:mb-1">
+                      <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                        <metric.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary" />
                       </div>
                     </div>
                 
-                <div className="space-y-1 sm:space-y-1.5">
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-xl sm:text-2xl font-bold text-foreground">
-                      {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
-                    </span>
-                    {metric.valueSuffix && (
-                      <span className="text-xs sm:text-sm font-medium text-muted-foreground">{metric.valueSuffix}</span>
-                    )}
+                <div className="space-y-0.5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-lg sm:text-xl font-bold text-foreground">
+                        {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
+                      </span>
+                      {metric.valueSuffix && (
+                        <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">{metric.valueSuffix}</span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {metric.trendUp ? (
+                        <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-600" />
+                      ) : (
+                        <TrendingDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-red-600" />
+                      )}
+                      <span className={`text-[9px] sm:text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                        {metric.trend}
+                      </span>
+                    </div>
                   </div>
                   {metric.subLabel && (
-                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">{metric.subLabel}</p>
+                    <p className="text-[9px] sm:text-[10px] font-medium text-muted-foreground">{metric.subLabel}</p>
                   )}
                   
-                  <div className="flex items-center gap-1.5">
-                    {metric.trendUp ? (
-                      <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600" />
-                    ) : (
-                      <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-600" />
-                    )}
-                    <span className={`text-[10px] sm:text-xs font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
-                      {metric.trend}
-                    </span>
-                  </div>
-                  
                   {/* Status Bar */}
-                  <div className="space-y-1">
-                    <div className="flex h-2.5 sm:h-3 rounded overflow-hidden">
+                  <div className="space-y-0.5">
+                    <div className="flex h-2 sm:h-2.5 rounded overflow-hidden">
                       {metric.segments.map((segment, idx) => {
                         const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
                         const percentage = (segment.value / total) * 100;
@@ -1013,11 +1014,11 @@ const Dashboard2ndLine = () => {
                     </div>
                     
                     {/* Legend */}
-                    <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                    <div className="flex flex-wrap gap-x-1.5 gap-y-0">
                       {metric.segments.map((segment, idx) => (
                         <div key={idx} className="flex items-center gap-0.5">
-                          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm ${segment.color}`} />
-                          <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground">
+                          <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
+                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
                             {segment.sublabel || segment.label}
                           </span>
                         </div>
@@ -1025,15 +1026,15 @@ const Dashboard2ndLine = () => {
                     </div>
                   </div>
                   
-                  <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-snug pt-0.5 sm:pt-1 hidden sm:block">
+                  <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-snug hidden sm:block">
                     {metric.description}
                   </p>
                 </div>
                 
                 {/* AI Generated Icon */}
-                <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2">
-                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary" />
+                <div className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-primary" />
                   </div>
                 </div>
               </CardContent>
