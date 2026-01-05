@@ -1856,7 +1856,7 @@ const Dashboard1stLine = () => {
                       onClick={() => setDirectAssessmentModalOpen(true)}
                     >
                       <Sparkles className="w-4 h-4 mr-1.5" />
-                      AI Document Scan
+                      Find Risks in Document
                     </Button>
                     <Button
                       size="sm" 

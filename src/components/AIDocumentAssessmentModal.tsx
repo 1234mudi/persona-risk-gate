@@ -999,7 +999,7 @@ export function AIDocumentAssessmentModal({
                 {skipReviewScreen ? (
                   <>
                     <Search className="w-5 h-5 text-blue-500" />
-                    AI Document Scan
+                    Find Risks in Document
                   </>
                 ) : (
                   <>
@@ -1010,7 +1010,7 @@ export function AIDocumentAssessmentModal({
               </DialogTitle>
               <DialogDescription>
                 {skipReviewScreen 
-                  ? `Upload documents to search for ${filterByTitles?.length || 0} selected risk(s). AI will find and extract matching assessments.`
+                  ? `Upload a document to find and extract assessment data for your ${filterByTitles?.length || 0} selected risk(s).`
                   : "Upload CSV or DOCX files containing risk data. AI will parse and create risk assessments automatically."
                 }
               </DialogDescription>
