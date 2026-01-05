@@ -134,6 +134,7 @@ const Dashboard1stLine = () => {
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [riskIdFilter, setRiskIdFilter] = useState<string>("all");
   const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
+  const [deadlineFilter, setDeadlineFilter] = useState<string>("all");
   
   // Historical assessments modal state
   const [historicalModalOpen, setHistoricalModalOpen] = useState(false);
@@ -285,6 +286,31 @@ const Dashboard1stLine = () => {
       filtered = filtered.filter(risk => risk.status === statusFilter);
     }
     
+    // Apply deadline filter
+    if (deadlineFilter !== "all") {
+      const today = startOfDay(new Date());
+      const weekEnd = endOfWeek(today, { weekStartsOn: 1 });
+      const monthEnd = endOfMonth(today);
+      
+      filtered = filtered.filter(risk => {
+        try {
+          const dueDate = parseISO(risk.dueDate);
+          const dueDateStart = startOfDay(dueDate);
+          
+          if (deadlineFilter === "overdue") {
+            return isBefore(dueDateStart, today);
+          } else if (deadlineFilter === "due-this-week") {
+            return (isBefore(dueDateStart, weekEnd) || isToday(dueDate)) && !isBefore(dueDateStart, today);
+          } else if (deadlineFilter === "due-this-month") {
+            return isBefore(dueDateStart, monthEnd) && !isBefore(dueDateStart, weekEnd) && !isToday(dueDate);
+          }
+          return true;
+        } catch (e) {
+          return false;
+        }
+      });
+    }
+    
     // Apply org level filter - but don't filter out risks with empty orgLevel
     if (orgLevelFilter !== "all") {
       filtered = filtered.filter(risk => {
@@ -379,7 +405,7 @@ const Dashboard1stLine = () => {
       }
       return visible;
     }
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows]);
+  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows, deadlineFilter]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -726,6 +752,48 @@ const Dashboard1stLine = () => {
 
   const scrollToBottom = () => {
     window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'smooth' });
+  };
+
+  // Handler for clicking on Assessment Status card segments
+  const handleSegmentClick = (segmentLabel: string, e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click from opening details modal
+    
+    // Map segment labels to status filter values
+    const statusMap: Record<string, string> = {
+      // Deadline segments - filter by due date status (we'll use a custom approach)
+      "Overdue": "overdue",
+      "Due This Week": "due-this-week",
+      "Due This Month": "due-this-month",
+      // Workflow segments - filter by status
+      "Completed": "Completed",
+      "Pending Approval": "Pending Approval",
+      "In Progress": "In Progress",
+      "Not Started": "Sent for Assessment",
+    };
+    
+    const filterValue = statusMap[segmentLabel];
+    if (filterValue) {
+      // For deadline-based filters, we need special handling
+      if (["overdue", "due-this-week", "due-this-month"].includes(filterValue)) {
+        // Set a custom deadline filter (we'll add this state)
+        setDeadlineFilter(filterValue);
+        setStatusFilter("all");
+      } else {
+        // For status-based filters
+        setStatusFilter(filterValue);
+        setDeadlineFilter("all");
+      }
+      
+      // Scroll to the risk table
+      setTimeout(() => {
+        reportSectionRef.current?.scrollIntoView({ 
+          behavior: 'smooth', 
+          block: 'start' 
+        });
+      }, 100);
+      
+      toast.success(`Filtered by: ${segmentLabel}`);
+    }
   };
 
   useState(() => {
@@ -1383,11 +1451,74 @@ const Dashboard1stLine = () => {
                         );
                       })()
                     ) : (
-                      // Bar Chart (default)
+                      // Bar Chart (default) - with clickable segments for Assessment Status
                       (() => {
                         const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
+                        const isAssessmentStatus = metric.title === "Assessment Status";
+                        const segmentRows = 'segmentRows' in metric ? (metric as any).segmentRows : null;
                         let total = 0;
                         for (const s of segments) total += s.value;
+                        
+                        // If this card has segmentRows (dual progress bars), render them
+                        if (isAssessmentStatus && segmentRows) {
+                          return (
+                            <div className="space-y-3">
+                              {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
+                                let rowTotal = 0;
+                                for (const s of row.segments) rowTotal += s.value;
+                                
+                                return (
+                                  <div key={rowIdx} className="space-y-1">
+                                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
+                                    <div className="flex h-5 rounded-md overflow-hidden">
+                                      {row.segments.map((segment, idx) => {
+                                        const percentage = rowTotal > 0 ? (segment.value / rowTotal) * 100 : 0;
+                                        if (percentage === 0) return null;
+                                        return (
+                                          <Tooltip key={idx}>
+                                            <TooltipTrigger asChild>
+                                              <div
+                                                className={`${segment.color} cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center`}
+                                                style={{ width: `${percentage}%` }}
+                                                onClick={(e) => handleSegmentClick(segment.label, e)}
+                                              >
+                                                {percentage > 15 && (
+                                                  <span className="text-[9px] font-medium text-white truncate px-1">
+                                                    {segment.value}
+                                                  </span>
+                                                )}
+                                              </div>
+                                            </TooltipTrigger>
+                                            <TooltipContent>
+                                              <p>{segment.label}: {segment.value} ({Math.round(percentage)}%)</p>
+                                              <p className="text-xs text-muted-foreground">Click to filter</p>
+                                            </TooltipContent>
+                                          </Tooltip>
+                                        );
+                                      })}
+                                    </div>
+                                    {/* Row Legend */}
+                                    <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                                      {row.segments.map((segment, idx) => (
+                                        <button 
+                                          key={idx} 
+                                          className="flex items-center gap-1 hover:bg-muted/50 rounded px-1 py-0.5 transition-colors"
+                                          onClick={(e) => handleSegmentClick(segment.label, e)}
+                                        >
+                                          <div className={`w-2 h-2 rounded-sm ${segment.color}`} />
+                                          <span className="text-[10px] font-medium text-muted-foreground">
+                                            {segment.value} {segment.label}
+                                          </span>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          );
+                        }
+                        
                         return (
                           <>
                             <div className="flex h-6 rounded-lg overflow-hidden">
@@ -1614,7 +1745,7 @@ const Dashboard1stLine = () => {
               </Select>
 
               {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={setStatusFilter}>
+              <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); if (val !== "all") setDeadlineFilter("all"); }}>
                 <SelectTrigger className="w-40 h-8">
                   <SelectValue placeholder="Status" />
                 </SelectTrigger>
@@ -1626,6 +1757,19 @@ const Dashboard1stLine = () => {
                   <SelectItem value="Review/Challenge">Review/Challenge</SelectItem>
                   <SelectItem value="Completed">Completed</SelectItem>
                   <SelectItem value="Overdue">Overdue</SelectItem>
+                </SelectContent>
+              </Select>
+
+              {/* Deadline Filter */}
+              <Select value={deadlineFilter} onValueChange={(val) => { setDeadlineFilter(val); if (val !== "all") setStatusFilter("all"); }}>
+                <SelectTrigger className="w-40 h-8">
+                  <SelectValue placeholder="Due Date" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                  <SelectItem value="all">All Due Dates</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
+                  <SelectItem value="due-this-week">Due This Week</SelectItem>
+                  <SelectItem value="due-this-month">Due This Month</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -1643,6 +1787,27 @@ const Dashboard1stLine = () => {
                     ))}
                   </SelectContent>
                 </Select>
+              )}
+
+              {/* Clear Filters Button - show when any filter is active */}
+              {(statusFilter !== "all" || deadlineFilter !== "all" || riskLevelFilter !== "all" || riskIdFilter !== "all" || assessorFilter !== "all" || searchQuery.trim()) && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="h-8 text-muted-foreground hover:text-foreground"
+                  onClick={() => {
+                    setStatusFilter("all");
+                    setDeadlineFilter("all");
+                    setRiskLevelFilter("all");
+                    setRiskIdFilter("all");
+                    setAssessorFilter("all");
+                    setSearchQuery("");
+                    toast.success("Filters cleared");
+                  }}
+                >
+                  <X className="w-3 h-3 mr-1" />
+                  Clear Filters
+                </Button>
               )}
             </div>
 
