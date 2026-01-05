@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1386,19 +1386,9 @@ const Dashboard1stLine = () => {
             <span>View My Action Plans</span>
           </a>
           <span className="text-muted-foreground/50">|</span>
-          <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <Sparkles className="w-4 h-4" />
-            <span>Assess Documents with AI</span>
-          </button>
-          <span className="text-muted-foreground/50">|</span>
-          <button onClick={downloadRiskDocx} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <FileText className="w-4 h-4" />
-            <span>Download Risk Events</span>
-          </button>
-          <span className="text-muted-foreground/50">|</span>
-          <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <FileText className="w-4 h-4" />
-            <span>Download Sample Hierarchy</span>
+          <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-first-line hover:underline text-sm italic">
+            <FlaskConical className="w-4 h-4" />
+            <span>Sample CSV for AI Assessment (Test Only)</span>
           </a>
         </div>
 
