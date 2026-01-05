@@ -3,6 +3,7 @@ import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, Shield } from "lucide-react";
+import { MetricDetailModal } from "@/components/MetricDetailModal";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -158,6 +159,10 @@ const Dashboard1stLine = () => {
   // Control details dialog state
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
+
+  // Metric detail modal state
+  const [metricDetailOpen, setMetricDetailOpen] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<typeof metrics[0] | null>(null);
 
   // Risk data state - must be before useEffect that references it
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
@@ -1248,11 +1253,17 @@ const Dashboard1stLine = () => {
           {metrics.map((metric, index) => (
             <Tooltip key={index}>
               <TooltipTrigger asChild>
-                <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
+                <Card 
+                  onClick={() => {
+                    setSelectedMetric(metric);
+                    setMetricDetailOpen(true);
+                  }}
+                  className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer group"
+                >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
-                      <div className="w-10 h-10 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center flex-shrink-0">
+                      <div className="w-10 h-10 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center flex-shrink-0 group-hover:bg-first-line/20 transition-colors">
                         <metric.icon className="w-5 h-5 text-first-line" />
                       </div>
                     </div>
@@ -1388,10 +1399,10 @@ const Dashboard1stLine = () => {
                   </p>
                 </div>
                 
-                {/* AI Generated Icon */}
-                <div className="absolute bottom-3 right-3">
-                  <div className="w-8 h-8 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-first-line" />
+                {/* Click indicator */}
+                <div className="absolute bottom-3 right-3 opacity-50 group-hover:opacity-100 transition-opacity">
+                  <div className="w-8 h-8 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center group-hover:bg-first-line/20">
+                    <ChevronRight className="w-4 h-4 text-first-line" />
                   </div>
                 </div>
               </CardContent>
@@ -2641,6 +2652,14 @@ const Dashboard1stLine = () => {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Metric Detail Modal */}
+      <MetricDetailModal
+        open={metricDetailOpen}
+        onOpenChange={setMetricDetailOpen}
+        metric={selectedMetric}
+        risks={safeRiskData}
+      />
     </div>
     </TooltipProvider>
   );
