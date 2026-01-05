@@ -5,6 +5,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
+import { MetricDetailModal } from "@/components/MetricDetailModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -98,6 +99,8 @@ const Dashboard2ndLine = () => {
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
+  const [metricDetailOpen, setMetricDetailOpen] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<typeof metrics[0] | null>(null);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
     title: string;
@@ -800,7 +803,13 @@ const Dashboard2ndLine = () => {
           {metrics.map((metric, index) => (
             <Tooltip key={index}>
               <TooltipTrigger asChild>
-                <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
+                <Card 
+                  onClick={() => {
+                    setSelectedMetric(metric);
+                    setMetricDetailOpen(true);
+                  }}
+                  className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-200 bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer"
+                >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-start justify-between mb-2 sm:mb-3">
                       <h3 className="text-sm sm:text-lg font-bold text-foreground leading-tight">{metric.title}</h3>
@@ -2068,6 +2077,14 @@ const Dashboard2ndLine = () => {
         </DialogContent>
       </Dialog>
       </div>
+
+      {/* Metric Detail Modal */}
+      <MetricDetailModal
+        open={metricDetailOpen}
+        onOpenChange={setMetricDetailOpen}
+        metric={selectedMetric}
+        risks={riskData}
+      />
     </TooltipProvider>
   );
 };
