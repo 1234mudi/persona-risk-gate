@@ -159,6 +159,9 @@ const Dashboard1stLine = () => {
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
+  // Risk data state - must be before useEffect that references it
+  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
+
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
     const riskId = searchParams.get("riskId");
@@ -232,7 +235,6 @@ const Dashboard1stLine = () => {
     riskId: null,
   });
 
-  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
   // Initialize expanded rows with all Level 1 risks by default (only once)
   useEffect(() => {
