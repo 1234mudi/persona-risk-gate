@@ -736,18 +736,26 @@ const Dashboard1stLine = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   });
 
-  // Calculate dynamic assessment due counts from risk data
-  const assessmentDueCounts = useMemo(() => {
+  // Combined assessment status counts (deadline urgency + workflow progress)
+  const assessmentStatusCounts = useMemo(() => {
     const today = startOfDay(new Date());
     const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Monday start
     const monthEnd = endOfMonth(today);
     
+    // Deadline urgency counts
     let overdue = 0;
     let dueThisWeek = 0;
     let dueThisMonth = 0;
     let future = 0;
     
+    // Workflow progress counts
+    let notStarted = 0;
+    let inProgress = 0;
+    let pendingApproval = 0;
+    let completed = 0;
+    
     riskData.forEach(risk => {
+      // Due date categorization
       try {
         const dueDate = parseISO(risk.dueDate);
         const dueDateStart = startOfDay(dueDate);
@@ -764,9 +772,27 @@ const Dashboard1stLine = () => {
       } catch (e) {
         // Skip invalid dates
       }
+      
+      // Workflow status categorization
+      const status = risk.status?.toLowerCase() || "";
+      if (status === "completed" || status === "complete" || status === "closed") {
+        completed++;
+      } else if (status === "pending approval" || status === "review/challenge" || status === "pending review") {
+        pendingApproval++;
+      } else if (status === "in progress" || status === "under review") {
+        inProgress++;
+      } else {
+        notStarted++;
+      }
     });
     
-    return { overdue, dueThisWeek, dueThisMonth, future, total: riskData.length };
+    return {
+      // Deadline data
+      overdue, dueThisWeek, dueThisMonth, future,
+      // Workflow data
+      notStarted, inProgress, pendingApproval, completed,
+      total: riskData.length
+    };
   }, [riskData]);
 
   // Calculate inherent risk rating counts from risk data
@@ -792,32 +818,6 @@ const Dashboard1stLine = () => {
     return { critical, high, medium, low, total: critical + high + medium + low };
   }, [riskData]);
 
-  // Calculate assessment progress counts based on risk status
-  const assessmentProgressCounts = useMemo(() => {
-    let notStarted = 0;
-    let inProgress = 0;
-    let pendingApproval = 0;
-    let completed = 0;
-    
-    riskData.forEach(risk => {
-      const status = risk.status?.toLowerCase() || "";
-      if (status === "completed" || status === "complete" || status === "closed") {
-        completed++;
-      } else if (status === "pending approval" || status === "review/challenge" || status === "pending review") {
-        pendingApproval++;
-      } else if (status === "in progress" || status === "under review") {
-        inProgress++;
-      } else if (status === "sent for assessment") {
-        notStarted++;
-      } else {
-        // Default to not started for any other status
-        notStarted++;
-      }
-    });
-    
-    const total = notStarted + inProgress + pendingApproval + completed;
-    return { notStarted, inProgress, pendingApproval, completed, total };
-  }, [riskData]);
 
   // Calculate control evidence status from controlEffectiveness
   const controlEvidenceCounts = useMemo(() => {
@@ -846,29 +846,53 @@ const Dashboard1stLine = () => {
   // 1st Line specific metrics
   const metrics = useMemo(() => [
     {
-      title: "My Assessments Due",
-      value: assessmentDueCounts.overdue + assessmentDueCounts.dueThisWeek,
-      trend: `${assessmentDueCounts.overdue} overdue`,
-      trendUp: assessmentDueCounts.overdue === 0,
-      icon: Clock,
-      segments: [
-        { label: "Overdue", value: assessmentDueCounts.overdue, sublabel: `${assessmentDueCounts.overdue} Overdue`, color: "bg-red-600" },
-        { label: "Due This Week", value: assessmentDueCounts.dueThisWeek, sublabel: `${assessmentDueCounts.dueThisWeek} Due This Week`, color: "bg-amber-500" },
-        { label: "Due This Month", value: assessmentDueCounts.dueThisMonth + assessmentDueCounts.future, sublabel: `${assessmentDueCounts.dueThisMonth + assessmentDueCounts.future} Due This Month`, color: "bg-green-600" },
+      title: "Assessment Status",
+      value: assessmentStatusCounts.total,
+      trend: `${assessmentStatusCounts.overdue} overdue, ${assessmentStatusCounts.completed} completed`,
+      trendUp: assessmentStatusCounts.overdue === 0 && assessmentStatusCounts.completed > 0,
+      icon: CalendarCheck,
+      segmentRows: [
+        {
+          label: "Deadline Status",
+          segments: [
+            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-red-600" },
+            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-amber-500" },
+            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-green-600" },
+          ]
+        },
+        {
+          label: "Workflow Progress",
+          segments: [
+            { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-green-600" },
+            { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, color: "bg-purple-500" },
+            { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-amber-500" },
+            { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-gray-400" },
+          ]
+        }
       ],
-      description: "Complete overdue assessments first to maintain compliance.",
-      tooltip: "Shows your assigned risk assessments by due date status. Focus on overdue and due today items to meet assessment deadlines.",
+      segments: [
+        { label: "Overdue", value: assessmentStatusCounts.overdue, sublabel: `${assessmentStatusCounts.overdue} Overdue`, color: "bg-red-600" },
+        { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, sublabel: `${assessmentStatusCounts.dueThisWeek} Due This Week`, color: "bg-amber-500" },
+        { label: "Completed", value: assessmentStatusCounts.completed, sublabel: `${assessmentStatusCounts.completed} Completed`, color: "bg-green-600" },
+      ],
+      description: "Track assessment deadlines and workflow progress together.",
+      tooltip: "Combined view of assessment timing and workflow status.",
       extendedDetails: {
-        insight: "Assessment timeliness is critical for maintaining an accurate risk profile. Overdue assessments may contain outdated risk ratings.",
+        insight: "Assessment management requires balancing urgency with progress tracking. Monitor both deadlines and completion rates.",
         breakdown: [
-          { label: "Overdue", value: assessmentDueCounts.overdue, action: "Immediate attention required" },
-          { label: "Due This Week", value: assessmentDueCounts.dueThisWeek, action: "Schedule for completion" },
-          { label: "Due This Month", value: assessmentDueCounts.dueThisMonth, action: "Plan ahead" },
-          { label: "Future", value: assessmentDueCounts.future, action: "Track progress" },
+          { label: "Overdue", value: assessmentStatusCounts.overdue, action: "Immediate attention required" },
+          { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, action: "Schedule for completion" },
+          { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth, action: "Plan ahead" },
+          { label: "Completed", value: assessmentStatusCounts.completed, action: "Ready for next cycle" },
+          { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, action: "Awaiting 2nd line review" },
+          { label: "In Progress", value: assessmentStatusCounts.inProgress, action: "Continue work" },
+          { label: "Not Started", value: assessmentStatusCounts.notStarted, action: "Prioritize initiation" },
         ],
-        recommendation: assessmentDueCounts.overdue > 0 
+        recommendation: assessmentStatusCounts.overdue > 0
           ? "Focus on clearing overdue assessments first to maintain compliance posture."
-          : "Great work! Stay on track by completing due items this week.",
+          : assessmentStatusCounts.notStarted > assessmentStatusCounts.completed
+            ? "Many assessments haven't started. Create a schedule to ensure timely completion."
+            : "Great progress! Stay on track by completing in-progress assessments.",
       },
     },
     {
@@ -924,34 +948,7 @@ const Dashboard1stLine = () => {
           : "Control effectiveness is healthy. Focus on assessing remaining controls.",
       },
     },
-    {
-      title: "Assessment Progress",
-      value: assessmentProgressCounts.total,
-      trend: `${assessmentProgressCounts.completed} completed`,
-      trendUp: assessmentProgressCounts.completed > 0,
-      icon: CheckSquare,
-      segments: [
-        { label: "Completed", value: assessmentProgressCounts.completed, sublabel: `${assessmentProgressCounts.completed} Completed`, color: "bg-green-600" },
-        { label: "Pending Approval", value: assessmentProgressCounts.pendingApproval, sublabel: `${assessmentProgressCounts.pendingApproval} Pending Approval`, color: "bg-purple-500" },
-        { label: "In Progress", value: assessmentProgressCounts.inProgress, sublabel: `${assessmentProgressCounts.inProgress} In Progress`, color: "bg-amber-500" },
-        { label: "Not Started", value: assessmentProgressCounts.notStarted, sublabel: `${assessmentProgressCounts.notStarted} Not Started`, color: "bg-gray-400" },
-      ],
-      description: "Track assessment completion based on risk status.",
-      tooltip: "Overall assessment progress based on the status of your assigned risks.",
-      extendedDetails: {
-        insight: "Assessment completion rate indicates overall risk management maturity and compliance readiness.",
-        breakdown: [
-          { label: "Completed", value: assessmentProgressCounts.completed, action: "Ready for next cycle" },
-          { label: "Pending Approval", value: assessmentProgressCounts.pendingApproval, action: "Awaiting 2nd line review" },
-          { label: "In Progress", value: assessmentProgressCounts.inProgress, action: "Continue work" },
-          { label: "Not Started", value: assessmentProgressCounts.notStarted, action: "Prioritize initiation" },
-        ],
-        recommendation: assessmentProgressCounts.notStarted > assessmentProgressCounts.completed
-          ? "Many assessments haven't started. Create a schedule to ensure timely completion."
-          : "Good progress! Focus on completing in-progress assessments.",
-      },
-    },
-  ], [assessmentDueCounts, inherentRiskCounts, controlEvidenceCounts, assessmentProgressCounts]);
+  ], [assessmentStatusCounts, inherentRiskCounts, controlEvidenceCounts]);
 
   // Get unique assessors for the filter dropdown (only from assess tab)
   const uniqueAssessors = useMemo(() => {
