@@ -2525,7 +2525,7 @@ const Dashboard1stLine = () => {
 
       {/* Metric Details Dialog */}
       <Dialog open={metricDetailsOpen} onOpenChange={setMetricDetailsOpen}>
-        <DialogContent className="sm:max-w-[550px]">
+        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3 text-xl">
               {selectedMetric && (
