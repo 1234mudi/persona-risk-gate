@@ -778,6 +778,7 @@ const Dashboard1stLine = () => {
     let low = 0;
     
     riskData.forEach(risk => {
+      if (!risk) return;
       const level = risk.inherentRisk?.level?.toLowerCase() || "";
       if (level.includes("critical")) {
         critical++;
@@ -801,6 +802,7 @@ const Dashboard1stLine = () => {
     let completed = 0;
     
     riskData.forEach(risk => {
+      if (!risk) return;
       const status = risk.status?.toLowerCase() || "";
       if (status === "completed" || status === "complete" || status === "closed") {
         completed++;
@@ -828,6 +830,7 @@ const Dashboard1stLine = () => {
     let notAssessed = 0;
     
     riskData.forEach(risk => {
+      if (!risk) return;
       const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
       if (label === "effective" || label === "design effective") {
         effective++;
