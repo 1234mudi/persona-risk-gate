@@ -122,6 +122,16 @@ const Dashboard2ndLine = () => {
   // Risk data state - must be before useEffect that references it
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
+  // Null-safety: filter out any null/undefined entries to prevent crashes
+  const safeRiskData = useMemo(() => riskData.filter((r): r is RiskData => r != null), [riskData]);
+
+  // Auto-cleanup: remove nulls from state if they exist
+  useEffect(() => {
+    if (riskData.some(r => r == null)) {
+      setRiskData(prev => prev.filter((r): r is RiskData => r != null));
+    }
+  }, [riskData]);
+
   // Check URL params to auto-open modal on navigation back
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
@@ -999,7 +1009,7 @@ const Dashboard2ndLine = () => {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="all">All Business Units</SelectItem>
-                    {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
+                    {Array.from(new Set(safeRiskData.map(r => r.businessUnit).filter(Boolean))).sort().map(unit => (
                       <SelectItem key={unit} value={unit}>{unit}</SelectItem>
                     ))}
                   </SelectContent>
