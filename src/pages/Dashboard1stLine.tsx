@@ -84,6 +84,7 @@ const Dashboard1stLine = () => {
   const [riskLevelFilter, setRiskLevelFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
+  const [businessUnitFilter, setBusinessUnitFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [riskIdFilter, setRiskIdFilter] = useState<string>("all");
   const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
@@ -290,6 +291,10 @@ const Dashboard1stLine = () => {
       });
     }
     
+    // Apply business unit filter
+    if (businessUnitFilter !== "all") {
+      filtered = filtered.filter(risk => risk.businessUnit === businessUnitFilter);
+    }
     
     // Apply hierarchy view mode filtering - group by level based on riskLevel
     const level1Risks = filtered.filter(risk => risk.riskLevel === "Level 1");
@@ -1767,9 +1772,21 @@ const Dashboard1stLine = () => {
                 </SelectContent>
               </Select>
 
+              {/* Business Unit Filter */}
+              <Select value={businessUnitFilter} onValueChange={setBusinessUnitFilter}>
+                <SelectTrigger className="w-40 h-8">
+                  <SelectValue placeholder="Business Unit" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
+                  <SelectItem value="all">All Business Units</SelectItem>
+                  {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
+                    <SelectItem key={unit} value={unit}>{unit}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
 
               {/* Clear Filters Button - show when any filter is active */}
-              {(statusFilter !== "all" || deadlineFilter !== "all" || riskLevelFilter !== "all" || riskIdFilter !== "all" || searchQuery.trim()) && (
+              {(statusFilter !== "all" || deadlineFilter !== "all" || riskLevelFilter !== "all" || riskIdFilter !== "all" || businessUnitFilter !== "all" || searchQuery.trim()) && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -1779,7 +1796,7 @@ const Dashboard1stLine = () => {
                     setDeadlineFilter("all");
                     setRiskLevelFilter("all");
                     setRiskIdFilter("all");
-                    
+                    setBusinessUnitFilter("all");
                     setSearchQuery("");
                     toast.success("Filters cleared");
                   }}
@@ -1912,6 +1929,7 @@ const Dashboard1stLine = () => {
                         <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Completion Date</TableHead>
                       )}
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
+                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Business Unit</TableHead>
                       <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
@@ -2153,6 +2171,12 @@ const Dashboard1stLine = () => {
                               </TooltipProvider>
                             )}
                           </div>
+                        </TableCell>
+                        {/* Business Unit */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <Badge variant="outline" className="text-[10px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700">
+                            {risk.businessUnit}
+                          </Badge>
                         </TableCell>
                         {/* Assessors */}
                         <TableCell className="py-2 border-r border-b border-border">
