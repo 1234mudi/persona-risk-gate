@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -108,6 +108,7 @@ interface MetricData {
   trendUp: boolean;
   icon: React.ComponentType<{ className?: string }>;
   segments: Array<{ label: string; value: number; sublabel: string; color: string }>;
+  segmentRows?: Array<{ label: string; segments: Array<{ label: string; value: number; color: string }> }>;
   description: string;
   tooltip: string;
   extendedDetails: {
@@ -2745,119 +2746,238 @@ const Dashboard1stLine = () => {
 
       {/* Metric Details Dialog */}
       <Dialog open={metricDetailsOpen} onOpenChange={setMetricDetailsOpen}>
-        <DialogContent className="sm:max-w-[550px] max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
+        <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+          <DialogHeader className="pb-2">
             <DialogTitle className="flex items-center gap-3 text-xl">
               {selectedMetric && (
                 <>
-                  <div className="w-12 h-12 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center">
-                    <selectedMetric.icon className="w-6 h-6 text-first-line" />
+                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-first-line/20 to-first-line/5 border border-first-line/20 flex items-center justify-center shadow-sm">
+                    <selectedMetric.icon className="w-5 h-5 text-first-line" />
                   </div>
                   {selectedMetric.title}
                 </>
               )}
             </DialogTitle>
-            <DialogDescription>
-              Detailed breakdown and insights for this metric
-            </DialogDescription>
           </DialogHeader>
           
           {selectedMetric && (
-            <div className="space-y-6 py-4">
-              {/* Main Value Display */}
-              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-                <div>
-                  <span className="text-4xl font-bold text-foreground">{selectedMetric.value}</span>
-                  <p className="text-sm text-muted-foreground mt-1">{selectedMetric.description}</p>
+            <div className="space-y-5 py-2">
+              {/* Enhanced Header Section */}
+              <div className="flex items-center justify-between p-4 bg-gradient-to-r from-first-line/10 via-first-line/5 to-transparent rounded-xl border border-first-line/10">
+                <div className="space-y-1">
+                  <span className="text-4xl font-bold bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">{selectedMetric.value}</span>
+                  <p className="text-sm text-muted-foreground">{selectedMetric.description}</p>
                 </div>
-                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
-                  selectedMetric.trendUp ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
-                }`}>
-                  {selectedMetric.trendUp ? (
-                    <TrendingUp className="w-4 h-4 text-green-600" />
-                  ) : (
-                    <TrendingDown className="w-4 h-4 text-red-600" />
-                  )}
-                  <span className={`text-sm font-medium ${selectedMetric.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                <div className="text-right space-y-1">
+                  <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${
+                    selectedMetric.trendUp 
+                      ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' 
+                      : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
+                  }`}>
+                    {selectedMetric.trendUp ? (
+                      <TrendingUp className="w-3.5 h-3.5" />
+                    ) : (
+                      <TrendingDown className="w-3.5 h-3.5" />
+                    )}
                     {selectedMetric.trend}
-                  </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">vs last period</p>
                 </div>
               </div>
               
-              {/* Detailed Breakdown */}
-              <div>
-                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
-                  <CheckSquare className="w-4 h-4 text-first-line" />
-                  Detailed Breakdown
+              {/* Visual Distribution - Dual Progress Bars */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold flex items-center gap-2">
+                  <BarChart className="w-4 h-4 text-first-line" />
+                  Distribution Overview
                 </h4>
-                <div className="space-y-2">
-                  {selectedMetric.extendedDetails.breakdown.map((item, idx) => {
-                    const total = selectedMetric.extendedDetails.breakdown.reduce((sum, s) => sum + s.value, 0);
-                    const percentage = total > 0 ? Math.round((item.value / total) * 100) : 0;
-                    return (
-                      <div key={idx} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg hover:bg-muted/40 transition-colors">
-                        <div className="flex items-center gap-3">
-                          <div className={`w-4 h-4 rounded-full ${selectedMetric.segments[idx]?.color || 'bg-gray-400'}`} />
-                          <div>
-                            <span className="font-medium">{item.label}</span>
-                            <p className="text-xs text-muted-foreground">{item.action}</p>
+                
+                {selectedMetric.segmentRows ? (
+                  <div className="space-y-3">
+                    {selectedMetric.segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
+                      let rowTotal = 0;
+                      for (const seg of row.segments) rowTotal += seg.value;
+                      
+                      return (
+                        <div key={rowIdx} className="p-3 bg-muted/30 rounded-lg border border-muted/50 space-y-2">
+                          <span className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                            {row.label}
+                          </span>
+                          <div className="h-5 rounded-md overflow-hidden flex bg-muted/30">
+                            {row.segments.map((seg, segIdx) => {
+                              const pct = rowTotal > 0 ? (seg.value / rowTotal) * 100 : 0;
+                              return (
+                                <div
+                                  key={segIdx}
+                                  className={`${seg.color} transition-all duration-500 flex items-center justify-center`}
+                                  style={{ width: `${pct}%` }}
+                                >
+                                  {pct > 12 && (
+                                    <span className="text-[10px] font-medium text-white drop-shadow-sm">
+                                      {seg.value}
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+                          <div className="flex flex-wrap gap-x-3 gap-y-1">
+                            {row.segments.map((seg, segIdx) => (
+                              <div key={segIdx} className="flex items-center gap-1.5">
+                                <div className={`w-2.5 h-2.5 rounded-sm ${seg.color}`} />
+                                <span className="text-xs text-muted-foreground">
+                                  {seg.label}: <span className="font-medium text-foreground">{seg.value}</span>
+                                </span>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl font-bold">{item.value}</span>
-                          <Badge variant="outline" className="text-xs">
-                            {percentage}%
-                          </Badge>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-              
-              {/* Visual Chart */}
-              <div>
-                <h4 className="text-sm font-semibold mb-3">Distribution</h4>
-                <div className="h-8 rounded-lg overflow-hidden flex">
-                  {selectedMetric.segments.map((segment, idx) => {
-                    const total = selectedMetric.segments.reduce((sum, s) => sum + s.value, 0);
-                    const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                    return (
-                      <div
-                        key={idx}
-                        className={`${segment.color} transition-all duration-500`}
-                        style={{ width: `${percentage}%` }}
-                      />
-                    );
-                  })}
-                </div>
-                <div className="flex flex-wrap gap-2 mt-2">
-                  {selectedMetric.segments.map((segment, idx) => (
-                    <div key={idx} className="flex items-center gap-1.5">
-                      <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
-                      <span className="text-xs text-muted-foreground">{segment.label}</span>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <div className="p-3 bg-muted/30 rounded-lg border border-muted/50 space-y-2">
+                    <div className="h-5 rounded-md overflow-hidden flex bg-muted/30">
+                      {selectedMetric.segments.map((segment, idx) => {
+                        const total = selectedMetric.segments.reduce((sum, s) => sum + s.value, 0);
+                        const pct = total > 0 ? (segment.value / total) * 100 : 0;
+                        return (
+                          <div
+                            key={idx}
+                            className={`${segment.color} transition-all duration-500 flex items-center justify-center`}
+                            style={{ width: `${pct}%` }}
+                          >
+                            {pct > 12 && (
+                              <span className="text-[10px] font-medium text-white drop-shadow-sm">
+                                {segment.value}
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                  ))}
-                </div>
+                    <div className="flex flex-wrap gap-x-3 gap-y-1">
+                      {selectedMetric.segments.map((segment, idx) => (
+                        <div key={idx} className="flex items-center gap-1.5">
+                          <div className={`w-2.5 h-2.5 rounded-sm ${segment.color}`} />
+                          <span className="text-xs text-muted-foreground">
+                            {segment.label}: <span className="font-medium text-foreground">{segment.value}</span>
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
               
-              {/* AI Insight Section */}
-              <div className="p-4 bg-first-line/5 border border-first-line/20 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Sparkles className="w-4 h-4 text-first-line" />
-                  <h4 className="text-sm font-semibold text-first-line">AI Insight</h4>
+              {/* Prioritized Breakdown */}
+              <div className="space-y-3">
+                <h4 className="text-sm font-semibold flex items-center gap-2">
+                  <CheckSquare className="w-4 h-4 text-first-line" />
+                  Action Items
+                </h4>
+                
+                {(() => {
+                  const breakdown = selectedMetric.extendedDetails.breakdown;
+                  const total = breakdown.reduce((sum, s) => sum + s.value, 0);
+                  const criticalItems = breakdown.filter(item => 
+                    item.label.toLowerCase().includes('critical') || 
+                    item.label.toLowerCase().includes('high') ||
+                    item.label.toLowerCase().includes('overdue') ||
+                    item.label.toLowerCase().includes('ineffective')
+                  );
+                  const otherItems = breakdown.filter(item => 
+                    !item.label.toLowerCase().includes('critical') && 
+                    !item.label.toLowerCase().includes('high') &&
+                    !item.label.toLowerCase().includes('overdue') &&
+                    !item.label.toLowerCase().includes('ineffective')
+                  );
+                  
+                  return (
+                    <div className="space-y-2">
+                      {/* Critical/High Priority Items */}
+                      {criticalItems.length > 0 && (
+                        <div className="space-y-2">
+                          {criticalItems.map((item, idx) => {
+                            const percentage = total > 0 ? Math.round((item.value / total) * 100) : 0;
+                            const segmentColor = selectedMetric.segments.find(s => s.label === item.label)?.color || 'bg-gray-400';
+                            return (
+                              <div key={idx} className="flex items-center justify-between p-3 bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800/50 rounded-lg">
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-3 h-3 rounded-full ${segmentColor}`} />
+                                  <div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="font-medium text-red-800 dark:text-red-200">{item.label}</span>
+                                      <Badge variant="destructive" className="text-[10px] h-4 px-1.5">
+                                        Priority
+                                      </Badge>
+                                    </div>
+                                    <p className="text-xs text-red-600 dark:text-red-400">{item.action}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <span className="text-xl font-bold text-red-700 dark:text-red-300">{item.value}</span>
+                                  <span className="text-xs text-red-500 dark:text-red-400">({percentage}%)</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                      
+                      {/* Other Items - Compact Grid */}
+                      {otherItems.length > 0 && (
+                        <div className="grid grid-cols-2 gap-2">
+                          {otherItems.map((item, idx) => {
+                            const percentage = total > 0 ? Math.round((item.value / total) * 100) : 0;
+                            const segmentColor = selectedMetric.segments.find(s => s.label === item.label)?.color || 'bg-gray-400';
+                            return (
+                              <div key={idx} className="flex items-center justify-between p-2.5 bg-muted/30 rounded-lg border border-muted/50 hover:bg-muted/50 transition-colors">
+                                <div className="flex items-center gap-2 min-w-0">
+                                  <div className={`w-2.5 h-2.5 rounded-full shrink-0 ${segmentColor}`} />
+                                  <div className="min-w-0">
+                                    <span className="text-sm font-medium truncate block">{item.label}</span>
+                                    <p className="text-[10px] text-muted-foreground truncate">{item.action}</p>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                                  <span className="text-lg font-bold">{item.value}</span>
+                                  <span className="text-[10px] text-muted-foreground">({percentage}%)</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
+              
+              {/* Enhanced AI Insight Section */}
+              <div className="p-4 bg-gradient-to-br from-first-line/10 via-emerald-500/5 to-transparent border border-first-line/20 rounded-xl">
+                <div className="flex items-start gap-3">
+                  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-first-line/30 to-emerald-500/20 flex items-center justify-center shrink-0 shadow-sm">
+                    <Sparkles className="w-4 h-4 text-first-line" />
+                  </div>
+                  <div className="space-y-2 flex-1">
+                    <h4 className="font-semibold text-first-line text-sm">AI Analysis</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">
+                      {selectedMetric.extendedDetails.insight}
+                    </p>
+                    <div className="p-2.5 bg-white/60 dark:bg-black/20 rounded-lg border border-first-line/10">
+                      <p className="text-sm font-medium text-foreground flex items-start gap-2">
+                        <Target className="w-4 h-4 text-first-line shrink-0 mt-0.5" />
+                        {selectedMetric.extendedDetails.recommendation}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-2">
-                  {selectedMetric.extendedDetails.insight}
-                </p>
-                <p className="text-sm font-medium text-foreground">
-                  {selectedMetric.extendedDetails.recommendation}
-                </p>
               </div>
             </div>
           )}
           
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setMetricDetailsOpen(false)}>
               Close
             </Button>
