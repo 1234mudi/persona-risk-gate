@@ -934,28 +934,18 @@ const Dashboard2ndLine = () => {
           </div>
           <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1.5 text-primary hover:underline text-sm">
             <ClipboardCheck className="w-4 h-4" />
-            <span>Risks to Assess</span>
+            <span>Open Risk Assessments</span>
           </button>
           <span className="text-muted-foreground/50">|</span>
           <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-1.5 text-primary hover:underline text-sm">
             <CheckCircle className="w-4 h-4" />
-            <span>Risks to Approve</span>
+            <span>Assessments Awaiting Approval</span>
           </button>
           <span className="text-muted-foreground/50">|</span>
           <button onClick={handleOpenChallengesClick} className="flex items-center gap-1.5 text-primary hover:underline text-sm">
             <AlertTriangle className="w-4 h-4" />
-            <span>Open Challenges</span>
+            <span>View 2nd Line Challenged Risks</span>
           </button>
-          <span className="text-muted-foreground/50">|</span>
-          <a href="#" className="flex items-center gap-1.5 text-primary hover:underline text-sm">
-            <CheckSquare className="w-4 h-4" />
-            <span>Completed Challenges</span>
-          </a>
-          <span className="text-muted-foreground/50">|</span>
-          <a href="#" className="flex items-center gap-1.5 text-primary hover:underline text-sm">
-            <AlertCircle className="w-4 h-4" />
-            <span>Open Risk Events</span>
-          </a>
         </div>
 
         {/* Scorecards - 2 rows x 3 columns */}
