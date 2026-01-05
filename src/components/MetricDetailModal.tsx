@@ -32,9 +32,6 @@ interface RiskData {
   inherentRisk: { level: string; color: string; score?: number };
   residualRisk: { level: string; color: string; score?: number };
   controlEffectiveness: { label: string; color: string };
-  assessmentProgress?: {
-    reviewChallenge?: "not-started" | "in-progress" | "completed";
-  };
 }
 
 interface MetricDetailModalProps {
@@ -58,12 +55,11 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
 
     switch (metric.title) {
       case "My Assessments Due":
-      case "Assessments Pending Review":
         return risks.filter(risk => {
           const dueDate = parseISO(risk.dueDate);
           if (segmentLabel === "Overdue") return dueDate < today;
-          if (segmentLabel === "Due This Week" || segmentLabel === "Due Today") return dueDate >= today && dueDate <= endOfWeekDate;
-          if (segmentLabel === "Due This Month" || segmentLabel === "Not Due Yet") return dueDate > endOfWeekDate;
+          if (segmentLabel === "Due This Week") return dueDate >= today && dueDate <= endOfWeekDate;
+          if (segmentLabel === "Due This Month") return dueDate > endOfWeekDate && dueDate <= endOfMonthDate;
           return true;
         });
       case "Inherent Risk Ratings":
@@ -71,13 +67,6 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
           if (segmentLabel === "Critical") return risk.inherentRisk.level === "Critical";
           if (segmentLabel === "High") return risk.inherentRisk.level === "High";
           if (segmentLabel === "Medium") return risk.inherentRisk.level === "Medium";
-          return true;
-        });
-      case "High Residual Risks":
-        return risks.filter(risk => {
-          if (segmentLabel === "Critical") return risk.residualRisk.level === "Critical";
-          if (segmentLabel === "High") return risk.residualRisk.level === "High";
-          if (segmentLabel === "Medium") return risk.residualRisk.level === "Medium";
           return true;
         });
       case "Control Evidence Status":
@@ -105,17 +94,6 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
           if (segmentLabel === "Not Started") return risk.status === "Not Started";
           return true;
         });
-      case "RCSA Review/Challenge Process":
-        return risks.filter(risk => {
-          const reviewStatus = risk.assessmentProgress?.reviewChallenge;
-          if (segmentLabel.includes("Agreed")) return reviewStatus === "completed";
-          if (segmentLabel.includes("Pending")) return reviewStatus === "in-progress";
-          if (segmentLabel.includes("Challenged")) return reviewStatus === "not-started";
-          return true;
-        });
-      case "Operational Loss Events":
-        // Financial summary - return all risks for context
-        return risks;
       default:
         return risks;
     }
@@ -123,14 +101,10 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
 
   const getColumnHeader = (): string => {
     switch (metric.title) {
-      case "My Assessments Due":
-      case "Assessments Pending Review": return "Due Date";
+      case "My Assessments Due": return "Due Date";
       case "Inherent Risk Ratings": return "Inherent Risk";
-      case "High Residual Risks": return "Residual Risk";
       case "Control Evidence Status": return "Control Status";
       case "Assessment Progress": return "Status";
-      case "RCSA Review/Challenge Process": return "Review Status";
-      case "Operational Loss Events": return "Risk Level";
       default: return "Value";
     }
   };
@@ -138,18 +112,11 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
   const getColumnValue = (risk: RiskData): React.ReactNode => {
     switch (metric.title) {
       case "My Assessments Due":
-      case "Assessments Pending Review":
         return format(parseISO(risk.dueDate), "MMM d, yyyy");
       case "Inherent Risk Ratings":
         return (
           <Badge variant="outline" className={`${risk.inherentRisk.color} text-white border-0`}>
             {risk.inherentRisk.level}
-          </Badge>
-        );
-      case "High Residual Risks":
-        return (
-          <Badge variant="outline" className={`${risk.residualRisk.color} text-white border-0`}>
-            {risk.residualRisk.level}
           </Badge>
         );
       case "Control Evidence Status":
@@ -168,29 +135,6 @@ export const MetricDetailModal = ({ open, onOpenChange, metric, risks }: MetricD
         return (
           <Badge variant="outline" className={`${statusColors[risk.status] || "bg-gray-400"} text-white border-0`}>
             {risk.status}
-          </Badge>
-        );
-      case "RCSA Review/Challenge Process":
-        const reviewStatus = risk.assessmentProgress?.reviewChallenge;
-        const reviewColors: Record<string, string> = {
-          "completed": "bg-green-600",
-          "in-progress": "bg-amber-500",
-          "not-started": "bg-gray-400",
-        };
-        const reviewLabels: Record<string, string> = {
-          "completed": "Agreed",
-          "in-progress": "Pending",
-          "not-started": "Not Started",
-        };
-        return (
-          <Badge variant="outline" className={`${reviewColors[reviewStatus || "not-started"]} text-white border-0`}>
-            {reviewLabels[reviewStatus || "not-started"]}
-          </Badge>
-        );
-      case "Operational Loss Events":
-        return (
-          <Badge variant="outline" className="bg-muted">
-            {risk.riskLevel}
           </Badge>
         );
       default:
