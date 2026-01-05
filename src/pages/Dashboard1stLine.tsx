@@ -898,7 +898,7 @@ const Dashboard1stLine = () => {
       },
     },
     {
-      title: "Control Evidence Status",
+      title: "Control Effectiveness by Risk",
       value: controlEvidenceCounts.total,
       trend: `${controlEvidenceCounts.effective} effective`,
       trendUp: controlEvidenceCounts.effective > controlEvidenceCounts.ineffective,
