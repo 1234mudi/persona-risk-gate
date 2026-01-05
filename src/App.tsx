@@ -1,8 +1,9 @@
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "next-themes";
 import Index from "./pages/Index";
 import Dashboard1stLine from "./pages/Dashboard1stLine";
@@ -13,13 +14,27 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+const HashPathRedirector = () => {
+  useEffect(() => {
+    const { pathname, search, hash } = window.location;
+
+    // If someone loads a deep link like "/dashboard/..." (no hash), redirect to hash route.
+    if (!hash && pathname !== "/" && !pathname.startsWith("/assets/")) {
+      window.location.replace(`/#${pathname}${search}`);
+    }
+  }, []);
+
+  return null;
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <ThemeProvider attribute="data-theme" defaultTheme="dark" enableSystem={false} storageKey="rcsa-theme">
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <HashRouter>
+          <HashPathRedirector />
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/dashboard/1st-line-analyst" element={<Dashboard1stLine />} />
@@ -29,7 +44,7 @@ const App = () => (
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
-        </BrowserRouter>
+        </HashRouter>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
