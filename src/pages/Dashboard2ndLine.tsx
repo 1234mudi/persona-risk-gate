@@ -963,42 +963,42 @@ const Dashboard2ndLine = () => {
           {metrics.map((metric, index) => (
             <Tooltip key={index}>
               <TooltipTrigger asChild>
-                <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
-                  <CardContent className="p-3 sm:p-4">
-                    <div className="flex items-start justify-between mb-2 sm:mb-3">
-                      <h3 className="text-sm sm:text-lg font-bold text-foreground leading-tight">{metric.title}</h3>
-                      <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
-                        <metric.icon className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
+                <Card className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
+                  <CardContent className="p-2 sm:p-3">
+                    <div className="flex items-start justify-between mb-1.5 sm:mb-2">
+                      <h3 className="text-xs sm:text-sm font-bold text-foreground leading-tight">{metric.title}</h3>
+                      <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
+                        <metric.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-primary" />
                       </div>
                     </div>
                 
-                <div className="space-y-2">
+                <div className="space-y-1 sm:space-y-1.5">
                   <div className="flex items-baseline gap-1">
-                    <span className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <span className="text-xl sm:text-2xl font-bold text-foreground">
                       {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
                     </span>
                     {metric.valueSuffix && (
-                      <span className="text-sm sm:text-base font-medium text-muted-foreground">{metric.valueSuffix}</span>
+                      <span className="text-xs sm:text-sm font-medium text-muted-foreground">{metric.valueSuffix}</span>
                     )}
                   </div>
                   {metric.subLabel && (
-                    <p className="text-xs sm:text-sm font-medium text-muted-foreground">{metric.subLabel}</p>
+                    <p className="text-[10px] sm:text-xs font-medium text-muted-foreground">{metric.subLabel}</p>
                   )}
                   
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     {metric.trendUp ? (
-                      <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
+                      <TrendingUp className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600" />
                     ) : (
-                      <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />
+                      <TrendingDown className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-red-600" />
                     )}
-                    <span className={`text-xs sm:text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                    <span className={`text-[10px] sm:text-xs font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
                       {metric.trend}
                     </span>
                   </div>
                   
                   {/* Status Bar */}
-                  <div className="space-y-2">
-                    <div className="flex h-4 sm:h-6 rounded-lg overflow-hidden">
+                  <div className="space-y-1">
+                    <div className="flex h-2.5 sm:h-3 rounded overflow-hidden">
                       {metric.segments.map((segment, idx) => {
                         const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
                         const percentage = (segment.value / total) * 100;
@@ -1012,12 +1012,12 @@ const Dashboard2ndLine = () => {
                       })}
                     </div>
                     
-                    {/* Legend - Collapsible on mobile */}
-                    <div className="flex flex-wrap gap-x-2 gap-y-1">
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-x-2 gap-y-0.5">
                       {metric.segments.map((segment, idx) => (
-                        <div key={idx} className="flex items-center gap-1">
-                          <div className={`w-2 h-2 sm:w-3 sm:h-3 rounded-sm ${segment.color}`} />
-                          <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                        <div key={idx} className="flex items-center gap-0.5">
+                          <div className={`w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-sm ${segment.color}`} />
+                          <span className="text-[9px] sm:text-[10px] font-medium text-muted-foreground">
                             {segment.sublabel || segment.label}
                           </span>
                         </div>
@@ -1025,21 +1025,21 @@ const Dashboard2ndLine = () => {
                     </div>
                   </div>
                   
-                  <p className="text-[10px] sm:text-xs text-muted-foreground leading-snug pt-1 sm:pt-2 hidden sm:block">
+                  <p className="text-[9px] sm:text-[10px] text-muted-foreground leading-snug pt-0.5 sm:pt-1 hidden sm:block">
                     {metric.description}
                   </p>
                 </div>
                 
                 {/* AI Generated Icon */}
-                <div className="absolute bottom-2 right-2 sm:bottom-3 sm:right-3">
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 text-primary" />
+                <div className="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2">
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary" />
                   </div>
                 </div>
               </CardContent>
             </Card>
           </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs text-sm">
+          <TooltipContent side="bottom" className="max-w-xs text-xs">
             <p>{metric.tooltip}</p>
           </TooltipContent>
         </Tooltip>
