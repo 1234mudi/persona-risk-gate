@@ -1071,24 +1071,32 @@ const Dashboard2ndLine = () => {
                 <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                      <Button 
+                        size="sm" 
+                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={selectedRisks.size === 0}
+                      >
                         <UserPlus className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
                         <span className="hidden sm:inline">Reassign</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Reassign risks to another owner</p>
+                      <p>{selectedRisks.size === 0 ? "Select risks to begin" : "Reassign risks to another owner"}</p>
                     </TooltipContent>
                   </Tooltip>
                   <Tooltip>
                     <TooltipTrigger asChild>
-                      <Button size="sm" className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground">
+                      <Button 
+                        size="sm" 
+                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={selectedRisks.size === 0}
+                      >
                         <AlertTriangle className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
                         <span className="hidden sm:inline">Review/Challenge</span>
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p>Review and challenge risk assessments</p>
+                      <p>{selectedRisks.size === 0 ? "Select risks to begin" : "Review and challenge risk assessments"}</p>
                     </TooltipContent>
                   </Tooltip>
                 </div>
