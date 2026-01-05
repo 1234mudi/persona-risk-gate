@@ -536,7 +536,7 @@ const Dashboard2ndLine = () => {
 
   const metrics = [
     {
-      title: "Assessments Pending Review",
+      title: "Assessments Pending Review/Approval",
       value: 24,
       trend: "+12% since last month",
       trendUp: true,
