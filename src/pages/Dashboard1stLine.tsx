@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect } from "react";
-import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
+import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical } from "lucide-react";
@@ -49,57 +49,8 @@ import {
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 
-interface HistoricalAssessment {
-  date: string;
-  assessor: string;
-  inherentRisk: { level: string; score: number };
-  residualRisk: { level: string; score: number };
-  controlEffectiveness: string;
-  status: string;
-  notes?: string;
-}
-
-interface RiskData {
-  id: string;
-  title: string;
-  dueDate: string;
-  riskLevel: string;
-  parentRisk?: string;
-  businessUnit: string;
-  category: string;
-  owner: string;
-  assessors: string[];
-  currentEditor?: string;
-  orgLevel: {
-    level1: string;
-    level2: string;
-    level3: string;
-  };
-  assessmentProgress: {
-    assess: "not-started" | "in-progress" | "completed";
-    reviewChallenge: "not-started" | "in-progress" | "completed";
-    approve: "not-started" | "in-progress" | "completed";
-  };
-  sectionCompletion: {
-    inherentRating: number;
-    controlEffectiveness: number;
-    residualRating: number;
-    riskTreatment: number;
-  };
-  inherentRisk: { level: string; color: string; score?: number };
-  inherentTrend: { value: string; up: boolean };
-  relatedControls: { id: string; name: string; type: string; nature: string; keyControl: "Key" | "Non-Key" }[];
-  controlEffectiveness: { label: string; color: string };
-  testResults: { label: string; sublabel: string };
-  residualRisk: { level: string; color: string; score?: number };
-  residualTrend: { value: string; up: boolean };
-  status: string;
-  lastAssessed: string;
-  completionDate?: string;
-  previousAssessments: number;
-  tabCategory: "own" | "assess" | "approve";
-  historicalAssessments?: HistoricalAssessment[];
-}
+// Use the shared type for consistency with 2nd Line dashboard
+type RiskData = SharedRiskData;
 
 interface MetricData {
   title: string;
