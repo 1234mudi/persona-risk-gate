@@ -101,6 +101,22 @@ interface RiskData {
   historicalAssessments?: HistoricalAssessment[];
 }
 
+interface MetricData {
+  title: string;
+  value: number | string;
+  trend: string;
+  trendUp: boolean;
+  icon: React.ComponentType<{ className?: string }>;
+  segments: Array<{ label: string; value: number; sublabel: string; color: string }>;
+  description: string;
+  tooltip: string;
+  extendedDetails: {
+    insight: string;
+    breakdown: Array<{ label: string; value: number; action: string }>;
+    recommendation: string;
+  };
+}
+
 const Dashboard1stLine = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -124,6 +140,8 @@ const Dashboard1stLine = () => {
   const [selectedRiskForHistory, setSelectedRiskForHistory] = useState<RiskData | null>(null);
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
+  const [selectedMetric, setSelectedMetric] = useState<MetricData | null>(null);
+  const [metricDetailsOpen, setMetricDetailsOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
     title: string;
@@ -840,6 +858,18 @@ const Dashboard1stLine = () => {
       ],
       description: "Complete overdue assessments first to maintain compliance.",
       tooltip: "Shows your assigned risk assessments by due date status. Focus on overdue and due today items to meet assessment deadlines.",
+      extendedDetails: {
+        insight: "Assessment timeliness is critical for maintaining an accurate risk profile. Overdue assessments may contain outdated risk ratings.",
+        breakdown: [
+          { label: "Overdue", value: assessmentDueCounts.overdue, action: "Immediate attention required" },
+          { label: "Due This Week", value: assessmentDueCounts.dueThisWeek, action: "Schedule for completion" },
+          { label: "Due This Month", value: assessmentDueCounts.dueThisMonth, action: "Plan ahead" },
+          { label: "Future", value: assessmentDueCounts.future, action: "Track progress" },
+        ],
+        recommendation: assessmentDueCounts.overdue > 0 
+          ? "Focus on clearing overdue assessments first to maintain compliance posture."
+          : "Great work! Stay on track by completing due items this week.",
+      },
     },
     {
       title: "Inherent Risk Ratings",
@@ -854,6 +884,18 @@ const Dashboard1stLine = () => {
       ],
       description: "Review Critical and High ratings for control adequacy.",
       tooltip: "Distribution of inherent risk ratings across your assigned risks. Higher ratings require stronger controls to mitigate.",
+      extendedDetails: {
+        insight: "Inherent risk represents the natural exposure before any controls are applied. Critical and High risks need robust mitigation strategies.",
+        breakdown: [
+          { label: "Critical", value: inherentRiskCounts.critical, action: "Requires executive oversight" },
+          { label: "High", value: inherentRiskCounts.high, action: "Enhanced monitoring needed" },
+          { label: "Medium", value: inherentRiskCounts.medium, action: "Standard controls apply" },
+          { label: "Low", value: inherentRiskCounts.low || 0, action: "Monitor periodically" },
+        ],
+        recommendation: inherentRiskCounts.critical > 0
+          ? "Critical risks detected. Ensure adequate controls and escalate to risk committee if needed."
+          : "No critical inherent risks. Continue monitoring high-risk areas.",
+      },
     },
     {
       title: "Control Evidence Status",
@@ -869,6 +911,18 @@ const Dashboard1stLine = () => {
       ],
       description: "Review ineffective and not assessed controls.",
       tooltip: "Control effectiveness ratings across your assigned risks. Focus on improving ineffective controls.",
+      extendedDetails: {
+        insight: "Control effectiveness directly impacts residual risk. Ineffective controls should be remediated or replaced.",
+        breakdown: [
+          { label: "Effective", value: controlEvidenceCounts.effective, action: "Maintain current practices" },
+          { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, action: "Identify improvement areas" },
+          { label: "Ineffective", value: controlEvidenceCounts.ineffective, action: "Remediation required" },
+          { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, action: "Schedule assessment" },
+        ],
+        recommendation: controlEvidenceCounts.ineffective > 0
+          ? "Ineffective controls found. Prioritize remediation to reduce residual risk exposure."
+          : "Control effectiveness is healthy. Focus on assessing remaining controls.",
+      },
     },
     {
       title: "Assessment Progress",
@@ -884,6 +938,18 @@ const Dashboard1stLine = () => {
       ],
       description: "Track assessment completion based on risk status.",
       tooltip: "Overall assessment progress based on the status of your assigned risks.",
+      extendedDetails: {
+        insight: "Assessment completion rate indicates overall risk management maturity and compliance readiness.",
+        breakdown: [
+          { label: "Completed", value: assessmentProgressCounts.completed, action: "Ready for next cycle" },
+          { label: "Pending Approval", value: assessmentProgressCounts.pendingApproval, action: "Awaiting 2nd line review" },
+          { label: "In Progress", value: assessmentProgressCounts.inProgress, action: "Continue work" },
+          { label: "Not Started", value: assessmentProgressCounts.notStarted, action: "Prioritize initiation" },
+        ],
+        recommendation: assessmentProgressCounts.notStarted > assessmentProgressCounts.completed
+          ? "Many assessments haven't started. Create a schedule to ensure timely completion."
+          : "Good progress! Focus on completing in-progress assessments.",
+      },
     },
   ], [assessmentDueCounts, inherentRiskCounts, controlEvidenceCounts, assessmentProgressCounts]);
 
@@ -1215,9 +1281,14 @@ const Dashboard1stLine = () => {
           </Card>
 
           {metrics.map((metric, index) => (
-            <Tooltip key={index}>
-              <TooltipTrigger asChild>
-                <Card className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
+            <Card 
+              key={index}
+              className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer group"
+              onClick={() => {
+                setSelectedMetric(metric);
+                setMetricDetailsOpen(true);
+              }}
+            >
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between mb-3">
                       <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
@@ -1365,11 +1436,6 @@ const Dashboard1stLine = () => {
                 </div>
               </CardContent>
             </Card>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs text-sm">
-            <p>{metric.tooltip}</p>
-          </TooltipContent>
-        </Tooltip>
           ))}
         </div>
 
@@ -2452,6 +2518,134 @@ const Dashboard1stLine = () => {
             </Button>
             <Button onClick={handleActionSubmit}>
               {actionDialog.type === "collaborate" ? "Add Collaborator" : "Update Assessors"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Metric Details Dialog */}
+      <Dialog open={metricDetailsOpen} onOpenChange={setMetricDetailsOpen}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3 text-xl">
+              {selectedMetric && (
+                <>
+                  <div className="w-12 h-12 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center">
+                    <selectedMetric.icon className="w-6 h-6 text-first-line" />
+                  </div>
+                  {selectedMetric.title}
+                </>
+              )}
+            </DialogTitle>
+            <DialogDescription>
+              Detailed breakdown and insights for this metric
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedMetric && (
+            <div className="space-y-6 py-4">
+              {/* Main Value Display */}
+              <div className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
+                <div>
+                  <span className="text-4xl font-bold text-foreground">{selectedMetric.value}</span>
+                  <p className="text-sm text-muted-foreground mt-1">{selectedMetric.description}</p>
+                </div>
+                <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${
+                  selectedMetric.trendUp ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
+                }`}>
+                  {selectedMetric.trendUp ? (
+                    <TrendingUp className="w-4 h-4 text-green-600" />
+                  ) : (
+                    <TrendingDown className="w-4 h-4 text-red-600" />
+                  )}
+                  <span className={`text-sm font-medium ${selectedMetric.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                    {selectedMetric.trend}
+                  </span>
+                </div>
+              </div>
+              
+              {/* Detailed Breakdown */}
+              <div>
+                <h4 className="text-sm font-semibold mb-3 flex items-center gap-2">
+                  <CheckSquare className="w-4 h-4 text-first-line" />
+                  Detailed Breakdown
+                </h4>
+                <div className="space-y-2">
+                  {selectedMetric.extendedDetails.breakdown.map((item, idx) => {
+                    const total = selectedMetric.extendedDetails.breakdown.reduce((sum, s) => sum + s.value, 0);
+                    const percentage = total > 0 ? Math.round((item.value / total) * 100) : 0;
+                    return (
+                      <div key={idx} className="flex items-center justify-between p-3 bg-muted/20 rounded-lg hover:bg-muted/40 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <div className={`w-4 h-4 rounded-full ${selectedMetric.segments[idx]?.color || 'bg-gray-400'}`} />
+                          <div>
+                            <span className="font-medium">{item.label}</span>
+                            <p className="text-xs text-muted-foreground">{item.action}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <span className="text-2xl font-bold">{item.value}</span>
+                          <Badge variant="outline" className="text-xs">
+                            {percentage}%
+                          </Badge>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+              
+              {/* Visual Chart */}
+              <div>
+                <h4 className="text-sm font-semibold mb-3">Distribution</h4>
+                <div className="h-8 rounded-lg overflow-hidden flex">
+                  {selectedMetric.segments.map((segment, idx) => {
+                    const total = selectedMetric.segments.reduce((sum, s) => sum + s.value, 0);
+                    const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                    return (
+                      <div
+                        key={idx}
+                        className={`${segment.color} transition-all duration-500`}
+                        style={{ width: `${percentage}%` }}
+                      />
+                    );
+                  })}
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2">
+                  {selectedMetric.segments.map((segment, idx) => (
+                    <div key={idx} className="flex items-center gap-1.5">
+                      <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
+                      <span className="text-xs text-muted-foreground">{segment.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              
+              {/* AI Insight Section */}
+              <div className="p-4 bg-first-line/5 border border-first-line/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Sparkles className="w-4 h-4 text-first-line" />
+                  <h4 className="text-sm font-semibold text-first-line">AI Insight</h4>
+                </div>
+                <p className="text-sm text-muted-foreground mb-2">
+                  {selectedMetric.extendedDetails.insight}
+                </p>
+                <p className="text-sm font-medium text-foreground">
+                  {selectedMetric.extendedDetails.recommendation}
+                </p>
+              </div>
+            </div>
+          )}
+          
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setMetricDetailsOpen(false)}>
+              Close
+            </Button>
+            <Button className="bg-first-line hover:bg-first-line/90" onClick={() => {
+              setMetricDetailsOpen(false);
+              reportSectionRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }}>
+              View Related Risks
             </Button>
           </DialogFooter>
         </DialogContent>
