@@ -748,6 +748,25 @@ const Dashboard1stLine = () => {
     }, 1500);
   };
 
+  const handleActionPlansClick = () => {
+    setActiveTab("assess");
+    setStatusFilter("In Progress");
+    setHighlightedTab("assess");
+    
+    setTimeout(() => {
+      reportSectionRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 100);
+    
+    setTimeout(() => {
+      setHighlightedTab(null);
+    }, 1500);
+    
+    toast.info("Showing risks with pending action items");
+  };
+
   const handleSubmitForReview = () => {
     if (selectedRisks.size === 0) {
       toast.error("Please select at least one risk to submit for review");
@@ -1396,14 +1415,14 @@ const Dashboard1stLine = () => {
           </button>
           <span className="text-muted-foreground/50">|</span>
           <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <FileCheck className="w-4 h-4" />
-            <span>View Control Evidence Tasks</span>
+            <CheckCircle className="w-4 h-4" />
+            <span>View Completed Assessments</span>
           </button>
           <span className="text-muted-foreground/50">|</span>
-          <a href="#" className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <AlertCircle className="w-4 h-4" />
+          <button onClick={() => handleActionPlansClick()} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+            <Target className="w-4 h-4" />
             <span>View My Action Plans</span>
-          </a>
+          </button>
           <span className="text-muted-foreground/50">|</span>
           <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-first-line hover:underline text-sm italic">
             <FlaskConical className="w-4 h-4" />
