@@ -168,7 +168,7 @@ const Dashboard1stLine = () => {
     const riskName = searchParams.get("riskName");
     
     if (openOverview === "true" && riskId && riskName) {
-      const foundRisk = riskData.find(r => r.id === riskId);
+      const foundRisk = riskData.find(r => r && r.id === riskId);
       setSelectedRiskForOverview({ 
         id: riskId, 
         title: riskName,
@@ -654,8 +654,8 @@ const Dashboard1stLine = () => {
       console.log("Updated risks:", updatedRisks.length);
       
       // Update existing risks with new data, or keep them unchanged
-      const updatedExisting = prev.map(existingRisk => {
-        const update = updatedRisks.find(r => r.id === existingRisk.id);
+      const updatedExisting = prev.filter(r => r).map(existingRisk => {
+        const update = updatedRisks.find(r => r && r.id === existingRisk.id);
         return update ? { ...existingRisk, ...update } : existingRisk;
       });
       
@@ -669,7 +669,7 @@ const Dashboard1stLine = () => {
   };
 
   const handleUpdateClosedAssessment = (riskId: string) => {
-    const risk = riskData.find(r => r.id === riskId);
+    const risk = riskData.find(r => r && r.id === riskId);
     if (risk) {
       setSelectedRiskForUpdate(risk);
       setUpdateVersionDialogOpen(true);
@@ -1546,7 +1546,7 @@ const Dashboard1stLine = () => {
                 <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
                   <SelectItem value="all">All Risk IDs</SelectItem>
                   {uniqueRiskIds.map((id) => {
-                    const risk = riskData.find(r => r.id === id);
+                    const risk = riskData.find(r => r && r.id === id);
                     const truncatedTitle = risk?.title && risk.title.length > 25 
                       ? risk.title.substring(0, 25) + "..." 
                       : risk?.title || "";
@@ -2426,7 +2426,7 @@ const Dashboard1stLine = () => {
               </Label>
               <div className="mt-3 space-y-2">
                 {actionDialog.riskId?.split(",").slice(0, 3).map((riskId) => {
-                  const risk = riskData.find(r => r.id === riskId.trim());
+                  const risk = riskData.find(r => r && r.id === riskId.trim());
                   if (!risk) return null;
                   return (
                     <div key={riskId} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
