@@ -128,7 +128,7 @@ const Dashboard1stLine = () => {
   const [expandedRowsInitialized, setExpandedRowsInitialized] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
-  const [assessorFilter, setAssessorFilter] = useState<string>("all");
+  
   const [riskLevelFilter, setRiskLevelFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
@@ -325,10 +325,6 @@ const Dashboard1stLine = () => {
       });
     }
     
-    // Apply assessor filter (only on assess tab)
-    if (activeTab === "assess" && assessorFilter !== "all") {
-      filtered = filtered.filter(risk => risk.assessors.includes(assessorFilter));
-    }
     
     // Apply hierarchy view mode filtering - group by level based on riskLevel
     const level1Risks = filtered.filter(risk => risk.riskLevel === "Level 1");
@@ -406,7 +402,7 @@ const Dashboard1stLine = () => {
       }
       return visible;
     }
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows, deadlineFilter]);
+  }, [riskData, activeTab, orgLevelFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows, deadlineFilter]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -1093,12 +1089,6 @@ const Dashboard1stLine = () => {
     },
   ], [assessmentStatusCounts, inherentRiskCounts, controlEvidenceCounts, inherentTrendCounts, controlTypeCounts]);
 
-  // Get unique assessors for the filter dropdown (only from assess tab)
-  const uniqueAssessors = useMemo(() => {
-    const assessRisks = riskData.filter(risk => risk.tabCategory === "assess");
-    const allAssessors = assessRisks.flatMap(risk => risk.assessors);
-    return [...new Set(allAssessors)].sort();
-  }, [riskData]);
 
   const filteredRiskData = useMemo(() => {
     let filtered = getFilteredByTab(riskData, activeTab);
@@ -1121,13 +1111,9 @@ const Dashboard1stLine = () => {
       });
     }
     
-    // Apply assessor filter (only on assess tab)
-    if (activeTab === "assess" && assessorFilter !== "all") {
-      filtered = filtered.filter(risk => risk.assessors.includes(assessorFilter));
-    }
     
     return filtered;
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter, searchQuery]);
+  }, [riskData, activeTab, orgLevelFilter, searchQuery]);
 
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
@@ -1822,24 +1808,9 @@ const Dashboard1stLine = () => {
                 </SelectContent>
               </Select>
 
-              {activeTab === "assess" && (
-                <Select value={assessorFilter} onValueChange={setAssessorFilter}>
-                  <SelectTrigger className="w-48 h-8">
-                    <SelectValue placeholder="All Assessors" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-popover border border-border shadow-lg z-50">
-                    <SelectItem value="all">All Assessors</SelectItem>
-                    {uniqueAssessors.map((assessor) => (
-                      <SelectItem key={assessor} value={assessor}>
-                        {assessor}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
 
               {/* Clear Filters Button - show when any filter is active */}
-              {(statusFilter !== "all" || deadlineFilter !== "all" || riskLevelFilter !== "all" || riskIdFilter !== "all" || assessorFilter !== "all" || searchQuery.trim()) && (
+              {(statusFilter !== "all" || deadlineFilter !== "all" || riskLevelFilter !== "all" || riskIdFilter !== "all" || searchQuery.trim()) && (
                 <Button
                   variant="outline"
                   size="sm"
@@ -1849,7 +1820,7 @@ const Dashboard1stLine = () => {
                     setDeadlineFilter("all");
                     setRiskLevelFilter("all");
                     setRiskIdFilter("all");
-                    setAssessorFilter("all");
+                    
                     setSearchQuery("");
                     toast.success("Filters cleared");
                   }}
