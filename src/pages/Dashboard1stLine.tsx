@@ -828,7 +828,7 @@ const Dashboard1stLine = () => {
     
     riskData.forEach(risk => {
       const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
-      if (label === "effective" || label === "design effective") {
+      if (label === "effective" || label === "design effective" || label === "operating effective") {
         effective++;
       } else if (label === "partially effective") {
         partiallyEffective++;
