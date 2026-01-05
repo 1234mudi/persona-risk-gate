@@ -162,13 +162,23 @@ const Dashboard1stLine = () => {
   // Risk data state - must be before useEffect that references it
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
+  // IMPORTANT: Filter out any null/undefined entries to prevent runtime crashes
+  const safeRiskData = useMemo(() => riskData.filter((r): r is RiskData => r != null), [riskData]);
+
+  // Auto-cleanup nulls from riskData if any are detected
+  useEffect(() => {
+    if (riskData.some(r => r == null)) {
+      setRiskData(prev => prev.filter((r): r is RiskData => r != null));
+    }
+  }, [riskData]);
+
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
     const riskId = searchParams.get("riskId");
     const riskName = searchParams.get("riskName");
     
     if (openOverview === "true" && riskId && riskName) {
-      const foundRisk = riskData.find(r => r && r.id === riskId);
+      const foundRisk = safeRiskData.find(r => r.id === riskId);
       setSelectedRiskForOverview({ 
         id: riskId, 
         title: riskName,
@@ -238,12 +248,12 @@ const Dashboard1stLine = () => {
 
   // Initialize expanded rows with all Level 1 risks by default (only once)
   useEffect(() => {
-    if (!expandedRowsInitialized && riskData.length > 0) {
-      const level1Ids = riskData.filter(r => r && r.riskLevel === "Level 1").map(r => r.id);
+    if (!expandedRowsInitialized && safeRiskData.length > 0) {
+      const level1Ids = safeRiskData.filter(r => r.riskLevel === "Level 1").map(r => r.id);
       setExpandedRows(new Set(level1Ids));
       setExpandedRowsInitialized(true);
     }
-  }, [riskData, expandedRowsInitialized]);
+  }, [safeRiskData, expandedRowsInitialized]);
 
   const getFilteredByTab = (data: RiskData[], tab: "own" | "assess" | "approve") => {
     return data.filter(risk => risk && risk.tabCategory === tab);
@@ -251,17 +261,17 @@ const Dashboard1stLine = () => {
 
   // Unique Risk IDs for filter dropdown
   const uniqueRiskIds = useMemo(() => {
-    const tabRisks = getFilteredByTab(riskData, activeTab);
+    const tabRisks = getFilteredByTab(safeRiskData, activeTab);
     return [...new Set(tabRisks.map(r => r.id))].sort();
-  }, [riskData, activeTab]);
+  }, [safeRiskData, activeTab]);
 
   // Total count for current tab (before filtering)
   const totalTabRisks = useMemo(() => {
-    return riskData.filter(r => r && r.tabCategory === activeTab).length;
-  }, [riskData, activeTab]);
+    return safeRiskData.filter(r => r.tabCategory === activeTab).length;
+  }, [safeRiskData, activeTab]);
 
   const visibleRisks = useMemo(() => {
-    let filtered = getFilteredByTab(riskData, activeTab);
+    let filtered = getFilteredByTab(safeRiskData, activeTab);
     
     // Apply search filter
     if (searchQuery.trim()) {
@@ -380,7 +390,7 @@ const Dashboard1stLine = () => {
       }
       return visible;
     }
-  }, [riskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows]);
+  }, [safeRiskData, activeTab, orgLevelFilter, assessorFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -407,7 +417,7 @@ const Dashboard1stLine = () => {
   };
 
   const getSelectedRiskData = () => {
-    return riskData.filter(r => selectedRisks.has(r.id));
+    return safeRiskData.filter(r => selectedRisks.has(r.id));
   };
 
   const toggleRow = (riskId: string) => {
@@ -642,9 +652,10 @@ const Dashboard1stLine = () => {
     console.log("Sample converted:", newRisks.slice(0, 3).map(r => ({ id: r.id, title: r.title, riskLevel: r.riskLevel })));
 
     setRiskData(prev => {
-      console.log("Previous riskData count:", prev.length);
+      const safePrev = prev.filter((r): r is RiskData => r != null);
+      console.log("Previous riskData count:", safePrev.length);
       // Create a map of existing risk IDs for quick lookup
-      const existingIds = new Set(prev.map(r => r.id));
+      const existingIds = new Set(safePrev.map(r => r.id));
       
       // Separate new risks from updates to existing risks
       const trulyNewRisks = newRisks.filter(r => !existingIds.has(r.id));
@@ -654,7 +665,7 @@ const Dashboard1stLine = () => {
       console.log("Updated risks:", updatedRisks.length);
       
       // Update existing risks with new data, or keep them unchanged
-      const updatedExisting = prev.filter(r => r).map(existingRisk => {
+      const updatedExisting = safePrev.map(existingRisk => {
         const update = updatedRisks.find(r => r && r.id === existingRisk.id);
         return update ? { ...existingRisk, ...update } : existingRisk;
       });
@@ -669,7 +680,7 @@ const Dashboard1stLine = () => {
   };
 
   const handleUpdateClosedAssessment = (riskId: string) => {
-    const risk = riskData.find(r => r && r.id === riskId);
+    const risk = safeRiskData.find(r => r.id === riskId);
     if (risk) {
       setSelectedRiskForUpdate(risk);
       setUpdateVersionDialogOpen(true);
@@ -748,7 +759,7 @@ const Dashboard1stLine = () => {
     let dueThisMonth = 0;
     let future = 0;
     
-    riskData.forEach(risk => {
+    safeRiskData.forEach(risk => {
       try {
         const dueDate = parseISO(risk.dueDate);
         const dueDateStart = startOfDay(dueDate);
@@ -767,8 +778,8 @@ const Dashboard1stLine = () => {
       }
     });
     
-    return { overdue, dueThisWeek, dueThisMonth, future, total: riskData.length };
-  }, [riskData]);
+    return { overdue, dueThisWeek, dueThisMonth, future, total: safeRiskData.length };
+  }, [safeRiskData]);
 
   // Calculate inherent risk rating counts from risk data
   const inherentRiskCounts = useMemo(() => {
@@ -777,8 +788,7 @@ const Dashboard1stLine = () => {
     let medium = 0;
     let low = 0;
     
-    riskData.forEach(risk => {
-      if (!risk) return;
+    safeRiskData.forEach(risk => {
       const level = risk.inherentRisk?.level?.toLowerCase() || "";
       if (level.includes("critical")) {
         critical++;
@@ -792,7 +802,7 @@ const Dashboard1stLine = () => {
     });
     
     return { critical, high, medium, low, total: critical + high + medium + low };
-  }, [riskData]);
+  }, [safeRiskData]);
 
   // Calculate assessment progress counts based on risk status
   const assessmentProgressCounts = useMemo(() => {
@@ -801,8 +811,7 @@ const Dashboard1stLine = () => {
     let pendingApproval = 0;
     let completed = 0;
     
-    riskData.forEach(risk => {
-      if (!risk) return;
+    safeRiskData.forEach(risk => {
       const status = risk.status?.toLowerCase() || "";
       if (status === "completed" || status === "complete" || status === "closed") {
         completed++;
@@ -820,7 +829,7 @@ const Dashboard1stLine = () => {
     
     const total = notStarted + inProgress + pendingApproval + completed;
     return { notStarted, inProgress, pendingApproval, completed, total };
-  }, [riskData]);
+  }, [safeRiskData]);
 
   // Calculate control evidence status from controlEffectiveness
   const controlEvidenceCounts = useMemo(() => {
@@ -829,8 +838,7 @@ const Dashboard1stLine = () => {
     let ineffective = 0;
     let notAssessed = 0;
     
-    riskData.forEach(risk => {
-      if (!risk) return;
+    safeRiskData.forEach(risk => {
       const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
       if (label === "effective" || label === "design effective") {
         effective++;
@@ -845,7 +853,7 @@ const Dashboard1stLine = () => {
     
     const total = effective + partiallyEffective + ineffective + notAssessed;
     return { effective, partiallyEffective, ineffective, notAssessed, total };
-  }, [riskData]);
+  }, [safeRiskData]);
 
   // 1st Line specific metrics
   const metrics = useMemo(() => [
@@ -911,7 +919,7 @@ const Dashboard1stLine = () => {
 
   // Get unique assessors for the filter dropdown (only from assess tab)
   const uniqueAssessors = useMemo(() => {
-    const assessRisks = riskData.filter(risk => risk && risk.tabCategory === "assess");
+    const assessRisks = safeRiskData.filter(risk => risk.tabCategory === "assess");
     const allAssessors = assessRisks.flatMap(risk => risk.assessors);
     return [...new Set(allAssessors)].sort();
   }, [riskData]);
@@ -989,7 +997,7 @@ const Dashboard1stLine = () => {
     if (parentRisk.riskLevel !== "Level 1") return null;
     
     // Find all child risks (Level 2 that belong to this parent)
-    const childRisks = riskData.filter(r => 
+    const childRisks = safeRiskData.filter(r => 
       r.riskLevel === "Level 2" && r.parentRisk === parentRisk.title
     );
     
@@ -1019,13 +1027,13 @@ const Dashboard1stLine = () => {
     if (parentRisk.riskLevel !== "Level 1") return null;
     
     // Get all Level 2 children that belong to this parent
-    const level2Children = riskData.filter(r => 
-      r && r.riskLevel === "Level 2" && r.parentRisk === parentRisk.title
+    const level2Children = safeRiskData.filter(r => 
+      r.riskLevel === "Level 2" && r.parentRisk === parentRisk.title
     );
     
     // Get all Level 3 children of those Level 2 risks
-    const level3Children = riskData.filter(r => 
-      r && r.riskLevel === "Level 3" && level2Children.some(l2 => l2.title === r.parentRisk)
+    const level3Children = safeRiskData.filter(r => 
+      r.riskLevel === "Level 3" && level2Children.some(l2 => l2.title === r.parentRisk)
     );
     
     const allChildren = [...level2Children, ...level3Children];
@@ -1480,7 +1488,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "own" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r && r.tabCategory === "own").length}
+                    {safeRiskData.filter(r => r.tabCategory === "own").length}
                   </span>
                 </button>
                 <button
@@ -1495,7 +1503,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "assess" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r && r.tabCategory === "assess").length}
+                    {safeRiskData.filter(r => r.tabCategory === "assess").length}
                   </span>
                 </button>
                 <button
@@ -1510,7 +1518,7 @@ const Dashboard1stLine = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "approve" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r && r.tabCategory === "approve").length}
+                    {safeRiskData.filter(r => r.tabCategory === "approve").length}
                   </span>
                 </button>
               </div>
@@ -1547,7 +1555,7 @@ const Dashboard1stLine = () => {
                 <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
                   <SelectItem value="all">All Risk IDs</SelectItem>
                   {uniqueRiskIds.map((id) => {
-                    const risk = riskData.find(r => r && r.id === id);
+                    const risk = safeRiskData.find(r => r.id === id);
                     const truncatedTitle = risk?.title && risk.title.length > 25 
                       ? risk.title.substring(0, 25) + "..." 
                       : risk?.title || "";
@@ -2348,7 +2356,7 @@ const Dashboard1stLine = () => {
         open={aiDocumentModalOpen}
         onOpenChange={setAiDocumentModalOpen}
         onRisksImported={handleImportedRisks}
-        existingRisks={riskData.map(r => ({ 
+        existingRisks={safeRiskData.map(r => ({ 
           id: r.id, 
           title: r.title,
           businessUnit: r.businessUnit,
@@ -2365,7 +2373,7 @@ const Dashboard1stLine = () => {
         open={directAssessmentModalOpen}
         onOpenChange={setDirectAssessmentModalOpen}
         onRisksImported={handleImportedRisks}
-        existingRisks={riskData.map(r => ({ 
+        existingRisks={safeRiskData.map(r => ({ 
           id: r.id, 
           title: r.title,
           businessUnit: r.businessUnit,
@@ -2376,7 +2384,7 @@ const Dashboard1stLine = () => {
           status: r.status
         }))}
         skipReviewScreen={true}
-        filterByTitles={riskData.filter(r => selectedRisks.has(r.id)).map(r => r.title)}
+        filterByTitles={safeRiskData.filter(r => selectedRisks.has(r.id)).map(r => r.title)}
       />
 
       <Dialog open={editDialog.open} onOpenChange={(open) => !open && setEditDialog({ open: false, type: null, riskId: null, currentValue: "" })}>
@@ -2427,7 +2435,7 @@ const Dashboard1stLine = () => {
               </Label>
               <div className="mt-3 space-y-2">
                 {actionDialog.riskId?.split(",").slice(0, 3).map((riskId) => {
-                  const risk = riskData.find(r => r && r.id === riskId.trim());
+                  const risk = safeRiskData.find(r => r.id === riskId.trim());
                   if (!risk) return null;
                   return (
                     <div key={riskId} className="flex items-center justify-between p-2 bg-muted/50 rounded-lg">
