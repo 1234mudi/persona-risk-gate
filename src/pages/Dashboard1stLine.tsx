@@ -886,6 +886,25 @@ const Dashboard1stLine = () => {
     return { critical, high, medium, low, total: critical + high + medium + low };
   }, [riskData]);
 
+  // Calculate inherent risk trend counts
+  const inherentTrendCounts = useMemo(() => {
+    let increasing = 0;
+    let stable = 0;
+    let decreasing = 0;
+    
+    riskData.forEach(risk => {
+      if (risk.inherentTrend?.up === true) {
+        increasing++;
+      } else if (risk.inherentTrend?.up === false) {
+        decreasing++;
+      } else {
+        stable++;
+      }
+    });
+    
+    return { increasing, stable, decreasing, total: increasing + stable + decreasing };
+  }, [riskData]);
+
 
   // Calculate control evidence status from controlEffectiveness
   const controlEvidenceCounts = useMemo(() => {
@@ -909,6 +928,24 @@ const Dashboard1stLine = () => {
     
     const total = effective + partiallyEffective + ineffective + notAssessed;
     return { effective, partiallyEffective, ineffective, notAssessed, total };
+  }, [riskData]);
+
+  // Calculate control type counts (key vs non-key)
+  const controlTypeCounts = useMemo(() => {
+    let keyControls = 0;
+    let nonKeyControls = 0;
+    
+    riskData.forEach(risk => {
+      risk.relatedControls?.forEach(control => {
+        if (control.keyControl === "Key") {
+          keyControls++;
+        } else {
+          nonKeyControls++;
+        }
+      });
+    });
+    
+    return { keyControls, nonKeyControls, total: keyControls + nonKeyControls };
   }, [riskData]);
 
   // 1st Line specific metrics
@@ -969,6 +1006,25 @@ const Dashboard1stLine = () => {
       trend: `${inherentRiskCounts.critical + inherentRiskCounts.high} require attention`,
       trendUp: inherentRiskCounts.critical === 0,
       icon: AlertTriangle,
+      segmentRows: [
+        {
+          label: "Risk Level Distribution",
+          segments: [
+            { label: "Critical", value: inherentRiskCounts.critical, color: "bg-red-600" },
+            { label: "High", value: inherentRiskCounts.high, color: "bg-amber-500" },
+            { label: "Medium", value: inherentRiskCounts.medium, color: "bg-yellow-400" },
+            { label: "Low", value: inherentRiskCounts.low, color: "bg-green-600" },
+          ]
+        },
+        {
+          label: "Trend Analysis",
+          segments: [
+            { label: "Increasing", value: inherentTrendCounts.increasing, color: "bg-red-500" },
+            { label: "Stable", value: inherentTrendCounts.stable, color: "bg-blue-500" },
+            { label: "Decreasing", value: inherentTrendCounts.decreasing, color: "bg-green-500" },
+          ]
+        }
+      ],
       segments: [
         { label: "Critical", value: inherentRiskCounts.critical, sublabel: `${inherentRiskCounts.critical} Critical`, color: "bg-red-600" },
         { label: "High", value: inherentRiskCounts.high, sublabel: `${inherentRiskCounts.high} High`, color: "bg-amber-500" },
@@ -995,6 +1051,24 @@ const Dashboard1stLine = () => {
       trend: `${controlEvidenceCounts.effective} effective`,
       trendUp: controlEvidenceCounts.effective > controlEvidenceCounts.ineffective,
       icon: FileCheck,
+      segmentRows: [
+        {
+          label: "Effectiveness Rating",
+          segments: [
+            { label: "Effective", value: controlEvidenceCounts.effective, color: "bg-green-600" },
+            { label: "Partially", value: controlEvidenceCounts.partiallyEffective, color: "bg-amber-500" },
+            { label: "Ineffective", value: controlEvidenceCounts.ineffective, color: "bg-red-600" },
+            { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, color: "bg-gray-400" },
+          ]
+        },
+        {
+          label: "Control Type",
+          segments: [
+            { label: "Key Controls", value: controlTypeCounts.keyControls, color: "bg-purple-600" },
+            { label: "Non-Key", value: controlTypeCounts.nonKeyControls, color: "bg-slate-400" },
+          ]
+        }
+      ],
       segments: [
         { label: "Effective", value: controlEvidenceCounts.effective, sublabel: `${controlEvidenceCounts.effective} Effective`, color: "bg-green-600" },
         { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, sublabel: `${controlEvidenceCounts.partiallyEffective} Partially Effective`, color: "bg-amber-500" },
@@ -1016,7 +1090,7 @@ const Dashboard1stLine = () => {
           : "Control effectiveness is healthy. Focus on assessing remaining controls.",
       },
     },
-  ], [assessmentStatusCounts, inherentRiskCounts, controlEvidenceCounts]);
+  ], [assessmentStatusCounts, inherentRiskCounts, controlEvidenceCounts, inherentTrendCounts, controlTypeCounts]);
 
   // Get unique assessors for the filter dropdown (only from assess tab)
   const uniqueAssessors = useMemo(() => {
