@@ -119,6 +119,9 @@ const Dashboard2ndLine = () => {
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
+  // Risk data state - must be before useEffect that references it
+  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
+
   // Check URL params to auto-open modal on navigation back
   useEffect(() => {
     const openOverview = searchParams.get("openOverview");
@@ -221,7 +224,6 @@ const Dashboard2ndLine = () => {
     type: null,
     riskId: null,
   });
-  const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
   // Selection helpers
   const visibleRisks = useMemo(() => {
