@@ -382,13 +382,13 @@ const Dashboard2ndLine = () => {
   };
 
   // Track scroll position for scroll button
-  useState(() => {
+  useEffect(() => {
     const handleScroll = () => {
       setShowScrollTop(window.scrollY > 400);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
-  });
+  }, []);
   const metrics = [
     {
       title: "Assessments Pending Review",
