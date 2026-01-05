@@ -228,7 +228,7 @@ const Dashboard2ndLine = () => {
   // Selection helpers
   const visibleRisks = useMemo(() => {
     const visible: RiskData[] = [];
-    const filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    const filtered = riskData.filter(risk => risk && risk.tabCategory === activeTab);
     filtered.forEach(risk => {
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
@@ -463,8 +463,8 @@ const Dashboard2ndLine = () => {
 
   const filteredRiskData = useMemo(() => {
     return riskData.filter(risk => {
-      // Tab filter
-      if (risk.tabCategory !== activeTab) return false;
+      // Null check + Tab filter
+      if (!risk || risk.tabCategory !== activeTab) return false;
       
       // Business Unit filter
       if (businessUnitFilter !== "all" && risk.businessUnit !== businessUnitFilter) return false;
@@ -929,7 +929,7 @@ const Dashboard2ndLine = () => {
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
                       activeTab === "own" ? "bg-green-800/30" : "bg-green-200 dark:bg-green-800/40"
                     }`}>
-                      {riskData.filter(r => r.tabCategory === "own").length}
+                      {riskData.filter(r => r && r.tabCategory === "own").length}
                     </span>
                   </button>
                   <button
@@ -945,7 +945,7 @@ const Dashboard2ndLine = () => {
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
                       activeTab === "assess" ? "bg-white/20" : "bg-muted"
                     }`}>
-                      {riskData.filter(r => r.tabCategory === "assess").length}
+                      {riskData.filter(r => r && r.tabCategory === "assess").length}
                     </span>
                   </button>
                   <button
@@ -961,7 +961,7 @@ const Dashboard2ndLine = () => {
                     <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold ${
                       activeTab === "approve" ? "bg-white/20" : "bg-muted"
                     }`}>
-                      {riskData.filter(r => r.tabCategory === "approve").length}
+                      {riskData.filter(r => r && r.tabCategory === "approve").length}
                     </span>
                   </button>
                 </div>

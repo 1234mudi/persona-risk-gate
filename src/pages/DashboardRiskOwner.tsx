@@ -186,7 +186,7 @@ const DashboardRiskOwner = () => {
 
   const visibleRisks = useMemo(() => {
     const visible: RiskData[] = [];
-    let filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    let filtered = riskData.filter(risk => risk && risk.tabCategory === activeTab);
     
     // Apply org level filter
     if (orgLevelFilter !== "all") {
@@ -386,13 +386,13 @@ const DashboardRiskOwner = () => {
 
   // Get unique assessors for the filter dropdown (only from assess tab)
   const uniqueAssessors = useMemo(() => {
-    const assessRisks = riskData.filter(risk => risk.tabCategory === "assess");
+    const assessRisks = riskData.filter(risk => risk && risk.tabCategory === "assess");
     const allAssessors = assessRisks.flatMap(risk => risk.assessors);
     return [...new Set(allAssessors)].sort();
   }, [riskData]);
 
   const filteredRiskData = useMemo(() => {
-    let filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    let filtered = riskData.filter(risk => risk && risk.tabCategory === activeTab);
     
     // Apply org level filter
     if (orgLevelFilter !== "all") {
@@ -730,7 +730,7 @@ const DashboardRiskOwner = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "own" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.tabCategory === "own").length}
+                    {riskData.filter(r => r && r.tabCategory === "own").length}
                   </span>
                 </button>
                 <button
@@ -745,7 +745,7 @@ const DashboardRiskOwner = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "assess" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.tabCategory === "assess").length}
+                    {riskData.filter(r => r && r.tabCategory === "assess").length}
                   </span>
                 </button>
                 <button
@@ -760,7 +760,7 @@ const DashboardRiskOwner = () => {
                   <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
                     activeTab === "approve" ? "bg-white/20" : "bg-muted"
                   }`}>
-                    {riskData.filter(r => r.tabCategory === "approve").length}
+                    {riskData.filter(r => r && r.tabCategory === "approve").length}
                   </span>
                 </button>
               </div>
