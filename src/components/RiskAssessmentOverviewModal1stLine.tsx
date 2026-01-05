@@ -171,35 +171,35 @@ const AssessmentCard = ({
   return (
     <div className="flex">
       {/* Timeline indicator */}
-      <div className="flex flex-col items-center mr-3">
-        <div className="flex items-center justify-center w-7 h-7 rounded-full bg-muted border border-border text-muted-foreground font-bold text-xs">
+      <div className="flex flex-col items-center mr-2">
+        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted border border-border text-muted-foreground font-bold text-[10px]">
           {stepNumber}
         </div>
         {!isLast && (
-          <div className="w-0.5 flex-1 mt-1.5 bg-border" />
+          <div className="w-0.5 flex-1 mt-1 bg-border" />
         )}
       </div>
 
       {/* Card content */}
       <div 
-        className="flex-1 mb-3 rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+        className="flex-1 mb-2 rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
         onClick={handleNavigate}
       >
-        <div className="p-3">
+        <div className="p-2">
           {/* Header row */}
-          <div className="flex items-start justify-between mb-2">
-            <div className="flex items-center gap-2">
-              <div className="p-1.5 rounded-md bg-muted/50">
+          <div className="flex items-start justify-between mb-1.5">
+            <div className="flex items-center gap-1.5">
+              <div className="p-1 rounded-md bg-muted/50">
                 {icon}
               </div>
               <div>
                 <h3 
-                  className="group text-sm font-semibold text-primary hover:text-primary/80 cursor-pointer transition-colors flex items-center gap-1 underline underline-offset-2 decoration-primary/40 hover:decoration-primary"
+                  className="group text-xs font-semibold text-primary hover:text-primary/80 cursor-pointer transition-colors flex items-center gap-1 underline underline-offset-2 decoration-primary/40 hover:decoration-primary"
                 >
                   {title}
-                  <ArrowRight className="w-3 h-3 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
+                  <ArrowRight className="w-2.5 h-2.5 opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all" />
                 </h3>
-                <p className="text-[11px] text-muted-foreground">{descriptor}</p>
+                <p className="text-[10px] text-muted-foreground">{descriptor}</p>
               </div>
             </div>
             <div className={`px-2 py-0.5 rounded-full text-[10px] font-medium ${getStatusColor()}`}>
@@ -679,41 +679,41 @@ This risk is currently being managed within established parameters. No immediate
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-5xl w-[95vw] p-0 overflow-hidden flex flex-col max-h-[90vh] [&>button]:top-3 [&>button]:right-3 [&>button]:z-10">
+      <DialogContent className="sm:max-w-2xl w-[95vw] p-0 overflow-hidden flex flex-col max-h-[90vh] [&>button]:top-2 [&>button]:right-2 [&>button]:z-10">
         {/* Header */}
-        <div className="px-4 py-3 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0 pr-12">
+        <div className="px-3 py-2 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0 pr-10">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-base font-semibold text-foreground">To-Do: Risk Assessment Overview</h2>
-              <p className="text-xs text-muted-foreground mt-0.5">
-                <span className="font-medium text-foreground">{risk.id}</span> · {risk.title}
+              <h2 className="text-sm font-semibold text-foreground">{risk.title}</h2>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                <span className="font-medium text-foreground">{risk.id}</span> · To-Do: Risk Assessment Overview
               </p>
             </div>
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
                 <div className="text-center">
-                  <p className="text-xl font-bold text-foreground">{completedSteps}/{cards.length}</p>
-                  <p className="text-[10px] text-muted-foreground">Steps Done</p>
+                  <p className="text-lg font-bold text-foreground">{completedSteps}/{cards.length}</p>
+                  <p className="text-[9px] text-muted-foreground">Steps Done</p>
                 </div>
-                <div className="h-8 w-px bg-border" />
+                <div className="h-6 w-px bg-border" />
                 <div className="text-center">
-                  <p className="text-xl font-bold text-foreground">{totalCompletion}%</p>
-                  <p className="text-[10px] text-muted-foreground">Overall</p>
+                  <p className="text-lg font-bold text-foreground">{totalCompletion}%</p>
+                  <p className="text-[9px] text-muted-foreground">Overall</p>
                 </div>
               </div>
               <Button 
                 size="sm"
                 variant="outline"
                 onClick={handleOpenSummaryModal}
-                className="h-8 text-xs gap-1.5 border-2 border-green-500"
+                className="h-7 text-[11px] gap-1 border-2 border-green-500"
               >
-                <Sparkles className="w-3.5 h-3.5 text-primary fill-primary/20" />
-                <span>Assessment Summary</span>
+                <Sparkles className="w-3 h-3 text-primary fill-primary/20" />
+                <span>Summary</span>
               </Button>
               <Button 
                 size="sm"
                 onClick={() => handleNavigateToSection('inherent-rating', risk.id, risk.title)}
-                className="bg-primary text-primary-foreground hover:bg-primary/90 h-8 text-xs"
+                className="bg-primary text-primary-foreground hover:bg-primary/90 h-7 text-[11px]"
               >
                 Continue
               </Button>
@@ -722,8 +722,8 @@ This risk is currently being managed within established parameters. No immediate
         </div>
         
         {/* Content - Vertical timeline layout */}
-        <div className="flex-1 overflow-auto p-4 bg-gradient-to-b from-background to-muted/20">
-          <div className="max-w-xl mx-auto">
+        <div className="flex-1 overflow-auto p-3 bg-gradient-to-b from-background to-muted/20">
+          <div>
             {cards.map((card, index) => (
               <AssessmentCard 
                 key={index} 
