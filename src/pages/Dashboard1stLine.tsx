@@ -129,6 +129,7 @@ const Dashboard1stLine = () => {
   const [showScrollTop, setShowScrollTop] = useState(false);
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   
+  const [selectedAssessor, setSelectedAssessor] = useState<string>("all");
   const [riskLevelFilter, setRiskLevelFilter] = useState<string>("all");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [orgLevelFilter, setOrgLevelFilter] = useState<"all" | "level1" | "level2" | "level3">("all");
@@ -250,19 +251,33 @@ const Dashboard1stLine = () => {
     return data.filter(risk => risk.tabCategory === tab);
   };
 
-  // Unique Risk IDs for filter dropdown
+  // Get unique assessors from all risk data for the dropdown (must be before assessorFilteredRiskData)
+  const uniqueAssessors = useMemo(() => {
+    const allAssessors = riskData.flatMap(risk => risk.assessors);
+    return [...new Set(allAssessors)].sort();
+  }, [riskData]);
+
+  // Filter risk data based on selected assessor - this affects ALL data on the page
+  const assessorFilteredRiskData = useMemo(() => {
+    if (selectedAssessor === "all") {
+      return riskData;
+    }
+    return riskData.filter(risk => risk.assessors.includes(selectedAssessor));
+  }, [riskData, selectedAssessor]);
+
+  // Unique Risk IDs for filter dropdown (uses assessor-filtered data)
   const uniqueRiskIds = useMemo(() => {
-    const tabRisks = getFilteredByTab(riskData, activeTab);
+    const tabRisks = getFilteredByTab(assessorFilteredRiskData, activeTab);
     return [...new Set(tabRisks.map(r => r.id))].sort();
-  }, [riskData, activeTab]);
+  }, [assessorFilteredRiskData, activeTab]);
 
   // Total count for current tab (before filtering)
   const totalTabRisks = useMemo(() => {
-    return riskData.filter(r => r.tabCategory === activeTab).length;
-  }, [riskData, activeTab]);
+    return assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length;
+  }, [assessorFilteredRiskData, activeTab]);
 
   const visibleRisks = useMemo(() => {
-    let filtered = getFilteredByTab(riskData, activeTab);
+    let filtered = getFilteredByTab(assessorFilteredRiskData, activeTab);
     
     // Apply search filter
     if (searchQuery.trim()) {
@@ -402,7 +417,7 @@ const Dashboard1stLine = () => {
       }
       return visible;
     }
-  }, [riskData, activeTab, orgLevelFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows, deadlineFilter]);
+  }, [assessorFilteredRiskData, activeTab, orgLevelFilter, riskLevelFilter, statusFilter, searchQuery, riskIdFilter, hierarchyViewMode, expandedRows, deadlineFilter]);
 
   const toggleRiskSelection = (riskId: string) => {
     setSelectedRisks(prev => {
@@ -819,7 +834,7 @@ const Dashboard1stLine = () => {
     let pendingApproval = 0;
     let completed = 0;
     
-    riskData.forEach(risk => {
+    assessorFilteredRiskData.forEach(risk => {
       // Due date categorization
       try {
         const dueDate = parseISO(risk.dueDate);
@@ -856,9 +871,9 @@ const Dashboard1stLine = () => {
       overdue, dueThisWeek, dueThisMonth, future,
       // Workflow data
       notStarted, inProgress, pendingApproval, completed,
-      total: riskData.length
+      total: assessorFilteredRiskData.length
     };
-  }, [riskData]);
+  }, [assessorFilteredRiskData]);
 
   // Calculate inherent risk rating counts from risk data
   const inherentRiskCounts = useMemo(() => {
@@ -867,7 +882,7 @@ const Dashboard1stLine = () => {
     let medium = 0;
     let low = 0;
     
-    riskData.forEach(risk => {
+    assessorFilteredRiskData.forEach(risk => {
       const level = risk.inherentRisk?.level?.toLowerCase() || "";
       if (level.includes("critical")) {
         critical++;
@@ -881,7 +896,7 @@ const Dashboard1stLine = () => {
     });
     
     return { critical, high, medium, low, total: critical + high + medium + low };
-  }, [riskData]);
+  }, [assessorFilteredRiskData]);
 
   // Calculate inherent risk trend counts
   const inherentTrendCounts = useMemo(() => {
@@ -889,7 +904,7 @@ const Dashboard1stLine = () => {
     let stable = 0;
     let decreasing = 0;
     
-    riskData.forEach(risk => {
+    assessorFilteredRiskData.forEach(risk => {
       if (risk.inherentTrend?.up === true) {
         increasing++;
       } else if (risk.inherentTrend?.up === false) {
@@ -900,7 +915,7 @@ const Dashboard1stLine = () => {
     });
     
     return { increasing, stable, decreasing, total: increasing + stable + decreasing };
-  }, [riskData]);
+  }, [assessorFilteredRiskData]);
 
 
   // Calculate control evidence status from controlEffectiveness
@@ -910,7 +925,7 @@ const Dashboard1stLine = () => {
     let ineffective = 0;
     let notAssessed = 0;
     
-    riskData.forEach(risk => {
+    assessorFilteredRiskData.forEach(risk => {
       const label = risk.controlEffectiveness?.label?.toLowerCase() || "";
       if (label === "effective" || label === "design effective" || label === "operating effective") {
         effective++;
@@ -925,14 +940,14 @@ const Dashboard1stLine = () => {
     
     const total = effective + partiallyEffective + ineffective + notAssessed;
     return { effective, partiallyEffective, ineffective, notAssessed, total };
-  }, [riskData]);
+  }, [assessorFilteredRiskData]);
 
   // Calculate control type counts (key vs non-key)
   const controlTypeCounts = useMemo(() => {
     let keyControls = 0;
     let nonKeyControls = 0;
     
-    riskData.forEach(risk => {
+    assessorFilteredRiskData.forEach(risk => {
       risk.relatedControls?.forEach(control => {
         if (control.keyControl === "Key") {
           keyControls++;
@@ -943,7 +958,7 @@ const Dashboard1stLine = () => {
     });
     
     return { keyControls, nonKeyControls, total: keyControls + nonKeyControls };
-  }, [riskData]);
+  }, [assessorFilteredRiskData]);
 
   // 1st Line specific metrics
   const metrics = useMemo(() => [
@@ -1091,7 +1106,7 @@ const Dashboard1stLine = () => {
 
 
   const filteredRiskData = useMemo(() => {
-    let filtered = getFilteredByTab(riskData, activeTab);
+    let filtered = getFilteredByTab(assessorFilteredRiskData, activeTab);
     
     // Apply search filter
     if (searchQuery.trim()) {
@@ -1113,7 +1128,7 @@ const Dashboard1stLine = () => {
     
     
     return filtered;
-  }, [riskData, activeTab, orgLevelFilter, searchQuery]);
+  }, [assessorFilteredRiskData, activeTab, orgLevelFilter, searchQuery]);
 
   const getVisibleRisks = () => {
     const visible: RiskData[] = [];
@@ -1322,11 +1337,30 @@ const Dashboard1stLine = () => {
                 <h1 className="text-xl font-semibold text-foreground">
                   1st Line Risk Analyst Dashboard
                 </h1>
-                <p className="text-sm text-muted-foreground">Risk and Control Self Assessment</p>
+                <p className="text-sm text-muted-foreground">
+                  {selectedAssessor !== "all" 
+                    ? `Viewing as: ${selectedAssessor}` 
+                    : "Risk and Control Self Assessment"
+                  }
+                </p>
               </div>
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
+              <Select value={selectedAssessor} onValueChange={setSelectedAssessor}>
+                <SelectTrigger className="w-52 h-9">
+                  <User className="w-4 h-4 mr-2 flex-shrink-0" />
+                  <SelectValue placeholder="All Assessors" />
+                </SelectTrigger>
+                <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                  <SelectItem value="all">All Assessors (Overview)</SelectItem>
+                  {uniqueAssessors.map((assessor) => (
+                    <SelectItem key={assessor} value={assessor}>
+                      {assessor}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="outline" size="sm">
