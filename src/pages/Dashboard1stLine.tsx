@@ -1518,7 +1518,7 @@ const Dashboard1stLine = () => {
                         for (const s of segments) total += s.value;
                         
                         // If this card has segmentRows (dual progress bars), render them
-                        if (isAssessmentStatus && segmentRows) {
+                        if (segmentRows) {
                           return (
                             <div className="space-y-3">
                               {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
