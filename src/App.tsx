@@ -19,8 +19,10 @@ const HashPathRedirector = () => {
     const { pathname, search, hash } = window.location;
 
     // If someone loads a deep link like "/dashboard/..." (no hash), redirect to hash route.
+    // Also handle the case where the "#" got URL-encoded as "%23" in the path.
     if (!hash && pathname !== "/" && !pathname.startsWith("/assets/")) {
-      window.location.replace(`/#${pathname}${search}`);
+      const normalizedPathname = pathname.replace(/^\/%23\/?/, "/");
+      window.location.replace(`/#${normalizedPathname}${search}`);
     }
   }, []);
 
