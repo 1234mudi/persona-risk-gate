@@ -38,9 +38,13 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/dashboard/1st-line-analyst" element={<Dashboard1stLine />} />
+            <Route path="/dashboard/1st-line-analyst/*" element={<Dashboard1stLine />} />
             <Route path="/dashboard/2nd-line-analyst" element={<Dashboard2ndLine />} />
+            <Route path="/dashboard/2nd-line-analyst/*" element={<Dashboard2ndLine />} />
             <Route path="/dashboard/risk-owner" element={<DashboardRiskOwner />} />
+            <Route path="/dashboard/risk-owner/*" element={<DashboardRiskOwner />} />
             <Route path="/risk-assessment" element={<RiskAssessmentForm />} />
+            <Route path="/risk-assessment/*" element={<RiskAssessmentForm />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
