@@ -42,17 +42,33 @@ import {
 } from "lucide-react";
 import pptxgen from "pptxgenjs";
 
-// Helper function to render markdown-like formatting
+import DOMPurify from "dompurify";
+
+// Helper function to render markdown-like formatting with XSS protection
 const renderFormattedText = (text: string) => {
   if (!text) return null;
   
   const lines = text.split('\n');
   
   return lines.map((line, index) => {
+    // First escape HTML entities to prevent XSS
+    const escaped = line
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+    
     // Process bold (**text**)
-    let processedLine = line.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
+    let processedLine = escaped.replace(/\*\*(.+?)\*\*/g, '<strong class="font-semibold">$1</strong>');
     // Process italic (*text*)
     processedLine = processedLine.replace(/(?<!\*)\*([^*]+)\*(?!\*)/g, '<em class="italic">$1</em>');
+    
+    // Sanitize the final HTML
+    const sanitized = DOMPurify.sanitize(processedLine, {
+      ALLOWED_TAGS: ['strong', 'em'],
+      ALLOWED_ATTR: ['class']
+    });
     
     if (line.trim() === '') {
       return <br key={index} />;
@@ -62,7 +78,7 @@ const renderFormattedText = (text: string) => {
       <p 
         key={index} 
         className="text-sm leading-relaxed text-foreground"
-        dangerouslySetInnerHTML={{ __html: processedLine }}
+        dangerouslySetInnerHTML={{ __html: sanitized }}
       />
     );
   });

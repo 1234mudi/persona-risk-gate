@@ -1,4 +1,4 @@
 project_id = "ontxoyngslqijqufcwfc"
 
 [functions.parse-risk-document]
-verify_jwt = false
+verify_jwt = true
