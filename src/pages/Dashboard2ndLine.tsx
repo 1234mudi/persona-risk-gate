@@ -579,7 +579,7 @@ const Dashboard2ndLine = () => {
       tooltip: "Displays risks that remain elevated even after controls are applied. Critical and High residual risks indicate areas where additional mitigation strategies may be needed.",
     },
     {
-      title: "RCSA Review/Challenge Process",
+      title: "2nd Line Challenges",
       value: 88,
       isPercentage: true,
       trend: "+7% since last month",
