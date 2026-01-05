@@ -1188,7 +1188,6 @@ export const initialRiskData: SharedRiskData[] = [
       { date: "2025-07-24", assessor: "William Davis", inherentRisk: { level: "Medium", score: 8 }, residualRisk: { level: "Low", score: 4 }, controlEffectiveness: "Operating Effective", status: "Completed" }
     ]
   },
-,
   // Additional risks for Corporate Banking
   {
     id: "R-013",
