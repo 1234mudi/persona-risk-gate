@@ -396,6 +396,7 @@ const Dashboard2ndLine = () => {
   const velocityMetrics = useMemo(() => {
     const today = new Date();
     let totalRemediationDays = 0;
+    let totalOpenOverdueDays = 0;
     let completedCount = 0;
     let completedOnTime = 0;
     let completedLate = 0;
@@ -432,23 +433,32 @@ const Dashboard2ndLine = () => {
           byBusinessUnit[risk.businessUnit].late++;
         }
       } else if (dueDate < today) {
+        // Track open overdue items and their overdue days
+        const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+        totalOpenOverdueDays += daysOverdue;
         stillOverdue++;
         byBusinessUnit[risk.businessUnit].overdue++;
       }
     });
     
-    // Calculate based on completed risks, or derive from overdue data if no completions
-    const avgRemediationDays = completedCount > 0 
-      ? Math.round(totalRemediationDays / completedCount) 
-      : stillOverdue > 0 
-        ? 18  // Show 18 days if there are overdue items (indicates delays)
-        : 14; // Default baseline when no data
+    // Calculate avgRemediationDays: prioritize open overdue items when they exist
+    let avgRemediationDays: number;
+    if (stillOverdue > 0) {
+      // When there are open overdue items, show average days overdue (minimum 1)
+      avgRemediationDays = Math.max(1, Math.round(totalOpenOverdueDays / stillOverdue));
+    } else if (completedCount > 0) {
+      // Fall back to completed items average
+      avgRemediationDays = Math.round(totalRemediationDays / completedCount);
+    } else {
+      // Default baseline when no data
+      avgRemediationDays = 14;
+    }
 
-    const completionRate = completedCount > 0 
-      ? Math.round((completedOnTime / completedCount) * 100) 
-      : stillOverdue > 0 
-        ? 72  // Lower completion rate when overdue items exist
-        : 85; // Default baseline when no data
+    // Calculate completion rate with denominator including overdue items
+    const denominator = completedCount + stillOverdue;
+    const completionRate = denominator > 0 
+      ? Math.round((completedOnTime / denominator) * 100) 
+      : 85; // Default baseline when no data
     
     // Sort to get slowest risks
     slowestRisks.sort((a, b) => b.days - a.days);
