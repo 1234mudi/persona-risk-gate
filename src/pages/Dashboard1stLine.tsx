@@ -1616,26 +1616,7 @@ const Dashboard1stLine = () => {
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
           <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
-            <div className="flex items-center justify-between">
-              <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
-              <TooltipProvider>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button 
-                      size="sm" 
-                      className="h-7 bg-gradient-to-r from-first-line to-emerald-600 hover:from-first-line/90 hover:to-emerald-600/90 text-white"
-                      onClick={() => setAiDocumentModalOpen(true)}
-                    >
-                      <Sparkles className="h-3.5 w-3.5 mr-1" />
-                      AI Document Parser
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>
-                    <p>Upload CSV/DOCX files to create risk assessments with AI</p>
-                  </TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-            </div>
+            <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             {/* Modern Segmented Tabs */}
@@ -1658,7 +1639,7 @@ const Dashboard1stLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-1.5 font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                  className={`px-4 py-1.5 rounded-r-md font-medium text-sm transition-all ${
                     activeTab === "assess"
                       ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -1671,21 +1652,6 @@ const Dashboard1stLine = () => {
                     {assessorFilteredRiskData.filter(r => r.tabCategory === "assess").length}
                   </span>
                 </button>
-                <button
-                  onClick={() => setActiveTab("approve")}
-                  className={`px-4 py-1.5 rounded-r-md font-medium text-sm transition-all ${
-                    activeTab === "approve"
-                      ? "bg-gradient-to-br from-indigo-500 to-violet-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-indigo-400 ring-offset-2" : ""}`}
-                >
-                  Pending Approval
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "approve" ? "bg-white/20" : "bg-muted"
-                  }`}>
-                    {assessorFilteredRiskData.filter(r => r.tabCategory === "approve").length}
-                  </span>
-                </button>
               </div>
             </div>
 
@@ -1696,7 +1662,6 @@ const Dashboard1stLine = () => {
                 <p className="text-xs text-emerald-800 dark:text-emerald-200">
                   {activeTab === "own" && "These completed risk assessments can be edited. Click the edit icon to update any field values as needed."}
                   {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
-                  {activeTab === "approve" && "These assessments have been submitted and are awaiting review by the 2nd Line team. Monitor status for any feedback or challenges."}
                 </p>
               </div>
             </div>
