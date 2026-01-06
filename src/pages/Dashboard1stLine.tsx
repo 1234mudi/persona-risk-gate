@@ -1112,8 +1112,9 @@ const Dashboard1stLine = () => {
         if (expandedRows.has(risk.id)) {
           const level2Risks = filteredRiskData.filter(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
           level2Risks.forEach(l2 => {
+            visible.push(l2);  // Add Level 2 as separate row
             const level3Risks = filteredRiskData.filter(r => r.riskLevel === "Level 3" && r.parentRisk === l2.title);
-            visible.push(...level3Risks);
+            visible.push(...level3Risks);  // Add Level 3 as separate rows
           });
         }
       }
@@ -2072,6 +2073,7 @@ const Dashboard1stLine = () => {
                               <span className="text-xs text-muted-foreground">{risk.owner}</span>
                               
                               {/* Level 2 Children (displayed within Level 1 row) */}
+                              {/* Level 2 Children - Only shown inline for Level 1 rows */}
                               {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
                                 <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
                                   <span className="text-[10px] font-medium text-purple-600 dark:text-purple-400">{l2Risk.id}</span>
@@ -2089,27 +2091,6 @@ const Dashboard1stLine = () => {
                                     </TooltipContent>
                                   </Tooltip>
                                   <span className="text-[10px] text-muted-foreground">{l2Risk.owner}</span>
-                                  
-                                  {/* Level 3 Children (nested within Level 2) */}
-                                  {getLevel3Children(l2Risk).map((l3Risk) => (
-                                    <div key={l3Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-orange-300 dark:border-orange-600 ml-1 mt-0.5">
-                                      <span className="text-[10px] font-medium text-orange-600 dark:text-orange-400">{l3Risk.id}</span>
-                                      <Tooltip>
-                                        <TooltipTrigger asChild>
-                                          <button 
-                                            onClick={() => handleRiskNameClick(l3Risk)}
-                                            className="text-left hover:text-primary transition-colors font-medium text-orange-600 dark:text-orange-400 hover:underline cursor-pointer text-[10px]"
-                                          >
-                                            └ {l3Risk.title}
-                                          </button>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>Click to view risk assessment and open challenges/issues.</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                      <span className="text-[10px] text-muted-foreground">{l3Risk.owner}</span>
-                                    </div>
-                                  ))}
                                 </div>
                               ))}
                             </div>
@@ -2122,16 +2103,9 @@ const Dashboard1stLine = () => {
                               {risk.riskLevel}
                             </Badge>
                             {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
-                              <React.Fragment key={l2Risk.id}>
-                                <Badge variant="outline" className={`text-[8px] ${getRiskLevelColor(l2Risk.riskLevel)}`}>
-                                  {l2Risk.riskLevel}
-                                </Badge>
-                                {getLevel3Children(l2Risk).map((l3Risk) => (
-                                  <Badge key={l3Risk.id} variant="outline" className={`text-[8px] ${getRiskLevelColor(l3Risk.riskLevel)}`}>
-                                    {l3Risk.riskLevel}
-                                  </Badge>
-                                ))}
-                              </React.Fragment>
+                              <Badge key={l2Risk.id} variant="outline" className={`text-[8px] ${getRiskLevelColor(l2Risk.riskLevel)}`}>
+                                {l2Risk.riskLevel}
+                              </Badge>
                             ))}
                           </div>
                         </TableCell>
