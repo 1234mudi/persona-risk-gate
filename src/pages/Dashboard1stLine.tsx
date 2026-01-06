@@ -1387,44 +1387,45 @@ const Dashboard1stLine = () => {
         </div>
 
         {/* Scorecards - 3 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {metrics.map((metric, index) => (
             <Card 
               key={index}
-              className="border-[3px] border-border/50 dark:border-border shadow-sm hover:shadow-lg hover:scale-[1.02] transition-all duration-300 ease-out bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer group"
+              className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer"
               onClick={() => {
                 setSelectedMetric(metric);
                 setMetricDetailsOpen(true);
               }}
             >
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-bold text-foreground">{metric.title}</h3>
-                      <div className="w-10 h-10 rounded-full bg-first-line/10 border-2 border-first-line/20 flex items-center justify-center flex-shrink-0">
-                        <metric.icon className="w-5 h-5 text-first-line" />
+                  <CardContent className="p-2 sm:p-2.5">
+                    <div className="flex items-start justify-between mb-0.5 sm:mb-1">
+                      <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
+                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center flex-shrink-0">
+                        <metric.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-first-line" />
                       </div>
                     </div>
                 
-                <div className="space-y-2">
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-bold text-foreground">
-                      {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
-                    </span>
-                  </div>
-                  
-                  <div className="flex items-center gap-2">
-                    {metric.trendUp ? (
-                      <TrendingUp className="w-4 h-4 text-green-600" />
-                    ) : (
-                      <TrendingDown className="w-4 h-4 text-red-600" />
-                    )}
-                    <span className={`text-sm font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
-                      {metric.trend}
-                    </span>
+                <div className="space-y-0.5">
+                  <div className="flex items-baseline justify-between gap-2">
+                    <div className="flex items-baseline gap-1">
+                      <span className="text-lg sm:text-xl font-bold text-foreground">
+                        {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      {metric.trendUp ? (
+                        <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-600" />
+                      ) : (
+                        <TrendingDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-red-600" />
+                      )}
+                      <span className={`text-[9px] sm:text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                        {metric.trend}
+                      </span>
+                    </div>
                   </div>
                   
                   {/* Chart - Pie or Bar */}
-                  <div className="space-y-2">
+                  <div className="space-y-0.5">
                     {'chartType' in metric && metric.chartType === 'pie' ? (
                       // Filled Pie Chart
                       (() => {
@@ -1464,9 +1465,9 @@ const Dashboard1stLine = () => {
                         });
                         
                         return (
-                          <div className="flex items-center gap-4">
-                            <div className="relative w-16 h-16">
-                              <svg viewBox="0 0 36 36" className="w-16 h-16">
+                          <div className="flex items-center gap-2">
+                            <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+                              <svg viewBox="0 0 36 36" className="w-10 h-10 sm:w-12 sm:h-12">
                                 {slices.map((slice, idx) => (
                                   <path
                                     key={idx}
@@ -1477,13 +1478,13 @@ const Dashboard1stLine = () => {
                                 ))}
                               </svg>
                             </div>
-                            <div className="flex flex-col gap-1">
+                            <div className="flex flex-col gap-0.5">
                               {segments.map((segment, idx) => {
                                 const percent = total > 0 ? Math.round((segment.value / total) * 100) : 0;
                                 return (
-                                  <div key={idx} className="flex items-center gap-1.5">
-                                    <div className={`w-2.5 h-2.5 rounded-full ${segment.color}`} />
-                                    <span className="text-xs font-medium text-muted-foreground">
+                                  <div key={idx} className="flex items-center gap-1">
+                                    <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${segment.color}`} />
+                                    <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
                                       {segment.value} {segment.label} ({percent}%)
                                     </span>
                                   </div>
@@ -1505,15 +1506,15 @@ const Dashboard1stLine = () => {
                         // If this card has segmentRows (dual progress bars), render them
                         if (segmentRows) {
                           return (
-                            <div className="space-y-3">
+                            <div className="space-y-1.5">
                               {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
                                 let rowTotal = 0;
                                 for (const s of row.segments) rowTotal += s.value;
                                 
                                 return (
-                                  <div key={rowIdx} className="space-y-1">
-                                    <span className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
-                                    <div className="flex h-5 rounded-md overflow-hidden">
+                                  <div key={rowIdx} className="space-y-0.5">
+                                    <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
+                                    <div className="flex h-2 sm:h-2.5 rounded-md overflow-hidden">
                                       {row.segments.map((segment, idx) => {
                                         const percentage = rowTotal > 0 ? (segment.value / rowTotal) * 100 : 0;
                                         if (percentage === 0) return null;
@@ -1525,8 +1526,8 @@ const Dashboard1stLine = () => {
                                                 style={{ width: `${percentage}%` }}
                                                 onClick={(e) => handleSegmentClick(segment.label, e)}
                                               >
-                                                {percentage > 15 && (
-                                                  <span className="text-[9px] font-medium text-white truncate px-1">
+                                                {percentage > 20 && (
+                                                  <span className="text-[7px] sm:text-[8px] font-medium text-white truncate px-0.5">
                                                     {segment.value}
                                                   </span>
                                                 )}
@@ -1541,15 +1542,15 @@ const Dashboard1stLine = () => {
                                       })}
                                     </div>
                                     {/* Row Legend */}
-                                    <div className="flex flex-wrap gap-x-2 gap-y-0.5">
+                                    <div className="flex flex-wrap gap-x-1.5 gap-y-0">
                                       {row.segments.map((segment, idx) => (
                                         <button 
                                           key={idx} 
-                                          className="flex items-center gap-1 hover:bg-muted/50 rounded px-1 py-0.5 transition-colors"
+                                          className="flex items-center gap-0.5 hover:bg-muted/50 rounded px-0.5 py-0 transition-colors"
                                           onClick={(e) => handleSegmentClick(segment.label, e)}
                                         >
-                                          <div className={`w-2 h-2 rounded-sm ${segment.color}`} />
-                                          <span className="text-[10px] font-medium text-muted-foreground">
+                                          <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
+                                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
                                             {segment.value} {segment.label}
                                           </span>
                                         </button>
@@ -1564,7 +1565,7 @@ const Dashboard1stLine = () => {
                         
                         return (
                           <>
-                            <div className="flex h-6 rounded-lg overflow-hidden">
+                            <div className="flex h-2 sm:h-2.5 rounded overflow-hidden">
                               {segments.map((segment, idx) => {
                                 const percentage = total > 0 ? (segment.value / total) * 100 : 0;
                                 return (
@@ -1578,11 +1579,11 @@ const Dashboard1stLine = () => {
                             </div>
                             
                             {/* Legend */}
-                            <div className="flex flex-wrap gap-x-2 gap-y-1">
+                            <div className="flex flex-wrap gap-x-1.5 gap-y-0">
                               {segments.map((segment, idx) => (
-                                <div key={idx} className="flex items-center gap-1.5">
-                                  <div className={`w-3 h-3 rounded-sm ${segment.color}`} />
-                                  <span className="text-xs font-medium text-muted-foreground">
+                                <div key={idx} className="flex items-center gap-0.5">
+                                  <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
+                                  <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
                                     {segment.sublabel || segment.label}
                                   </span>
                                 </div>
@@ -1594,15 +1595,15 @@ const Dashboard1stLine = () => {
                     )}
                   </div>
                   
-                  <p className="text-xs text-muted-foreground leading-snug pt-2">
+                  <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-snug hidden sm:block">
                     {metric.description}
                   </p>
                 </div>
                 
                 {/* AI Generated Icon */}
-                <div className="absolute bottom-3 right-3">
-                  <div className="w-8 h-8 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-first-line" />
+                <div className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5">
+                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center">
+                    <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-first-line" />
                   </div>
                 </div>
               </CardContent>
