@@ -948,14 +948,6 @@ const Dashboard1stLine = () => {
       icon: CalendarCheck,
       segmentRows: [
         {
-          label: "Deadline Status",
-          segments: [
-            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-red-600" },
-            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-amber-500" },
-            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-green-600" },
-          ]
-        },
-        {
           label: "Workflow Progress",
           segments: [
             { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-green-600" },
@@ -963,6 +955,14 @@ const Dashboard1stLine = () => {
             { label: "Challenge", value: assessmentStatusCounts.challenge, color: "bg-orange-500" },
             { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-amber-500" },
             { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-gray-400" },
+          ]
+        },
+        {
+          label: "Deadline Status",
+          segments: [
+            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-red-600" },
+            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-amber-500" },
+            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-green-600" },
           ]
         }
       ],
