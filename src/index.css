@@ -8,47 +8,82 @@ All colors MUST be HSL.
 
 @layer base {
   :root {
-    --background: 210 20% 98%;
-    --foreground: 215 25% 15%;
+    /* Background Colors - from Color Guide */
+    --background: 200 33% 97%;        /* #F7FBFA - Background.Default */
+    --background-paper: 210 23% 93%;  /* #E8EDF2 - Background.Paper */
+    --background-secondary: 252 9% 91%; /* #E7E6EA - Background.Secondary */
+    --background-tertiary: 0 0% 81%;   /* #CECECE - Background.Tertiary */
 
+    /* Foreground/Text Colors - from Color Guide */
+    --foreground: 141 78% 29%;         /* #10852F - Text.Primary */
+
+    /* Card Colors */
     --card: 0 0% 100%;
-    --card-foreground: 215 25% 15%;
+    --card-foreground: 141 78% 29%;    /* #10852F - Text.Primary */
 
+    /* Popover Colors */
     --popover: 0 0% 100%;
-    --popover-foreground: 215 25% 15%;
+    --popover-foreground: 141 78% 29%;
 
-    --primary: 215 70% 50%;
+    /* Primary Colors - Teal from Color Guide */
+    --primary: 175 85% 25%;            /* #0A8078 - Primary.Main */
     --primary-foreground: 0 0% 100%;
+    --primary-light: 180 53% 75%;      /* #A0E0E1 - Primary.Light */
+    --primary-dark: 174 88% 18%;       /* #066058 - Primary.Dark */
 
-    --secondary: 210 15% 95%;
-    --secondary-foreground: 215 25% 15%;
+    /* Secondary Colors - Grayish Purple from Color Guide */
+    --secondary: 258 12% 46%;          /* #706982 - Secondary.Main */
+    --secondary-foreground: 0 0% 100%;
+    --secondary-light: 210 10% 60%;    /* #8F9AA2 - Secondary.Light */
+    --secondary-dark: 261 10% 35%;     /* #585060 - Secondary.Dark */
 
-    --muted: 210 15% 95%;
-    --muted-foreground: 215 15% 45%;
+    /* Muted Colors */
+    --muted: 252 9% 91%;               /* #E7E6EA - Background.Secondary */
+    --muted-foreground: 258 12% 46%;   /* #706982 - Text.Quaternary */
 
-    --accent: 215 70% 50%;
+    /* Accent (same as primary for consistency) */
+    --accent: 175 85% 25%;             /* #0A8078 - Primary.Main */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    /* Destructive/Error Colors - from Color Guide */
+    --destructive: 2 88% 60%;          /* #F3453F - Error.Main */
     --destructive-foreground: 0 0% 100%;
+    --destructive-light: 4 100% 88%;   /* #FFC6C3 - Error.Light */
+    --destructive-dark: 1 87% 29%;     /* #890C09 - Error.Dark */
 
-    --border: 214 20% 90%;
-    --input: 214 20% 90%;
-    --ring: 215 70% 50%;
+    /* Border/Input/Ring Colors - from Color Guide */
+    --border: 240 41% 89%;             /* #D6D5EF - Stroke.Primary */
+    --input: 235 47% 94%;              /* #E8EAF7 - Stroke.Secondary */
+    --ring: 175 85% 25%;               /* #0A8078 - Primary.Main */
+    --focus: 210 17% 24%;              /* #323E49 - Focus.Primary */
 
     --radius: 0.75rem;
     
-    /* RCSA Design System */
-    --first-line: 200 80% 55%;
-    --first-line-light: 200 85% 90%;
-    --first-line-foreground: 200 90% 25%;
+    /* Status Colors - from Color Guide */
+    --success: 143 57% 43%;            /* #3BA05F - Success.Main */
+    --success-light: 136 85% 82%;      /* #AFF7C5 - Success.Light */
+    --success-dark: 130 100% 50%;      /* #19E631 - Success.Dark */
     
-    --second-line: 260 50% 65%;
-    --second-line-light: 260 60% 92%;
-    --second-line-foreground: 260 60% 30%;
+    --warning: 36 100% 40%;            /* #CE7900 - Warning.Main */
+    --warning-light: 42 100% 85%;      /* #FFE9B0 - Warning.Light */
+    --warning-dark: 36 100% 30%;       /* #985B00 - Warning.Dark */
     
-    --gradient-primary: linear-gradient(135deg, hsl(215, 70%, 50%), hsl(200, 80%, 55%));
-    --gradient-subtle: linear-gradient(180deg, hsl(210, 20%, 98%), hsl(210, 20%, 96%));
+    --error: 2 88% 60%;                /* #F3453F - Error.Main */
+    --error-light: 4 100% 88%;         /* #FFC6C3 - Error.Light */
+    --error-dark: 1 87% 29%;           /* #890C09 - Error.Dark */
+    
+    /* RCSA Design System - 1st Line uses Primary (Teal) */
+    --first-line: 175 85% 25%;         /* Using Primary.Main for 1st line */
+    --first-line-light: 180 53% 75%;   /* Using Primary.Light */
+    --first-line-foreground: 174 88% 18%; /* Using Primary.Dark */
+    
+    /* RCSA Design System - 2nd Line uses Secondary (Purple/Gray) */
+    --second-line: 258 12% 46%;        /* Using Secondary.Main for 2nd line */
+    --second-line-light: 252 16% 85%;  /* #D6D4DE - Secondary.100 */
+    --second-line-foreground: 261 10% 35%; /* Using Secondary.Dark */
+    
+    --gradient-primary: linear-gradient(135deg, hsl(175, 85%, 25%), hsl(180, 53%, 75%));
+    --gradient-subtle: linear-gradient(180deg, hsl(200, 33%, 97%), hsl(210, 23%, 93%));
     
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08);
@@ -57,21 +92,15 @@ All colors MUST be HSL.
     
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
-    --sidebar-accent: 240 4.8% 95.9%;
-
-    --sidebar-accent-foreground: 240 5.9% 10%;
-
-    --sidebar-border: 220 13% 91%;
-
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    /* Sidebar Colors */
+    --sidebar-background: 200 33% 97%;
+    --sidebar-foreground: 141 78% 29%;
+    --sidebar-primary: 175 85% 25%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 252 9% 91%;
+    --sidebar-accent-foreground: 141 78% 29%;
+    --sidebar-border: 240 41% 89%;
+    --sidebar-ring: 175 85% 25%;
   }
 
   [data-theme="dark"] {

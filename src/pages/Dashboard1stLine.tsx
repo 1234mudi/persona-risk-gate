@@ -967,26 +967,26 @@ const Dashboard1stLine = () => {
         {
           label: "Workflow Progress",
           segments: [
-            { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-green-600" },
-            { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, color: "bg-purple-500" },
-            { label: "Challenge", value: assessmentStatusCounts.challenge, color: "bg-orange-500" },
-            { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-amber-500" },
-            { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-gray-400" },
+            { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-success" },
+            { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, color: "bg-secondary" },
+            { label: "Challenge", value: assessmentStatusCounts.challenge, color: "bg-warning" },
+            { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-warning-light" },
+            { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-muted-foreground" },
           ]
         },
         {
           label: "Deadline Status",
           segments: [
-            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-red-600" },
-            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-amber-500" },
-            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-green-600" },
+            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-error" },
+            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-warning" },
+            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-success" },
           ]
         }
       ],
       segments: [
-        { label: "Overdue", value: assessmentStatusCounts.overdue, sublabel: `${assessmentStatusCounts.overdue} Overdue`, color: "bg-red-600" },
-        { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, sublabel: `${assessmentStatusCounts.dueThisWeek} Due This Week`, color: "bg-amber-500" },
-        { label: "Completed", value: assessmentStatusCounts.completed, sublabel: `${assessmentStatusCounts.completed} Completed`, color: "bg-green-600" },
+        { label: "Overdue", value: assessmentStatusCounts.overdue, sublabel: `${assessmentStatusCounts.overdue} Overdue`, color: "bg-error" },
+        { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, sublabel: `${assessmentStatusCounts.dueThisWeek} Due This Week`, color: "bg-warning" },
+        { label: "Completed", value: assessmentStatusCounts.completed, sublabel: `${assessmentStatusCounts.completed} Completed`, color: "bg-success" },
       ],
       description: "Track assessment deadlines and workflow progress together.",
       tooltip: "Combined view of assessment timing and workflow status.",
@@ -1019,25 +1019,25 @@ const Dashboard1stLine = () => {
         {
           label: "Risk Level Distribution",
           segments: [
-            { label: "Critical", value: inherentRiskCounts.critical, color: "bg-red-600" },
-            { label: "High", value: inherentRiskCounts.high, color: "bg-amber-500" },
-            { label: "Medium", value: inherentRiskCounts.medium, color: "bg-yellow-400" },
-            { label: "Low", value: inherentRiskCounts.low, color: "bg-green-600" },
+            { label: "Critical", value: inherentRiskCounts.critical, color: "bg-error" },
+            { label: "High", value: inherentRiskCounts.high, color: "bg-warning" },
+            { label: "Medium", value: inherentRiskCounts.medium, color: "bg-warning-light" },
+            { label: "Low", value: inherentRiskCounts.low, color: "bg-success" },
           ]
         },
         {
           label: "Trend Analysis",
           segments: [
-            { label: "Increasing", value: inherentTrendCounts.increasing, color: "bg-red-500" },
-            { label: "Stable", value: inherentTrendCounts.stable, color: "bg-blue-500" },
-            { label: "Decreasing", value: inherentTrendCounts.decreasing, color: "bg-green-500" },
+            { label: "Increasing", value: inherentTrendCounts.increasing, color: "bg-error" },
+            { label: "Stable", value: inherentTrendCounts.stable, color: "bg-primary" },
+            { label: "Decreasing", value: inherentTrendCounts.decreasing, color: "bg-success" },
           ]
         }
       ],
       segments: [
-        { label: "Critical", value: inherentRiskCounts.critical, sublabel: `${inherentRiskCounts.critical} Critical`, color: "bg-red-600" },
-        { label: "High", value: inherentRiskCounts.high, sublabel: `${inherentRiskCounts.high} High`, color: "bg-amber-500" },
-        { label: "Medium", value: inherentRiskCounts.medium, sublabel: `${inherentRiskCounts.medium} Medium`, color: "bg-green-600" },
+        { label: "Critical", value: inherentRiskCounts.critical, sublabel: `${inherentRiskCounts.critical} Critical`, color: "bg-error" },
+        { label: "High", value: inherentRiskCounts.high, sublabel: `${inherentRiskCounts.high} High`, color: "bg-warning" },
+        { label: "Medium", value: inherentRiskCounts.medium, sublabel: `${inherentRiskCounts.medium} Medium`, color: "bg-success" },
       ],
       description: "Review Critical and High ratings for control adequacy.",
       tooltip: "Distribution of inherent risk ratings across your assigned risks. Higher ratings require stronger controls to mitigate.",

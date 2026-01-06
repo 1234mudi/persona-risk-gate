@@ -332,9 +332,9 @@ const DashboardRiskOwner = () => {
       trendUp: false,
       icon: ShieldCheck,
       segments: [
-        { label: "Urgent", value: 4, sublabel: "4 Urgent", color: "bg-red-600" },
-        { label: "Normal", value: 6, sublabel: "6 Normal", color: "bg-amber-500" },
-        { label: "Low Priority", value: 2, sublabel: "2 Low Priority", color: "bg-green-600" },
+        { label: "Urgent", value: 4, sublabel: "4 Urgent", color: "bg-error" },
+        { label: "Normal", value: 6, sublabel: "6 Normal", color: "bg-warning" },
+        { label: "Low Priority", value: 2, sublabel: "2 Low Priority", color: "bg-success" },
       ],
       description: "Review and approve submitted assessments promptly.",
       tooltip: "Shows assessments awaiting your approval as Risk Owner. Urgent items may have compliance deadlines.",
@@ -346,9 +346,9 @@ const DashboardRiskOwner = () => {
       trendUp: true,
       icon: AlertTriangle,
       segments: [
-        { label: "Critical/High", value: 8, sublabel: "8 Critical/High", color: "bg-red-600" },
-        { label: "Medium", value: 12, sublabel: "12 Medium", color: "bg-amber-500" },
-        { label: "Low", value: 8, sublabel: "8 Low", color: "bg-green-600" },
+        { label: "Critical/High", value: 8, sublabel: "8 Critical/High", color: "bg-error" },
+        { label: "Medium", value: 12, sublabel: "12 Medium", color: "bg-warning" },
+        { label: "Low", value: 8, sublabel: "8 Low", color: "bg-success" },
       ],
       description: "Monitor high-severity risks within your business area.",
       tooltip: "Distribution of risk severity levels for risks you own. Focus on Critical/High risks for remediation.",
@@ -360,9 +360,9 @@ const DashboardRiskOwner = () => {
       trendUp: true,
       icon: CheckSquare,
       segments: [
-        { label: "Overdue", value: 3, sublabel: "3 Overdue", color: "bg-red-600" },
-        { label: "In Progress", value: 7, sublabel: "7 In Progress", color: "bg-amber-500" },
-        { label: "On Track", value: 5, sublabel: "5 On Track", color: "bg-green-600" },
+        { label: "Overdue", value: 3, sublabel: "3 Overdue", color: "bg-error" },
+        { label: "In Progress", value: 7, sublabel: "7 In Progress", color: "bg-warning" },
+        { label: "On Track", value: 5, sublabel: "5 On Track", color: "bg-success" },
       ],
       description: "Ensure overdue actions are escalated and resolved.",
       tooltip: "Tracks remediation action plans for risks in your area. Overdue items require immediate attention.",
@@ -375,9 +375,9 @@ const DashboardRiskOwner = () => {
       trendUp: true,
       icon: FileCheck,
       segments: [
-        { label: "Completed (82%)", value: 23, sublabel: "23 Completed", color: "bg-green-600" },
-        { label: "In Progress (11%)", value: 3, sublabel: "3 In Progress", color: "bg-amber-500" },
-        { label: "Not Started (7%)", value: 2, sublabel: "2 Not Started", color: "bg-red-600" },
+        { label: "Completed (82%)", value: 23, sublabel: "23 Completed", color: "bg-success" },
+        { label: "In Progress (11%)", value: 3, sublabel: "3 In Progress", color: "bg-warning" },
+        { label: "Not Started (7%)", value: 2, sublabel: "2 Not Started", color: "bg-error" },
       ],
       description: "Drive completion of remaining assessments.",
       tooltip: "Overall assessment completion rate for your business area. Target is 100% by quarter end.",
@@ -445,35 +445,35 @@ const DashboardRiskOwner = () => {
 
   const getRiskLevelColor = (level: string) => {
     switch(level) {
-      case "Level 1": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400";
-      case "Level 2": return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400";
-      case "Level 3": return "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400";
+      case "Level 1": return "bg-primary-light text-primary-dark border-primary dark:bg-primary/20 dark:text-primary";
+      case "Level 2": return "bg-secondary-light text-secondary-dark border-secondary dark:bg-secondary/20 dark:text-secondary";
+      case "Level 3": return "bg-warning-light text-warning-dark border-warning dark:bg-warning/20 dark:text-warning";
       default: return "bg-muted text-muted-foreground";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case "Sent for Assessment": return "bg-cyan-500 text-white";
-      case "In Progress": return "bg-amber-500 text-white";
-      case "Pending Approval": return "bg-purple-500 text-white";
-      case "Review/Challenge": return "bg-orange-500 text-white";
-      case "Completed": return "bg-green-500 text-white";
-      case "Complete": return "bg-green-500 text-white";
-      case "Closed": return "bg-slate-500 text-white";
-      case "Overdue": return "bg-red-500 text-white";
-      case "Pending Review": return "bg-indigo-500 text-white";
-      case "Awaiting Approval": return "bg-violet-500 text-white";
-      default: return "bg-blue-500 text-white";
+      case "Sent for Assessment": return "bg-primary-light text-primary-dark";
+      case "In Progress": return "bg-warning text-white";
+      case "Pending Approval": return "bg-secondary text-white";
+      case "Review/Challenge": return "bg-warning-dark text-white";
+      case "Completed": return "bg-success text-white";
+      case "Complete": return "bg-success text-white";
+      case "Closed": return "bg-muted-foreground text-white";
+      case "Overdue": return "bg-error text-white";
+      case "Pending Review": return "bg-secondary-light text-white";
+      case "Awaiting Approval": return "bg-secondary text-white";
+      default: return "bg-primary text-white";
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch(category) {
-      case "Operational": return "bg-indigo-50 dark:bg-indigo-950/30";
-      case "Technology": return "bg-cyan-50 dark:bg-cyan-950/30";
-      case "Compliance": return "bg-purple-50 dark:bg-purple-950/30";
-      case "Financial": return "bg-green-50 dark:bg-green-950/30";
+      case "Operational": return "bg-secondary-light/30 dark:bg-secondary/20";
+      case "Technology": return "bg-primary-light/30 dark:bg-primary/20";
+      case "Compliance": return "bg-secondary/10 dark:bg-secondary/20";
+      case "Financial": return "bg-success-light/30 dark:bg-success/20";
       default: return "bg-muted/30";
     }
   };
@@ -481,11 +481,11 @@ const DashboardRiskOwner = () => {
   const getRiskBadgeColor = (color: string) => {
     switch (color) {
       case "red":
-        return "bg-destructive/20 text-destructive border-destructive/30";
+        return "bg-error-light text-error border-error/30";
       case "yellow":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/20 dark:text-yellow-400";
+        return "bg-warning-light text-warning-dark border-warning dark:bg-warning/20 dark:text-warning";
       case "green":
-        return "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/20 dark:text-green-400";
+        return "bg-success-light text-success-dark border-success dark:bg-success/20 dark:text-success";
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -493,20 +493,20 @@ const DashboardRiskOwner = () => {
 
   const getEffectivenessBadge = (label: string, color: string) => {
     const colorClass = color === "green" 
-      ? "bg-green-500 text-white" 
-      : "bg-yellow-500 text-white";
+      ? "bg-success text-white" 
+      : "bg-warning text-white";
     return <Badge className={`${colorClass} rounded-full`}>{label}</Badge>;
   };
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-amber-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
+      <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-amber-600 to-amber-700 dark:from-amber-700 dark:to-amber-800 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-warning to-warning-dark flex items-center justify-center">
                 <UserCheck className="w-6 h-6 text-white" />
               </div>
               <div>
