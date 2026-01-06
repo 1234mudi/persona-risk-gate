@@ -243,14 +243,31 @@ const Dashboard1stLine = () => {
       filtered = filtered.filter(risk => risk.id === riskIdFilter);
     }
     
+    // Robust status normalization helper (matches 2nd Line Dashboard)
+    const normalizeStatus = (status: string): string => {
+      return status
+        .trim()
+        .toLowerCase()
+        .replace(/[\u00A0\u2007\u202F]/g, ' ')
+        .replace(/[／⁄∕]/g, '/')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '');
+    };
+
     // Apply risk level filter
     if (riskLevelFilter !== "all") {
-      filtered = filtered.filter(risk => risk.riskLevel === riskLevelFilter);
+      filtered = filtered.filter(risk => {
+        const normalizedLevel = risk.riskLevel.toLowerCase().replace(" ", "-");
+        return normalizedLevel === riskLevelFilter;
+      });
     }
     
     // Apply status filter
     if (statusFilter !== "all") {
-      filtered = filtered.filter(risk => risk.status === statusFilter);
+      filtered = filtered.filter(risk => {
+        const normalizedRiskStatus = normalizeStatus(risk.status ?? "");
+        return normalizedRiskStatus === statusFilter;
+      });
     }
     
     // Apply deadline filter
@@ -746,16 +763,16 @@ const Dashboard1stLine = () => {
     
     // Map segment labels to status filter values
     const statusMap: Record<string, string> = {
-      // Deadline segments - filter by due date status (we'll use a custom approach)
+      // Deadline segments - filter by due date status
       "Overdue": "overdue",
       "Due This Week": "due-this-week",
       "Due This Month": "due-this-month",
-      // Workflow segments - filter by status
-      "Completed": "Completed",
-      "Pending Approval": "Pending Approval",
-      "Challenge": "Review/Challenge",
-      "In Progress": "In Progress",
-      "Not Started": "Sent for Assessment",
+      // Workflow segments - filter by status (kebab-case to match filter values)
+      "Completed": "completed",
+      "Pending Approval": "pending-approval",
+      "Challenge": "review-challenge",
+      "In Progress": "in-progress",
+      "Not Started": "sent-for-assessment",
     };
     
     const filterValue = statusMap[segmentLabel];
@@ -1725,9 +1742,9 @@ const Dashboard1stLine = () => {
                 </SelectTrigger>
                 <SelectContent className="bg-popover border border-border shadow-lg z-50">
                   <SelectItem value="all">All Levels</SelectItem>
-                  <SelectItem value="Level 1">Level 1</SelectItem>
-                  <SelectItem value="Level 2">Level 2</SelectItem>
-                  <SelectItem value="Level 3">Level 3</SelectItem>
+                  <SelectItem value="level-1">Level 1</SelectItem>
+                  <SelectItem value="level-2">Level 2</SelectItem>
+                  <SelectItem value="level-3">Level 3</SelectItem>
                 </SelectContent>
               </Select>
 
@@ -1738,12 +1755,12 @@ const Dashboard1stLine = () => {
                 </SelectTrigger>
                 <SelectContent className="bg-popover border border-border shadow-lg z-50">
                   <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="Sent for Assessment">Sent for Assessment</SelectItem>
-                  <SelectItem value="In Progress">In Progress</SelectItem>
-                  <SelectItem value="Pending Approval">Pending Approval</SelectItem>
-                  <SelectItem value="Review/Challenge">Review/Challenge</SelectItem>
-                  <SelectItem value="Completed">Completed</SelectItem>
-                  <SelectItem value="Overdue">Overdue</SelectItem>
+                  <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
+                  <SelectItem value="in-progress">In Progress</SelectItem>
+                  <SelectItem value="pending-approval">Pending Approval</SelectItem>
+                  <SelectItem value="review-challenge">Review/Challenge</SelectItem>
+                  <SelectItem value="completed">Completed</SelectItem>
+                  <SelectItem value="overdue">Overdue</SelectItem>
                 </SelectContent>
               </Select>
 
