@@ -1377,15 +1377,17 @@ const Dashboard1stLine = () => {
             <span>View Completed Assessments</span>
           </button>
           <span className="text-muted-foreground/50">|</span>
-          <button onClick={() => handleActionPlansClick()} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <Target className="w-4 h-4" />
-            <span>View My Action Plans</span>
-          </button>
-          <span className="text-muted-foreground/50">|</span>
-          <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-first-line hover:underline text-sm italic">
-            <FlaskConical className="w-4 h-4" />
-            <span>Sample CSV for AI Assessment (Test Only)</span>
-          </a>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-first-line hover:underline text-sm italic">
+                <FlaskConical className="w-4 h-4" />
+                <span>Sample CSV for AI Assessment (Test Only)</span>
+              </a>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Download a sample CSV file to test the AI-powered risk assessment parser</p>
+            </TooltipContent>
+          </Tooltip>
         </div>
 
         {/* Scorecards - 3 columns */}
