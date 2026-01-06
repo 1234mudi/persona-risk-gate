@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1703,99 +1703,82 @@ const Dashboard1stLine = () => {
               </div>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 mb-4">
-              <div className="relative flex-1 min-w-[200px]">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-1.5 sm:gap-2 mb-2">
+              <div className="flex flex-col gap-0.5">
+                <Label htmlFor="business-unit" className="text-[10px] font-medium text-muted-foreground">
+                  Business Unit
+                </Label>
+                <Select value={businessUnitFilter} onValueChange={setBusinessUnitFilter}>
+                  <SelectTrigger id="business-unit" className="w-full sm:w-40 h-7 sm:h-6 text-[10px] sm:text-xs bg-primary text-primary-foreground border-primary">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
+                    <SelectItem value="all">All Business Units</SelectItem>
+                    {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
+                      <SelectItem key={unit} value={unit}>{unit}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-0.5">
+                <Label htmlFor="status-filter" className="text-[10px] font-medium text-muted-foreground">
+                  Status
+                </Label>
+                <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); if (val !== "all") setDeadlineFilter("all"); }}>
+                  <SelectTrigger id="status-filter" className="w-full sm:w-32 h-7 sm:h-6 text-[10px] sm:text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                    <SelectItem value="all">All Statuses</SelectItem>
+                    {activeTab === "own" ? (
+                      <SelectItem value="completed">Completed</SelectItem>
+                    ) : (
+                      <>
+                        <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
+                        <SelectItem value="in-progress">In Progress</SelectItem>
+                        <SelectItem value="pending-approval">Pending Approval</SelectItem>
+                        <SelectItem value="review-challenge">Review/Challenge</SelectItem>
+                        <SelectItem value="overdue">Overdue</SelectItem>
+                      </>
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex flex-col gap-0.5">
+                <Label htmlFor="risk-hierarchy-filter" className="text-[10px] font-medium text-muted-foreground">
+                  Risk Hierarchy
+                </Label>
+                <Select value={riskLevelFilter} onValueChange={setRiskLevelFilter}>
+                  <SelectTrigger id="risk-hierarchy-filter" className="w-full sm:w-28 h-7 sm:h-6 text-[10px] sm:text-xs">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                    <SelectItem value="all">All Levels</SelectItem>
+                    <SelectItem value="level-1">Level 1</SelectItem>
+                    <SelectItem value="level-2">Level 2</SelectItem>
+                    <SelectItem value="level-3">Level 3</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="relative flex-1 min-w-0 sm:min-w-[180px]">
                 <Input 
-                  placeholder="Search risks by title..." 
-                  className="pl-10 h-8" 
+                  placeholder="Search risks..." 
+                  className="pl-8 h-7 sm:h-6 w-full text-[10px] sm:text-xs" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <ClipboardCheck className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Shield className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
               </div>
 
-              {/* Risk ID Filter */}
-              <Select value={riskIdFilter} onValueChange={setRiskIdFilter}>
-                <SelectTrigger className="w-56 h-8">
-                  <SelectValue placeholder="Risk ID" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
-                  <SelectItem value="all">All Risk IDs</SelectItem>
-                  {uniqueRiskIds.map((id) => {
-                    const risk = riskData.find(r => r.id === id);
-                    const truncatedTitle = risk?.title && risk.title.length > 25 
-                      ? risk.title.substring(0, 25) + "..." 
-                      : risk?.title || "";
-                    return (
-                      <SelectItem key={id} value={id}>
-                        {id} - {truncatedTitle}
-                      </SelectItem>
-                    );
-                  })}
-                </SelectContent>
-              </Select>
-
-              {/* Risk Level Filter */}
-              <Select value={riskLevelFilter} onValueChange={setRiskLevelFilter}>
-                <SelectTrigger className="w-32 h-8">
-                  <SelectValue placeholder="Risk Level" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50">
-                  <SelectItem value="all">All Levels</SelectItem>
-                  <SelectItem value="level-1">Level 1</SelectItem>
-                  <SelectItem value="level-2">Level 2</SelectItem>
-                  <SelectItem value="level-3">Level 3</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Status Filter */}
-              <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); if (val !== "all") setDeadlineFilter("all"); }}>
-                <SelectTrigger className="w-40 h-8">
-                  <SelectValue placeholder="Status" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50">
-                  <SelectItem value="all">All Statuses</SelectItem>
-                  <SelectItem value="sent-for-assessment">Sent for Assessment</SelectItem>
-                  <SelectItem value="in-progress">In Progress</SelectItem>
-                  <SelectItem value="pending-approval">Pending Approval</SelectItem>
-                  <SelectItem value="review-challenge">Review/Challenge</SelectItem>
-                  <SelectItem value="completed">Completed</SelectItem>
-                  <SelectItem value="overdue">Overdue</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Deadline Filter */}
-              <Select value={deadlineFilter} onValueChange={(val) => { setDeadlineFilter(val); if (val !== "all") setStatusFilter("all"); }}>
-                <SelectTrigger className="w-40 h-8">
-                  <SelectValue placeholder="Due Date" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50">
-                  <SelectItem value="all">All Due Dates</SelectItem>
-                  <SelectItem value="overdue">Overdue</SelectItem>
-                  <SelectItem value="due-this-week">Due This Week</SelectItem>
-                  <SelectItem value="due-this-month">Due This Month</SelectItem>
-                </SelectContent>
-              </Select>
-
-              {/* Business Unit Filter */}
-              <Select value={businessUnitFilter} onValueChange={setBusinessUnitFilter}>
-                <SelectTrigger className="w-40 h-8">
-                  <SelectValue placeholder="Business Unit" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
-                  <SelectItem value="all">All Business Units</SelectItem>
-                  {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
-                    <SelectItem key={unit} value={unit}>{unit}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-
               {/* Clear Filters Button - show when any filter is active */}
-              {(statusFilter !== "all" || deadlineFilter !== "all" || riskLevelFilter !== "all" || riskIdFilter !== "all" || businessUnitFilter !== "all" || searchQuery.trim()) && (
+              {(statusFilter !== "all" || riskLevelFilter !== "all" || businessUnitFilter !== "all" || searchQuery.trim()) && (
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-8 text-muted-foreground hover:text-foreground"
+                  className="h-7 sm:h-6 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground"
                   onClick={() => {
                     setStatusFilter("all");
                     setDeadlineFilter("all");
@@ -1807,7 +1790,7 @@ const Dashboard1stLine = () => {
                   }}
                 >
                   <X className="w-3 h-3 mr-1" />
-                  Clear Filters
+                  Clear
                 </Button>
               )}
             </div>
