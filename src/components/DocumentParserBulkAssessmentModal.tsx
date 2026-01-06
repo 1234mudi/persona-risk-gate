@@ -7,7 +7,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
-import { AlertTriangle, Info, Layers, Send, Search, ChevronLeft, ChevronRight, Filter, FileText, Users, TrendingUp, Shield, Plus, Pencil, AlertCircle, CheckCircle } from "lucide-react";
+import { AlertTriangle, Info, Layers, Send, Search, ChevronLeft, ChevronRight, Filter, FileText, Shield, Plus, Pencil, AlertCircle, CheckCircle, ClipboardCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -30,13 +30,8 @@ interface ExistingRisk {
   riskLevel1?: string;
   riskLevel2?: string;
   riskLevel3?: string;
-  assessor?: string;
-  inherentTrend?: string;
   controls?: string;
   effectiveness?: string;
-  testResults?: string;
-  residualTrend?: string;
-  lastAssessed?: string;
 }
 
 interface DocumentParserBulkAssessmentModalProps {
@@ -53,72 +48,57 @@ interface RiskAssessmentData {
   controls: Record<string, { design: string; operating: string; overall: string }>;
 }
 
-// Risk field categories for display
+// Rating options for Inherent and Residual Risk
+const RISK_RATING_OPTIONS = [
+  { value: "", label: "Select rating..." },
+  { value: "Very Low", label: "Very Low" },
+  { value: "Low", label: "Low" },
+  { value: "Medium", label: "Medium" },
+  { value: "High", label: "High" },
+  { value: "Very High", label: "Very High" },
+];
+
+// Control effectiveness options
+const CONTROL_EFFECTIVENESS_OPTIONS = [
+  { value: "", label: "Select effectiveness..." },
+  { value: "Ineffective", label: "Ineffective" },
+  { value: "Partially Effective", label: "Partially Effective" },
+  { value: "Moderately Effective", label: "Moderately Effective" },
+  { value: "Effective", label: "Effective" },
+  { value: "Highly Effective", label: "Highly Effective" },
+];
+
+// Reorganized into two clear sections: Read-only Info vs Editable Assessment
 const RISK_FIELD_CATEGORIES = [
   {
-    id: 'basic',
-    label: 'Basic Information',
+    id: 'info',
+    label: 'Risk Information',
     icon: FileText,
     color: 'blue',
+    readOnly: true,
     fields: [
-      { key: 'title', label: 'Risk Title' },
       { key: 'id', label: 'Risk ID' },
-      { key: 'status', label: 'Status' },
-    ]
-  },
-  {
-    id: 'classification',
-    label: 'Classification',
-    icon: Layers,
-    color: 'purple',
-    fields: [
+      { key: 'title', label: 'Risk Title' },
       { key: 'category', label: 'Category' },
       { key: 'riskLevel1', label: 'Risk Level 1' },
       { key: 'riskLevel2', label: 'Risk Level 2' },
       { key: 'riskLevel3', label: 'Risk Level 3' },
-    ]
-  },
-  {
-    id: 'ownership',
-    label: 'Ownership & Assignment',
-    icon: Users,
-    color: 'amber',
-    fields: [
-      { key: 'owner', label: 'Risk Owner' },
-      { key: 'assessor', label: 'Assessor' },
       { key: 'businessUnit', label: 'Business Unit' },
+      { key: 'owner', label: 'Owner' },
+      { key: 'status', label: 'Status' },
     ]
   },
   {
-    id: 'inherent',
-    label: 'Inherent Risk',
-    icon: AlertTriangle,
-    color: 'red',
-    fields: [
-      { key: 'inherentRisk', label: 'Inherent Risk Rating' },
-      { key: 'inherentTrend', label: 'Inherent Trend' },
-    ]
-  },
-  {
-    id: 'controls',
-    label: 'Controls',
-    icon: Shield,
+    id: 'assessment',
+    label: 'Assessment',
+    icon: ClipboardCheck,
     color: 'emerald',
+    readOnly: false,
     fields: [
-      { key: 'controls', label: 'Controls' },
-      { key: 'effectiveness', label: 'Control Effectiveness' },
-      { key: 'testResults', label: 'Test Results' },
-    ]
-  },
-  {
-    id: 'residual',
-    label: 'Residual Risk',
-    icon: TrendingUp,
-    color: 'orange',
-    fields: [
-      { key: 'residualRisk', label: 'Residual Risk Rating' },
-      { key: 'residualTrend', label: 'Residual Trend' },
-      { key: 'lastAssessed', label: 'Last Assessed' },
+      { key: 'inherentRisk', label: 'Inherent Risk Rating', type: 'rating-dropdown' },
+      { key: 'controls', label: 'Controls', type: 'textarea' },
+      { key: 'effectiveness', label: 'Control Effectiveness', type: 'effectiveness-dropdown' },
+      { key: 'residualRisk', label: 'Residual Risk Rating', type: 'rating-dropdown' },
     ]
   },
 ];
@@ -209,32 +189,35 @@ export const DocumentParserBulkAssessmentModal = ({
     return filtered;
   }, [selectedRisks, searchQuery, categoryFilter]);
 
-  // Calculate progress for each risk based on filled fields
+  // Get only the editable fields for progress calculation
+  const editableFields = RISK_FIELD_CATEGORIES
+    .filter(c => !c.readOnly)
+    .flatMap(c => c.fields.map(f => f.key));
+
+  // Calculate progress for each risk based on filled editable fields only
   const calculateRiskProgress = (riskId: string): number => {
     const risk = selectedRisks.find(r => r.id === riskId);
     if (!risk) return 0;
     
     const edited = editedRiskData.get(riskId) || {};
-    const allFields = RISK_FIELD_CATEGORIES.flatMap(c => c.fields.map(f => f.key));
     
     let filledCount = 0;
-    allFields.forEach(key => {
+    editableFields.forEach(key => {
       const value = (edited as any)[key] ?? (risk as any)[key];
       if (value && String(value).trim() !== '') filledCount++;
     });
     
-    return Math.round((filledCount / allFields.length) * 100);
+    return Math.round((filledCount / editableFields.length) * 100);
   };
 
-  // Check if a risk has any missing (empty) fields
+  // Check if a risk has any missing editable fields
   const hasRiskMissingFields = (riskId: string): boolean => {
     const risk = selectedRisks.find(r => r.id === riskId);
     if (!risk) return true;
     
     const edited = editedRiskData.get(riskId) || {};
-    const allFields = RISK_FIELD_CATEGORIES.flatMap(c => c.fields.map(f => f.key));
     
-    return allFields.some(key => {
+    return editableFields.some(key => {
       const value = (edited as any)[key] ?? (risk as any)[key];
       return !value || String(value).trim() === '';
     });
@@ -278,41 +261,26 @@ export const DocumentParserBulkAssessmentModal = ({
   };
 
   // Get the status of a field (new, modified, missing)
-  // - "new": The entire RISK is new to the system (doesn't exist yet)
-  // - "modified": User manually edited the field from what was in the document
-  // - "missing": Field is empty/undefined and needs to be filled
-  // - null: No badge needed (risk exists in system, field has value)
   const getFieldStatus = (riskId: string, fieldKey: string): 'new' | 'modified' | 'missing' | null => {
-    // Get system data (what exists in the app before import)
     const systemRisk = existingRiskMap.get(riskId);
-    
-    // Get document data (what was parsed from the uploaded file)
     const documentRisk = originalRiskData.get(riskId);
     const documentValue = documentRisk ? String((documentRisk as any)[fieldKey] || '').trim() : '';
-    
-    // Get current value (may be edited by user)
     const currentValue = getFieldValue(riskId, fieldKey).trim();
-    
-    // Check if user has edited this field from document value
     const edited = editedRiskData.get(riskId);
     const hasBeenEdited = edited && fieldKey in edited;
     
-    // MISSING: Current value is empty
     if (!currentValue) {
       return 'missing';
     }
     
-    // MODIFIED: User has manually changed the field from what was in the document
     if (hasBeenEdited && currentValue !== documentValue) {
       return 'modified';
     }
     
-    // NEW: The entire risk doesn't exist in the system yet
     if (!systemRisk) {
       return 'new';
     }
     
-    // Risk exists in system - no badge needed for any field
     return null;
   };
 
@@ -320,10 +288,8 @@ export const DocumentParserBulkAssessmentModal = ({
   const getRiskOverallStatus = (riskId: string): 'new' | 'modified' | 'unchanged' => {
     const systemRisk = existingRiskMap.get(riskId);
     
-    // If risk doesn't exist in system, it's new
     if (!systemRisk) return 'new';
     
-    // Check if any fields are modified from system values
     const allFields = RISK_FIELD_CATEGORIES.flatMap(c => c.fields.map(f => f.key));
     const documentRisk = originalRiskData.get(riskId);
     const edited = editedRiskData.get(riskId) || {};
@@ -335,7 +301,6 @@ export const DocumentParserBulkAssessmentModal = ({
         ? String((edited as any)[key] || '').trim() 
         : documentValue;
       
-      // If current/document value differs from system, it's modified
       if (currentValue && currentValue !== systemValue) {
         return 'modified';
       }
@@ -384,10 +349,162 @@ export const DocumentParserBulkAssessmentModal = ({
     return colors[color] || colors.blue;
   };
 
+  // Get status badge color for display
+  const getStatusDisplayColor = (status: string) => {
+    const statusLower = status?.toLowerCase() || '';
+    if (statusLower.includes('active') || statusLower.includes('open')) {
+      return 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400';
+    }
+    if (statusLower.includes('closed') || statusLower.includes('resolved')) {
+      return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400';
+    }
+    if (statusLower.includes('pending') || statusLower.includes('review')) {
+      return 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400';
+    }
+    return 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300';
+  };
+
   // Get checked risks that match current filters
   const checkedFilteredRisks = useMemo(() => {
     return filteredRisks.filter(r => checkedRisks.has(r.id));
   }, [filteredRisks, checkedRisks]);
+
+  // Render field based on type
+  const renderField = (risk: ParsedRisk, field: { key: string; label: string; type?: string }, category: typeof RISK_FIELD_CATEGORIES[0]) => {
+    const value = getFieldValue(risk.id, field.key);
+    const isSingleRisk = selectedRisks.length === 1;
+    
+    // Read-only fields - display as static text/badges
+    if (category.readOnly) {
+      return (
+        <div key={`${risk.id}-${field.key}`} className="flex items-start gap-3">
+          {!isSingleRisk && (
+            <Badge variant="outline" className="font-mono text-xs shrink-0 mt-0.5">
+              {risk.id}
+            </Badge>
+          )}
+          <div className="flex-1">
+            {field.key === 'status' ? (
+              <Badge className={`${getStatusDisplayColor(value)}`}>
+                {value || 'N/A'}
+              </Badge>
+            ) : (
+              <p className="text-sm text-foreground py-1.5 px-3 bg-muted/50 rounded-md border border-border">
+                {value || <span className="text-muted-foreground italic">Not specified</span>}
+              </p>
+            )}
+          </div>
+        </div>
+      );
+    }
+    
+    // Editable fields
+    const status = getFieldStatus(risk.id, field.key);
+    
+    // Rating dropdown (for inherentRisk and residualRisk)
+    if (field.type === 'rating-dropdown') {
+      return (
+        <div key={`${risk.id}-${field.key}`} className="flex items-start gap-3">
+          {!isSingleRisk && (
+            <Badge variant="outline" className="font-mono text-xs shrink-0 mt-2">
+              {risk.id}
+            </Badge>
+          )}
+          <div className="flex-1">
+            <Select
+              value={value}
+              onValueChange={(newValue) => updateFieldValue(risk.id, field.key, newValue)}
+            >
+              <SelectTrigger className={`w-full bg-background ${
+                status === 'missing' ? 'border-red-300 dark:border-red-800' :
+                status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
+                status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
+                ''
+              }`}>
+                <SelectValue placeholder="Select rating..." />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50">
+                {RISK_RATING_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value || "placeholder"} disabled={!option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="shrink-0 w-20 mt-2">
+            {getStatusBadge(status)}
+          </div>
+        </div>
+      );
+    }
+    
+    // Effectiveness dropdown
+    if (field.type === 'effectiveness-dropdown') {
+      return (
+        <div key={`${risk.id}-${field.key}`} className="flex items-start gap-3">
+          {!isSingleRisk && (
+            <Badge variant="outline" className="font-mono text-xs shrink-0 mt-2">
+              {risk.id}
+            </Badge>
+          )}
+          <div className="flex-1">
+            <Select
+              value={value}
+              onValueChange={(newValue) => updateFieldValue(risk.id, field.key, newValue)}
+            >
+              <SelectTrigger className={`w-full bg-background ${
+                status === 'missing' ? 'border-red-300 dark:border-red-800' :
+                status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
+                status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
+                ''
+              }`}>
+                <SelectValue placeholder="Select effectiveness..." />
+              </SelectTrigger>
+              <SelectContent className="bg-background border border-border z-50">
+                {CONTROL_EFFECTIVENESS_OPTIONS.map((option) => (
+                  <SelectItem key={option.value} value={option.value || "placeholder"} disabled={!option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="shrink-0 w-20 mt-2">
+            {getStatusBadge(status)}
+          </div>
+        </div>
+      );
+    }
+    
+    // Default textarea for controls and other text fields
+    return (
+      <div key={`${risk.id}-${field.key}`} className="flex items-start gap-3">
+        {!isSingleRisk && (
+          <Badge variant="outline" className="font-mono text-xs shrink-0 mt-2">
+            {risk.id}
+          </Badge>
+        )}
+        <div className="flex-1">
+          <Textarea
+            value={value}
+            onChange={(e) => updateFieldValue(risk.id, field.key, e.target.value)}
+            placeholder={`Enter ${field.label.toLowerCase()}...`}
+            className={`min-h-[60px] resize-none bg-background ${
+              status === 'missing' ? 'border-red-300 dark:border-red-800' :
+              status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
+              status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
+              ''
+            }`}
+            rows={2}
+          />
+        </div>
+        <div className="shrink-0 w-20 mt-2">
+          {getStatusBadge(status)}
+        </div>
+      </div>
+    );
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -400,8 +517,8 @@ export const DocumentParserBulkAssessmentModal = ({
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-foreground">Assess Selected Risks</h2>
-                <p className="text-sm text-muted-foreground">Apply common ratings across {selectedRisks.length} risks simultaneously</p>
+                <h2 className="text-lg font-semibold text-foreground">Review Selected Risks</h2>
+                <p className="text-sm text-muted-foreground">Review and edit {selectedRisks.length} risk{selectedRisks.length !== 1 ? 's' : ''} before import</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -417,7 +534,7 @@ export const DocumentParserBulkAssessmentModal = ({
                 className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
               >
                 <Send className="w-4 h-4" />
-                {selectedRisks.length > 1 ? 'Apply to All Selected Risks' : 'Apply'}
+                {selectedRisks.length > 1 ? 'Import Selected Risks' : 'Import Risk'}
               </Button>
             </div>
           </div>
@@ -457,7 +574,7 @@ export const DocumentParserBulkAssessmentModal = ({
                             <SelectValue placeholder="All Categories" />
                           </div>
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className="bg-background border border-border z-50">
                           <SelectItem value="all">All Categories</SelectItem>
                           {categories.map((cat) => (
                             <SelectItem key={cat} value={cat}>{cat}</SelectItem>
@@ -513,7 +630,6 @@ export const DocumentParserBulkAssessmentModal = ({
                             const hasMissing = hasRiskMissingFields(risk.id);
                             const overallStatus = getRiskOverallStatus(risk.id);
                             
-                            // Determine which badge to show
                             const getRiskBadge = () => {
                               if (hasMissing) {
                                 return (
@@ -542,7 +658,6 @@ export const DocumentParserBulkAssessmentModal = ({
                                 );
                               }
                               
-                              // unchanged and complete
                               return (
                                 <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-xs gap-1">
                                   <CheckCircle className="w-3 h-3" />
@@ -620,7 +735,7 @@ export const DocumentParserBulkAssessmentModal = ({
               {/* Note Banner */}
               <div className="px-6 py-3 bg-muted/50 border-b border-border">
                 <p className="text-sm text-muted-foreground">
-                  Review and edit risk details below. Fields are organized by category with status indicators.
+                  <strong>Risk Information</strong> is read-only (parsed from document). Complete the <strong>Assessment</strong> fields below.
                 </p>
               </div>
 
@@ -646,6 +761,9 @@ export const DocumentParserBulkAssessmentModal = ({
                             </div>
                             <IconComponent className={`w-5 h-5 text-${category.color}-500`} />
                             <span className="font-semibold text-foreground">{category.label}</span>
+                            {category.readOnly && (
+                              <Badge variant="secondary" className="text-xs">Read-only</Badge>
+                            )}
                             <Badge variant="secondary" className="ml-auto text-xs">
                               {checkedFilteredRisks.length} risk{checkedFilteredRisks.length !== 1 ? 's' : ''}
                             </Badge>
@@ -661,43 +779,7 @@ export const DocumentParserBulkAssessmentModal = ({
                                 
                                 {/* Show each selected risk's field value */}
                                 <div className="space-y-2">
-                                  {checkedFilteredRisks.map((risk) => {
-                                    // Skip status badges for classification section
-                                    const isClassificationSection = category.id === 'classification';
-                                    const status = isClassificationSection ? null : getFieldStatus(risk.id, field.key);
-                                    const value = getFieldValue(risk.id, field.key);
-                                    const isSingleRisk = selectedRisks.length === 1;
-                                    
-                                    return (
-                                      <div key={`${risk.id}-${field.key}`} className="flex items-start gap-3">
-                                        {/* Only show risk ID badge when multiple risks */}
-                                        {!isSingleRisk && (
-                                          <Badge variant="outline" className="font-mono text-xs shrink-0 mt-2">
-                                            {risk.id}
-                                          </Badge>
-                                        )}
-                                        <div className="flex-1">
-                                          <Textarea
-                                            value={value}
-                                            onChange={(e) => updateFieldValue(risk.id, field.key, e.target.value)}
-                                            placeholder={`Enter ${field.label.toLowerCase()}...`}
-                                            className={`min-h-[40px] resize-none bg-background ${
-                                              status === 'missing' ? 'border-red-300 dark:border-red-800' :
-                                              status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
-                                              status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
-                                              ''
-                                            }`}
-                                            rows={1}
-                                          />
-                                        </div>
-                                        {!isClassificationSection && (
-                                          <div className="shrink-0 w-20 mt-2">
-                                            {getStatusBadge(status)}
-                                          </div>
-                                        )}
-                                      </div>
-                                    );
-                                  })}
+                                  {checkedFilteredRisks.map((risk) => renderField(risk, field, category))}
                                 </div>
                               </div>
                             ))}
