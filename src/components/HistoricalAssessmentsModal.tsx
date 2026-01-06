@@ -45,27 +45,27 @@ interface HistoricalAssessmentsModalProps {
 
 const getRiskBadgeColor = (level: string) => {
   const lowerLevel = level.toLowerCase();
-  if (lowerLevel === 'critical') return 'bg-red-600 text-white border-red-600';
-  if (lowerLevel === 'high') return 'bg-red-500 text-white border-red-500';
-  if (lowerLevel === 'medium') return 'bg-amber-500 text-white border-amber-500';
-  if (lowerLevel === 'low') return 'bg-green-500 text-white border-green-500';
+  if (lowerLevel === 'critical') return 'bg-error text-white border-error';
+  if (lowerLevel === 'high') return 'bg-error/90 text-white border-error/90';
+  if (lowerLevel === 'medium') return 'bg-warning text-white border-warning';
+  if (lowerLevel === 'low') return 'bg-success text-white border-success';
   return 'bg-muted text-muted-foreground';
 };
 
 const getEffectivenessColor = (effectiveness: string) => {
   const lower = effectiveness.toLowerCase();
-  if (lower.includes('effective') && !lower.includes('in') && !lower.includes('partial')) return 'bg-green-500 text-white';
-  if (lower.includes('partial')) return 'bg-amber-500 text-white';
-  if (lower.includes('ineffective')) return 'bg-red-500 text-white';
+  if (lower.includes('effective') && !lower.includes('in') && !lower.includes('partial')) return 'bg-success text-white';
+  if (lower.includes('partial')) return 'bg-warning text-white';
+  if (lower.includes('ineffective')) return 'bg-error text-white';
   return 'bg-muted text-muted-foreground';
 };
 
 const getScoreColor = (score: number) => {
-  if (score >= 5) return 'text-green-600 bg-green-100';
-  if (score >= 4) return 'text-green-500 bg-green-50';
-  if (score >= 3) return 'text-amber-600 bg-amber-100';
-  if (score >= 2) return 'text-orange-600 bg-orange-100';
-  return 'text-red-600 bg-red-100';
+  if (score >= 5) return 'text-success bg-success-light';
+  if (score >= 4) return 'text-success/80 bg-success-light/50';
+  if (score >= 3) return 'text-warning bg-warning-light';
+  if (score >= 2) return 'text-warning-dark bg-warning-light/70';
+  return 'text-error bg-error-light';
 };
 
 const getScoreLabel = (score: number) => {
@@ -206,7 +206,7 @@ export const HistoricalAssessmentsModal = ({
                       return (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className={`flex items-center gap-1 cursor-help ${trend.direction === 'up' ? 'text-red-600' : trend.direction === 'down' ? 'text-green-600' : 'text-muted-foreground'}`}>
+                            <div className={`flex items-center gap-1 cursor-help ${trend.direction === 'up' ? 'text-error' : trend.direction === 'down' ? 'text-success' : 'text-muted-foreground'}`}>
                               {trend.direction === 'up' ? <TrendingUp className="w-5 h-5" /> : trend.direction === 'down' ? <TrendingDown className="w-5 h-5" /> : null}
                               <span className="text-lg font-bold">{trend.change}%</span>
                               <span className="text-sm">{trend.direction === 'up' ? 'increase' : trend.direction === 'down' ? 'decrease' : 'stable'}</span>
@@ -232,7 +232,7 @@ export const HistoricalAssessmentsModal = ({
                       return (
                         <Tooltip>
                           <TooltipTrigger asChild>
-                            <div className={`flex items-center gap-1 cursor-help ${trend.direction === 'up' ? 'text-red-600' : trend.direction === 'down' ? 'text-green-600' : 'text-muted-foreground'}`}>
+                            <div className={`flex items-center gap-1 cursor-help ${trend.direction === 'up' ? 'text-error' : trend.direction === 'down' ? 'text-success' : 'text-muted-foreground'}`}>
                               {trend.direction === 'up' ? <TrendingUp className="w-5 h-5" /> : trend.direction === 'down' ? <TrendingDown className="w-5 h-5" /> : null}
                               <span className="text-lg font-bold">{trend.change}%</span>
                               <span className="text-sm">{trend.direction === 'up' ? 'increase' : trend.direction === 'down' ? 'decrease' : 'stable'}</span>
