@@ -753,6 +753,7 @@ const Dashboard1stLine = () => {
       // Workflow segments - filter by status
       "Completed": "Completed",
       "Pending Approval": "Pending Approval",
+      "Challenge": "Review/Challenge",
       "In Progress": "In Progress",
       "Not Started": "Sent for Assessment",
     };
@@ -806,6 +807,7 @@ const Dashboard1stLine = () => {
     let notStarted = 0;
     let inProgress = 0;
     let pendingApproval = 0;
+    let challenge = 0;
     let completed = 0;
     
     assessorFilteredRiskData.forEach(risk => {
@@ -831,7 +833,9 @@ const Dashboard1stLine = () => {
       const status = risk.status?.toLowerCase() || "";
       if (status === "completed" || status === "complete" || status === "closed") {
         completed++;
-      } else if (status === "pending approval" || status === "review/challenge" || status === "pending review") {
+      } else if (status === "review/challenge" || status === "challenge") {
+        challenge++;
+      } else if (status === "pending approval" || status === "pending review") {
         pendingApproval++;
       } else if (status === "in progress" || status === "under review") {
         inProgress++;
@@ -844,7 +848,7 @@ const Dashboard1stLine = () => {
       // Deadline data
       overdue, dueThisWeek, dueThisMonth, future,
       // Workflow data
-      notStarted, inProgress, pendingApproval, completed,
+      notStarted, inProgress, pendingApproval, challenge, completed,
       total: assessorFilteredRiskData.length
     };
   }, [assessorFilteredRiskData]);
@@ -956,6 +960,7 @@ const Dashboard1stLine = () => {
           segments: [
             { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-green-600" },
             { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, color: "bg-purple-500" },
+            { label: "Challenge", value: assessmentStatusCounts.challenge, color: "bg-orange-500" },
             { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-amber-500" },
             { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-gray-400" },
           ]
@@ -976,6 +981,7 @@ const Dashboard1stLine = () => {
           { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth, action: "Plan ahead" },
           { label: "Completed", value: assessmentStatusCounts.completed, action: "Ready for next cycle" },
           { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, action: "Awaiting 2nd line review" },
+          { label: "Challenge", value: assessmentStatusCounts.challenge, action: "Address 2nd line challenges" },
           { label: "In Progress", value: assessmentStatusCounts.inProgress, action: "Continue work" },
           { label: "Not Started", value: assessmentStatusCounts.notStarted, action: "Prioritize initiation" },
         ],
