@@ -1,4 +1,4 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -1122,24 +1122,25 @@ const Dashboard1stLine = () => {
   };
 
   const getLevel2Children = (level1Risk: RiskData): RiskData[] => {
-    // Return ALL Level 2 risks (not filtered by parentRisk)
-    return filteredRiskData.filter(r => r.riskLevel === "Level 2");
+    return filteredRiskData.filter(r => 
+      r.riskLevel === "Level 2" && r.parentRisk === level1Risk.title
+    );
   };
 
   const hasChildren = (risk: RiskData) => {
-    // Check if there are any risks at a lower level (regardless of parentRisk naming)
     if (risk.riskLevel === "Level 1") {
-      return filteredRiskData.some(r => r.riskLevel === "Level 2");
+      return filteredRiskData.some(r => r.riskLevel === "Level 2" && r.parentRisk === risk.title);
     }
     if (risk.riskLevel === "Level 2") {
-      return filteredRiskData.some(r => r.riskLevel === "Level 3");
+      return filteredRiskData.some(r => r.riskLevel === "Level 3" && r.parentRisk === risk.title);
     }
     return false;
   };
 
   const getLevel3Children = (level2Risk: RiskData): RiskData[] => {
-    // Return ALL Level 3 risks (not filtered by parentRisk)
-    return filteredRiskData.filter(r => r.riskLevel === "Level 3");
+    return filteredRiskData.filter(r => 
+      r.riskLevel === "Level 3" && r.parentRisk === level2Risk.title
+    );
   };
 
   // Calculate aggregated risk for Level 1 parents based on children
@@ -2069,14 +2070,70 @@ const Dashboard1stLine = () => {
                                 </TooltipContent>
                               </Tooltip>
                               <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                              
+                              {/* Level 2 Children (displayed within Level 1 row) */}
+                              {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
+                                <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
+                                  <span className="text-[10px] font-medium text-purple-600 dark:text-purple-400">{l2Risk.id}</span>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <button 
+                                        onClick={() => handleRiskNameClick(l2Risk)}
+                                        className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-[10px]"
+                                      >
+                                        └ {l2Risk.title}
+                                      </button>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Click to view risk assessment and open challenges/issues.</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                  <span className="text-[10px] text-muted-foreground">{l2Risk.owner}</span>
+                                  
+                                  {/* Level 3 Children (nested within Level 2) */}
+                                  {getLevel3Children(l2Risk).map((l3Risk) => (
+                                    <div key={l3Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-orange-300 dark:border-orange-600 ml-1 mt-0.5">
+                                      <span className="text-[10px] font-medium text-orange-600 dark:text-orange-400">{l3Risk.id}</span>
+                                      <Tooltip>
+                                        <TooltipTrigger asChild>
+                                          <button 
+                                            onClick={() => handleRiskNameClick(l3Risk)}
+                                            className="text-left hover:text-primary transition-colors font-medium text-orange-600 dark:text-orange-400 hover:underline cursor-pointer text-[10px]"
+                                          >
+                                            └ {l3Risk.title}
+                                          </button>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Click to view risk assessment and open challenges/issues.</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                      <span className="text-[10px] text-muted-foreground">{l3Risk.owner}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              ))}
                             </div>
                           </div>
                         </TableCell>
                         {/* Risk Hierarchy - moved next to Risk Title */}
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
-                            {risk.riskLevel}
-                          </Badge>
+                        <TableCell className="py-2 border-r border-b border-border align-top">
+                          <div className="flex flex-col gap-0.5">
+                            <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
+                              {risk.riskLevel}
+                            </Badge>
+                            {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
+                              <React.Fragment key={l2Risk.id}>
+                                <Badge variant="outline" className={`text-[8px] ${getRiskLevelColor(l2Risk.riskLevel)}`}>
+                                  {l2Risk.riskLevel}
+                                </Badge>
+                                {getLevel3Children(l2Risk).map((l3Risk) => (
+                                  <Badge key={l3Risk.id} variant="outline" className={`text-[8px] ${getRiskLevelColor(l3Risk.riskLevel)}`}>
+                                    {l3Risk.riskLevel}
+                                  </Badge>
+                                ))}
+                              </React.Fragment>
+                            ))}
+                          </div>
                         </TableCell>
                         {/* Due Date */}
                         <TableCell className="py-2 border-r border-b border-border">
