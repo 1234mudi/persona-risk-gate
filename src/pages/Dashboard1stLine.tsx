@@ -1379,6 +1379,18 @@ const Dashboard1stLine = () => {
           <span className="text-muted-foreground/50">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
+              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
+                <FileText className="w-4 h-4" />
+                <span>AI Document Parser</span>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>
+              <p>Upload and parse documents to extract risk assessments using AI</p>
+            </TooltipContent>
+          </Tooltip>
+          <span className="text-muted-foreground/50">|</span>
+          <Tooltip>
+            <TooltipTrigger asChild>
               <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-first-line hover:underline text-sm italic">
                 <FlaskConical className="w-4 h-4" />
                 <span>Sample CSV for AI Assessment (Test Only)</span>
