@@ -1265,7 +1265,7 @@ export function AIDocumentAssessmentModal({
                     variant={statusFilter === "all" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setStatusFilter("all")}
-                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "all" ? "bg-white dark:bg-card shadow-sm" : ""}`}
+                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "all" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
                   >
                     All ({parsedRisks.length})
                   </Button>
@@ -1273,7 +1273,7 @@ export function AIDocumentAssessmentModal({
                     variant={statusFilter === "new" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setStatusFilter("new")}
-                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "new" ? "bg-white dark:bg-card shadow-sm" : ""}`}
+                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "new" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
                   >
                     <Plus className="w-2.5 h-2.5 mr-0.5" />
                     New ({riskCounts.newCount})
@@ -1282,7 +1282,7 @@ export function AIDocumentAssessmentModal({
                     variant={statusFilter === "modified" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setStatusFilter("modified")}
-                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "modified" ? "bg-white dark:bg-card shadow-sm" : ""}`}
+                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "modified" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
                   >
                     <Pencil className="w-2.5 h-2.5 mr-0.5" />
                     Modified ({riskCounts.modifiedCount})
