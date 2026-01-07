@@ -104,241 +104,90 @@ All colors MUST be HSL.
   }
 
   [data-theme="dark"] {
-    --background: 215 30% 8%;
-    --foreground: 210 20% 95%;
+    /* Background Colors - Dark Theme from Color Guide */
+    --background: 200 19% 18%;           /* #263137 - Background.Default */
+    --background-paper: 205 17% 24%;     /* #323E49 - Background.Paper */
+    --background-secondary: 200 31% 10%; /* #111B21 - Background.Secondary */
+    --background-tertiary: 200 9% 28%;   /* #434C51 - Background.Tertiary */
 
-    --card: 215 25% 12%;
-    --card-foreground: 210 20% 95%;
+    /* Foreground/Text Colors - Dark Theme */
+    --foreground: 0 0% 100%;             /* #FFFFFF - Text.Primary */
 
-    --popover: 215 25% 12%;
-    --popover-foreground: 210 20% 95%;
+    /* Card Colors */
+    --card: 205 17% 24%;                 /* #323E49 - Background.Paper */
+    --card-foreground: 0 0% 100%;        /* #FFFFFF */
 
-    --primary: 215 70% 55%;
+    /* Popover Colors */
+    --popover: 205 17% 24%;              /* #323E49 - Background.Paper */
+    --popover-foreground: 0 0% 100%;     /* #FFFFFF */
+
+    /* Primary Colors - Teal (Dark Theme) */
+    --primary: 181 100% 36%;             /* #00B5B8 - Primary.Main */
     --primary-foreground: 0 0% 100%;
+    --primary-light: 180 53% 75%;        /* #A0E0E1 - Primary.Light */
+    --primary-dark: 120 100% 41%;        /* #00D306 - Primary.Dark */
 
-    --secondary: 215 20% 18%;
-    --secondary-foreground: 210 20% 95%;
+    /* Secondary Colors - Dark Theme */
+    --secondary: 252 5% 91%;             /* #E7E6EA - Secondary.Main */
+    --secondary-foreground: 0 0% 0%;     /* Dark text on light secondary */
+    --secondary-light: 220 25% 48%;      /* #5C709C - Secondary.Light */
+    --secondary-dark: 264 20% 7%;        /* #110F15 - Secondary.Dark */
 
-    --muted: 215 20% 18%;
-    --muted-foreground: 215 15% 60%;
+    /* Muted Colors */
+    --muted: 200 31% 10%;                /* #111B21 - Background.Secondary */
+    --muted-foreground: 261 11% 73%;     /* #BDB0C7 - Text.Quaternary */
 
-    --accent: 215 70% 55%;
+    /* Accent (same as primary for consistency) */
+    --accent: 181 100% 36%;              /* #00B5B8 - Primary.Main */
     --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 72% 51%;
+    /* Destructive/Error Colors - Dark Theme */
+    --destructive: 2 88% 60%;            /* #F3453F - Error.Main */
     --destructive-foreground: 0 0% 100%;
+    --destructive-light: 356 100% 90%;   /* #FFCCD0 - Error.Light */
+    --destructive-dark: 355 100% 33%;    /* #A9010E - Error.Dark */
 
-    --border: 215 20% 32%;
-    --input: 215 20% 32%;
-    --ring: 215 70% 55%;
-    
-    --first-line: 200 75% 50%;
-    --first-line-light: 200 60% 20%;
-    --first-line-foreground: 200 80% 85%;
-    
-    --second-line: 260 45% 60%;
-    --second-line-light: 260 40% 22%;
-    --second-line-foreground: 260 50% 85%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
+    /* Border/Input/Ring Colors - Dark Theme */
+    --border: 200 11% 32%;               /* #4A565C - Stroke.Primary */
+    --input: 198 11% 25%;                /* #3A4348 - Stroke.Secondary */
+    --ring: 181 100% 36%;                /* #00B5B8 - Primary.Main */
+    --focus: 210 23% 93%;                /* #E8EDF2 - Focus.Primary */
+
+    /* Status Colors - Dark Theme */
+    --success: 159 67% 36%;              /* #20986C - Success.Main */
+    --success-light: 158 100% 86%;       /* #B8FFE4 - Success.Light */
+    --success-dark: 142 73% 21%;         /* #0F5C2E - Success.Dark */
+
+    --warning: 23 87% 50%;               /* #EE6011 - Warning.Main */
+    --warning-light: 46 100% 83%;        /* #FFE7A7 - Warning.Light */
+    --warning-dark: 23 84% 43%;          /* #CB5411 - Warning.Dark */
+
+    --error: 2 88% 60%;                  /* #F3453F - Error.Main */
+    --error-light: 356 100% 90%;         /* #FFCCD0 - Error.Light */
+    --error-dark: 355 100% 33%;          /* #A9010E - Error.Dark */
+
+    /* RCSA Design System - Dark Theme */
+    --first-line: 181 100% 36%;          /* Using Primary.Main for 1st line */
+    --first-line-light: 180 53% 75%;     /* Using Primary.Light */
+    --first-line-foreground: 120 100% 41%; /* Using Primary.Dark */
+
+    --second-line: 252 5% 91%;           /* Using Secondary.Main for 2nd line */
+    --second-line-light: 220 25% 48%;    /* Using Secondary.Light */
+    --second-line-foreground: 264 20% 7%; /* Using Secondary.Dark */
+
+    /* Gradient - Dark Theme */
+    --gradient-primary: linear-gradient(135deg, hsl(181, 100%, 36%), hsl(180, 53%, 75%));
+    --gradient-subtle: linear-gradient(180deg, hsl(200, 19%, 18%), hsl(205, 17%, 24%));
+
+    /* Sidebar Colors - Dark Theme */
+    --sidebar-background: 200 19% 18%;   /* Background.Default */
+    --sidebar-foreground: 0 0% 100%;     /* Text.Primary */
+    --sidebar-primary: 181 100% 36%;     /* Primary.Main */
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
-  }
-
-  /* High Contrast Light Theme */
-  [data-theme="high-contrast-light"] {
-    --background: 0 0% 100%;
-    --foreground: 0 0% 0%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 0 0% 0%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 0 0% 0%;
-
-    --primary: 220 100% 40%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 0 0% 95%;
-    --secondary-foreground: 0 0% 0%;
-
-    --muted: 0 0% 90%;
-    --muted-foreground: 0 0% 20%;
-
-    --accent: 220 100% 40%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 0 100% 40%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 0%;
-    --input: 0 0% 0%;
-    --ring: 220 100% 40%;
-
-    --first-line: 200 100% 35%;
-    --first-line-light: 200 100% 95%;
-    --first-line-foreground: 200 100% 20%;
-    
-    --second-line: 260 100% 40%;
-    --second-line-light: 260 100% 95%;
-    --second-line-foreground: 260 100% 20%;
-
-    --sidebar-background: 0 0% 100%;
-    --sidebar-foreground: 0 0% 0%;
-    --sidebar-primary: 220 100% 40%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 0 0% 95%;
-    --sidebar-accent-foreground: 0 0% 0%;
-    --sidebar-border: 0 0% 0%;
-    --sidebar-ring: 220 100% 40%;
-  }
-
-  /* High Contrast Dark Theme */
-  [data-theme="high-contrast-dark"] {
-    --background: 0 0% 0%;
-    --foreground: 0 0% 100%;
-
-    --card: 0 0% 5%;
-    --card-foreground: 0 0% 100%;
-
-    --popover: 0 0% 5%;
-    --popover-foreground: 0 0% 100%;
-
-    --primary: 60 100% 50%;
-    --primary-foreground: 0 0% 0%;
-
-    --secondary: 0 0% 15%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 0 0% 20%;
-    --muted-foreground: 0 0% 80%;
-
-    --accent: 60 100% 50%;
-    --accent-foreground: 0 0% 0%;
-
-    --destructive: 0 100% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 0 0% 100%;
-    --input: 0 0% 100%;
-    --ring: 60 100% 50%;
-
-    --first-line: 180 100% 50%;
-    --first-line-light: 180 100% 15%;
-    --first-line-foreground: 180 100% 90%;
-    
-    --second-line: 280 100% 60%;
-    --second-line-light: 280 100% 15%;
-    --second-line-foreground: 280 100% 90%;
-
-    --sidebar-background: 0 0% 5%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 60 100% 50%;
-    --sidebar-primary-foreground: 0 0% 0%;
-    --sidebar-accent: 0 0% 15%;
+    --sidebar-accent: 200 31% 10%;       /* Background.Secondary */
     --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 0 0% 100%;
-    --sidebar-ring: 60 100% 50%;
-  }
-
-  /* Colorblind-Friendly Light Theme (Deuteranopia/Protanopia optimized) */
-  [data-theme="colorblind-light"] {
-    --background: 210 20% 98%;
-    --foreground: 220 15% 20%;
-
-    --card: 0 0% 100%;
-    --card-foreground: 220 15% 20%;
-
-    --popover: 0 0% 100%;
-    --popover-foreground: 220 15% 20%;
-
-    --primary: 210 100% 45%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 40 95% 50%;
-    --secondary-foreground: 220 15% 20%;
-
-    --muted: 210 15% 90%;
-    --muted-foreground: 220 10% 40%;
-
-    --accent: 210 100% 45%;
-    --accent-foreground: 0 0% 100%;
-
-    --destructive: 15 100% 45%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 214 20% 85%;
-    --input: 214 20% 85%;
-    --ring: 210 100% 45%;
-
-    --first-line: 210 100% 45%;
-    --first-line-light: 210 100% 92%;
-    --first-line-foreground: 210 100% 25%;
-    
-    --second-line: 40 95% 50%;
-    --second-line-light: 40 100% 92%;
-    --second-line-foreground: 40 90% 25%;
-
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 220 15% 20%;
-    --sidebar-primary: 210 100% 45%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 210 15% 95%;
-    --sidebar-accent-foreground: 220 15% 20%;
-    --sidebar-border: 220 13% 88%;
-    --sidebar-ring: 210 100% 45%;
-  }
-
-  /* Colorblind-Friendly Dark Theme (Deuteranopia/Protanopia optimized) */
-  [data-theme="colorblind-dark"] {
-    --background: 220 25% 10%;
-    --foreground: 210 20% 92%;
-
-    --card: 220 20% 14%;
-    --card-foreground: 210 20% 92%;
-
-    --popover: 220 20% 14%;
-    --popover-foreground: 210 20% 92%;
-
-    --primary: 210 100% 60%;
-    --primary-foreground: 220 25% 10%;
-
-    --secondary: 40 100% 55%;
-    --secondary-foreground: 220 25% 10%;
-
-    --muted: 220 15% 20%;
-    --muted-foreground: 210 15% 65%;
-
-    --accent: 210 100% 60%;
-    --accent-foreground: 220 25% 10%;
-
-    --destructive: 15 100% 60%;
-    --destructive-foreground: 0 0% 100%;
-
-    --border: 220 15% 35%;
-    --input: 220 15% 35%;
-    --ring: 210 100% 60%;
-
-    --first-line: 210 100% 60%;
-    --first-line-light: 210 80% 22%;
-    --first-line-foreground: 210 100% 88%;
-    
-    --second-line: 40 100% 60%;
-    --second-line-light: 40 80% 22%;
-    --second-line-foreground: 40 100% 88%;
-
-    --sidebar-background: 220 20% 12%;
-    --sidebar-foreground: 210 20% 92%;
-    --sidebar-primary: 210 100% 60%;
-    --sidebar-primary-foreground: 220 25% 10%;
-    --sidebar-accent: 220 15% 18%;
-    --sidebar-accent-foreground: 210 20% 92%;
-    --sidebar-border: 220 15% 18%;
-    --sidebar-ring: 210 100% 60%;
+    --sidebar-border: 200 11% 32%;       /* Stroke.Primary */
+    --sidebar-ring: 181 100% 36%;        /* Primary.Main */
   }
 }
 
