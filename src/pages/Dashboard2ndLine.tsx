@@ -1,10 +1,11 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
-import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
+import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
+import { PreviousAssessmentFloater } from "@/components/PreviousAssessmentFloater";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -122,6 +123,9 @@ const Dashboard2ndLine = () => {
   // Control details dialog state
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
+
+  // Previous assessment floater state
+  const [expandedPreviousAssessments, setExpandedPreviousAssessments] = useState<Record<string, { inherent: boolean; control: boolean; residual: boolean }>>({});
 
   // Reset status filter when switching tabs to avoid invalid filter values
   useEffect(() => {
@@ -1748,9 +1752,17 @@ const Dashboard2ndLine = () => {
                                 </Tooltip>
                               </TooltipProvider>
                             </div>
-                            <button className="text-[8px] text-blue-600 dark:text-blue-400 hover:underline text-left">
-                              View Previous
-                            </button>
+                            <div className="relative">
+                              <PreviousAssessmentFloater
+                                type="inherent"
+                                historicalAssessments={risk.historicalAssessments || []}
+                                isExpanded={expandedPreviousAssessments[risk.id]?.inherent || false}
+                                onToggle={() => setExpandedPreviousAssessments(prev => ({
+                                  ...prev,
+                                  [risk.id]: { ...prev[risk.id], inherent: !prev[risk.id]?.inherent, control: false, residual: false }
+                                }))}
+                              />
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="py-[2px] border-r border-b border-border min-w-[250px]">
@@ -1802,25 +1814,38 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-[2px] border-r border-b border-border">
-                          <div className="flex items-center gap-1">
-                            {getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color)}
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <Button
-                                    variant="ghost"
-                                    size="icon"
-                                    className="h-3 w-3"
-                                    onClick={() => handleEdit("effectiveness", risk.id, risk.controlEffectiveness.label)}
-                                  >
-                                    <Edit2 className="w-2 h-2 text-muted-foreground hover:text-primary cursor-pointer" />
-                                  </Button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Edit Control Effectiveness</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
+                          <div className="space-y-0.5">
+                            <div className="flex items-center gap-1">
+                              {getEffectivenessBadge(risk.controlEffectiveness.label, risk.controlEffectiveness.color)}
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <Button
+                                      variant="ghost"
+                                      size="icon"
+                                      className="h-3 w-3"
+                                      onClick={() => handleEdit("effectiveness", risk.id, risk.controlEffectiveness.label)}
+                                    >
+                                      <Edit2 className="w-2 h-2 text-muted-foreground hover:text-primary cursor-pointer" />
+                                    </Button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Edit Control Effectiveness</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                            <div className="relative">
+                              <PreviousAssessmentFloater
+                                type="control"
+                                historicalAssessments={risk.historicalAssessments || []}
+                                isExpanded={expandedPreviousAssessments[risk.id]?.control || false}
+                                onToggle={() => setExpandedPreviousAssessments(prev => ({
+                                  ...prev,
+                                  [risk.id]: { ...prev[risk.id], control: !prev[risk.id]?.control, inherent: false, residual: false }
+                                }))}
+                              />
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="py-[2px] border-r border-b border-border">
@@ -1872,9 +1897,17 @@ const Dashboard2ndLine = () => {
                                 </Tooltip>
                               </TooltipProvider>
                             </div>
-                            <button className="text-[8px] text-blue-600 dark:text-blue-400 hover:underline text-left">
-                              View Previous
-                            </button>
+                            <div className="relative">
+                              <PreviousAssessmentFloater
+                                type="residual"
+                                historicalAssessments={risk.historicalAssessments || []}
+                                isExpanded={expandedPreviousAssessments[risk.id]?.residual || false}
+                                onToggle={() => setExpandedPreviousAssessments(prev => ({
+                                  ...prev,
+                                  [risk.id]: { ...prev[risk.id], residual: !prev[risk.id]?.residual, inherent: false, control: false }
+                                }))}
+                              />
+                            </div>
                           </div>
                         </TableCell>
                         <TableCell className="py-[2px] border-b border-border">
