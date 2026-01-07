@@ -1758,32 +1758,34 @@ const Dashboard1stLine = () => {
                   ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
                 </span>
               </div>
-              
-              {/* Right: Button-styled Tabs */}
-              <div className="flex items-center gap-2 pr-3">
-                <button
-                  onClick={() => setActiveTab("own")}
-                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
-                    activeTab === "own"
-                      ? "bg-primary text-white border-primary"
-                      : "bg-transparent text-primary border-primary hover:bg-primary/10"
-                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
-                >
-                  Completed Assessments ({assessorFilteredRiskData.filter(r => r.tabCategory === "own").length})
-                </button>
-                <button
-                  onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
-                    activeTab === "assess"
-                      ? "bg-primary text-white border-primary"
-                      : "bg-transparent text-primary border-primary hover:bg-primary/10"
-                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
-                >
-                  Risks to Assess ({assessorFilteredRiskData.filter(r => r.tabCategory === "assess").length})
-                </button>
-              </div>
             </div>
           </CardHeader>
+
+          {/* Tabs Row */}
+          <div className="border-b border-border/50 bg-muted/10 px-4 py-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveTab("own")}
+                className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                  activeTab === "own"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-transparent text-primary border-primary hover:bg-primary/10"
+                } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
+              >
+                Completed Assessments ({assessorFilteredRiskData.filter(r => r.tabCategory === "own").length})
+              </button>
+              <button
+                onClick={() => setActiveTab("assess")}
+                className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                  activeTab === "assess"
+                    ? "bg-primary text-white border-primary"
+                    : "bg-transparent text-primary border-primary hover:bg-primary/10"
+                } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
+              >
+                Risks to Assess ({assessorFilteredRiskData.filter(r => r.tabCategory === "assess").length})
+              </button>
+            </div>
+          </div>
 
           {/* Info Banner */}
           <div className="bg-emerald-50 dark:bg-emerald-900/10 border-b border-emerald-200 dark:border-emerald-800 px-4 py-2">
