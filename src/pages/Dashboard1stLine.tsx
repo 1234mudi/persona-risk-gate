@@ -1448,19 +1448,19 @@ const Dashboard1stLine = () => {
             <Link className="w-3 h-3 text-black dark:text-white" />
             Quick Links:
           </div>
-          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs">
+          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
             <ClipboardCheck className="w-3 h-3" />
             <span>View My Pending Assessments</span>
           </button>
-          <span className="text-black/50 dark:text-white/50">|</span>
-          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs">
+          <span className="text-gray-400 dark:text-gray-500">|</span>
+          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
             <CheckCircle className="w-3 h-3" />
             <span>View Completed Assessments</span>
           </button>
-          <span className="text-black/50 dark:text-white/50">|</span>
+          <span className="text-gray-400 dark:text-gray-500">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs">
+              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
                 <FileText className="w-3 h-3" />
                 <span>AI Document Parser</span>
               </button>
@@ -1469,10 +1469,10 @@ const Dashboard1stLine = () => {
               <p>Upload and parse documents to extract risk assessments using AI</p>
             </TooltipContent>
           </Tooltip>
-          <span className="text-black/50 dark:text-white/50">|</span>
+          <span className="text-gray-400 dark:text-gray-500">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs italic">
+              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs italic">
                 <FlaskConical className="w-3 h-3" />
                 <span>Sample CSV for AI Assessment (Test Only)</span>
               </a>
@@ -1751,10 +1751,10 @@ const Dashboard1stLine = () => {
             <div className="flex items-center justify-between h-12">
               {/* Left: Title */}
               <div className="flex items-center gap-1.5 px-4">
-                <span className="text-base font-semibold text-foreground">
+                <span className="text-base font-semibold text-black dark:text-white">
                   My Risk Assessments
                 </span>
-                <span className="text-base text-muted-foreground">
+                <span className="text-base text-black dark:text-white">
                   ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
                 </span>
               </div>
