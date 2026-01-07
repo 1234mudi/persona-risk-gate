@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, Shield } from "lucide-react";
+import { getControlRatingLabel } from "@/lib/riskAssessmentSchema";
 
 interface AvailableControl {
   id: string;
@@ -41,11 +42,6 @@ const availableControlsData: AvailableControl[] = [
   { id: "CTL-013", name: "Incident Response Procedures", type: "Detective", prevDesign: 3, prevOperating: 2, prevAvg: 2.5 },
 ];
 
-const getRatingBadgeColor = (rating: number): string => {
-  if (rating >= 4) return "bg-emerald-500";
-  if (rating >= 3) return "bg-amber-500";
-  return "bg-red-500";
-};
 
 export const AddControlModal = ({
   open,
@@ -191,19 +187,34 @@ export const AddControlModal = ({
                         </Badge>
                       </td>
                       <td className="p-1.5 text-center border-r border-border">
-                        <Badge className={`${getRatingBadgeColor(control.prevDesign)} text-white text-[10px] px-1.5 py-0`}>
-                          {control.prevDesign}
-                        </Badge>
+                        <div className="flex flex-col items-center gap-0.5">
+                          <Badge className={`${getControlRatingLabel(control.prevDesign).color} text-white text-[10px] px-1.5 py-0`}>
+                            {control.prevDesign}
+                          </Badge>
+                          <span className="text-[9px] text-muted-foreground">
+                            {getControlRatingLabel(control.prevDesign).label}
+                          </span>
+                        </div>
                       </td>
                       <td className="p-1.5 text-center border-r border-border">
-                        <Badge className={`${getRatingBadgeColor(control.prevOperating)} text-white text-[10px] px-1.5 py-0`}>
-                          {control.prevOperating}
-                        </Badge>
+                        <div className="flex flex-col items-center gap-0.5">
+                          <Badge className={`${getControlRatingLabel(control.prevOperating).color} text-white text-[10px] px-1.5 py-0`}>
+                            {control.prevOperating}
+                          </Badge>
+                          <span className="text-[9px] text-muted-foreground">
+                            {getControlRatingLabel(control.prevOperating).label}
+                          </span>
+                        </div>
                       </td>
                       <td className="p-1.5 text-center">
-                        <Badge className={`${getRatingBadgeColor(control.prevAvg)} text-white text-[10px] px-1.5 py-0 font-semibold`}>
-                          {control.prevAvg.toFixed(1)}
-                        </Badge>
+                        <div className="flex flex-col items-center gap-0.5">
+                          <Badge className={`${getControlRatingLabel(control.prevAvg).color} text-white text-[10px] px-1.5 py-0 font-semibold`}>
+                            {control.prevAvg.toFixed(1)}
+                          </Badge>
+                          <span className="text-[9px] text-muted-foreground">
+                            {getControlRatingLabel(control.prevAvg).label}
+                          </span>
+                        </div>
                       </td>
                     </tr>
                   ))}
