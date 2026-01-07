@@ -478,31 +478,50 @@ const RiskAssessmentForm = () => {
             <ChevronRight className="w-3 h-3" />
           </button>
         </DialogTrigger>
-        <DialogContent className="max-w-md max-h-[70vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-sm font-medium">
+        <DialogContent className="max-w-xs max-h-[60vh] overflow-y-auto p-3">
+          <DialogHeader className="pb-2">
+            <DialogTitle className="text-xs font-medium">
               {type === 'inherent' && 'Inherent Risk History'}
               {type === 'control' && 'Control Effectiveness History'}
               {type === 'residual' && 'Residual Risk History'}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3 mt-2">
+          <div className="space-y-1.5">
             {historyData.map((item, idx) => (
-              <div key={idx} className="p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs text-muted-foreground font-medium">{item.date}</span>
-                  <Badge className={`${getHistoryRatingBadge(item.score).color} text-[10px]`}>
-                    Score: {item.score}
-                  </Badge>
+              <div key={idx} className="p-1.5 rounded-md border bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] text-muted-foreground font-medium">{item.date}</span>
+                  <div className="flex items-center gap-1">
+                    <Badge className={`${getHistoryRatingBadge(item.score).color} text-[9px] px-1.5 py-0`}>
+                      {item.score}
+                    </Badge>
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button 
+                            className="p-0.5 rounded hover:bg-muted transition-colors"
+                            onClick={() => {
+                              if (type === 'inherent') handleCopyHistoryToInherent(item);
+                              if (type === 'control') handleCopyHistoryToControl(item);
+                              if (type === 'residual') handleCopyHistoryToResidual(item);
+                            }}
+                          >
+                            <Copy className="w-3 h-3 text-blue-600" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="left" className="text-[10px]">Copy to Current</TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
                 </div>
                 {/* Factor/Control details based on type */}
                 {type !== 'control' && item.factors && (
-                  <div className="space-y-1 mb-2">
+                  <div className="space-y-0.5 mt-1">
                     {item.factors.map((factor: any, fIdx: number) => (
-                      <div key={fIdx} className="flex items-center justify-between text-[10px]">
+                      <div key={fIdx} className="flex items-center justify-between text-[9px]">
                         <span className="text-muted-foreground">{factor.name}</span>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className={`${getHistoryRatingBadge(factor.rating).color} text-[9px] px-1.5 py-0`}>
+                        <div className="flex items-center gap-1">
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(factor.rating).color} text-[8px] px-1 py-0`}>
                             {factor.rating}
                           </Badge>
                           <span className="text-muted-foreground/70">({factor.weight}%)</span>
@@ -512,18 +531,18 @@ const RiskAssessmentForm = () => {
                   </div>
                 )}
                 {type === 'control' && item.controls && (
-                  <div className="space-y-1 mb-2">
+                  <div className="space-y-0.5 mt-1">
                     {item.controls.map((control: any, cIdx: number) => (
-                      <div key={cIdx} className="flex items-center justify-between text-[10px]">
-                        <span className="text-muted-foreground truncate max-w-[180px]">{control.name}</span>
-                        <div className="flex items-center gap-1">
-                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.design).color} text-[9px] px-1 py-0`}>
+                      <div key={cIdx} className="flex items-center justify-between text-[9px]">
+                        <span className="text-muted-foreground truncate max-w-[120px]">{control.name}</span>
+                        <div className="flex items-center gap-0.5">
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.design).color} text-[8px] px-0.5 py-0`}>
                             D:{control.design}
                           </Badge>
-                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.operating).color} text-[9px] px-1 py-0`}>
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.operating).color} text-[8px] px-0.5 py-0`}>
                             O:{control.operating}
                           </Badge>
-                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.overall).color} text-[9px] px-1 py-0`}>
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.overall).color} text-[8px] px-0.5 py-0`}>
                             Ov:{control.overall}
                           </Badge>
                         </div>
@@ -531,22 +550,6 @@ const RiskAssessmentForm = () => {
                     ))}
                   </div>
                 )}
-                {/* Copy Button */}
-                <div className="pt-2 border-t border-border">
-                  <Button 
-                    size="sm" 
-                    variant="outline" 
-                    className="h-7 text-xs gap-1.5 w-full"
-                    onClick={() => {
-                      if (type === 'inherent') handleCopyHistoryToInherent(item);
-                      if (type === 'control') handleCopyHistoryToControl(item);
-                      if (type === 'residual') handleCopyHistoryToResidual(item);
-                    }}
-                  >
-                    <Copy className="w-3 h-3" />
-                    Copy to Current Assessment
-                  </Button>
-                </div>
               </div>
             ))}
           </div>
@@ -2294,9 +2297,9 @@ const RiskAssessmentForm = () => {
                         <TooltipContent>Expand to full screen</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <div className={`px-3 py-1.5 rounded-lg ${getRatingLabel(inherentScore).color} text-white`}>
-                      <div className="text-xs opacity-90">Score: {inherentScore}</div>
-                      <div className="font-semibold text-sm">{getRatingLabel(inherentScore).label}</div>
+                    <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(inherentScore).color} text-white flex-shrink-0`}>
+                      <div className="text-[10px] opacity-90">Score: {inherentScore}</div>
+                      <div className="font-semibold text-xs">{getRatingLabel(inherentScore).label}</div>
                     </div>
                   </div>
                 </div>
@@ -2347,11 +2350,11 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-1.5 text-left"><Checkbox /></th>
-                        <th className="p-1.5 text-left text-xs font-medium w-48">Factor & Description</th>
-                        <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
-                        <th className="p-1.5 text-left text-xs font-medium">Comments</th>
-                        {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
+                        <th className="w-8 px-1 py-1 text-left border-r border-border"><Checkbox /></th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-36 border-r border-border">Factor & Description</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-28 border-r border-border">Rating</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-48 border-r border-border">Comments</th>
+                        {showWeights && <th className="px-1.5 py-1 text-left text-xs font-medium w-20">Weightage (%)</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -2359,20 +2362,20 @@ const RiskAssessmentForm = () => {
                         const factorCellId = factor.name.toLowerCase().replace(/\s+/g, '-');
                         return (
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
-                          <td className="p-1.5"><Checkbox /></td>
-                          <td className="p-1.5">
-                            <div className="flex items-start gap-2">
+                          <td className="px-1 py-1 border-r border-border"><Checkbox /></td>
+                          <td className="px-1.5 py-1 border-r border-border">
+                            <div className="flex items-start gap-1">
                               <CellCommentPopover factorName={factor.name} field="Description">
                                 <div className="flex-1">
-                                  <div className="font-medium text-sm">{factor.name}</div>
-                                  <div className="text-xs text-muted-foreground">{factor.description}</div>
+                                  <div className="font-medium text-xs">{factor.name}</div>
+                                  <div className="text-[10px] text-muted-foreground leading-tight">{factor.description}</div>
                                 </div>
                               </CellCommentPopover>
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <button className="mt-0.5 text-muted-foreground hover:text-foreground flex-shrink-0">
-                                      <HelpCircle className="w-3.5 h-3.5" />
+                                      <HelpCircle className="w-3 h-3" />
                                     </button>
                                   </TooltipTrigger>
                                   <TooltipContent side="right" className="max-w-xs p-3">
@@ -2390,7 +2393,7 @@ const RiskAssessmentForm = () => {
                               </TooltipProvider>
                             </div>
                           </td>
-                          <td className="p-1.5 overflow-visible">
+                          <td className="px-1.5 py-1 overflow-visible border-r border-border">
                             <CollaborativeCell cellId={`${factorCellId}-rating`}>
                               <CellCommentPopover factorName={factor.name} field="Rating">
                                 <UpdateVersionIndicator 
@@ -2408,7 +2411,7 @@ const RiskAssessmentForm = () => {
                                         updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v), 'inherent');
                                       }}
                                     >
-                                      <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                      <SelectTrigger className="w-full bg-background h-6 text-xs">
                                         <SelectValue />
                                       </SelectTrigger>
                                       <SelectContent className="bg-background border shadow-lg z-50">
@@ -2425,7 +2428,7 @@ const RiskAssessmentForm = () => {
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
-                          <td className="p-1.5 overflow-visible">
+                          <td className="px-1.5 py-1 overflow-visible border-r border-border">
                             <CollaborativeCell cellId={`${factorCellId}-comments`}>
                               <CellCommentPopover factorName={factor.name} field="Comments">
                                 <UpdateVersionIndicator 
@@ -2442,14 +2445,14 @@ const RiskAssessmentForm = () => {
                                         markFieldAsEdited(`inherent-${factor.id}-comments`);
                                         updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value, 'inherent');
                                       }}
-                                      className="min-h-[28px] resize-none text-xs"
+                                      className="min-h-[22px] h-[22px] resize-none text-xs py-0.5"
                                     />
                                   </AIFieldIndicator>
                                 </UpdateVersionIndicator>
                               </CellCommentPopover>
                             </CollaborativeCell>
                           </td>
-                          {showWeights && <td className="p-1.5 text-center text-sm font-medium">{factor.weightage}</td>}
+                          {showWeights && <td className="px-1.5 py-1 text-center text-xs font-medium">{factor.weightage}</td>}
                         </tr>
                       )})}
                     </tbody>
@@ -2458,8 +2461,8 @@ const RiskAssessmentForm = () => {
               </Card>
 
               <div className="flex items-center justify-end">
-                <Button className="gap-2 bg-blue-600 hover:bg-blue-700" onClick={() => setActiveTab("control-effectiveness")}>
-                  Continue to Control Effectiveness<ChevronRight className="w-4 h-4" />
+                <Button className="gap-1.5 bg-blue-600 hover:bg-blue-700 h-8 text-sm px-3" onClick={() => setActiveTab("control-effectiveness")}>
+                  Continue to Control Effectiveness<ChevronRight className="w-3.5 h-3.5" />
                 </Button>
               </div>
             </TabsContent>
@@ -2538,15 +2541,15 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-1.5 text-left"><Checkbox /></th>
-                        <th className="p-1.5 text-left text-xs font-medium">Control ID</th>
-                        <th className="p-1.5 text-left text-xs font-medium">Control Name</th>
-                        <th className="p-1.5 text-left text-xs font-medium">Type</th>
-                        <th className="p-1.5 text-left text-xs font-medium">Owner</th>
-<th className="p-1.5 text-left text-xs font-medium w-28">Design Effectiveness</th>
-                              <th className="p-1.5 text-left text-xs font-medium w-28">Operating Effectiveness</th>
-                              <th className="p-1.5 text-left text-xs font-medium w-28">Overall Effectiveness</th>
-                        <th className="p-1.5 text-left text-xs font-medium w-24">Average Control Score</th>
+                        <th className="w-8 px-1 py-1 text-left border-r border-border"><Checkbox /></th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-16 border-r border-border">Control ID</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-32 border-r border-border">Control Name</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-20 border-r border-border">Type</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-32 border-r border-border">Owner</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-24 border-r border-border">Design</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-24 border-r border-border">Operating</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-24 border-r border-border">Overall</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-16">Score</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2557,38 +2560,37 @@ const RiskAssessmentForm = () => {
                         return (
                           <>
                             <tr key={control.id} className="border-t hover:bg-muted/30">
-                              <td className="p-1.5"><Checkbox /></td>
-                              <td className="p-1.5 font-mono text-xs text-blue-600">{control.id}</td>
-                              <td className="p-1.5">
+                              <td className="px-1 py-1 border-r border-border"><Checkbox /></td>
+                              <td className="px-1.5 py-1 font-mono text-[10px] text-blue-600 border-r border-border">{control.id}</td>
+                              <td className="px-1.5 py-1 border-r border-border">
                                 <button 
-                                  className="flex items-center gap-2 text-left hover:text-blue-600 transition-colors group w-full"
+                                  className="flex items-center gap-1 text-left hover:text-blue-600 transition-colors group w-full"
                                   onClick={() => toggleControlExpanded(control.id)}
                                 >
-                                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`} />
+                                  <ChevronDown className={`w-3 h-3 text-muted-foreground transition-transform duration-200 ${isExpanded ? 'rotate-0' : '-rotate-90'}`} />
                                   <CellCommentPopover factorName={control.id} field="Name">
-                                    <span className="font-medium text-sm group-hover:text-blue-600">{control.name}</span>
+                                    <span className="font-medium text-xs group-hover:text-blue-600 truncate">{control.name}</span>
                                   </CellCommentPopover>
                                 </button>
                               </td>
-                              <td className="p-1.5">
-                                <Badge variant="outline" className={`text-xs ${control.type === "Preventive" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}`}>
+                              <td className="px-1.5 py-1 border-r border-border">
+                                <Badge variant="outline" className={`text-[10px] px-1 py-0 ${control.type === "Preventive" ? "bg-blue-50 text-blue-700" : "bg-amber-50 text-amber-700"}`}>
                                   {control.type}
                                 </Badge>
                               </td>
-                              <td className="p-1.5">
-                                <div className="flex items-center gap-1.5">
-                                  <div className="flex items-center gap-2 px-2 py-1 bg-muted/50 rounded-full border border-border">
-                                    <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center text-[9px] font-medium text-primary">
+                              <td className="px-1.5 py-1 border-r border-border">
+                                <div className="flex items-center gap-1">
+                                  <div className="flex items-center gap-1 px-1.5 py-0.5 bg-muted/50 rounded-full border border-border">
+                                    <div className="w-4 h-4 rounded-full bg-primary/20 flex items-center justify-center text-[8px] font-medium text-primary">
                                       {control.owner.split(' ').map(w => w[0]).join('').substring(0, 2) || control.owner.substring(0, 2)}
                                     </div>
                                     <div className="flex flex-col">
-                                      <span className="text-xs font-medium leading-tight">{control.owner === "Compliance Team" ? "John Smith" : control.owner === "Risk Management" ? "Sarah Lee" : "Mike Davis"}</span>
-                                      <span className="text-[10px] text-muted-foreground leading-tight">{control.owner}</span>
+                                      <span className="text-[10px] font-medium leading-tight">{control.owner === "Compliance Team" ? "J. Smith" : control.owner === "Risk Management" ? "S. Lee" : "M. Davis"}</span>
                                     </div>
                                   </div>
                                 </div>
                               </td>
-                              <td className="p-1.5 overflow-visible">
+                              <td className="px-1.5 py-1 overflow-visible border-r border-border">
                                 <CollaborativeCell cellId={`${controlCellId}-design`}>
                                   <CellCommentPopover factorName={control.id} field="Design">
                                     <UpdateVersionIndicator 
@@ -2606,7 +2608,7 @@ const RiskAssessmentForm = () => {
                                             updateControlRating(control.id, 'designRating', parseInt(v));
                                           }}
                                         >
-                                          <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                          <SelectTrigger className="w-full bg-background h-6 text-xs">
                                             <SelectValue />
                                           </SelectTrigger>
                                           <SelectContent className="bg-background border shadow-lg z-50">
@@ -2618,7 +2620,7 @@ const RiskAssessmentForm = () => {
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
-                              <td className="p-1.5 overflow-visible">
+                              <td className="px-1.5 py-1 overflow-visible border-r border-border">
                                 <CollaborativeCell cellId={`${controlCellId}-operating`}>
                                   <CellCommentPopover factorName={control.id} field="Operating">
                                     <UpdateVersionIndicator 
@@ -2636,7 +2638,7 @@ const RiskAssessmentForm = () => {
                                             updateControlRating(control.id, 'operatingRating', parseInt(v));
                                           }}
                                         >
-                                          <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                          <SelectTrigger className="w-full bg-background h-6 text-xs">
                                             <SelectValue />
                                           </SelectTrigger>
                                           <SelectContent className="bg-background border shadow-lg z-50">
@@ -2648,7 +2650,7 @@ const RiskAssessmentForm = () => {
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
-                              <td className="p-1.5 overflow-visible">
+                              <td className="px-1.5 py-1 overflow-visible border-r border-border">
                                 <CollaborativeCell cellId={`${controlCellId}-testing`}>
                                   <CellCommentPopover factorName={control.id} field="Testing">
                                     <UpdateVersionIndicator 
@@ -2666,7 +2668,7 @@ const RiskAssessmentForm = () => {
                                             updateControlRating(control.id, 'testingRating', parseInt(v));
                                           }}
                                         >
-                                          <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                          <SelectTrigger className="w-full bg-background h-6 text-xs">
                                             <SelectValue />
                                           </SelectTrigger>
                                           <SelectContent className="bg-background border shadow-lg z-50">
@@ -2678,8 +2680,8 @@ const RiskAssessmentForm = () => {
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
-                              <td className="p-1.5">
-                                <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white text-xs`}>{avg}</Badge>
+                              <td className="px-1.5 py-1">
+                                <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white text-[10px] px-1.5 py-0`}>{avg}</Badge>
                               </td>
                             </tr>
                             {/* Expandable row for control details */}
@@ -2835,30 +2837,30 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-10 p-1.5 text-left"><Checkbox /></th>
-                        <th className="p-1.5 text-left text-xs font-medium w-48">Factor & Description</th>
-                        <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
-                        <th className="p-1.5 text-left text-xs font-medium">Comments</th>
-                        {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
+                        <th className="w-8 px-1 py-1 text-left border-r border-border"><Checkbox /></th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-36 border-r border-border">Factor & Description</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-28 border-r border-border">Rating</th>
+                        <th className="px-1.5 py-1 text-left text-xs font-medium w-48 border-r border-border">Comments</th>
+                        {showWeights && <th className="px-1.5 py-1 text-left text-xs font-medium w-20">Weightage (%)</th>}
                       </tr>
                     </thead>
                     <tbody>
                       {residualFactors.map((factor) => (
                         <tr key={factor.id} className="border-t hover:bg-muted/30">
-                          <td className="p-1.5"><Checkbox /></td>
-                          <td className="p-1.5">
-                            <div className="flex items-start gap-2">
+                          <td className="px-1 py-1 border-r border-border"><Checkbox /></td>
+                          <td className="px-1.5 py-1 border-r border-border">
+                            <div className="flex items-start gap-1">
                               <CellCommentPopover factorName={factor.name} field="Description">
                                 <div className="flex-1">
-                                  <div className="font-medium text-sm">{factor.name}</div>
-                                  <div className="text-xs text-muted-foreground">{factor.description}</div>
+                                  <div className="font-medium text-xs">{factor.name}</div>
+                                  <div className="text-[10px] text-muted-foreground leading-tight">{factor.description}</div>
                                 </div>
                               </CellCommentPopover>
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <button className="mt-0.5 text-muted-foreground hover:text-foreground flex-shrink-0">
-                                      <HelpCircle className="w-3.5 h-3.5" />
+                                      <HelpCircle className="w-3 h-3" />
                                     </button>
                                   </TooltipTrigger>
                                   <TooltipContent side="right" className="max-w-xs p-3">
@@ -2876,7 +2878,7 @@ const RiskAssessmentForm = () => {
                               </TooltipProvider>
                             </div>
                           </td>
-                          <td className="p-1.5 overflow-visible">
+                          <td className="px-1.5 py-1 overflow-visible border-r border-border">
                             <CellCommentPopover factorName={factor.name} field="Rating">
                               <UpdateVersionIndicator 
                                 fieldKey={`residual-${factor.id}-rating`}
@@ -2893,7 +2895,7 @@ const RiskAssessmentForm = () => {
                                       updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v), 'residual');
                                     }}
                                   >
-                                    <SelectTrigger className="w-full bg-background h-7 text-xs">
+                                    <SelectTrigger className="w-full bg-background h-6 text-xs">
                                       <SelectValue />
                                     </SelectTrigger>
                                     <SelectContent className="bg-background border shadow-lg z-50">
@@ -2909,7 +2911,7 @@ const RiskAssessmentForm = () => {
                               </UpdateVersionIndicator>
                             </CellCommentPopover>
                           </td>
-                          <td className="p-1.5 overflow-visible">
+                          <td className="px-1.5 py-1 overflow-visible border-r border-border">
                             <CellCommentPopover factorName={factor.name} field="Comments">
                               <UpdateVersionIndicator 
                                 fieldKey={`residual-${factor.id}-comments`}
@@ -2925,13 +2927,13 @@ const RiskAssessmentForm = () => {
                                       markFieldAsEdited(`residual-${factor.id}-comments`);
                                       updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value, 'residual');
                                     }}
-                                    className="min-h-[28px] resize-none text-xs"
+                                    className="min-h-[22px] h-[22px] resize-none text-xs py-0.5"
                                   />
                                 </AIFieldIndicator>
                               </UpdateVersionIndicator>
                             </CellCommentPopover>
                           </td>
-                          {showWeights && <td className="p-1.5 text-center text-sm font-medium">{factor.weightage}</td>}
+                          {showWeights && <td className="px-1.5 py-1 text-center text-xs font-medium">{factor.weightage}</td>}
                         </tr>
                       ))}
                     </tbody>
@@ -2940,9 +2942,9 @@ const RiskAssessmentForm = () => {
               </Card>
 
               <div className="flex items-center justify-between">
-                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("control-effectiveness")}><ChevronLeft className="w-4 h-4" />Back to Previous Section</Button>
-                <Button className="gap-2 bg-purple-600 hover:bg-purple-700" onClick={() => setActiveTab("heat-map")}>
-                  View Heat Map<ChevronRight className="w-4 h-4" />
+                <Button variant="outline" className="gap-1.5 h-8 text-sm px-3" onClick={() => setActiveTab("control-effectiveness")}><ChevronLeft className="w-3.5 h-3.5" />Back to Previous Section</Button>
+                <Button className="gap-1.5 bg-purple-600 hover:bg-purple-700 h-8 text-sm px-3" onClick={() => setActiveTab("heat-map")}>
+                  View Heat Map<ChevronRight className="w-3.5 h-3.5" />
                 </Button>
               </div>
             </TabsContent>
