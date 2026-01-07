@@ -1978,8 +1978,8 @@ const Dashboard1stLine = () => {
                         </TableHead>
                       )}
                       <TableHead className="w-16 min-w-[64px] py-1 border-r border-b border-border text-xs text-center">Edit</TableHead>
-                      <TableHead className="min-w-[280px] py-1 border-r border-b border-border">Risk ID / Title</TableHead>
-                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border">
+                      <TableHead className="min-w-[280px] py-1 border-r border-b border-border text-xs">Risk ID / Title</TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <button className="flex items-center gap-2 hover:text-primary transition-colors">
@@ -2014,20 +2014,20 @@ const Dashboard1stLine = () => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableHead>
-                      <TableHead className="min-w-[120px] py-1 border-r border-b border-border">Due Date</TableHead>
+                      <TableHead className="min-w-[120px] py-1 border-r border-b border-border text-xs">Due Date</TableHead>
                       {activeTab === "own" && (
-                        <TableHead className="min-w-[140px] py-1 border-r border-b border-border">Completion Date</TableHead>
+                        <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">Completion Date</TableHead>
                       )}
-                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Assessment Progress</TableHead>
-                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border">Business Unit</TableHead>
-                      <TableHead className="min-w-[180px] py-1 border-r border-b border-border">Assessors/Collaborators</TableHead>
-                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border">Last Assessed Date</TableHead>
-                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Inherent Risk</TableHead>
-                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Related Controls</TableHead>
-                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
-                      <TableHead className="min-w-[180px] py-1 border-r border-b border-border">Control Test Results</TableHead>
-                      <TableHead className="min-w-[160px] py-1 border-b border-border">Status</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Assessment Progress</TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">Business Unit</TableHead>
+                      <TableHead className="min-w-[180px] py-1 border-r border-b border-border text-xs">Assessors/Collaborators</TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">Last Assessed Date</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Inherent Risk</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Residual Risk</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Related Controls</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Calculated Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[180px] py-1 border-r border-b border-border text-xs">Control Test Results</TableHead>
+                      <TableHead className="min-w-[160px] py-1 border-b border-border text-xs">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
