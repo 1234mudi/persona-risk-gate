@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useEffect, useCallback } from "react"
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, Star, HelpCircle, Printer, Share2, Download } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1760,8 +1760,84 @@ const Dashboard1stLine = () => {
 
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
-          <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
-            <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
+          <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0">
+            <div className="flex items-center justify-between">
+              {/* Left Section - Teal accent with list icon */}
+              <div className="flex items-center">
+                <div className="bg-first-line px-3 py-2 flex items-center justify-center">
+                  <Menu className="w-4 h-4 text-white" />
+                </div>
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <CardTitle className="text-sm font-medium text-foreground">
+                    Risk Assessments Due for My Action
+                  </CardTitle>
+                  <span className="text-xs text-muted-foreground">
+                    ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
+                  </span>
+                  <button className="p-1 hover:bg-muted rounded">
+                    <Star className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                  <button className="p-1 hover:bg-muted rounded">
+                    <MoreHorizontal className="w-3.5 h-3.5 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+              
+              {/* Right Section - Icons and Action Buttons */}
+              <div className="flex items-center gap-1 px-2 py-1.5">
+                <button className="p-1.5 hover:bg-muted rounded">
+                  <RefreshCw className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button className="p-1.5 hover:bg-muted rounded">
+                  <HelpCircle className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button className="p-1.5 hover:bg-muted rounded">
+                  <Mail className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button className="p-1.5 hover:bg-muted rounded">
+                  <Printer className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button className="p-1.5 hover:bg-muted rounded">
+                  <Share2 className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                <button className="p-1.5 hover:bg-muted rounded">
+                  <Download className="w-3.5 h-3.5 text-muted-foreground" />
+                </button>
+                
+                <div className="w-px h-5 bg-border mx-1" />
+                
+                <Button 
+                  size="xs" 
+                  className="bg-first-line hover:bg-first-line/90 text-white font-medium uppercase text-xs px-3"
+                >
+                  Export
+                </Button>
+                <Button 
+                  size="xs" 
+                  variant="outline" 
+                  className="border-border font-medium uppercase text-xs px-3"
+                >
+                  Proceed
+                </Button>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button 
+                      size="xs" 
+                      variant="outline" 
+                      className="border-border font-medium uppercase text-xs px-3"
+                    >
+                      Actions
+                      <ChevronDown className="w-3 h-3 ml-1" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem>Bulk Assess</DropdownMenuItem>
+                    <DropdownMenuItem>Export All</DropdownMenuItem>
+                    <DropdownMenuItem>Print Report</DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-4">
             {/* Modern Segmented Tabs */}
