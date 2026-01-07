@@ -1765,9 +1765,9 @@ const Dashboard1stLine = () => {
                   onClick={() => setActiveTab("own")}
                   className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
                     activeTab === "own"
-                      ? "bg-first-line text-white border-first-line"
-                      : "bg-transparent text-first-line border-first-line hover:bg-first-line/10"
-                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
+                      ? "bg-primary text-white border-primary"
+                      : "bg-transparent text-primary border-primary hover:bg-primary/10"
+                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
                 >
                   Completed Assessments ({assessorFilteredRiskData.filter(r => r.tabCategory === "own").length})
                 </button>
@@ -1775,9 +1775,9 @@ const Dashboard1stLine = () => {
                   onClick={() => setActiveTab("assess")}
                   className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
                     activeTab === "assess"
-                      ? "bg-first-line text-white border-first-line"
-                      : "bg-transparent text-first-line border-first-line hover:bg-first-line/10"
-                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
+                      ? "bg-primary text-white border-primary"
+                      : "bg-transparent text-primary border-primary hover:bg-primary/10"
+                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
                 >
                   Risks to Assess ({assessorFilteredRiskData.filter(r => r.tabCategory === "assess").length})
                 </button>
@@ -1924,7 +1924,7 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="h-8"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
                       onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: Array.from(selectedRisks).join(",") })}
                     >
                       <UsersIcon className="w-4 h-4 mr-1.5" />
@@ -1933,7 +1933,7 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="h-8"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
                       onClick={() => setActionDialog({ open: true, type: "reassign", riskId: Array.from(selectedRisks).join(",") })}
                     >
                       <UserPlus className="w-4 h-4 mr-1.5" />
@@ -1942,7 +1942,7 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="h-8 border-blue-500/50 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
                       onClick={() => setDirectAssessmentModalOpen(true)}
                     >
                       <Sparkles className="w-4 h-4 mr-1.5" />
@@ -1950,7 +1950,7 @@ const Dashboard1stLine = () => {
                     </Button>
                     <Button
                       size="sm" 
-                      className="h-8 bg-indigo-500 hover:bg-indigo-600 text-white"
+                      className="h-8 bg-primary hover:bg-primary/90 text-white"
                       onClick={handleSubmitForReview}
                     >
                       <Send className="w-4 h-4 mr-1.5" />

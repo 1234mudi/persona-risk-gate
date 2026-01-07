@@ -1145,7 +1145,7 @@ const Dashboard2ndLine = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="h-8 text-xs border-second-line/30 text-second-line hover:bg-second-line/10"
+                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
                   onClick={() => setActionDialog({ open: true, type: "reassign", riskId: null })}
                   disabled={selectedRisks.size === 0}
                 >
@@ -1155,7 +1155,7 @@ const Dashboard2ndLine = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="h-8 text-xs border-second-line/30 text-second-line hover:bg-second-line/10"
+                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
                   onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: null })}
                   disabled={selectedRisks.size === 0}
                 >
@@ -1164,7 +1164,7 @@ const Dashboard2ndLine = () => {
                 </Button>
                 <Button 
                   size="sm"
-                  className="h-8 text-xs bg-second-line text-white hover:bg-second-line/90"
+                  className="h-8 text-xs bg-primary text-white hover:bg-primary/90"
                   onClick={() => setBulkAssessmentOpen(true)}
                   disabled={selectedRisks.size === 0}
                 >
@@ -1182,9 +1182,9 @@ const Dashboard2ndLine = () => {
                 onClick={() => setActiveTab("own")}
                 className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
                   activeTab === "own"
-                    ? "bg-second-line text-white border-second-line"
-                    : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
-                } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                    ? "bg-primary text-white border-primary"
+                    : "bg-transparent text-primary border-primary hover:bg-primary/10"
+                } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
               >
                 Completed Assessments ({riskData.filter(r => r.tabCategory === "own").length})
               </button>
@@ -1192,9 +1192,9 @@ const Dashboard2ndLine = () => {
                 onClick={() => setActiveTab("assess")}
                 className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
                   activeTab === "assess"
-                    ? "bg-second-line text-white border-second-line"
-                    : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
-                } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                    ? "bg-primary text-white border-primary"
+                    : "bg-transparent text-primary border-primary hover:bg-primary/10"
+                } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
               >
                 Risks to be Assessed ({riskData.filter(r => r.tabCategory === "assess").length})
               </button>
@@ -1202,9 +1202,9 @@ const Dashboard2ndLine = () => {
                 onClick={() => setActiveTab("approve")}
                 className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
                   activeTab === "approve"
-                    ? "bg-second-line text-white border-second-line"
-                    : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
-                } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                    ? "bg-primary text-white border-primary"
+                    : "bg-transparent text-primary border-primary hover:bg-primary/10"
+                } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
               >
                 Risks to be Approved ({riskData.filter(r => r.tabCategory === "approve").length})
               </button>
