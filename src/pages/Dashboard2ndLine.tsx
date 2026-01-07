@@ -1132,10 +1132,10 @@ const Dashboard2ndLine = () => {
             <div className="flex items-center justify-between h-12">
               {/* Left: Title */}
               <div className="flex items-center gap-1.5 px-4">
-                <span className="text-base font-semibold text-foreground">
+              <span className="text-base font-semibold text-[#10052F] dark:text-white">
                   Risk Coverage by Business Unit
                 </span>
-                <span className="text-base text-foreground">
+                <span className="text-base text-[#10052F] dark:text-white">
                   ({filteredRiskData.length})
                 </span>
               </div>
@@ -1212,10 +1212,10 @@ const Dashboard2ndLine = () => {
           </div>
 
           {/* Row 3: Info Banner */}
-          <div className="bg-second-line/5 dark:bg-second-line/10 border-b border-second-line/20 dark:border-second-line/30 px-4 py-2">
+          <div className="bg-indigo-50 dark:bg-indigo-900/10 border-b border-indigo-200 dark:border-indigo-800 px-4 py-2">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-second-line dark:text-second-line flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-second-line dark:text-second-line/90">
+              <AlertTriangle className="w-4 h-4 text-indigo-600 dark:text-indigo-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-indigo-800 dark:text-indigo-200">
                 {activeTab === "own" && "These assessments have been completed by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to view details and any open challenge comments."}
                 {activeTab === "assess" && "These risks are pending assessment by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin your assessment and view any open challenge comments."}
                 {activeTab === "approve" && "These risk assessments require approval by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review and view any open challenge comments."}
