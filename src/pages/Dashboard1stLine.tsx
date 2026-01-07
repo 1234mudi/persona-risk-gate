@@ -1746,29 +1746,30 @@ const Dashboard1stLine = () => {
 
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
+          {/* Title Bar with Tabs */}
           <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0">
-            <div className="flex items-center">
-              <div className="bg-first-line w-2 self-stretch" />
-              <div className="flex items-center gap-2 px-3 py-2">
-                <CardTitle className="text-sm font-medium text-foreground">
-                  My Risk Assessments
-                </CardTitle>
-                <span className="text-xs text-muted-foreground">
-                  ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
-                </span>
+            <div className="flex items-center justify-between">
+              {/* Left: Teal accent + Title */}
+              <div className="flex items-center">
+                <div className="bg-first-line w-2 self-stretch" />
+                <div className="flex items-center gap-2 px-3 py-2">
+                  <CardTitle className="text-sm font-medium text-foreground">
+                    My Risk Assessments
+                  </CardTitle>
+                  <span className="text-xs text-muted-foreground">
+                    ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
+                  </span>
+                </div>
               </div>
-            </div>
-          </CardHeader>
-          <CardContent className="p-4">
-            {/* Modern Segmented Tabs */}
-            <div className="mb-3">
-              <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-none border border-border/50">
+              
+              {/* Right: Segmented Tabs */}
+              <div className="flex items-center gap-0 pr-0">
                 <button
                   onClick={() => setActiveTab("own")}
-                  className={`px-4 py-1.5 rounded-none font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                  className={`px-4 py-2 font-medium text-sm transition-all border-l border-border/50 ${
                     activeTab === "own"
-                      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
                 >
                   Completed Assessments
@@ -1780,10 +1781,10 @@ const Dashboard1stLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-1.5 rounded-none font-medium text-sm transition-all ${
+                  className={`px-4 py-2 font-medium text-sm transition-all border-l border-border/50 ${
                     activeTab === "assess"
-                      ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
+                      ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
                   } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
                 >
                   Risks to Assess
@@ -1795,19 +1796,22 @@ const Dashboard1stLine = () => {
                 </button>
               </div>
             </div>
+          </CardHeader>
 
-            {/* Info Banner */}
-            <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-none p-2.5 mb-3">
-              <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-emerald-800 dark:text-emerald-200">
-                  {activeTab === "own" && "These completed risk assessments can be edited. Click the edit icon to update any field values as needed."}
-                  {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
-                </p>
-              </div>
+          {/* Info Banner */}
+          <div className="bg-emerald-50 dark:bg-emerald-900/10 border-b border-emerald-200 dark:border-emerald-800 px-4 py-2">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-emerald-800 dark:text-emerald-200">
+                {activeTab === "own" && "These completed risk assessments can be edited. Click the edit icon to update any field values as needed."}
+                {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
+              </p>
             </div>
+          </div>
 
-            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-1.5 sm:gap-2 mb-2">
+          {/* Filter Bar */}
+          <div className="bg-muted/30 border-b border-border/50 px-4 py-2">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-end gap-1.5 sm:gap-2">
               <div className="flex flex-col gap-0.5">
                 <Label htmlFor="business-unit" className="text-[10px] font-medium text-muted-foreground">
                   Business Unit
@@ -1868,21 +1872,22 @@ const Dashboard1stLine = () => {
               </div>
 
               <div className="relative flex-1 min-w-0 sm:min-w-[180px]">
+                <Label className="text-[10px] font-medium text-muted-foreground invisible">Search</Label>
                 <Input 
                   placeholder="Search risks..." 
                   className="pl-8 h-7 sm:h-6 w-full text-[10px] sm:text-xs" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <Shield className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Shield className="w-3 h-3 absolute left-2.5 bottom-1.5 sm:bottom-1.5 text-muted-foreground" />
               </div>
 
-              {/* Clear Filters Button - show when any filter is active */}
+              {/* Clear Filters Button */}
               {(statusFilter !== "all" || riskLevelFilter !== "all" || businessUnitFilter !== "all" || searchQuery.trim()) && (
                 <Button
                   variant="outline"
                   size="sm"
-                  className="h-7 sm:h-6 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground"
+                  className="h-7 sm:h-6 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground self-end"
                   onClick={() => {
                     setStatusFilter("all");
                     setDeadlineFilter("all");
@@ -1897,18 +1902,21 @@ const Dashboard1stLine = () => {
                   Clear
                 </Button>
               )}
-            </div>
 
-            {/* Row Count Display */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-muted-foreground">
-                Showing {visibleRisks.length} of {totalTabRisks} risk(s)
-              </span>
+              {/* Row Count - Right aligned */}
+              <div className="flex-1 flex justify-end items-end">
+                <span className="text-xs text-muted-foreground">
+                  Showing {visibleRisks.length} of {totalTabRisks} risk(s)
+                </span>
+              </div>
             </div>
+          </div>
+
+          <CardContent className="p-0">
 
             {/* Bulk Action Toolbar */}
             {selectedRisks.size > 0 && (
-              <div className="mb-4 p-3 bg-first-line/5 border border-first-line/20 rounded-none shadow-sm animate-in slide-in-from-top-2 duration-200">
+              <div className="mx-4 mt-3 p-3 bg-first-line/5 border border-first-line/20 rounded-none shadow-sm animate-in slide-in-from-top-2 duration-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Badge variant="secondary" className="font-medium">
@@ -1973,7 +1981,7 @@ const Dashboard1stLine = () => {
             )}
 
             {/* Table */}
-            <div className="border rounded-none overflow-hidden">
+            <div className="overflow-hidden">
               <div className="overflow-x-auto">
                 <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">
