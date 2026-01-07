@@ -20,7 +20,7 @@ export const PersonaCard = ({ icon: Icon, name, description, line, onSelect }: P
 
   return (
     <Card 
-      className={`${lineClass} border-2 transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer p-3 sm:p-2 group min-h-[60px] touch-manipulation`}
+      className={`${lineClass} border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer p-2.5 group touch-manipulation`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
@@ -31,15 +31,15 @@ export const PersonaCard = ({ icon: Icon, name, description, line, onSelect }: P
         }
       }}
     >
-      <div className="flex items-start gap-2 sm:gap-1.5">
-        <div className={`${iconClass} transition-transform duration-300 group-hover:scale-110 flex-shrink-0 mt-0.5`}>
-          <Icon className="w-5 h-5 sm:w-4 sm:h-4" />
+      <div className="flex items-start gap-2">
+        <div className={`${iconClass} transition-transform duration-200 group-hover:scale-110 flex-shrink-0 mt-0.5`}>
+          <Icon className="w-4 h-4" />
         </div>
-        <div className="flex-1 space-y-0.5">
-          <h3 className="font-semibold text-sm text-foreground group-hover:text-primary transition-colors">
+        <div className="flex-1 min-w-0">
+          <h3 className="font-medium text-xs text-foreground group-hover:text-primary transition-colors leading-tight">
             {name}
           </h3>
-          <p className="text-xs sm:text-[11px] text-muted-foreground leading-tight">
+          <p className="text-[10px] text-muted-foreground leading-snug mt-0.5 line-clamp-2">
             {description}
           </p>
         </div>
