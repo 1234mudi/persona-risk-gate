@@ -1718,17 +1718,17 @@ const Dashboard1stLine = () => {
         </div>
 
         {/* Active Risk Profile Section */}
-        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
+        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
           <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
             <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
           </CardHeader>
           <CardContent className="p-4">
             {/* Modern Segmented Tabs */}
             <div className="mb-3">
-              <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50">
+              <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-none border border-border/50">
                 <button
                   onClick={() => setActiveTab("own")}
-                  className={`px-4 py-1.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                  className={`px-4 py-1.5 rounded-none font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
                     activeTab === "own"
                       ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -1743,7 +1743,7 @@ const Dashboard1stLine = () => {
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-1.5 rounded-r-md font-medium text-sm transition-all ${
+                  className={`px-4 py-1.5 rounded-none font-medium text-sm transition-all ${
                     activeTab === "assess"
                       ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md"
                       : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -1760,7 +1760,7 @@ const Dashboard1stLine = () => {
             </div>
 
             {/* Info Banner */}
-            <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-lg p-2.5 mb-3">
+            <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-none p-2.5 mb-3">
               <div className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
                 <p className="text-xs text-emerald-800 dark:text-emerald-200">
@@ -1871,7 +1871,7 @@ const Dashboard1stLine = () => {
 
             {/* Bulk Action Toolbar */}
             {selectedRisks.size > 0 && (
-              <div className="mb-4 p-3 bg-first-line/5 border border-first-line/20 rounded-lg shadow-sm animate-in slide-in-from-top-2 duration-200">
+              <div className="mb-4 p-3 bg-first-line/5 border border-first-line/20 rounded-none shadow-sm animate-in slide-in-from-top-2 duration-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Badge variant="secondary" className="font-medium">
@@ -1936,7 +1936,7 @@ const Dashboard1stLine = () => {
             )}
 
             {/* Table */}
-            <div className="border rounded-lg overflow-hidden">
+            <div className="border rounded-none overflow-hidden">
               <div className="overflow-x-auto">
                 <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">
