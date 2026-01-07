@@ -1749,19 +1749,14 @@ const Dashboard1stLine = () => {
           {/* Title Bar with Tabs */}
           <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
             <div className="flex items-center justify-between h-10">
-              {/* Left: Teal square icon + Title */}
-              <div className="flex items-center h-full">
-                <div className="bg-first-line w-10 h-full flex items-center justify-center">
-                  <LayoutList className="w-5 h-5 text-white" />
-                </div>
-                <div className="flex items-center gap-1.5 px-3">
-                  <span className="text-sm font-medium text-foreground">
-                    My Risk Assessments
-                  </span>
-                  <span className="text-sm text-muted-foreground">
-                    ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
-                  </span>
-                </div>
+              {/* Left: Title */}
+              <div className="flex items-center gap-1.5 px-3">
+                <span className="text-sm font-medium text-foreground">
+                  My Risk Assessments
+                </span>
+                <span className="text-sm text-muted-foreground">
+                  ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
+                </span>
               </div>
               
               {/* Right: Button-styled Tabs */}
