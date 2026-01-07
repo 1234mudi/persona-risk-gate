@@ -761,7 +761,7 @@ This risk is currently being managed within established parameters. No immediate
 
         {/* Footer with navigation */}
         {showTraversal && onNext && onPrevious && (
-          <div className="px-3 py-2 border-t border-border bg-muted/30 shrink-0 flex justify-center">
+          <div className="px-3 py-1.5 border-t border-border bg-muted/30 shrink-0 flex justify-center">
             <RiskTraversalNav
               currentIndex={currentIndex}
               totalCount={totalCount}
