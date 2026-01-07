@@ -1,8 +1,8 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -107,6 +107,10 @@ const Dashboard1stLine = () => {
       riskTreatment: number;
     };
   } | null>(null);
+  
+  // Risk traversal state for review mode
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [reviewRiskIds, setReviewRiskIds] = useState<string[]>([]);
   
   // Inline editing state
   const [editingCell, setEditingCell] = useState<{
@@ -418,6 +422,69 @@ const Dashboard1stLine = () => {
   const getSelectedRiskData = () => {
     return riskData.filter(r => selectedRisks.has(r.id));
   };
+
+  // Risk traversal logic
+  const traversableRisks = useMemo(() => {
+    if (isReviewMode && reviewRiskIds.length > 0) {
+      return visibleRisks.filter(r => reviewRiskIds.includes(r.id)).map(r => ({
+        id: r.id,
+        title: r.title,
+        sectionCompletion: r.sectionCompletion,
+      }));
+    }
+    return visibleRisks.map(r => ({
+      id: r.id,
+      title: r.title,
+      sectionCompletion: r.sectionCompletion,
+    }));
+  }, [visibleRisks, isReviewMode, reviewRiskIds]);
+
+  const currentTraversalIndex = useMemo(() => {
+    if (!selectedRiskForOverview) return -1;
+    return traversableRisks.findIndex(r => r.id === selectedRiskForOverview.id);
+  }, [traversableRisks, selectedRiskForOverview]);
+
+  const isFirstRisk = currentTraversalIndex <= 0;
+  const isLastRisk = currentTraversalIndex >= traversableRisks.length - 1;
+
+  const goToNextRisk = useCallback(() => {
+    if (isLastRisk || currentTraversalIndex === -1) return;
+    const nextRisk = traversableRisks[currentTraversalIndex + 1];
+    if (nextRisk) {
+      setSelectedRiskForOverview(nextRisk);
+    }
+  }, [traversableRisks, currentTraversalIndex, isLastRisk]);
+
+  const goToPreviousRisk = useCallback(() => {
+    if (isFirstRisk || currentTraversalIndex === -1) return;
+    const prevRisk = traversableRisks[currentTraversalIndex - 1];
+    if (prevRisk) {
+      setSelectedRiskForOverview(prevRisk);
+    }
+  }, [traversableRisks, currentTraversalIndex, isFirstRisk]);
+
+  const startReviewMode = useCallback(() => {
+    const ids = Array.from(selectedRisks);
+    const validRisks = visibleRisks.filter(r => ids.includes(r.id));
+    if (validRisks.length === 0) return;
+    
+    setReviewRiskIds(ids);
+    setIsReviewMode(true);
+    setSelectedRiskForOverview({
+      id: validRisks[0].id,
+      title: validRisks[0].title,
+      sectionCompletion: validRisks[0].sectionCompletion,
+    });
+    setRiskOverviewModalOpen(true);
+  }, [selectedRisks, visibleRisks]);
+
+  const handleModalClose = useCallback((open: boolean) => {
+    setRiskOverviewModalOpen(open);
+    if (!open) {
+      setIsReviewMode(false);
+      setReviewRiskIds([]);
+    }
+  }, []);
 
   const toggleRow = (riskId: string) => {
     setExpandedRows(prev => {
@@ -1822,6 +1889,15 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
+                      onClick={startReviewMode}
+                    >
+                      <Eye className="w-4 h-4 mr-1.5" />
+                      Review Selected
+                    </Button>
+                    <Button 
+                      size="sm" 
+                      variant="outline"
                       className="h-8"
                       onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: Array.from(selectedRisks).join(",") })}
                     >
@@ -2547,7 +2623,7 @@ const Dashboard1stLine = () => {
 
       <RiskAssessmentOverviewModal1stLine
         open={riskOverviewModalOpen}
-        onOpenChange={setRiskOverviewModalOpen}
+        onOpenChange={handleModalClose}
         risk={selectedRiskForOverview}
         assessmentIssues={[
           { id: "ISS-2025-001", title: "Control testing failure identified", description: "KYC verification control failed 3 out of 10 sample tests", severity: "High", status: "Open", dateIdentified: "2025-01-15", owner: "Compliance Team" },
@@ -2558,6 +2634,15 @@ const Dashboard1stLine = () => {
           { id: "ISS-2024-022", title: "Delayed verification process", description: "Average verification time exceeds SLA by 40%", severity: "Medium", status: "Open", dateIdentified: "2024-09-10", owner: "Operations" },
           { id: "ISS-2024-028", title: "Missing audit trail records", description: "Transaction monitoring gaps identified during internal audit", severity: "High", status: "Open", dateIdentified: "2024-10-05", owner: "Compliance Team" },
         ]}
+        showTraversal={traversableRisks.length > 1}
+        currentIndex={currentTraversalIndex}
+        totalCount={traversableRisks.length}
+        isFirst={isFirstRisk}
+        isLast={isLastRisk}
+        onNext={goToNextRisk}
+        onPrevious={goToPreviousRisk}
+        isReviewMode={isReviewMode}
+        reviewProgress={isReviewMode ? { current: currentTraversalIndex + 1, total: traversableRisks.length } : null}
       />
 
       {/* Historical Assessments Drilldown Modal */}

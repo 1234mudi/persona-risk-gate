@@ -65,6 +65,7 @@ const renderFormattedText = (text: string) => {
 };
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
+import { RiskTraversalNav } from "./RiskTraversalNav";
 
 interface IssueItem {
   id: string;
@@ -91,6 +92,16 @@ interface RiskAssessmentOverviewModalProps {
   } | null;
   assessmentIssues?: IssueItem[];
   activeRelatedIssues?: IssueItem[];
+  // Traversal props
+  showTraversal?: boolean;
+  currentIndex?: number;
+  totalCount?: number;
+  isFirst?: boolean;
+  isLast?: boolean;
+  onNext?: () => void;
+  onPrevious?: () => void;
+  isReviewMode?: boolean;
+  reviewProgress?: { current: number; total: number } | null;
 }
 
 interface AssessmentCardProps {
@@ -263,6 +274,15 @@ export const RiskAssessmentOverviewModal = ({
   risk,
   assessmentIssues = [],
   activeRelatedIssues = [],
+  showTraversal = false,
+  currentIndex = 0,
+  totalCount = 0,
+  isFirst = true,
+  isLast = true,
+  onNext,
+  onPrevious,
+  isReviewMode = false,
+  reviewProgress,
 }: RiskAssessmentOverviewModalProps) => {
   const navigate = useNavigate();
   const [summaryModalOpen, setSummaryModalOpen] = useState(false);
@@ -585,13 +605,27 @@ This risk is currently being managed within established parameters. No immediate
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl w-[95vw] p-0 flex flex-col max-h-[85vh]">
         {/* Header */}
-        <div className="px-3 py-2 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0">
+        <div className="px-3 py-2 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0 pr-10">
           <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-semibold text-foreground">{risk.title}</h2>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
-                <span className="font-medium text-foreground">{risk.id}</span> · To-Do: Risk Assessment Overview
-              </p>
+            <div className="flex items-center gap-3">
+              <div>
+                <h2 className="text-sm font-semibold text-foreground">{risk.title}</h2>
+                <p className="text-[10px] text-muted-foreground mt-0.5">
+                  <span className="font-medium text-foreground">{risk.id}</span> · To-Do: Risk Assessment Overview
+                </p>
+              </div>
+              {showTraversal && onNext && onPrevious && (
+                <RiskTraversalNav
+                  currentIndex={currentIndex}
+                  totalCount={totalCount}
+                  isFirst={isFirst}
+                  isLast={isLast}
+                  onNext={onNext}
+                  onPrevious={onPrevious}
+                  isReviewMode={isReviewMode}
+                  reviewProgress={reviewProgress}
+                />
+              )}
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">

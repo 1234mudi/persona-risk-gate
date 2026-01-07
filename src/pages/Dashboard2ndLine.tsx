@@ -1,8 +1,8 @@
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { getInitialRiskDataCopy, SharedRiskData } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3 } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -114,6 +114,10 @@ const Dashboard2ndLine = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [riskHierarchyFilter, setRiskHierarchyFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  
+  // Risk traversal state for review mode
+  const [isReviewMode, setIsReviewMode] = useState(false);
+  const [reviewRiskIds, setReviewRiskIds] = useState<string[]>([]);
   
   // Control details dialog state
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
@@ -289,6 +293,60 @@ const Dashboard2ndLine = () => {
   const getSelectedRiskData = () => {
     return riskData.filter(r => selectedRisks.has(r.id));
   };
+
+  // Risk traversal logic
+  const traversableRisks = useMemo(() => {
+    const risksToTraverse = isReviewMode && reviewRiskIds.length > 0
+      ? filteredRiskData.filter(r => reviewRiskIds.includes(r.id))
+      : filteredRiskData;
+    return risksToTraverse.map(r => ({
+      id: r.id,
+      title: r.title,
+      sectionCompletion: r.sectionCompletion,
+    }));
+  }, [filteredRiskData, isReviewMode, reviewRiskIds]);
+
+  const currentTraversalIndex = useMemo(() => {
+    if (!selectedRiskForOverview) return -1;
+    return traversableRisks.findIndex(r => r.id === selectedRiskForOverview.id);
+  }, [traversableRisks, selectedRiskForOverview]);
+
+  const isFirstRisk = currentTraversalIndex <= 0;
+  const isLastRisk = currentTraversalIndex >= traversableRisks.length - 1;
+
+  const goToNextRisk = useCallback(() => {
+    if (isLastRisk || currentTraversalIndex === -1) return;
+    const nextRisk = traversableRisks[currentTraversalIndex + 1];
+    if (nextRisk) setSelectedRiskForOverview(nextRisk);
+  }, [traversableRisks, currentTraversalIndex, isLastRisk]);
+
+  const goToPreviousRisk = useCallback(() => {
+    if (isFirstRisk || currentTraversalIndex === -1) return;
+    const prevRisk = traversableRisks[currentTraversalIndex - 1];
+    if (prevRisk) setSelectedRiskForOverview(prevRisk);
+  }, [traversableRisks, currentTraversalIndex, isFirstRisk]);
+
+  const startReviewMode = useCallback(() => {
+    const ids = Array.from(selectedRisks);
+    const validRisks = filteredRiskData.filter(r => ids.includes(r.id));
+    if (validRisks.length === 0) return;
+    setReviewRiskIds(ids);
+    setIsReviewMode(true);
+    setSelectedRiskForOverview({
+      id: validRisks[0].id,
+      title: validRisks[0].title,
+      sectionCompletion: validRisks[0].sectionCompletion,
+    });
+    setRiskOverviewModalOpen(true);
+  }, [selectedRisks, filteredRiskData]);
+
+  const handleModalClose = useCallback((open: boolean) => {
+    setRiskOverviewModalOpen(open);
+    if (!open) {
+      setIsReviewMode(false);
+      setReviewRiskIds([]);
+    }
+  }, []);
 
   const toggleRow = (riskId: string) => {
     setExpandedRows(prev => {
