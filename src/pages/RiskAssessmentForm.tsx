@@ -2546,8 +2546,8 @@ const RiskAssessmentForm = () => {
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-32 border-r border-border">Control Name</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-20 border-r border-border">Type</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-32 border-r border-border">Owner</th>
-                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-24 border-r border-border">Design</th>
-                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-24 border-r border-border">Operating</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-28 border-r border-border">Design Effectiveness</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-28 border-r border-border">Operational Effectiveness</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-24 border-r border-border">Overall</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-16">Score</th>
                       </tr>
@@ -2612,7 +2612,11 @@ const RiskAssessmentForm = () => {
                                             <SelectValue />
                                           </SelectTrigger>
                                           <SelectContent className="bg-background border shadow-lg z-50">
-                                            {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                            <SelectItem value="1">Ineffective (1)</SelectItem>
+                                            <SelectItem value="2">Partially Effective (2)</SelectItem>
+                                            <SelectItem value="3">Moderately Effective (3)</SelectItem>
+                                            <SelectItem value="4">Effective (4)</SelectItem>
+                                            <SelectItem value="5">Highly Effective (5)</SelectItem>
                                           </SelectContent>
                                         </Select>
                                       </AIFieldIndicator>
@@ -2642,7 +2646,11 @@ const RiskAssessmentForm = () => {
                                             <SelectValue />
                                           </SelectTrigger>
                                           <SelectContent className="bg-background border shadow-lg z-50">
-                                            {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                            <SelectItem value="1">Ineffective (1)</SelectItem>
+                                            <SelectItem value="2">Partially Effective (2)</SelectItem>
+                                            <SelectItem value="3">Moderately Effective (3)</SelectItem>
+                                            <SelectItem value="4">Effective (4)</SelectItem>
+                                            <SelectItem value="5">Highly Effective (5)</SelectItem>
                                           </SelectContent>
                                         </Select>
                                       </AIFieldIndicator>
