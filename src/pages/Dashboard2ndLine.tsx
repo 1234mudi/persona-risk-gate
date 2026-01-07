@@ -1565,7 +1565,7 @@ const Dashboard2ndLine = () => {
                                   <TooltipTrigger asChild>
                                     <button 
                                       onClick={() => handleRiskNameClick(risk)}
-                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer"
+                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer text-[10px]"
                                     >
                                       {risk.title}
                                     </button>
