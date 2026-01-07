@@ -171,8 +171,8 @@ const RiskAssessmentForm = () => {
   const [bottomTab, setBottomTab] = useState("previous-assessments");
   const [showWeights, setShowWeights] = useState(true);
   const [isAiLoading, setIsAiLoading] = useState(false);
-  const [rightPanelOpen, setRightPanelOpen] = useState(openPanel === 'issues');
-  const [rightPanelTab, setRightPanelTab] = useState<'review' | 'issues' | 'metrics' | 'details'>(openPanel === 'issues' ? 'issues' : 'review');
+  const [rightPanelOpen, setRightPanelOpen] = useState(false);
+  const [rightPanelTab, setRightPanelTab] = useState<'review' | 'treatment' | 'metrics' | 'details'>('review');
   const [expandedPreviousFloater, setExpandedPreviousFloater] = useState<{
     inherent: boolean;
     control: boolean;
@@ -2249,28 +2249,28 @@ const RiskAssessmentForm = () => {
 
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
-            <TabsList className="bg-transparent border-b border-border rounded-none w-full justify-start gap-0 p-0 h-auto flex-wrap">
-              <TabsTrigger value="inherent-rating" className="rounded-none border-b-2 border-transparent data-[state=active]:border-orange-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
+            <TabsList className="bg-transparent border border-border rounded-md w-full justify-start gap-0 p-0 h-auto flex-wrap">
+              <TabsTrigger value="inherent-rating" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-orange-500 px-4 py-3 gap-2">
                 <AlertTriangle className="w-4 h-4" />
                 Inherent Rating
                 <Badge variant="outline" className="ml-1 text-xs">1</Badge>
               </TabsTrigger>
-              <TabsTrigger value="control-effectiveness" className="rounded-none border-b-2 border-transparent data-[state=active]:border-blue-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
+              <TabsTrigger value="control-effectiveness" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-blue-500 px-4 py-3 gap-2">
                 <Shield className="w-4 h-4" />
                 Control Effectiveness
                 <Badge variant="outline" className="ml-1 text-xs">2</Badge>
               </TabsTrigger>
-              <TabsTrigger value="residual-rating" className="rounded-none border-b-2 border-transparent data-[state=active]:border-emerald-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
+              <TabsTrigger value="residual-rating" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-emerald-500 px-4 py-3 gap-2">
                 <CheckCircle className="w-4 h-4" />
                 Residual Rating
                 <Badge variant="outline" className="ml-1 text-xs">3</Badge>
               </TabsTrigger>
-              <TabsTrigger value="heat-map" className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
+              <TabsTrigger value="heat-map" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-purple-500 px-4 py-3 gap-2">
                 Heat Map
               </TabsTrigger>
-              <TabsTrigger value="treatment" className="rounded-none border-b-2 border-transparent data-[state=active]:border-purple-500 data-[state=active]:bg-transparent px-4 py-3 gap-2">
-                <Clipboard className="w-4 h-4" />
-                Treatment
+              <TabsTrigger value="issues" className="rounded-none data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-red-500 px-4 py-3 gap-2">
+                <AlertCircle className="w-4 h-4" />
+                Issues
               </TabsTrigger>
             </TabsList>
 
@@ -3287,96 +3287,134 @@ const RiskAssessmentForm = () => {
                 <Button variant="outline" className="gap-2" onClick={() => setActiveTab("residual-rating")}>
                   <ChevronLeft className="w-4 h-4" />Previous
                 </Button>
-                <Button className="gap-2 bg-slate-600 hover:bg-slate-700" onClick={() => setActiveTab("issues")}>
-                  View Issues<ChevronRight className="w-4 h-4" />
+                <Button className="gap-2 bg-slate-600 hover:bg-slate-700" onClick={() => setActiveTab("treatment")}>
+                  Continue<ChevronRight className="w-4 h-4" />
                 </Button>
               </div>
             </TabsContent>
 
-            {/* Treatment Tab */}
-            <TabsContent value="treatment">
+            {/* Issues Tab */}
+            <TabsContent value="issues">
               <Card className="p-6">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-lg font-semibold">Risk Treatment Plan</h2>
-                  <div className="flex items-center gap-2">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('treatment')}>
-                            <Maximize2 className="w-4 h-4" />
-                          </Button>
-                        </TooltipTrigger>
-                        <TooltipContent>Expand to full screen</TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
-                      How the risk will be managed
-                    </Badge>
-                  </div>
+                  <h2 className="text-lg font-semibold">Related Issues</h2>
+                  <Badge className="bg-red-100 text-red-700">{assessmentIssues.length + activeRelatedIssues.length} Open</Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mb-6">
-                  In this section, define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.
+                  Issues and findings related to this risk assessment.
                 </p>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Risk Treatment Approach</label>
-                    <Select>
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Select approach" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="mitigate">Mitigate</SelectItem>
-                        <SelectItem value="accept">Accept</SelectItem>
-                        <SelectItem value="transfer">Transfer</SelectItem>
-                        <SelectItem value="avoid">Avoid</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">The high-level strategy for handling this risk.</p>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Risk Treatment Owner</label>
-                    <Select>
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Select owner" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="compliance">Compliance Team</SelectItem>
-                        <SelectItem value="risk">Risk Management</SelectItem>
-                        <SelectItem value="operations">Operations</SelectItem>
-                        <SelectItem value="it">IT Department</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">The person responsible for implementing the treatment plan.</p>
-                  </div>
+                {/* Issues from This Assessment */}
+                <div className="border rounded-lg overflow-hidden mb-4">
+                  <button 
+                    className="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors"
+                    onClick={() => toggleIssueSection('assessment')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronDown className={`w-4 h-4 text-blue-600 transition-transform duration-200 ${expandedIssueSections.has('assessment') ? 'rotate-0' : '-rotate-90'}`} />
+                      <AlertCircle className="w-4 h-4 text-blue-600" />
+                      <span className="font-medium text-sm text-blue-800 dark:text-blue-200">New issues identified</span>
+                    </div>
+                    <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
+                  </button>
+                  {expandedIssueSections.has('assessment') && (
+                    <div className="p-3 space-y-2 bg-background animate-fade-in">
+                      {assessmentIssues.map((issue) => (
+                        <div key={issue.id} className="p-3 border-l-4 border-l-blue-500 border rounded-lg bg-muted/30">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                            <Badge className={
+                              issue.severity === "High" ? "bg-red-100 text-red-700" : 
+                              issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
+                              "bg-slate-100 text-slate-700"
+                            }>{issue.severity}</Badge>
+                          </div>
+                          <p className="text-sm font-medium">{issue.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs">{issue.status}</Badge>
+                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
+                            <span className="text-xs text-muted-foreground">• {issue.dateIdentified}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-6">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Treatment Methodology/Strategy</label>
-                    <Select>
-                      <SelectTrigger className="h-9">
-                        <SelectValue placeholder="Select methodology" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="controls">Enhanced Controls</SelectItem>
-                        <SelectItem value="training">Staff Training</SelectItem>
-                        <SelectItem value="automation">Process Automation</SelectItem>
-                        <SelectItem value="monitoring">Continuous Monitoring</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">The specific approach to implementing the treatment plan.</p>
-                  </div>
+                {/* Other Active Issues Related to the Risk */}
+                <div className="border rounded-lg overflow-hidden mb-4">
+                  <button 
+                    className="w-full flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
+                    onClick={() => toggleIssueSection('active')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronDown className={`w-4 h-4 text-amber-600 transition-transform duration-200 ${expandedIssueSections.has('active') ? 'rotate-0' : '-rotate-90'}`} />
+                      <AlertTriangle className="w-4 h-4 text-amber-600" />
+                      <span className="font-medium text-sm text-amber-800 dark:text-amber-200">Other Active Issues related to the Risk</span>
+                    </div>
+                    <Badge className="bg-amber-600 text-white">{activeRelatedIssues.length}</Badge>
+                  </button>
+                  {expandedIssueSections.has('active') && (
+                    <div className="p-3 space-y-2 bg-background animate-fade-in">
+                      {activeRelatedIssues.map((issue) => (
+                        <div key={issue.id} className="p-3 border-l-4 border-l-amber-500 border rounded-lg bg-muted/30">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-blue-600">{issue.id}</span>
+                            <Badge className={
+                              issue.severity === "High" ? "bg-red-100 text-red-700" : 
+                              issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
+                              "bg-slate-100 text-slate-700"
+                            }>{issue.severity}</Badge>
+                          </div>
+                          <p className="text-sm font-medium">{issue.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs">{issue.status}</Badge>
+                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
+                            <span className="text-xs text-muted-foreground">• {issue.dateIdentified}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Assessment Date</label>
-                    <Button variant="outline" className="w-full h-9 justify-start text-left font-normal">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      April 10th, 2025
-                    </Button>
-                    <p className="text-xs text-muted-foreground">The date when this assessment was conducted.</p>
-                  </div>
+                {/* Closed Issues Related to the Risk */}
+                <div className="border rounded-lg overflow-hidden">
+                  <button 
+                    className="w-full flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                    onClick={() => toggleIssueSection('closed')}
+                  >
+                    <div className="flex items-center gap-2">
+                      <ChevronDown className={`w-4 h-4 text-slate-600 transition-transform duration-200 ${expandedIssueSections.has('closed') ? 'rotate-0' : '-rotate-90'}`} />
+                      <XCircle className="w-4 h-4 text-slate-500" />
+                      <span className="font-medium text-sm text-slate-700 dark:text-slate-300">Closed Issues related to the Risk</span>
+                    </div>
+                    <Badge variant="secondary" className="bg-slate-300 text-slate-700 dark:bg-slate-600 dark:text-slate-200">{closedRelatedIssues.length}</Badge>
+                  </button>
+                  {expandedIssueSections.has('closed') && (
+                    <div className="p-3 space-y-2 bg-background animate-fade-in">
+                      {closedRelatedIssues.map((issue) => (
+                        <div key={issue.id} className="p-3 border-l-4 border-l-slate-400 border rounded-lg bg-muted/20 opacity-80">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="font-mono text-sm text-slate-500">{issue.id}</span>
+                            <Badge variant="outline" className="text-xs text-slate-500 border-slate-300">{issue.severity}</Badge>
+                          </div>
+                          <p className="text-sm font-medium text-muted-foreground">{issue.title}</p>
+                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
+                          <div className="flex items-center gap-2 mt-2">
+                            <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200">
+                              <Check className="w-3 h-3 mr-1" />
+                              Closed
+                            </Badge>
+                            <span className="text-xs text-muted-foreground">• {issue.closedDate}</span>
+                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </Card>
             </TabsContent>
@@ -3389,7 +3427,7 @@ const RiskAssessmentForm = () => {
       <div className="fixed top-0 right-0 h-full w-auto bg-muted/30 border-l-2 border-l-primary/20 shadow-[-4px_0_12px_-2px_rgba(0,0,0,0.1)] z-[60] flex flex-col pt-14">
         {[
           { id: 'review', label: 'Review/Challenge', icon: MessageSquare },
-          { id: 'issues', label: 'Issues', icon: AlertTriangle },
+          { id: 'treatment', label: 'Treatment', icon: Clipboard },
           { id: 'metrics', label: 'Metrics & Losses', icon: BarChart3 },
           { id: 'details', label: 'Additional Details', icon: FileText },
         ].map((tab) => {
@@ -4461,7 +4499,7 @@ const RiskAssessmentForm = () => {
           <div className="p-3 border-b flex items-center justify-between bg-muted/30">
             <h3 className="font-semibold text-sm truncate flex-1 mr-2">
               {rightPanelTab === 'review' && 'Review/Challenge'}
-              {rightPanelTab === 'issues' && 'Related Issues'}
+              {rightPanelTab === 'treatment' && 'Risk Treatment Plan'}
               {rightPanelTab === 'metrics' && 'Metrics & Losses'}
               {rightPanelTab === 'details' && 'Additional Details'}
             </h3>
@@ -4708,131 +4746,79 @@ const RiskAssessmentForm = () => {
             </ScrollArea>
           )}
 
-          {/* Issues Tab */}
-          {rightPanelTab === 'issues' && (
+          {/* Treatment Tab */}
+          {rightPanelTab === 'treatment' && (
             <ScrollArea className="flex-1 overflow-hidden">
               <div className="space-y-4 p-4 pr-3">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-lg font-semibold">Related Issues</h3>
-                    <Badge className="bg-red-100 text-red-700">{assessmentIssues.length + activeRelatedIssues.length} Open</Badge>
+                    <h3 className="text-lg font-semibold">Risk Treatment Plan</h3>
+                    <Badge variant="secondary" className="bg-purple-100 text-purple-700 border-0">
+                      How the risk will be managed
+                    </Badge>
                   </div>
                   <p className="text-sm text-muted-foreground">
-                    Issues and findings related to this risk assessment.
+                    Define how the identified risk will be treated, who owns the treatment actions, and the methodology to be used.
                   </p>
                 </div>
 
-                {/* Issues from This Assessment */}
-                <div className="border rounded-lg overflow-hidden">
-                  <button 
-                    className="w-full flex items-center justify-between p-3 bg-blue-50 dark:bg-blue-950/30 hover:bg-blue-100 dark:hover:bg-blue-950/50 transition-colors"
-                    onClick={() => toggleIssueSection('assessment')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <ChevronDown className={`w-4 h-4 text-blue-600 transition-transform duration-200 ${expandedIssueSections.has('assessment') ? 'rotate-0' : '-rotate-90'}`} />
-                      <AlertCircle className="w-4 h-4 text-blue-600" />
-                      <span className="font-medium text-sm text-blue-800 dark:text-blue-200">New issues identified</span>
-                    </div>
-                    <Badge className="bg-blue-600 text-white">{assessmentIssues.length}</Badge>
-                  </button>
-                  {expandedIssueSections.has('assessment') && (
-                    <div className="p-3 space-y-2 bg-background animate-fade-in">
-                      {assessmentIssues.map((issue) => (
-                        <div key={issue.id} className="p-3 border-l-4 border-l-blue-500 border rounded-lg bg-muted/30">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-mono text-sm text-blue-600">{issue.id}</span>
-                            <Badge className={
-                              issue.severity === "High" ? "bg-red-100 text-red-700" : 
-                              issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
-                              "bg-slate-100 text-slate-700"
-                            }>{issue.severity}</Badge>
-                          </div>
-                          <p className="text-sm font-medium">{issue.title}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline" className="text-xs">{issue.status}</Badge>
-                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
-                            <span className="text-xs text-muted-foreground">• {issue.dateIdentified}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                <div className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Risk Treatment Approach</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select approach" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="mitigate">Mitigate</SelectItem>
+                        <SelectItem value="accept">Accept</SelectItem>
+                        <SelectItem value="transfer">Transfer</SelectItem>
+                        <SelectItem value="avoid">Avoid</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The high-level strategy for handling this risk.</p>
+                  </div>
 
-                {/* Other Active Issues Related to the Risk */}
-                <div className="border rounded-lg overflow-hidden">
-                  <button 
-                    className="w-full flex items-center justify-between p-3 bg-amber-50 dark:bg-amber-950/30 hover:bg-amber-100 dark:hover:bg-amber-950/50 transition-colors"
-                    onClick={() => toggleIssueSection('active')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <ChevronDown className={`w-4 h-4 text-amber-600 transition-transform duration-200 ${expandedIssueSections.has('active') ? 'rotate-0' : '-rotate-90'}`} />
-                      <AlertTriangle className="w-4 h-4 text-amber-600" />
-                      <span className="font-medium text-sm text-amber-800 dark:text-amber-200">Other Active Issues related to the Risk</span>
-                    </div>
-                    <Badge className="bg-amber-600 text-white">{activeRelatedIssues.length}</Badge>
-                  </button>
-                  {expandedIssueSections.has('active') && (
-                    <div className="p-3 space-y-2 bg-background animate-fade-in">
-                      {activeRelatedIssues.map((issue) => (
-                        <div key={issue.id} className="p-3 border-l-4 border-l-amber-500 border rounded-lg bg-muted/30">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-mono text-sm text-blue-600">{issue.id}</span>
-                            <Badge className={
-                              issue.severity === "High" ? "bg-red-100 text-red-700" : 
-                              issue.severity === "Medium" ? "bg-amber-100 text-amber-700" : 
-                              "bg-slate-100 text-slate-700"
-                            }>{issue.severity}</Badge>
-                          </div>
-                          <p className="text-sm font-medium">{issue.title}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline" className="text-xs">{issue.status}</Badge>
-                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
-                            <span className="text-xs text-muted-foreground">• {issue.dateIdentified}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Risk Treatment Owner</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select owner" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="compliance">Compliance Team</SelectItem>
+                        <SelectItem value="risk">Risk Management</SelectItem>
+                        <SelectItem value="operations">Operations</SelectItem>
+                        <SelectItem value="it">IT Department</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The person responsible for implementing the treatment plan.</p>
+                  </div>
 
-                {/* Closed Issues Related to the Risk */}
-                <div className="border rounded-lg overflow-hidden">
-                  <button 
-                    className="w-full flex items-center justify-between p-3 bg-slate-100 dark:bg-slate-800/50 hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-                    onClick={() => toggleIssueSection('closed')}
-                  >
-                    <div className="flex items-center gap-2">
-                      <ChevronDown className={`w-4 h-4 text-slate-600 transition-transform duration-200 ${expandedIssueSections.has('closed') ? 'rotate-0' : '-rotate-90'}`} />
-                      <XCircle className="w-4 h-4 text-slate-500" />
-                      <span className="font-medium text-sm text-slate-700 dark:text-slate-300">Closed Issues related to the Risk</span>
-                    </div>
-                    <Badge variant="secondary" className="bg-slate-300 text-slate-700 dark:bg-slate-600 dark:text-slate-200">{closedRelatedIssues.length}</Badge>
-                  </button>
-                  {expandedIssueSections.has('closed') && (
-                    <div className="p-3 space-y-2 bg-background animate-fade-in">
-                      {closedRelatedIssues.map((issue) => (
-                        <div key={issue.id} className="p-3 border-l-4 border-l-slate-400 border rounded-lg bg-muted/20 opacity-80">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="font-mono text-sm text-slate-500">{issue.id}</span>
-                            <Badge variant="outline" className="text-xs text-slate-500 border-slate-300">{issue.severity}</Badge>
-                          </div>
-                          <p className="text-sm font-medium text-muted-foreground">{issue.title}</p>
-                          <p className="text-xs text-muted-foreground mt-1">{issue.description}</p>
-                          <div className="flex items-center gap-2 mt-2">
-                            <Badge variant="outline" className="text-xs bg-emerald-50 text-emerald-700 border-emerald-200">
-                              <Check className="w-3 h-3 mr-1" />
-                              Closed
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">• {issue.closedDate}</span>
-                            <span className="text-xs text-muted-foreground">• {issue.owner}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Treatment Methodology/Strategy</label>
+                    <Select>
+                      <SelectTrigger className="h-9">
+                        <SelectValue placeholder="Select methodology" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="controls">Enhanced Controls</SelectItem>
+                        <SelectItem value="training">Staff Training</SelectItem>
+                        <SelectItem value="automation">Process Automation</SelectItem>
+                        <SelectItem value="monitoring">Continuous Monitoring</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">The specific approach to implementing the treatment plan.</p>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Assessment Date</label>
+                    <Button variant="outline" className="w-full h-9 justify-start text-left font-normal">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      April 10th, 2025
+                    </Button>
+                    <p className="text-xs text-muted-foreground">The date when this assessment was conducted.</p>
+                  </div>
                 </div>
               </div>
             </ScrollArea>
