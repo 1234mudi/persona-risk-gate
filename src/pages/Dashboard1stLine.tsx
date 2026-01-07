@@ -2324,7 +2324,7 @@ const Dashboard1stLine = () => {
                                             <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-background" />
                                           )}
                                         </div>
-                                        <span className="text-sm">{assessor} ({initials})</span>
+                                        <span className="text-sm text-black dark:text-white">{assessor} ({initials})</span>
                                       </div>
                                     </TooltipTrigger>
                                     <TooltipContent>
@@ -2346,7 +2346,7 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Last Assessed Date - clickable drilldown */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="text-sm">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
+                          <div className="text-sm text-black dark:text-white">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
                           {risk.previousAssessments > 0 && (
                             <button 
                               onClick={() => {
@@ -2367,7 +2367,7 @@ const Dashboard1stLine = () => {
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
                               {risk.inherentRisk.score && (
-                                <span className="font-bold text-sm min-w-[20px]">{risk.inherentRisk.score}</span>
+                                <span className="font-bold text-sm min-w-[20px] text-black dark:text-white">{risk.inherentRisk.score}</span>
                               )}
                               {renderEditableCell(
                                 risk.id,
@@ -2410,7 +2410,7 @@ const Dashboard1stLine = () => {
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
                               {risk.residualRisk.score && (
-                                <span className="font-bold text-sm min-w-[20px]">{risk.residualRisk.score}</span>
+                                <span className="font-bold text-sm min-w-[20px] text-black dark:text-white">{risk.residualRisk.score}</span>
                               )}
                               {renderEditableCell(
                                 risk.id,
@@ -2464,10 +2464,10 @@ const Dashboard1stLine = () => {
                                 <tbody>
                                   {risk.relatedControls.slice(0, 3).map((control, idx) => (
                                     <tr key={idx} className="border-b border-border/30 last:border-0">
-                                      <td className="py-1 pr-2 font-medium text-first-line overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
+                                      <td className="py-1 pr-2 font-medium text-black dark:text-white overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
                                       <td className="py-1 pr-2 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={control.name}>{control.name}</td>
-                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap" title={control.keyControl}>{control.keyControl}</td>
-                                      <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap" title={control.nature}>{control.nature}</td>
+                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap text-black dark:text-white" title={control.keyControl}>{control.keyControl}</td>
+                                      <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap text-black dark:text-white" title={control.nature}>{control.nature}</td>
                                     </tr>
                                   ))}
                                 </tbody>
