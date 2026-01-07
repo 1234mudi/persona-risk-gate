@@ -1994,8 +1994,22 @@ const Dashboard1stLine = () => {
                               <div className="w-4" />
                             )}
                             
-                            {/* Level 2: keep alignment, but remove tree marker */}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && (
+                            {/* Level 2 expand button (when viewing by Level 1) - to expand Level 3 children */}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                                ) : (
+                                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                                )}
+                              </button>
+                            )}
+
+                            {/* Level 2 spacer (when viewing by Level 1 and no children) */}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && !canExpand && (
                               <div className="w-4" />
                             )}
                             
