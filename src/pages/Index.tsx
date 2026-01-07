@@ -71,7 +71,7 @@ const Index = () => {
   return (
     <div className="h-screen flex flex-col lg:flex-row overflow-hidden">
       {/* Left Panel - Teal with Wave Pattern */}
-      <div className="hidden lg:flex lg:w-[48%] bg-primary relative overflow-hidden">
+      <div className="hidden lg:flex lg:w-[35%] bg-primary relative overflow-hidden">
         {/* Wave Pattern SVG */}
         <svg
           className="absolute inset-0 w-full h-full"
