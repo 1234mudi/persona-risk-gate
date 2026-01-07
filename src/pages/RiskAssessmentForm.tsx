@@ -2794,31 +2794,31 @@ const RiskAssessmentForm = () => {
 
                 {/* Create New Control Dialog */}
                 <Dialog open={showNewControlForm} onOpenChange={setShowNewControlForm}>
-                  <DialogContent className="sm:max-w-md p-0">
-                    <div className="px-4 py-2 border-b bg-gradient-to-r from-emerald-500 to-teal-600">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center">
-                          <PenLine className="w-4 h-4 text-white" />
+                  <DialogContent className="sm:max-w-sm p-0">
+                    <div className="px-3 py-1.5 border-b bg-gradient-to-r from-emerald-500 to-teal-600">
+                      <div className="flex items-center gap-1.5">
+                        <div className="w-6 h-6 rounded-md bg-white/20 flex items-center justify-center">
+                          <PenLine className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <DialogTitle className="text-white text-sm">Create New Control</DialogTitle>
+                        <DialogTitle className="text-white text-xs">Create New Control</DialogTitle>
                       </div>
                     </div>
                     
-                    <div className="p-4 space-y-3">
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium">Control Title</label>
+                    <div className="p-3 space-y-2">
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-medium">Control Title</label>
                         <Input 
                           placeholder="Enter control title..."
                           value={newControlTitle}
                           onChange={(e) => setNewControlTitle(e.target.value)}
-                          className="h-8 text-sm"
+                          className="h-7 text-xs"
                         />
                       </div>
                       
-                      <div className="space-y-1.5">
-                        <label className="text-xs font-medium">Control Type</label>
+                      <div className="space-y-1">
+                        <label className="text-[11px] font-medium">Control Type</label>
                         <Select value={newControlType} onValueChange={(val) => setNewControlType(val as "Preventive" | "Detective")}>
-                          <SelectTrigger className="h-8 text-xs">
+                          <SelectTrigger className="h-7 text-xs">
                             <SelectValue placeholder="Select type" />
                           </SelectTrigger>
                           <SelectContent>
@@ -2829,28 +2829,28 @@ const RiskAssessmentForm = () => {
                       </div>
                       
                       {/* Add to Library Checkbox */}
-                      <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-md border border-blue-200 dark:border-blue-800">
+                      <div className="flex items-center gap-1.5 p-1.5 bg-blue-50 dark:bg-blue-950/30 rounded-sm border border-blue-200 dark:border-blue-800">
                         <Checkbox 
                           id="addToLibrary" 
                           checked={addToLibrary}
                           onCheckedChange={(checked) => setAddToLibrary(checked as boolean)}
-                          className="h-3.5 w-3.5"
+                          className="h-3 w-3"
                         />
-                        <label htmlFor="addToLibrary" className="text-xs cursor-pointer">
+                        <label htmlFor="addToLibrary" className="text-[11px] cursor-pointer">
                           <span className="font-medium">Add to control library</span>
-                          <span className="block text-[10px] text-muted-foreground">
+                          <span className="block text-[9px] text-muted-foreground">
                             Make this control available for future assessments
                           </span>
                         </label>
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-end gap-2 px-4 py-2 border-t bg-muted/30">
-                      <Button variant="outline" className="h-7 text-xs" onClick={() => setShowNewControlForm(false)}>
+                    <div className="flex items-center justify-end gap-2 px-3 py-1.5 border-t bg-muted/30">
+                      <Button variant="outline" className="h-6 text-[11px] px-2" onClick={() => setShowNewControlForm(false)}>
                         Cancel
                       </Button>
                       <Button 
-                        className="gap-1.5 h-7 text-xs bg-emerald-600 hover:bg-emerald-700"
+                        className="gap-1 h-6 text-[11px] px-2 bg-emerald-600 hover:bg-emerald-700"
                         onClick={() => {
                           if (!newControlTitle.trim()) return;
                           const newId = `CTL-${String(controls.length + 4).padStart(3, '0')}`;
