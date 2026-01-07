@@ -2,11 +2,11 @@ import { useState } from "react";
 import { Shield, Users, BarChart3, UserCheck, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { PersonaCard } from "@/components/PersonaCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
+import metricstreamLogo from "@/assets/metricstream-logo.png";
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -140,28 +140,17 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-center justify-start px-4 sm:px-8 lg:px-12 pb-6">
-          {/* MetricStream-style Logo */}
-          <div className="flex items-center gap-2 mb-10">
-            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* M shape */}
-              <path 
-                d="M8 38V14L18 28L24 18L30 28L40 14V38" 
-                stroke="hsl(175, 100%, 42%)" 
-                strokeWidth="4" 
-                strokeLinecap="round" 
-                strokeLinejoin="round"
-                fill="none"
-              />
-              {/* Sparkle top right */}
-              <circle cx="42" cy="8" r="2" fill="hsl(175, 100%, 42%)" />
-              <path d="M42 4V12M38 8H46" stroke="hsl(175, 100%, 42%)" strokeWidth="1.5" strokeLinecap="round" />
-              {/* Small sparkle */}
-              <circle cx="36" cy="14" r="1" fill="hsl(175, 100%, 50%)" />
-            </svg>
-            <span className="text-2xl font-light tracking-wide">
-              <span className="text-[hsl(175,100%,35%)]">metric</span>
-              <span className="text-muted-foreground">stream</span>
-            </span>
+          {/* Logo/Branding */}
+          <div className="w-full max-w-sm flex items-center gap-3 mb-6">
+            <img 
+              src={metricstreamLogo} 
+              alt="Logo" 
+              className="w-10 h-10 object-contain"
+            />
+            <div>
+              <h1 className="text-xl font-bold text-foreground">RCSA Platform</h1>
+              <p className="text-xs text-muted-foreground">Risk & Control Self-Assessment</p>
+            </div>
           </div>
 
           {/* Login Form */}
