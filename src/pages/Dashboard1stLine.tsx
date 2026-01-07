@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useEffect, useCallback } from "react"
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1797,14 +1797,13 @@ const Dashboard1stLine = () => {
           </div>
 
           {/* Filter Bar */}
-          <div className="bg-muted/30 border-b border-border/50 px-4 py-2">
-            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-end gap-1.5 sm:gap-2">
-              <div className="flex flex-col gap-0.5">
-                <Label htmlFor="business-unit" className="text-[10px] font-medium text-muted-foreground">
-                  Business Unit
-                </Label>
+          <div className="bg-muted/20 border-b border-border/50 px-4 py-2">
+            <div className="flex items-center gap-4">
+              {/* Business Unit Filter */}
+              <div className="flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-muted-foreground" />
                 <Select value={businessUnitFilter} onValueChange={setBusinessUnitFilter}>
-                  <SelectTrigger id="business-unit" className="w-full sm:w-40 h-7 sm:h-6 text-[10px] sm:text-xs bg-primary text-primary-foreground border-primary">
+                  <SelectTrigger className="border-0 bg-transparent h-auto p-0 text-xs uppercase tracking-wide font-medium text-muted-foreground hover:text-foreground focus:ring-0 gap-1 w-auto">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
@@ -1816,12 +1815,11 @@ const Dashboard1stLine = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-col gap-0.5">
-                <Label htmlFor="status-filter" className="text-[10px] font-medium text-muted-foreground">
-                  Status
-                </Label>
+              {/* Status Filter */}
+              <div className="flex items-center gap-1.5">
+                <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); if (val !== "all") setDeadlineFilter("all"); }}>
-                  <SelectTrigger id="status-filter" className="w-full sm:w-32 h-7 sm:h-6 text-[10px] sm:text-xs">
+                  <SelectTrigger className="border-0 bg-transparent h-auto p-0 text-xs uppercase tracking-wide font-medium text-muted-foreground hover:text-foreground focus:ring-0 gap-1 w-auto">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border shadow-lg z-50">
@@ -1841,12 +1839,11 @@ const Dashboard1stLine = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-col gap-0.5">
-                <Label htmlFor="risk-hierarchy-filter" className="text-[10px] font-medium text-muted-foreground">
-                  Risk Hierarchy
-                </Label>
+              {/* Risk Hierarchy Filter */}
+              <div className="flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-muted-foreground" />
                 <Select value={riskLevelFilter} onValueChange={setRiskLevelFilter}>
-                  <SelectTrigger id="risk-hierarchy-filter" className="w-full sm:w-28 h-7 sm:h-6 text-[10px] sm:text-xs">
+                  <SelectTrigger className="border-0 bg-transparent h-auto p-0 text-xs uppercase tracking-wide font-medium text-muted-foreground hover:text-foreground focus:ring-0 gap-1 w-auto">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border shadow-lg z-50">
@@ -1858,23 +1855,21 @@ const Dashboard1stLine = () => {
                 </Select>
               </div>
 
-              <div className="relative flex-1 min-w-0 sm:min-w-[180px]">
-                <Label className="text-[10px] font-medium text-muted-foreground invisible">Search</Label>
+              {/* Search */}
+              <div className="flex items-center gap-1.5">
+                <Search className="w-4 h-4 text-muted-foreground" />
                 <Input 
-                  placeholder="Search risks..." 
-                  className="pl-8 h-7 sm:h-6 w-full text-[10px] sm:text-xs" 
+                  placeholder="Search..." 
+                  className="border-0 bg-transparent h-auto py-0 text-xs w-32 focus-visible:ring-0 placeholder:text-muted-foreground" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <Shield className="w-3 h-3 absolute left-2.5 bottom-1.5 sm:bottom-1.5 text-muted-foreground" />
               </div>
 
-              {/* Clear Filters Button */}
+              {/* Reset Button */}
               {(statusFilter !== "all" || riskLevelFilter !== "all" || businessUnitFilter !== "all" || searchQuery.trim()) && (
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="h-7 sm:h-6 text-[10px] sm:text-xs text-muted-foreground hover:text-foreground self-end"
+                <button
+                  className="text-xs uppercase tracking-wide font-medium text-first-line hover:text-first-line/80"
                   onClick={() => {
                     setStatusFilter("all");
                     setDeadlineFilter("all");
@@ -1885,13 +1880,12 @@ const Dashboard1stLine = () => {
                     toast.success("Filters cleared");
                   }}
                 >
-                  <X className="w-3 h-3 mr-1" />
-                  Clear
-                </Button>
+                  Reset
+                </button>
               )}
 
               {/* Row Count - Right aligned */}
-              <div className="flex-1 flex justify-end items-end">
+              <div className="flex-1 flex justify-end">
                 <span className="text-xs text-muted-foreground">
                   Showing {visibleRisks.length} of {totalTabRisks} risk(s)
                 </span>
