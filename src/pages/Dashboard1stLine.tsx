@@ -1443,25 +1443,25 @@ const Dashboard1stLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
       {/* Quick Links - Horizontal Strip */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 px-1">
-          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <Link className="w-4 h-4 text-first-line" />
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-4 px-1 w-full">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
+            <Link className="w-3 h-3 text-first-line" />
             Quick Links:
           </div>
-          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <ClipboardCheck className="w-4 h-4" />
+          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-first-line hover:underline text-xs">
+            <ClipboardCheck className="w-3 h-3" />
             <span>View My Pending Assessments</span>
           </button>
           <span className="text-muted-foreground/50">|</span>
-          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <CheckCircle className="w-4 h-4" />
+          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-first-line hover:underline text-xs">
+            <CheckCircle className="w-3 h-3" />
             <span>View Completed Assessments</span>
           </button>
           <span className="text-muted-foreground/50">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-                <FileText className="w-4 h-4" />
+              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-first-line hover:underline text-xs">
+                <FileText className="w-3 h-3" />
                 <span>AI Document Parser</span>
               </button>
             </TooltipTrigger>
@@ -1472,8 +1472,8 @@ const Dashboard1stLine = () => {
           <span className="text-muted-foreground/50">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-first-line hover:underline text-sm italic">
-                <FlaskConical className="w-4 h-4" />
+              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-muted-foreground hover:text-first-line hover:underline text-xs italic">
+                <FlaskConical className="w-3 h-3" />
                 <span>Sample CSV for AI Assessment (Test Only)</span>
               </a>
             </TooltipTrigger>
@@ -1529,7 +1529,7 @@ const Dashboard1stLine = () => {
                   >
                     <CardContent className="p-2 sm:p-2.5">
                       <div className="flex items-start justify-between mb-0.5 sm:mb-1">
-                        <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
+                        <h3 className="text-xs sm:text-sm font-bold text-foreground leading-tight">{metric.title}</h3>
                         <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${accentColors.bg} border ${accentColors.border} flex items-center justify-center flex-shrink-0`}>
                           <metric.icon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${accentColors.text}`} />
                         </div>
