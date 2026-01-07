@@ -2580,7 +2580,6 @@ const Dashboard1stLine = () => {
             </div>
           </div>
         </div>
-      </main>
 
       {/* Modals */}
       <BulkAssessmentModal
@@ -3072,10 +3071,10 @@ const Dashboard1stLine = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+      </main>
+      </div>
     </TooltipProvider>
   );
 };
-
 
 export default Dashboard1stLine;
