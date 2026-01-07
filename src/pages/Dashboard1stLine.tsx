@@ -1974,93 +1974,89 @@ const Dashboard1stLine = () => {
                           )}
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className={`flex items-start gap-2 ${
-                            hierarchyViewMode === "level1" ? (
-                              risk.riskLevel === "Level 2" ? "pl-6" : 
-                              risk.riskLevel === "Level 3" ? "pl-12" : ""
-                            ) : hierarchyViewMode === "level2" ? (
-                              risk.riskLevel === "Level 3" ? "pl-6" : ""
-                            ) : ""
-                          }`}>
-                          {/* Tree line indicator for child risks - L-shaped connectors */}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && (
-                              <div className="flex items-center flex-shrink-0 text-purple-500 dark:text-purple-400 font-light text-lg leading-none mr-1">
-                                └
-                              </div>
-                            )}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 3" && (
-                              <div className="flex items-center flex-shrink-0 text-orange-500 dark:text-orange-400 font-light text-lg leading-none mr-1">
-                                <span className="text-muted-foreground/50 mr-0.5">│</span>
-                                └
-                              </div>
-                            )}
-                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 3" && (
-                              <div className="flex items-center flex-shrink-0 text-orange-500 dark:text-orange-400 font-light text-lg leading-none mr-1">
-                                └
-                              </div>
-                            )}
-                            
-                            {/* Expand/collapse button - only show if risk has children */}
+                          <div className="flex items-start gap-1.5">
+                            {/* Expand/collapse button - only for Level 1 with children */}
                             {hierarchyViewMode === "level1" && risk.riskLevel === "Level 1" && canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
-                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
+                                className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
                               >
                                 {isExpanded ? (
-                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
+                                  <ChevronDown className="w-3 h-3 text-muted-foreground" />
                                 ) : (
-                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                                )}
-                              </button>
-                            )}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && canExpand && (
-                              <button
-                                onClick={() => toggleRow(risk.id)}
-                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
-                              >
-                                {isExpanded ? (
-                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                                ) : (
-                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
-                                )}
-                              </button>
-                            )}
-                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 2" && canExpand && (
-                              <button
-                                onClick={() => toggleRow(risk.id)}
-                                className="p-1 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
-                              >
-                                {isExpanded ? (
-                                  <ChevronDown className="w-4 h-4 text-muted-foreground" />
-                                ) : (
-                                  <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
                                 )}
                               </button>
                             )}
                             
-                            <div className="flex flex-col gap-1">
-                              {/* Risk ID - show for all tabs now */}
-                              <span className="font-mono text-xs text-first-line">{risk.id}</span>
-                              {/* Risk Title */}
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button 
-                                    onClick={() => handleRiskNameClick(risk)}
-                                    className="text-left hover:text-primary transition-colors font-medium hover:underline cursor-pointer text-blue-600 dark:text-blue-400"
-                                  >
-                                    {risk.title}
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Click to view risk assessment and open challenges/issues.</p>
-                                </TooltipContent>
-                              </Tooltip>
-                              <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                            {/* Spacer for Level 1 without children */}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 1" && !canExpand && (
+                              <div className="w-4" />
+                            )}
+                            
+                            {/* Spacer + tree indicator for Level 2 */}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && (
+                              <>
+                                <div className="w-4" />
+                                <span className="text-purple-500 dark:text-purple-400 font-light text-sm leading-none mt-0.5">└</span>
+                              </>
+                            )}
+                            
+                            {/* Level 2 expand button (when viewing by Level 2) */}
+                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 2" && canExpand && (
+                              <button
+                                onClick={() => toggleRow(risk.id)}
+                                className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
+                              >
+                                {isExpanded ? (
+                                  <ChevronDown className="w-3 h-3 text-muted-foreground" />
+                                ) : (
+                                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                                )}
+                              </button>
+                            )}
+                            
+                            {/* Spacer + tree indicator for Level 3 */}
+                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 3" && (
+                              <>
+                                <div className="w-8" />
+                                <span className="text-orange-500 dark:text-orange-400 font-light text-sm leading-none mt-0.5">└</span>
+                              </>
+                            )}
+                            {hierarchyViewMode === "level2" && risk.riskLevel === "Level 3" && (
+                              <>
+                                <div className="w-4" />
+                                <span className="text-orange-500 dark:text-orange-400 font-light text-sm leading-none mt-0.5">└</span>
+                              </>
+                            )}
+                            
+                            {/* Main content wrapper */}
+                            <div className="flex flex-col gap-2">
+                              {/* Risk Title and Info */}
+                              <div className="flex flex-col gap-1">
+                                <span className="font-mono text-xs text-first-line">{risk.id}</span>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button 
+                                      onClick={() => handleRiskNameClick(risk)}
+                                      className="text-left hover:text-primary transition-colors font-medium hover:underline cursor-pointer text-blue-600 dark:text-blue-400"
+                                    >
+                                      {risk.title}
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Click to view risk assessment and open challenges/issues.</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                                <span className="text-xs text-muted-foreground">{risk.owner}</span>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
+                                  {risk.category}
+                                </span>
+                              </div>
                               
-                              {/* Level 2 Children (displayed within Level 1 row) */}
-                              {/* Level 2 Children - Only shown inline for Level 1 rows */}
+                              {/* Level 2 Children - displayed within Level 1 row */}
                               {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
-                                <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-1">
+                                <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-0.5">
                                   <span className="text-[10px] font-medium text-purple-600 dark:text-purple-400">{l2Risk.id}</span>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
