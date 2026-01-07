@@ -1994,12 +1994,9 @@ const Dashboard1stLine = () => {
                               <div className="w-4" />
                             )}
                             
-                            {/* Spacer + tree indicator for Level 2 */}
+                            {/* Level 2: keep alignment, but remove tree marker */}
                             {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && (
-                              <>
-                                <div className="w-4" />
-                                <span className="text-purple-500 dark:text-purple-400 font-light text-sm leading-none mt-0.5">└</span>
-                              </>
+                              <div className="w-4" />
                             )}
                             
                             {/* Level 2 expand button (when viewing by Level 2) */}
@@ -2019,7 +2016,7 @@ const Dashboard1stLine = () => {
                             {/* Spacer + tree indicator for Level 3 */}
                             {hierarchyViewMode === "level1" && risk.riskLevel === "Level 3" && (
                               <>
-                                <div className="w-8" />
+                                <div className="w-4" />
                                 <span className="text-orange-500 dark:text-orange-400 font-light text-sm leading-none mt-0.5">└</span>
                               </>
                             )}
@@ -2064,7 +2061,7 @@ const Dashboard1stLine = () => {
                                         onClick={() => handleRiskNameClick(l2Risk)}
                                         className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-[10px]"
                                       >
-                                        └ {l2Risk.title}
+                                        {l2Risk.title}
                                       </button>
                                     </TooltipTrigger>
                                     <TooltipContent>
