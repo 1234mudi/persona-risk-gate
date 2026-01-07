@@ -146,7 +146,7 @@ const Index = () => {
               <Shield className="w-6 h-6 text-primary" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-black">RCSA Platform</h1>
+              <h1 className="text-xl font-bold text-black dark:text-white">RCSA Platform</h1>
               <p className="text-xs text-muted-foreground">Risk & Control Self-Assessment</p>
             </div>
           </div>
