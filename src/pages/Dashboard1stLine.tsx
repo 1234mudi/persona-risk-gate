@@ -1420,7 +1420,7 @@ const Dashboard1stLine = () => {
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="bg-first-line hover:bg-first-line/90 text-white border-first-line h-8 rounded-none" size="sm">
+                  <Button variant="outline" size="sm" className="h-8 px-3 rounded-none">
                     <User className="w-4 h-4 mr-2" />
                     1st Line Analyst
                     <ChevronDown className="w-4 h-4 ml-2" />
