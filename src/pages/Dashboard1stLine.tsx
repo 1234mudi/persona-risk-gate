@@ -2147,7 +2147,7 @@ const Dashboard1stLine = () => {
                             <div className="flex flex-col gap-2">
                               {/* Risk Title and Info */}
                               <div className="flex flex-col gap-1">
-                                <span className="font-mono text-xs text-black dark:text-white">{risk.id}</span>
+                                <span className="font-mono text-xs text-[#10052F] dark:text-white">{risk.id}</span>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <button 
@@ -2162,7 +2162,7 @@ const Dashboard1stLine = () => {
                                   </TooltipContent>
                                 </Tooltip>
                                 <span className="text-xs text-muted-foreground">{risk.owner}</span>
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium inline-block w-fit text-black dark:text-white ${getCategoryColor(risk.category)}`}>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium inline-block w-fit text-[#10052F] dark:text-white ${getCategoryColor(risk.category)}`}>
                                   {risk.category}
                                 </span>
                               </div>
@@ -2217,7 +2217,7 @@ const Dashboard1stLine = () => {
                               
                             return (
                               <>
-                                <div className={`text-sm font-medium ${isOverdue ? 'text-destructive' : 'text-black dark:text-white'}`}>
+                                <div className={`text-sm font-medium ${isOverdue ? 'text-destructive' : 'text-[#10052F] dark:text-white'}`}>
                                   {format(dueDate, 'MMM dd, yyyy')}
                                 </div>
                                 {isOverdue && (
@@ -2233,7 +2233,7 @@ const Dashboard1stLine = () => {
                             {risk.completionDate ? (
                               <div className="flex items-center gap-2">
                                 <CalendarCheck className="w-4 h-4 text-emerald-500" />
-                                <span className="text-sm text-black dark:text-white">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
+                                <span className="text-sm text-[#10052F] dark:text-white">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
                               </div>
                             ) : (
                               <span className="text-muted-foreground text-sm">-</span>
@@ -2270,9 +2270,9 @@ const Dashboard1stLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded mt-1">
-                                      <span className="text-black dark:text-white font-medium">{level1Agg.progressBreakdown.completed}</span>
-                                      <span className="text-black dark:text-white">/</span>
-                                      <span className="text-black dark:text-white">{level1Agg.childCount}</span>
+                                      <span className="text-[#10052F] dark:text-white font-medium">{level1Agg.progressBreakdown.completed}</span>
+                                      <span className="text-[#10052F] dark:text-white">/</span>
+                                      <span className="text-[#10052F] dark:text-white">{level1Agg.childCount}</span>
                                       <span className="ml-1">completed</span>
                                     </div>
                                   </TooltipTrigger>
@@ -2300,7 +2300,7 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Business Unit */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <Badge variant="outline" className="text-[10px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700 text-black dark:text-white">
+                          <Badge variant="outline" className="text-[10px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700 text-[#10052F] dark:text-white">
                             {risk.businessUnit}
                           </Badge>
                         </TableCell>
@@ -2324,7 +2324,7 @@ const Dashboard1stLine = () => {
                                             <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border border-background" />
                                           )}
                                         </div>
-                                        <span className="text-sm text-black dark:text-white">{assessor} ({initials})</span>
+                                        <span className="text-sm text-[#10052F] dark:text-white">{assessor} ({initials})</span>
                                       </div>
                                     </TooltipTrigger>
                                     <TooltipContent>
@@ -2346,7 +2346,7 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Last Assessed Date - clickable drilldown */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <div className="text-sm text-black dark:text-white">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
+                          <div className="text-sm text-[#10052F] dark:text-white">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
                           {risk.previousAssessments > 0 && (
                             <button 
                               onClick={() => {
@@ -2367,7 +2367,7 @@ const Dashboard1stLine = () => {
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
                               {risk.inherentRisk.score && (
-                                <span className="font-bold text-sm min-w-[20px] text-black dark:text-white">{risk.inherentRisk.score}</span>
+                                <span className="font-bold text-sm min-w-[20px] text-[#10052F] dark:text-white">{risk.inherentRisk.score}</span>
                               )}
                               {renderEditableCell(
                                 risk.id,
@@ -2389,9 +2389,9 @@ const Dashboard1stLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
-                                      <span className="font-medium text-black dark:text-white">Σ Avg: {inherentAgg.avgScore}</span>
-                                      <span className="text-black dark:text-white">|</span>
-                                      <span className="text-black dark:text-white">Max: {inherentAgg.maxScore}</span>
+                                      <span className="font-medium text-[#10052F] dark:text-white">Σ Avg: {inherentAgg.avgScore}</span>
+                                      <span className="text-[#10052F] dark:text-white">|</span>
+                                      <span className="text-[#10052F] dark:text-white">Max: {inherentAgg.maxScore}</span>
                                       <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(inherentAgg.avgScore).color)}`}>
                                         {getRiskLevelFromScore(inherentAgg.avgScore).level}
                                       </Badge>
@@ -2410,7 +2410,7 @@ const Dashboard1stLine = () => {
                           <div className="flex flex-col gap-1">
                             <div className="flex items-center gap-2">
                               {risk.residualRisk.score && (
-                                <span className="font-bold text-sm min-w-[20px] text-black dark:text-white">{risk.residualRisk.score}</span>
+                                <span className="font-bold text-sm min-w-[20px] text-[#10052F] dark:text-white">{risk.residualRisk.score}</span>
                               )}
                               {renderEditableCell(
                                 risk.id,
@@ -2432,9 +2432,9 @@ const Dashboard1stLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
-                                      <span className="font-medium text-black dark:text-white">Σ Avg: {residualAgg.avgScore}</span>
-                                      <span className="text-black dark:text-white">|</span>
-                                      <span className="text-black dark:text-white">Max: {residualAgg.maxScore}</span>
+                                      <span className="font-medium text-[#10052F] dark:text-white">Σ Avg: {residualAgg.avgScore}</span>
+                                      <span className="text-[#10052F] dark:text-white">|</span>
+                                      <span className="text-[#10052F] dark:text-white">Max: {residualAgg.maxScore}</span>
                                       <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(residualAgg.avgScore).color)}`}>
                                         {getRiskLevelFromScore(residualAgg.avgScore).level}
                                       </Badge>
@@ -2464,10 +2464,10 @@ const Dashboard1stLine = () => {
                                 <tbody>
                                   {risk.relatedControls.slice(0, 3).map((control, idx) => (
                                     <tr key={idx} className="border-b border-border/30 last:border-0">
-                                      <td className="py-1 pr-2 font-medium text-black dark:text-white overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
+                                      <td className="py-1 pr-2 font-medium text-[#10052F] dark:text-white overflow-hidden text-ellipsis whitespace-nowrap" title={control.id}>{control.id}</td>
                                       <td className="py-1 pr-2 text-muted-foreground overflow-hidden text-ellipsis whitespace-nowrap" title={control.name}>{control.name}</td>
-                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap text-black dark:text-white" title={control.keyControl}>{control.keyControl}</td>
-                                      <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap text-black dark:text-white" title={control.nature}>{control.nature}</td>
+                                      <td className="py-1 pr-2 overflow-hidden text-ellipsis whitespace-nowrap text-[#10052F] dark:text-white" title={control.keyControl}>{control.keyControl}</td>
+                                      <td className="py-1 overflow-hidden text-ellipsis whitespace-nowrap text-[#10052F] dark:text-white" title={control.nature}>{control.nature}</td>
                                     </tr>
                                   ))}
                                 </tbody>
