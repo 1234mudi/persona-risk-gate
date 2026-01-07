@@ -84,6 +84,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "@/components/ui/hover-card";
+import {
   Popover,
   PopoverContent,
   PopoverTrigger,
@@ -453,43 +458,38 @@ const RiskAssessmentForm = () => {
     toast.success(`Residual risk values from ${historyItem.date} copied to current assessment`);
   };
 
-  // Previous Assessment Floater Component for tabs
+  // Previous Assessment Floater Component for tabs - Hover tooltip version
   const FormPreviousAssessmentFloater = ({
     type,
-    historyData,
-    isExpanded,
-    onToggle
+    historyData
   }: {
     type: 'inherent' | 'control' | 'residual';
     historyData: any[];
-    isExpanded: boolean;
-    onToggle: () => void;
   }) => {
     if (!historyData || historyData.length === 0) return null;
 
     const hasData = historyData.length > 0;
 
     return (
-      <Dialog open={isExpanded} onOpenChange={onToggle}>
-        <DialogTrigger asChild>
+      <HoverCard openDelay={200} closeDelay={100}>
+        <HoverCardTrigger asChild>
           <button className={`flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:underline transition-all ${hasData ? 'animate-pulse hover:animate-none' : ''}`}>
             <History className="w-3.5 h-3.5" />
             <span>Previous Assessments ({historyData.length})</span>
-            <ChevronRight className="w-3 h-3" />
           </button>
-        </DialogTrigger>
-        <DialogContent className="max-w-xs max-h-[60vh] overflow-y-auto p-3">
-          <DialogHeader className="pb-2">
-            <DialogTitle className="text-xs font-medium">
+        </HoverCardTrigger>
+        <HoverCardContent side="bottom" align="start" className="w-80 max-h-[50vh] overflow-y-auto p-3">
+          <div className="pb-2 mb-2 border-b border-border">
+            <h3 className="text-xs font-semibold text-primary">
               {type === 'inherent' && 'Inherent Risk History'}
               {type === 'control' && 'Control Effectiveness History'}
               {type === 'residual' && 'Residual Risk History'}
-            </DialogTitle>
-          </DialogHeader>
-          <div className="space-y-1.5">
+            </h3>
+          </div>
+          <div className="space-y-2">
             {historyData.map((item, idx) => (
-              <div key={idx} className="p-1.5 rounded-md border bg-muted/30 hover:bg-muted/50 transition-colors">
-                <div className="flex items-center justify-between">
+              <div key={idx} className="p-2 rounded-md border border-border bg-card shadow-sm hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between pb-1.5 border-b border-border">
                   <span className="text-[10px] text-muted-foreground font-medium">{item.date}</span>
                   <div className="flex items-center gap-1">
                     <Badge className={`${getHistoryRatingBadge(item.score).color} text-[9px] px-1.5 py-0`}>
@@ -516,9 +516,9 @@ const RiskAssessmentForm = () => {
                 </div>
                 {/* Factor/Control details based on type */}
                 {type !== 'control' && item.factors && (
-                  <div className="space-y-0.5 mt-1">
+                  <div className="mt-1.5">
                     {item.factors.map((factor: any, fIdx: number) => (
-                      <div key={fIdx} className="flex items-center justify-between text-[9px]">
+                      <div key={fIdx} className="flex items-center justify-between text-[9px] py-1 border-b border-border last:border-b-0">
                         <span className="text-muted-foreground">{factor.name}</span>
                         <div className="flex items-center gap-1">
                           <Badge variant="outline" className={`${getHistoryRatingBadge(factor.rating).color} text-[8px] px-1 py-0`}>
@@ -531,9 +531,9 @@ const RiskAssessmentForm = () => {
                   </div>
                 )}
                 {type === 'control' && item.controls && (
-                  <div className="space-y-0.5 mt-1">
+                  <div className="mt-1.5">
                     {item.controls.map((control: any, cIdx: number) => (
-                      <div key={cIdx} className="flex items-center justify-between text-[9px]">
+                      <div key={cIdx} className="flex items-center justify-between text-[9px] py-1 border-b border-border last:border-b-0">
                         <span className="text-muted-foreground truncate max-w-[120px]">{control.name}</span>
                         <div className="flex items-center gap-0.5">
                           <Badge variant="outline" className={`${getHistoryRatingBadge(control.design).color} text-[8px] px-0.5 py-0`}>
@@ -553,8 +553,8 @@ const RiskAssessmentForm = () => {
               </div>
             ))}
           </div>
-        </DialogContent>
-      </Dialog>
+        </HoverCardContent>
+      </HoverCard>
     );
   };
 
@@ -2309,13 +2309,6 @@ const RiskAssessmentForm = () => {
                   <FormPreviousAssessmentFloater
                     type="inherent"
                     historyData={inherentHistory}
-                    isExpanded={expandedPreviousFloater.inherent}
-                    onToggle={() => setExpandedPreviousFloater(prev => ({
-                      ...prev,
-                      inherent: !prev.inherent,
-                      control: false,
-                      residual: false
-                    }))}
                   />
                 </div>
 
@@ -2481,13 +2474,6 @@ const RiskAssessmentForm = () => {
                   <FormPreviousAssessmentFloater
                     type="control"
                     historyData={controlHistory}
-                    isExpanded={expandedPreviousFloater.control}
-                    onToggle={() => setExpandedPreviousFloater(prev => ({
-                      ...prev,
-                      inherent: false,
-                      control: !prev.control,
-                      residual: false
-                    }))}
                   />
                 </div>
                   <div className="flex items-center gap-1.5">
@@ -2788,13 +2774,6 @@ const RiskAssessmentForm = () => {
                   <FormPreviousAssessmentFloater
                     type="residual"
                     historyData={residualHistory}
-                    isExpanded={expandedPreviousFloater.residual}
-                    onToggle={() => setExpandedPreviousFloater(prev => ({
-                      ...prev,
-                      inherent: false,
-                      control: false,
-                      residual: !prev.residual
-                    }))}
                   />
                 </div>
                   <div className="flex items-center gap-1.5">
