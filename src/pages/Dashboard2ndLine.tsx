@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { PreviousAssessmentFloater } from "@/components/PreviousAssessmentFloater";
@@ -1127,147 +1127,77 @@ const Dashboard2ndLine = () => {
 
         {/* Risk Coverage by Business Unit Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
-          <CardHeader className="border-b border-border/50 space-y-0 py-1 sm:py-1.5 px-2 sm:px-3">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0">
-              <CardTitle className="text-xs sm:text-sm font-semibold">Risk Coverage by Business Unit</CardTitle>
-                <TooltipProvider>
-                <div className="flex flex-wrap items-center gap-1 sm:gap-1.5">
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-[#10052F]/30 dark:border-white/30 text-[#10052F] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={selectedRisks.size === 0}
-                      >
-                        <UserPlus className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
-                        <span className="hidden sm:inline">Reassign</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{selectedRisks.size === 0 ? "Select risks to begin" : "Reassign risks to another owner"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-[#10052F]/30 dark:border-white/30 text-[#10052F] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={selectedRisks.size === 0}
-                      >
-                        <AlertTriangle className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
-                        <span className="hidden sm:inline">Review/Challenge</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{selectedRisks.size === 0 ? "Select risks to begin" : "Review and challenge risk assessments"}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button 
-                        size="sm" 
-                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
-                        disabled={selectedRisks.size === 0}
-                        onClick={startReviewMode}
-                      >
-                        <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
-                        <span className="hidden sm:inline">Review Selected ({selectedRisks.size})</span>
-                        <span className="sm:hidden">{selectedRisks.size}</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      <p>{selectedRisks.size === 0 ? "Select risks to begin review" : `Review ${selectedRisks.size} selected risk${selectedRisks.size > 1 ? "s" : ""} with Next/Previous navigation`}</p>
-                    </TooltipContent>
-                  </Tooltip>
-                </div>
-              </TooltipProvider>
+          {/* Title Bar with Tabs */}
+          <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
+            <div className="flex items-center justify-between h-12">
+              {/* Left: Title */}
+              <div className="flex items-center gap-1.5 px-4">
+                <span className="text-base font-semibold text-[#10052F] dark:text-white">
+                  Risk Coverage by Business Unit
+                </span>
+                <span className="text-base text-[#10052F] dark:text-white">
+                  ({filteredRiskData.length})
+                </span>
+              </div>
+              
+              {/* Right: Button-styled Tabs */}
+              <div className="flex items-center gap-2 pr-3">
+                <button
+                  onClick={() => setActiveTab("own")}
+                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                    activeTab === "own"
+                      ? "bg-second-line text-white border-second-line"
+                      : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
+                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                >
+                  Completed Assessments ({riskData.filter(r => r.tabCategory === "own").length})
+                </button>
+                <button
+                  onClick={() => setActiveTab("assess")}
+                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                    activeTab === "assess"
+                      ? "bg-second-line text-white border-second-line"
+                      : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
+                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                >
+                  Risks to be Assessed ({riskData.filter(r => r.tabCategory === "assess").length})
+                </button>
+                <button
+                  onClick={() => setActiveTab("approve")}
+                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                    activeTab === "approve"
+                      ? "bg-second-line text-white border-second-line"
+                      : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
+                  } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                >
+                  Risks to be Approved ({riskData.filter(r => r.tabCategory === "approve").length})
+                </button>
+              </div>
             </div>
           </CardHeader>
-          <CardContent className="p-2 sm:p-3">
-            {/* Modern Segmented Tabs */}
-            <div className="mb-2">
-              <div className="flex overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
-                <div className="inline-flex items-center gap-0 p-0.5 bg-muted/50 border border-border/50 min-w-max">
-                  <button
-                    onClick={() => setActiveTab("own")}
-                    className={`px-2 sm:px-3 py-1 font-medium text-[10px] sm:text-xs transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
-                      activeTab === "own"
-                        ? "bg-green-600 text-white shadow-md"
-                        : "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
-                    } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
-                  >
-                    <span className="hidden sm:inline">Completed Assessments</span>
-                    <span className="sm:hidden">Completed</span>
-                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold ${
-                      activeTab === "own" ? "bg-green-800/30" : "bg-green-200 dark:bg-green-800/40"
-                    }`}>
-                      {riskData.filter(r => r.tabCategory === "own").length}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("assess")}
-                    className={`px-2 sm:px-3 py-1 font-medium text-[10px] sm:text-xs transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
-                      activeTab === "assess"
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                    } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
-                  >
-                    <span className="hidden sm:inline">Risks to be Assessed</span>
-                    <span className="sm:hidden">Assess</span>
-                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold ${
-                      activeTab === "assess" ? "bg-white/20" : "bg-muted"
-                    }`}>
-                      {riskData.filter(r => r.tabCategory === "assess").length}
-                    </span>
-                  </button>
-                  <button
-                    onClick={() => setActiveTab("approve")}
-                    className={`px-2 sm:px-3 py-1 font-medium text-[10px] sm:text-xs transition-all whitespace-nowrap ${
-                      activeTab === "approve"
-                        ? "bg-primary text-primary-foreground shadow-md"
-                        : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                    } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-blue-400 ring-offset-2" : ""}`}
-                  >
-                    <span className="hidden sm:inline">Risks to be Approved</span>
-                    <span className="sm:hidden">Approve</span>
-                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold ${
-                      activeTab === "approve" ? "bg-white/20" : "bg-muted"
-                    }`}>
-                      {riskData.filter(r => r.tabCategory === "approve").length}
-                    </span>
-                  </button>
-                </div>
-              </div>
+          {/* Info Banner */}
+          <div className="bg-second-line/5 dark:bg-second-line/10 border-b border-second-line/20 dark:border-second-line/30 px-4 py-2">
+            <div className="flex items-start gap-2">
+              <AlertTriangle className="w-4 h-4 text-second-line dark:text-second-line flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-second-line dark:text-second-line/90">
+                {activeTab === "own" && "These assessments have been completed by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to view details and any open challenge comments."}
+                {activeTab === "assess" && "These risks are pending assessment by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin your assessment and view any open challenge comments."}
+                {activeTab === "approve" && "These risk assessments require approval by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review and view any open challenge comments."}
+              </p>
             </div>
+          </div>
 
-            {/* Info Banner */}
-            <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 p-1.5 sm:p-2 mb-2">
-              <div className="flex items-start gap-1.5">
-                <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
-                <div className="text-[9px] sm:text-[10px] text-yellow-800 dark:text-yellow-200 leading-snug">
-                  <p>
-                    {activeTab === "own" && "These assessments have been completed by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to view details and any open challenge comments."}
-                    {activeTab === "assess" && "These risks are pending assessment by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin your assessment and view any open challenge comments."}
-                    {activeTab === "approve" && "These risk assessments require approval by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review and view any open challenge comments."}
-                  </p>
-                  <p className="mt-0.5">
-                    <span className="font-medium">Note:</span> Values under 'Control Test Results' are auto-fetched from detailed control test results. These can be overridden in the 'Calculated Control Effectiveness' column.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Filters and Actions */}
-            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-1.5 sm:gap-2 mb-2">
-              <div className="flex flex-col gap-0.5">
-                <Label htmlFor="business-unit" className="text-[10px] font-medium text-muted-foreground">
-                  Business Unit
-                </Label>
+          {/* Filter Bar */}
+          <div className="bg-muted/20 border-b border-border/50 px-4 py-2">
+            <div className="flex items-center gap-4">
+              {/* Business Unit Filter */}
+              <div className="flex items-center gap-1.5">
+                <Building2 className="w-4 h-4 text-muted-foreground" />
                 <Select value={businessUnitFilter} onValueChange={setBusinessUnitFilter}>
-                  <SelectTrigger id="business-unit" className="w-full sm:w-40 h-7 sm:h-6 text-[10px] sm:text-xs bg-primary text-primary-foreground border-primary">
+                  <SelectTrigger className="border-0 bg-transparent h-auto p-0 text-xs uppercase tracking-wide font-medium text-muted-foreground hover:text-foreground focus:ring-0 gap-1 w-auto">
                     <SelectValue />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
                     <SelectItem value="all">All Business Units</SelectItem>
                     {Array.from(new Set(riskData.map(r => r.businessUnit))).sort().map(unit => (
                       <SelectItem key={unit} value={unit}>{unit}</SelectItem>
@@ -1276,15 +1206,14 @@ const Dashboard2ndLine = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-col gap-0.5">
-                <Label htmlFor="status-filter" className="text-[10px] font-medium text-muted-foreground">
-                  Status
-                </Label>
+              {/* Status Filter */}
+              <div className="flex items-center gap-1.5">
+                <Filter className="w-4 h-4 text-muted-foreground" />
                 <Select value={statusFilter} onValueChange={setStatusFilter}>
-                  <SelectTrigger id="status-filter" className="w-full sm:w-32 h-7 sm:h-6 text-[10px] sm:text-xs">
+                  <SelectTrigger className="border-0 bg-transparent h-auto p-0 text-xs uppercase tracking-wide font-medium text-muted-foreground hover:text-foreground focus:ring-0 gap-1 w-auto">
                     <SelectValue />
                   </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50">
+                  <SelectContent className="bg-popover border border-border shadow-lg z-50">
                     <SelectItem value="all">All Statuses</SelectItem>
                     {activeTab === "own" ? (
                       <SelectItem value="completed">Completed</SelectItem>
@@ -1300,12 +1229,11 @@ const Dashboard2ndLine = () => {
                 </Select>
               </div>
 
-              <div className="flex flex-col gap-0.5">
-                <Label htmlFor="risk-hierarchy-filter" className="text-[10px] font-medium text-muted-foreground">
-                  Risk Hierarchy
-                </Label>
+              {/* Risk Hierarchy Filter */}
+              <div className="flex items-center gap-1.5">
+                <Layers className="w-4 h-4 text-muted-foreground" />
                 <Select value={riskHierarchyFilter} onValueChange={setRiskHierarchyFilter}>
-                  <SelectTrigger id="risk-hierarchy-filter" className="w-full sm:w-28 h-7 sm:h-6 text-[10px] sm:text-xs">
+                  <SelectTrigger className="border-0 bg-transparent h-auto p-0 text-xs uppercase tracking-wide font-medium text-muted-foreground hover:text-foreground focus:ring-0 gap-1 w-auto">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border shadow-lg z-50">
@@ -1317,16 +1245,43 @@ const Dashboard2ndLine = () => {
                 </Select>
               </div>
 
-              <div className="relative flex-1 min-w-0 sm:min-w-[180px]">
+              {/* Search */}
+              <div className="flex items-center gap-1.5">
+                <Search className="w-4 h-4 text-muted-foreground" />
                 <Input 
-                  placeholder="Search risks..." 
-                  className="pl-8 h-7 sm:h-6 w-full text-[10px] sm:text-xs" 
+                  placeholder="Search..." 
+                  className="border-0 bg-transparent h-auto py-0 text-xs w-32 focus-visible:ring-0 placeholder:text-muted-foreground" 
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
-                <Shield className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              </div>
+
+              {/* Reset Button */}
+              {(statusFilter !== "all" || riskHierarchyFilter !== "all" || businessUnitFilter !== "all" || searchQuery.trim()) && (
+                <button
+                  className="text-xs uppercase tracking-wide font-medium text-second-line hover:text-second-line/80"
+                  onClick={() => {
+                    setStatusFilter("all");
+                    setRiskHierarchyFilter("all");
+                    setBusinessUnitFilter("all");
+                    setSearchQuery("");
+                    toast.success("Filters cleared");
+                  }}
+                >
+                  Reset
+                </button>
+              )}
+
+              {/* Row Count - Right aligned */}
+              <div className="flex-1 flex justify-end">
+                <span className="text-xs text-muted-foreground">
+                  Showing {filteredRiskData.length} of {riskData.filter(r => r.tabCategory === activeTab).length} risk(s)
+                </span>
               </div>
             </div>
+          </div>
+
+          <CardContent className="p-0">
 
             {/* Bulk Action Toolbar - Shows when items are selected */}
             {selectedRisks.size > 0 && (
@@ -1364,7 +1319,7 @@ const Dashboard2ndLine = () => {
                 <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
-                      <TableHead className="w-8 py-0.5 border-r border-b border-border">
+                      <TableHead className="w-8 py-1 border-r border-b border-border">
                         <div className="flex items-center justify-center">
                           <Checkbox 
                             checked={selectableRisks.length > 0 && selectedRisks.size === selectableRisks.length}
@@ -1374,13 +1329,13 @@ const Dashboard2ndLine = () => {
                           />
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[80px] py-0.5 border-r border-b border-border text-[9px]">Update Assessment</TableHead>
-                      <TableHead className="min-w-[200px] py-0.5 border-r border-b border-border text-[9px]">Risk ID / Title</TableHead>
-                      <TableHead className="min-w-[70px] py-0.5 border-r border-b border-border text-[9px]">Risk Hierarchy</TableHead>
-                      <TableHead className="min-w-[80px] py-0.5 border-r border-b border-border text-[9px]">Due Date</TableHead>
-                      <TableHead className="min-w-[90px] py-0.5 border-r border-b border-border text-[9px]">Completion Date</TableHead>
-                      <TableHead className="min-w-[150px] py-0.5 border-r border-b border-border text-[9px]">Assessment Progress</TableHead>
-                      <TableHead className="min-w-[100px] py-0.5 border-r border-b border-border text-[9px]">
+                      <TableHead className="min-w-[80px] py-1 border-r border-b border-border text-xs">Update Assessment</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Risk ID / Title</TableHead>
+                      <TableHead className="min-w-[70px] py-1 border-r border-b border-border text-xs">Risk Hierarchy</TableHead>
+                      <TableHead className="min-w-[80px] py-1 border-r border-b border-border text-xs">Due Date</TableHead>
+                      <TableHead className="min-w-[90px] py-1 border-r border-b border-border text-xs">Completion Date</TableHead>
+                      <TableHead className="min-w-[150px] py-1 border-r border-b border-border text-xs">Assessment Progress</TableHead>
+                      <TableHead className="min-w-[100px] py-1 border-r border-b border-border text-xs">
                         <div className="flex items-center gap-0.5">
                           <span>Business Unit</span>
                           <Tooltip>
@@ -1402,19 +1357,19 @@ const Dashboard2ndLine = () => {
                           </Tooltip>
                         </div>
                       </TableHead>
-                      <TableHead className="min-w-[130px] py-0.5 border-r border-b border-border text-[9px]">Assessors/Collaborators</TableHead>
-                      <TableHead className="min-w-[120px] py-0.5 border-r border-b border-border text-[9px]">
+                      <TableHead className="min-w-[130px] py-1 border-r border-b border-border text-xs">Assessors/Collaborators</TableHead>
+                      <TableHead className="min-w-[120px] py-1 border-r border-b border-border text-xs">
                         <Tooltip>
                           <TooltipTrigger asChild>
                             <span className="cursor-help underline decoration-dotted decoration-muted-foreground underline-offset-2">
                               Inherent Rating
                             </span>
                           </TooltipTrigger>
-                          <TooltipContent className="max-w-xs p-2 text-[9px]">
+                          <TooltipContent className="max-w-xs p-2 text-xs">
                             <div className="space-y-1">
                               <p className="font-semibold">Inherent Rating</p>
                               <p>The level of risk before considering the effectiveness of any controls. Calculated as:</p>
-                              <p className="font-mono bg-muted px-1.5 py-0.5 rounded text-[8px]">Likelihood × Impact = Inherent Score</p>
+                              <p className="font-mono bg-muted px-1.5 py-0.5 rounded text-[10px]">Likelihood × Impact = Inherent Score</p>
                               <ul className="list-disc list-inside space-y-0.5 text-muted-foreground">
                                 <li><span className="text-red-600 font-medium">Critical</span>: Score 15-25</li>
                                 <li><span className="text-orange-500 font-medium">High</span>: Score 10-14</li>
@@ -1425,11 +1380,11 @@ const Dashboard2ndLine = () => {
                           </TooltipContent>
                         </Tooltip>
                       </TableHead>
-                      <TableHead className="min-w-[130px] py-0.5 border-r border-b border-border text-[9px]">Related Controls</TableHead>
-                      <TableHead className="min-w-[150px] py-0.5 border-r border-b border-border text-[9px]">Calculated Control Effectiveness</TableHead>
-                      <TableHead className="min-w-[130px] py-0.5 border-r border-b border-border text-[9px]">Control Test Results</TableHead>
-                      <TableHead className="min-w-[120px] py-0.5 border-r border-b border-border text-[9px]">Residual Risk</TableHead>
-                      <TableHead className="min-w-[100px] py-0.5 border-b border-border text-[9px]">Status</TableHead>
+                      <TableHead className="min-w-[130px] py-1 border-r border-b border-border text-xs">Related Controls</TableHead>
+                      <TableHead className="min-w-[150px] py-1 border-r border-b border-border text-xs">Calculated Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[130px] py-1 border-r border-b border-border text-xs">Control Test Results</TableHead>
+                      <TableHead className="min-w-[120px] py-1 border-r border-b border-border text-xs">Residual Risk</TableHead>
+                      <TableHead className="min-w-[100px] py-1 border-b border-border text-xs">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
