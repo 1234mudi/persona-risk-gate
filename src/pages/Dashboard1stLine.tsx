@@ -1336,34 +1336,34 @@ const Dashboard1stLine = () => {
 
   const getRiskLevelColor = (level: string) => {
     switch(level) {
-      case "Level 1": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400";
-      case "Level 2": return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400";
-      case "Level 3": return "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400";
+      case "Level 1": return "bg-[#6A75D8]/20 text-[#6A75D8] border-[#979EE4] dark:bg-[#6A75D8]/20 dark:text-[#979EE4]";
+      case "Level 2": return "bg-[#A361CF]/20 text-[#A361CF] border-[#A361CF]/50 dark:bg-[#A361CF]/20 dark:text-[#A361CF]";
+      case "Level 3": return "bg-[#F1BA50]/20 text-[#CE7900] border-[#F1BA50] dark:bg-[#F1BA50]/20 dark:text-[#F1BA50]";
       default: return "bg-muted text-muted-foreground";
     }
   };
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case "Sent for Assessment": return "bg-cyan-500 text-white";
-      case "In Progress": return "bg-amber-500 text-white";
-      case "Pending Approval": return "bg-purple-500 text-white";
-      case "Review/Challenge": return "bg-orange-500 text-white";
-      case "Completed": return "bg-green-500 text-white";
-      case "Complete": return "bg-green-500 text-white";
-      case "Closed": return "bg-slate-500 text-white";
-      case "Overdue": return "bg-red-500 text-white";
-      case "Pending Review": return "bg-indigo-500 text-white";
-      default: return "bg-blue-500 text-white";
+      case "Sent for Assessment": return "bg-[#0A8078] text-white";
+      case "In Progress": return "bg-[#CE7900] text-white";
+      case "Pending Approval": return "bg-[#A361CF] text-white";
+      case "Review/Challenge": return "bg-[#F1BA50] text-white";
+      case "Completed": return "bg-[#46AF6A] text-white";
+      case "Complete": return "bg-[#46AF6A] text-white";
+      case "Closed": return "bg-[#8B5993] text-white";
+      case "Overdue": return "bg-[#D21C1C] text-white";
+      case "Pending Review": return "bg-[#6A75D8] text-white";
+      default: return "bg-[#0A8078] text-white";
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch(category) {
-      case "Operational": return "bg-indigo-50 dark:bg-indigo-950/30";
-      case "Technology": return "bg-cyan-50 dark:bg-cyan-950/30";
-      case "Compliance": return "bg-purple-50 dark:bg-purple-950/30";
-      case "Financial": return "bg-green-50 dark:bg-green-950/30";
+      case "Operational": return "bg-[#6A75D8]/10 dark:bg-[#6A75D8]/20";
+      case "Technology": return "bg-[#0A8078]/10 dark:bg-[#0A8078]/20";
+      case "Compliance": return "bg-[#A361CF]/10 dark:bg-[#A361CF]/20";
+      case "Financial": return "bg-[#46AF6A]/10 dark:bg-[#46AF6A]/20";
       default: return "bg-muted/30";
     }
   };
@@ -1371,20 +1371,25 @@ const Dashboard1stLine = () => {
   const getRiskBadgeColor = (color: string) => {
     switch (color) {
       case "red":
-        return "bg-destructive/20 text-destructive border-destructive/30";
+        return "bg-[#D21C1C]/20 text-[#D21C1C] border-[#D21C1C]/30";
       case "yellow":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/20 dark:text-yellow-400";
+        return "bg-[#F1BA50]/20 text-[#CE7900] border-[#F1BA50]/50 dark:bg-[#F1BA50]/20 dark:text-[#F1BA50]";
       case "green":
-        return "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/20 dark:text-green-400";
+        return "bg-[#46AF6A]/20 text-[#46AF6A] border-[#46AF6A]/30 dark:bg-[#46AF6A]/20 dark:text-[#46AF6A]";
       default:
         return "bg-muted text-muted-foreground";
     }
   };
 
   const getEffectivenessBadge = (label: string, color: string) => {
-    const colorClass = color === "green" 
-      ? "bg-green-500 text-white" 
-      : "bg-yellow-500 text-white";
+    let colorClass = "bg-[#8B5993] text-white";
+    if (color === "green") {
+      colorClass = "bg-[#46AF6A] text-white";
+    } else if (color === "yellow" || label === "Partially Effective") {
+      colorClass = "bg-[#CE7900] text-white";
+    } else if (label === "Ineffective") {
+      colorClass = "bg-[#D21C1C] text-white";
+    }
     return <Badge className={`${colorClass} rounded-full`}>{label}</Badge>;
   };
 
@@ -2052,9 +2057,9 @@ const Dashboard1stLine = () => {
                       
                       return (
                       <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
-                        risk.riskLevel === "Level 1" ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
-                        risk.riskLevel === "Level 2" ? 'bg-purple-50/30 dark:bg-purple-950/10' :
-                        'bg-orange-50/30 dark:bg-orange-950/10'
+                        risk.riskLevel === "Level 1" ? 'bg-[#6A75D8]/5 dark:bg-[#6A75D8]/10' : 
+                        risk.riskLevel === "Level 2" ? 'bg-[#A361CF]/5 dark:bg-[#A361CF]/10' :
+                        'bg-[#F1BA50]/5 dark:bg-[#F1BA50]/10'
                       }`}>
                         {activeTab !== "own" && (
                           <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
@@ -2255,19 +2260,19 @@ const Dashboard1stLine = () => {
                           <div className="space-y-1">
                             <div className="flex gap-1">
                               <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress?.assess === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress?.assess === "in-progress" ? "bg-amber-500" :
-                                "bg-gray-300 dark:bg-gray-600"
+                                risk.assessmentProgress?.assess === "completed" ? "bg-[#46AF6A]" :
+                                risk.assessmentProgress?.assess === "in-progress" ? "bg-[#CE7900]" :
+                                "bg-[#8B5993]/30 dark:bg-[#8B5993]/50"
                               }`} />
                               <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress?.reviewChallenge === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress?.reviewChallenge === "in-progress" ? "bg-amber-500" :
-                                "bg-gray-300 dark:bg-gray-600"
+                                risk.assessmentProgress?.reviewChallenge === "completed" ? "bg-[#46AF6A]" :
+                                risk.assessmentProgress?.reviewChallenge === "in-progress" ? "bg-[#CE7900]" :
+                                "bg-[#8B5993]/30 dark:bg-[#8B5993]/50"
                               }`} />
                               <div className={`h-2 flex-1 rounded-sm ${
-                                risk.assessmentProgress?.approve === "completed" ? "bg-green-500" :
-                                risk.assessmentProgress?.approve === "in-progress" ? "bg-amber-500" :
-                                "bg-gray-300 dark:bg-gray-600"
+                                risk.assessmentProgress?.approve === "completed" ? "bg-[#46AF6A]" :
+                                risk.assessmentProgress?.approve === "in-progress" ? "bg-[#CE7900]" :
+                                "bg-[#8B5993]/30 dark:bg-[#8B5993]/50"
                               }`} />
                             </div>
                             <div className="flex justify-between text-[10px] text-muted-foreground">
@@ -2290,15 +2295,15 @@ const Dashboard1stLine = () => {
                                     <div className="text-xs space-y-1">
                                       <p className="font-medium">Assessment Progress Summary ({level1Agg.childCount} risks)</p>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-green-500 rounded-sm"></span>
+                                        <span className="w-2 h-2 bg-[#46AF6A] rounded-sm"></span>
                                         <span>Completed: {level1Agg.progressBreakdown.completed}</span>
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-amber-500 rounded-sm"></span>
+                                        <span className="w-2 h-2 bg-[#CE7900] rounded-sm"></span>
                                         <span>In Progress: {level1Agg.progressBreakdown.inProgress}</span>
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-gray-400 rounded-sm"></span>
+                                        <span className="w-2 h-2 bg-[#8B5993] rounded-sm"></span>
                                         <span>Not Started: {level1Agg.progressBreakdown.notStarted}</span>
                                       </div>
                                     </div>
@@ -2389,7 +2394,7 @@ const Dashboard1stLine = () => {
                                 'select',
                                 ['Critical', 'High', 'Medium', 'Low']
                               )}
-                              <span className={`text-xs flex items-center gap-0.5 ${risk.inherentTrend.up ? 'text-red-600' : 'text-green-600'}`}>
+                              <span className={`text-xs flex items-center gap-0.5 ${risk.inherentTrend.up ? 'text-[#D21C1C]' : 'text-[#46AF6A]'}`}>
                                 {risk.inherentTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
                                 {risk.inherentTrend.value}
                               </span>
@@ -2432,7 +2437,7 @@ const Dashboard1stLine = () => {
                                 'select',
                                 ['Critical', 'High', 'Medium', 'Low']
                               )}
-                              <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-red-600' : 'text-green-600'}`}>
+                              <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-[#D21C1C]' : 'text-[#46AF6A]'}`}>
                                 {risk.residualTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
                                 {risk.residualTrend.value}
                               </span>
@@ -2540,20 +2545,20 @@ const Dashboard1stLine = () => {
                                     <div className="text-xs space-y-1">
                                       <p className="font-medium">Effectiveness Summary ({level1Agg.childCount} risks)</p>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        <span className="w-2 h-2 bg-[#46AF6A] rounded-full"></span>
                                         <span>Effective: {level1Agg.effectivenessBreakdown.effective}</span>
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                                        <span className="w-2 h-2 bg-[#CE7900] rounded-full"></span>
                                         <span>Partially Effective: {level1Agg.effectivenessBreakdown.partiallyEffective}</span>
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                        <span className="w-2 h-2 bg-[#D21C1C] rounded-full"></span>
                                         <span>Ineffective: {level1Agg.effectivenessBreakdown.ineffective}</span>
                                       </div>
                                       {level1Agg.effectivenessBreakdown.notAssessed > 0 && (
                                         <div className="flex items-center gap-2">
-                                          <span className="w-2 h-2 bg-gray-400 rounded-full"></span>
+                                          <span className="w-2 h-2 bg-[#8B5993] rounded-full"></span>
                                           <span>Not Assessed: {level1Agg.effectivenessBreakdown.notAssessed}</span>
                                         </div>
                                       )}
@@ -2590,13 +2595,13 @@ const Dashboard1stLine = () => {
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-1 text-[10px] bg-muted/50 px-1.5 py-0.5 rounded mt-1 flex-wrap">
                                       {level1Agg.statusBreakdown.completed > 0 && (
-                                        <span className="text-green-600">{level1Agg.statusBreakdown.completed} ✓</span>
+                                        <span className="text-[#46AF6A]">{level1Agg.statusBreakdown.completed} ✓</span>
                                       )}
                                       {level1Agg.statusBreakdown.inProgress > 0 && (
-                                        <span className="text-amber-600">{level1Agg.statusBreakdown.inProgress} ◐</span>
+                                        <span className="text-[#CE7900]">{level1Agg.statusBreakdown.inProgress} ◐</span>
                                       )}
                                       {level1Agg.statusBreakdown.overdue > 0 && (
-                                        <span className="text-red-600">{level1Agg.statusBreakdown.overdue} !</span>
+                                        <span className="text-[#D21C1C]">{level1Agg.statusBreakdown.overdue} !</span>
                                       )}
                                     </div>
                                   </TooltipTrigger>
@@ -2604,15 +2609,15 @@ const Dashboard1stLine = () => {
                                     <div className="text-xs space-y-1">
                                       <p className="font-medium">Status Summary ({level1Agg.childCount} risks)</p>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                                        <span className="w-2 h-2 bg-[#46AF6A] rounded-full"></span>
                                         <span>Completed: {level1Agg.statusBreakdown.completed}</span>
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-amber-500 rounded-full"></span>
+                                        <span className="w-2 h-2 bg-[#CE7900] rounded-full"></span>
                                         <span>In Progress: {level1Agg.statusBreakdown.inProgress}</span>
                                       </div>
                                       <div className="flex items-center gap-2">
-                                        <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                                        <span className="w-2 h-2 bg-[#D21C1C] rounded-full"></span>
                                         <span>Overdue: {level1Agg.statusBreakdown.overdue}</span>
                                       </div>
                                       {level1Agg.statusBreakdown.pendingApproval > 0 && (
