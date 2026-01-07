@@ -1418,23 +1418,9 @@ const Dashboard1stLine = () => {
             </div>
             <div className="flex items-center gap-3">
               <ThemeToggle />
-              <Select value={selectedAssessor} onValueChange={setSelectedAssessor}>
-                <SelectTrigger className="w-52 h-8 bg-first-line text-white border-first-line">
-                  <User className="w-4 h-4 mr-2 flex-shrink-0" />
-                  <SelectValue placeholder="All Assessors" />
-                </SelectTrigger>
-                <SelectContent className="bg-popover border border-border shadow-lg z-50">
-                  <SelectItem value="all">All Assessors (Overview)</SelectItem>
-                  {uniqueAssessors.map((assessor) => (
-                    <SelectItem key={assessor} value={assessor}>
-                      {assessor}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button className="bg-first-line hover:bg-first-line/90 text-white border-first-line h-8" size="sm">
+                  <Button className="bg-first-line hover:bg-first-line/90 text-white border-first-line h-8 rounded-none" size="sm">
                     <User className="w-4 h-4 mr-2" />
                     1st Line Analyst
                     <ChevronDown className="w-4 h-4 ml-2" />
