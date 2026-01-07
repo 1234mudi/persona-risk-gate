@@ -294,52 +294,6 @@ const Dashboard2ndLine = () => {
     return riskData.filter(r => selectedRisks.has(r.id));
   };
 
-  // Risk traversal logic
-  const traversableRisks = useMemo(() => {
-    const risksToTraverse = isReviewMode && reviewRiskIds.length > 0
-      ? filteredRiskData.filter(r => reviewRiskIds.includes(r.id))
-      : filteredRiskData;
-    return risksToTraverse.map(r => ({
-      id: r.id,
-      title: r.title,
-      sectionCompletion: r.sectionCompletion,
-    }));
-  }, [filteredRiskData, isReviewMode, reviewRiskIds]);
-
-  const currentTraversalIndex = useMemo(() => {
-    if (!selectedRiskForOverview) return -1;
-    return traversableRisks.findIndex(r => r.id === selectedRiskForOverview.id);
-  }, [traversableRisks, selectedRiskForOverview]);
-
-  const isFirstRisk = currentTraversalIndex <= 0;
-  const isLastRisk = currentTraversalIndex >= traversableRisks.length - 1;
-
-  const goToNextRisk = useCallback(() => {
-    if (isLastRisk || currentTraversalIndex === -1) return;
-    const nextRisk = traversableRisks[currentTraversalIndex + 1];
-    if (nextRisk) setSelectedRiskForOverview(nextRisk);
-  }, [traversableRisks, currentTraversalIndex, isLastRisk]);
-
-  const goToPreviousRisk = useCallback(() => {
-    if (isFirstRisk || currentTraversalIndex === -1) return;
-    const prevRisk = traversableRisks[currentTraversalIndex - 1];
-    if (prevRisk) setSelectedRiskForOverview(prevRisk);
-  }, [traversableRisks, currentTraversalIndex, isFirstRisk]);
-
-  const startReviewMode = useCallback(() => {
-    const ids = Array.from(selectedRisks);
-    const validRisks = filteredRiskData.filter(r => ids.includes(r.id));
-    if (validRisks.length === 0) return;
-    setReviewRiskIds(ids);
-    setIsReviewMode(true);
-    setSelectedRiskForOverview({
-      id: validRisks[0].id,
-      title: validRisks[0].title,
-      sectionCompletion: validRisks[0].sectionCompletion,
-    });
-    setRiskOverviewModalOpen(true);
-  }, [selectedRisks, filteredRiskData]);
-
   const handleModalClose = useCallback((open: boolean) => {
     setRiskOverviewModalOpen(open);
     if (!open) {
@@ -745,6 +699,52 @@ const Dashboard2ndLine = () => {
       return true;
     });
   }, [riskData, activeTab, businessUnitFilter, statusFilter, riskHierarchyFilter, searchQuery]);
+
+  // Risk traversal logic - must be after filteredRiskData is declared
+  const traversableRisks = useMemo(() => {
+    const risksToTraverse = isReviewMode && reviewRiskIds.length > 0
+      ? filteredRiskData.filter(r => reviewRiskIds.includes(r.id))
+      : filteredRiskData;
+    return risksToTraverse.map(r => ({
+      id: r.id,
+      title: r.title,
+      sectionCompletion: r.sectionCompletion,
+    }));
+  }, [filteredRiskData, isReviewMode, reviewRiskIds]);
+
+  const currentTraversalIndex = useMemo(() => {
+    if (!selectedRiskForOverview) return -1;
+    return traversableRisks.findIndex(r => r.id === selectedRiskForOverview.id);
+  }, [traversableRisks, selectedRiskForOverview]);
+
+  const isFirstRisk = currentTraversalIndex <= 0;
+  const isLastRisk = currentTraversalIndex >= traversableRisks.length - 1;
+
+  const goToNextRisk = useCallback(() => {
+    if (isLastRisk || currentTraversalIndex === -1) return;
+    const nextRisk = traversableRisks[currentTraversalIndex + 1];
+    if (nextRisk) setSelectedRiskForOverview(nextRisk);
+  }, [traversableRisks, currentTraversalIndex, isLastRisk]);
+
+  const goToPreviousRisk = useCallback(() => {
+    if (isFirstRisk || currentTraversalIndex === -1) return;
+    const prevRisk = traversableRisks[currentTraversalIndex - 1];
+    if (prevRisk) setSelectedRiskForOverview(prevRisk);
+  }, [traversableRisks, currentTraversalIndex, isFirstRisk]);
+
+  const startReviewMode = useCallback(() => {
+    const ids = Array.from(selectedRisks);
+    const validRisks = filteredRiskData.filter(r => ids.includes(r.id));
+    if (validRisks.length === 0) return;
+    setReviewRiskIds(ids);
+    setIsReviewMode(true);
+    setSelectedRiskForOverview({
+      id: validRisks[0].id,
+      title: validRisks[0].title,
+      sectionCompletion: validRisks[0].sectionCompletion,
+    });
+    setRiskOverviewModalOpen(true);
+  }, [selectedRisks, filteredRiskData]);
 
   // Get unique business units for grouping
   const businessUnitsInView = useMemo(() => {
