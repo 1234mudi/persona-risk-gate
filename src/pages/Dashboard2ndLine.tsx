@@ -938,8 +938,8 @@ const Dashboard2ndLine = () => {
         return "bg-[#D21C1C]/20 text-[#D21C1C] border-[#D21C1C]/30 dark:bg-[#D21C1C]/20 dark:text-[#D21C1C]";
       case "yellow":
         return "bg-[#F1BA50]/20 text-[#CE7900] border-[#F1BA50]/50 dark:bg-[#F1BA50]/20 dark:text-[#F1BA50]";
-      case "green":
-        return "bg-[#46AF6A]/20 text-[#46AF6A] border-[#46AF6A]/30 dark:bg-[#46AF6A]/20 dark:text-[#46AF6A]";
+    case "green":
+      return "bg-[#46AF6A]/20 text-[#10052F] border-[#46AF6A]/30 dark:bg-[#46AF6A]/20 dark:text-white";
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -955,8 +955,8 @@ const Dashboard2ndLine = () => {
         return "bg-[#F1BA50]/20 text-[#CE7900] border-[#F1BA50]/50 dark:text-[#F1BA50]";
       case "cyan":
         return "bg-[#0A8078]/20 text-[#0A8078] border-[#0A8078]/30 dark:text-[#0A8078]";
-      case "green":
-        return "bg-[#46AF6A]/20 text-[#46AF6A] border-[#46AF6A]/30 dark:text-[#46AF6A]";
+    case "green":
+      return "bg-[#46AF6A]/20 text-[#10052F] border-[#46AF6A]/30 dark:text-white";
       default:
         return "bg-muted text-muted-foreground";
     }
