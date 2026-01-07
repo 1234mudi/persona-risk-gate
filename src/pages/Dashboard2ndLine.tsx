@@ -981,7 +981,7 @@ const Dashboard2ndLine = () => {
                 <Shield className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-base sm:text-xl font-semibold text-foreground truncate">
+                <h1 className="text-base sm:text-xl font-semibold text-[#10052F] dark:text-white truncate">
                   <span className="hidden sm:inline">2nd Line Risk Analyst Dashboard</span>
                   <span className="sm:hidden">2nd Line Dashboard</span>
                 </h1>
@@ -1044,7 +1044,7 @@ const Dashboard2ndLine = () => {
                 <Card className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-card relative cursor-help rounded-none">
                   <CardContent className="p-2 sm:p-2.5">
                     <div className="flex items-start justify-between mb-0.5 sm:mb-1">
-                      <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
+                      <h3 className="text-[10px] sm:text-xs font-bold text-[#10052F] dark:text-white leading-tight">{metric.title}</h3>
                       <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
                         <metric.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary" />
                       </div>
@@ -1053,7 +1053,7 @@ const Dashboard2ndLine = () => {
                 <div className="space-y-0.5">
                   <div className="flex items-baseline justify-between gap-2">
                     <div className="flex items-baseline gap-1">
-                      <span className="text-lg sm:text-xl font-bold text-foreground">
+                      <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
                         {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
                       </span>
                       {metric.valueSuffix && (
@@ -1136,7 +1136,7 @@ const Dashboard2ndLine = () => {
                     <TooltipTrigger asChild>
                       <Button 
                         size="sm" 
-                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-[#10052F]/30 dark:border-white/30 text-[#10052F] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={selectedRisks.size === 0}
                       >
                         <UserPlus className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
@@ -1151,7 +1151,7 @@ const Dashboard2ndLine = () => {
                     <TooltipTrigger asChild>
                       <Button 
                         size="sm" 
-                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-foreground/30 text-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-muted/50 hover:bg-muted border border-[#10052F]/30 dark:border-white/30 text-[#10052F] dark:text-white disabled:opacity-50 disabled:cursor-not-allowed"
                         disabled={selectedRisks.size === 0}
                       >
                         <AlertTriangle className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
@@ -1461,7 +1461,7 @@ const Dashboard2ndLine = () => {
                                         <div className="flex flex-col">
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Inherent Rating</span>
                                           <div className="flex items-center gap-1">
-                                            <span className="text-[10px] font-bold text-foreground">{aggregation.avgInherentRisk.score.toFixed(1)}</span>
+                                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white">{aggregation.avgInherentRisk.score.toFixed(1)}</span>
                                             <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border px-1 text-[9px]`}>
                                               {aggregation.avgInherentRisk.level}
                                             </Badge>
@@ -1474,7 +1474,7 @@ const Dashboard2ndLine = () => {
                                         <div className="flex flex-col">
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Control Effectiveness</span>
                                           <div className="flex items-center gap-1">
-                                            <span className="text-[10px] font-bold text-foreground">{aggregation.avgControlEffectiveness.score.toFixed(1)}</span>
+                                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white">{aggregation.avgControlEffectiveness.score.toFixed(1)}</span>
                                             <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border px-1 text-[9px]`}>
                                               {aggregation.avgControlEffectiveness.level}
                                             </Badge>
@@ -1487,7 +1487,7 @@ const Dashboard2ndLine = () => {
                                         <div className="flex flex-col">
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Residual Rating</span>
                                           <div className="flex items-center gap-1">
-                                            <span className="text-[10px] font-bold text-foreground">{aggregation.avgResidualRisk.score.toFixed(1)}</span>
+                                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white">{aggregation.avgResidualRisk.score.toFixed(1)}</span>
                                             <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border px-1 text-[9px]`}>
                                               {aggregation.avgResidualRisk.level}
                                             </Badge>
