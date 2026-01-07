@@ -1493,229 +1493,273 @@ const Dashboard1stLine = () => {
         </div>
 
         {/* Scorecards - 3 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          {metrics.map((metric, index) => (
-            <Card 
-              key={index}
-              className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer rounded-none"
-              onClick={() => {
-                setSelectedMetric(metric);
-                setMetricDetailsOpen(true);
-              }}
-            >
-                  <CardContent className="p-2 sm:p-2.5">
-                    <div className="flex items-start justify-between mb-0.5 sm:mb-1">
-                      <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center flex-shrink-0">
-                        <metric.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-first-line" />
+        {(() => {
+          const getMetricAccentColor = (title: string) => {
+            switch (title) {
+              case "Assessment Status":
+                return {
+                  bg: "bg-[#6A75D8]/10",
+                  border: "border-[#6A75D8]/20",
+                  text: "text-[#6A75D8]",
+                  cardBorder: "border-[#979EE4]/50",
+                  cardGradient: "bg-gradient-to-br from-[#979EE4]/10 to-white dark:from-[#6A75D8]/10 dark:to-card"
+                };
+              case "Inherent Risk Ratings":
+                return {
+                  bg: "bg-[#CE7900]/10",
+                  border: "border-[#CE7900]/20",
+                  text: "text-[#CE7900]",
+                  cardBorder: "border-[#FFE980]/50",
+                  cardGradient: "bg-gradient-to-br from-[#FFE980]/20 to-white dark:from-[#CE7900]/10 dark:to-card"
+                };
+              case "Control Effectiveness by Risk":
+                return {
+                  bg: "bg-[#0A8078]/10",
+                  border: "border-[#0A8078]/20",
+                  text: "text-[#0A8078]",
+                  cardBorder: "border-[#A0E0E1]/50",
+                  cardGradient: "bg-gradient-to-br from-[#A0E0E1]/20 to-white dark:from-[#0A8078]/10 dark:to-card"
+                };
+              default:
+                return {
+                  bg: "bg-first-line/10",
+                  border: "border-first-line/20",
+                  text: "text-first-line",
+                  cardBorder: "border-border/50",
+                  cardGradient: "bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card"
+                };
+            }
+          };
+
+          return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+              {metrics.map((metric, index) => {
+                const accentColors = getMetricAccentColor(metric.title);
+                return (
+                  <Card 
+                    key={index}
+                    className={`border-2 ${accentColors.cardBorder} shadow-sm hover:shadow-md transition-shadow ${accentColors.cardGradient} relative cursor-pointer rounded-none`}
+                    onClick={() => {
+                      setSelectedMetric(metric);
+                      setMetricDetailsOpen(true);
+                    }}
+                  >
+                    <CardContent className="p-2 sm:p-2.5">
+                      <div className="flex items-start justify-between mb-0.5 sm:mb-1">
+                        <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
+                        <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${accentColors.bg} border ${accentColors.border} flex items-center justify-center flex-shrink-0`}>
+                          <metric.icon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${accentColors.text}`} />
+                        </div>
                       </div>
-                    </div>
-                
-                <div className="space-y-0.5">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-lg sm:text-xl font-bold text-foreground">
-                        {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {metric.trendUp ? (
-                        <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-red-600" />
-                      )}
-                      <span className={`text-[9px] sm:text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
-                        {metric.trend}
-                      </span>
-                    </div>
-                  </div>
                   
-                  {/* Chart - Pie or Bar */}
-                  <div className="space-y-0.5">
-                    {'chartType' in metric && metric.chartType === 'pie' ? (
-                      // Filled Pie Chart
-                      (() => {
-                        const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string; chartColor?: string }>;
-                        let total = 0;
-                        for (const s of segments) total += s.value;
-                        
-                        // Calculate pie slices
-                        const slices: Array<{ path: string; color: string; percent: number }> = [];
-                        let currentAngle = 0;
-                        const cx = 18, cy = 18, r = 16;
-                        
-                        segments.forEach((segment) => {
-                          const percent = total > 0 ? (segment.value / total) * 100 : 0;
-                          const angle = (percent / 100) * 360;
-                          const startAngle = currentAngle;
-                          const endAngle = currentAngle + angle;
-                          
-                          // Convert angles to radians
-                          const startRad = (startAngle - 90) * (Math.PI / 180);
-                          const endRad = (endAngle - 90) * (Math.PI / 180);
-                          
-                          // Calculate arc points
-                          const x1 = cx + r * Math.cos(startRad);
-                          const y1 = cy + r * Math.sin(startRad);
-                          const x2 = cx + r * Math.cos(endRad);
-                          const y2 = cy + r * Math.sin(endRad);
-                          
-                          // Large arc flag
-                          const largeArc = angle > 180 ? 1 : 0;
-                          
-                          // Create path
-                          const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-                          
-                          slices.push({ path, color: segment.chartColor || '#888', percent });
-                          currentAngle = endAngle;
-                        });
-                        
-                        return (
-                          <div className="flex items-center gap-2">
-                            <div className="relative w-10 h-10 sm:w-12 sm:h-12">
-                              <svg viewBox="0 0 36 36" className="w-10 h-10 sm:w-12 sm:h-12">
-                                {slices.map((slice, idx) => (
-                                  <path
-                                    key={idx}
-                                    d={slice.path}
-                                    fill={slice.color}
-                                    className="transition-all duration-500"
-                                  />
-                                ))}
-                              </svg>
-                            </div>
-                            <div className="flex flex-col gap-0.5">
-                              {segments.map((segment, idx) => {
-                                const percent = total > 0 ? Math.round((segment.value / total) * 100) : 0;
-                                return (
-                                  <div key={idx} className="flex items-center gap-1">
-                                    <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${segment.color}`} />
-                                    <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                      {segment.value} {segment.label} ({percent}%)
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
+                      <div className="space-y-0.5">
+                        <div className="flex items-baseline justify-between gap-2">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-lg sm:text-xl font-bold text-foreground">
+                              {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
+                            </span>
                           </div>
-                        );
-                      })()
-                    ) : (
-                      // Bar Chart (default) - with clickable segments for Assessment Status
-                      (() => {
-                        const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
-                        const isAssessmentStatus = metric.title === "Assessment Status";
-                        const segmentRows = 'segmentRows' in metric ? (metric as any).segmentRows : null;
-                        let total = 0;
-                        for (const s of segments) total += s.value;
+                          <div className="flex items-center gap-1">
+                            {metric.trendUp ? (
+                              <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-600" />
+                            ) : (
+                              <TrendingDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-red-600" />
+                            )}
+                            <span className={`text-[9px] sm:text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                              {metric.trend}
+                            </span>
+                          </div>
+                        </div>
                         
-                        // If this card has segmentRows (dual progress bars), render them
-                        if (segmentRows) {
-                          return (
-                            <div className="space-y-1.5">
-                              {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
-                                let rowTotal = 0;
-                                for (const s of row.segments) rowTotal += s.value;
+                        {/* Chart - Pie or Bar */}
+                        <div className="space-y-0.5">
+                          {'chartType' in metric && metric.chartType === 'pie' ? (
+                            // Filled Pie Chart
+                            (() => {
+                              const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string; chartColor?: string }>;
+                              let total = 0;
+                              for (const s of segments) total += s.value;
+                              
+                              // Calculate pie slices
+                              const slices: Array<{ path: string; color: string; percent: number }> = [];
+                              let currentAngle = 0;
+                              const cx = 18, cy = 18, r = 16;
+                              
+                              segments.forEach((segment) => {
+                                const percent = total > 0 ? (segment.value / total) * 100 : 0;
+                                const angle = (percent / 100) * 360;
+                                const startAngle = currentAngle;
+                                const endAngle = currentAngle + angle;
                                 
+                                // Convert angles to radians
+                                const startRad = (startAngle - 90) * (Math.PI / 180);
+                                const endRad = (endAngle - 90) * (Math.PI / 180);
+                                
+                                // Calculate arc points
+                                const x1 = cx + r * Math.cos(startRad);
+                                const y1 = cy + r * Math.sin(startRad);
+                                const x2 = cx + r * Math.cos(endRad);
+                                const y2 = cy + r * Math.sin(endRad);
+                                
+                                // Large arc flag
+                                const largeArc = angle > 180 ? 1 : 0;
+                                
+                                // Create path
+                                const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+                                
+                                slices.push({ path, color: segment.chartColor || '#888', percent });
+                                currentAngle = endAngle;
+                              });
+                              
+                              return (
+                                <div className="flex items-center gap-2">
+                                  <div className="relative w-10 h-10 sm:w-12 sm:h-12">
+                                    <svg viewBox="0 0 36 36" className="w-10 h-10 sm:w-12 sm:h-12">
+                                      {slices.map((slice, idx) => (
+                                        <path
+                                          key={idx}
+                                          d={slice.path}
+                                          fill={slice.color}
+                                          className="transition-all duration-500"
+                                        />
+                                      ))}
+                                    </svg>
+                                  </div>
+                                  <div className="flex flex-col gap-0.5">
+                                    {segments.map((segment, idx) => {
+                                      const percent = total > 0 ? Math.round((segment.value / total) * 100) : 0;
+                                      return (
+                                        <div key={idx} className="flex items-center gap-1">
+                                          <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${segment.color}`} />
+                                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
+                                            {segment.value} {segment.label} ({percent}%)
+                                          </span>
+                                        </div>
+                                      );
+                                    })}
+                                  </div>
+                                </div>
+                              );
+                            })()
+                          ) : (
+                            // Bar Chart (default) - with clickable segments for Assessment Status
+                            (() => {
+                              const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
+                              const isAssessmentStatus = metric.title === "Assessment Status";
+                              const segmentRows = 'segmentRows' in metric ? (metric as any).segmentRows : null;
+                              let total = 0;
+                              for (const s of segments) total += s.value;
+                              
+                              // If this card has segmentRows (dual progress bars), render them
+                              if (segmentRows) {
                                 return (
-                                  <div key={rowIdx} className="space-y-0.5">
-                                    <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
-                                    <div className="flex h-2 sm:h-2.5 rounded-md overflow-hidden">
-                                      {row.segments.map((segment, idx) => {
-                                        const percentage = rowTotal > 0 ? (segment.value / rowTotal) * 100 : 0;
-                                        if (percentage === 0) return null;
-                                        return (
-                                          <Tooltip key={idx}>
-                                            <TooltipTrigger asChild>
-                                              <div
-                                                className={`${segment.color} cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center`}
-                                                style={{ width: `${percentage}%` }}
+                                  <div className="space-y-1.5">
+                                    {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
+                                      let rowTotal = 0;
+                                      for (const s of row.segments) rowTotal += s.value;
+                                      
+                                      return (
+                                        <div key={rowIdx} className="space-y-0.5">
+                                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
+                                          <div className="flex h-2 sm:h-2.5 rounded-md overflow-hidden">
+                                            {row.segments.map((segment, idx) => {
+                                              const percentage = rowTotal > 0 ? (segment.value / rowTotal) * 100 : 0;
+                                              if (percentage === 0) return null;
+                                              return (
+                                                <Tooltip key={idx}>
+                                                  <TooltipTrigger asChild>
+                                                    <div
+                                                      className={`${segment.color} cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center`}
+                                                      style={{ width: `${percentage}%` }}
+                                                      onClick={(e) => handleSegmentClick(segment.label, e)}
+                                                    >
+                                                      {percentage > 20 && (
+                                                        <span className="text-[7px] sm:text-[8px] font-medium text-white truncate px-0.5">
+                                                          {segment.value}
+                                                        </span>
+                                                      )}
+                                                    </div>
+                                                  </TooltipTrigger>
+                                                  <TooltipContent>
+                                                    <p>{segment.label}: {segment.value} ({Math.round(percentage)}%)</p>
+                                                    <p className="text-xs text-muted-foreground">Click to filter</p>
+                                                  </TooltipContent>
+                                                </Tooltip>
+                                              );
+                                            })}
+                                          </div>
+                                          {/* Row Legend */}
+                                          <div className="flex flex-wrap gap-x-1.5 gap-y-0">
+                                            {row.segments.map((segment, idx) => (
+                                              <button 
+                                                key={idx} 
+                                                className="flex items-center gap-0.5 hover:bg-muted/50 rounded px-0.5 py-0 transition-colors"
                                                 onClick={(e) => handleSegmentClick(segment.label, e)}
                                               >
-                                                {percentage > 20 && (
-                                                  <span className="text-[7px] sm:text-[8px] font-medium text-white truncate px-0.5">
-                                                    {segment.value}
-                                                  </span>
-                                                )}
-                                              </div>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              <p>{segment.label}: {segment.value} ({Math.round(percentage)}%)</p>
-                                              <p className="text-xs text-muted-foreground">Click to filter</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        );
-                                      })}
-                                    </div>
-                                    {/* Row Legend */}
-                                    <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                                      {row.segments.map((segment, idx) => (
-                                        <button 
-                                          key={idx} 
-                                          className="flex items-center gap-0.5 hover:bg-muted/50 rounded px-0.5 py-0 transition-colors"
-                                          onClick={(e) => handleSegmentClick(segment.label, e)}
-                                        >
-                                          <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
-                                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                            {segment.value} {segment.label}
-                                          </span>
-                                        </button>
-                                      ))}
-                                    </div>
+                                                <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
+                                                <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
+                                                  {segment.value} {segment.label}
+                                                </span>
+                                              </button>
+                                            ))}
+                                          </div>
+                                        </div>
+                                      );
+                                    })}
                                   </div>
                                 );
-                              })}
-                            </div>
-                          );
-                        }
+                              }
+                              
+                              return (
+                                <>
+                                  <div className="flex h-2 sm:h-2.5 rounded overflow-hidden">
+                                    {segments.map((segment, idx) => {
+                                      const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                                      return (
+                                        <div
+                                          key={idx}
+                                          className={segment.color}
+                                          style={{ width: `${percentage}%` }}
+                                        />
+                                      );
+                                    })}
+                                  </div>
+                                  
+                                  {/* Legend */}
+                                  <div className="flex flex-wrap gap-x-1.5 gap-y-0">
+                                    {segments.map((segment, idx) => (
+                                      <div key={idx} className="flex items-center gap-0.5">
+                                        <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
+                                        <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
+                                          {segment.sublabel || segment.label}
+                                        </span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </>
+                              );
+                            })()
+                          )}
+                        </div>
                         
-                        return (
-                          <>
-                            <div className="flex h-2 sm:h-2.5 rounded overflow-hidden">
-                              {segments.map((segment, idx) => {
-                                const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                                return (
-                                  <div
-                                    key={idx}
-                                    className={segment.color}
-                                    style={{ width: `${percentage}%` }}
-                                  />
-                                );
-                              })}
-                            </div>
-                            
-                            {/* Legend */}
-                            <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                              {segments.map((segment, idx) => (
-                                <div key={idx} className="flex items-center gap-0.5">
-                                  <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
-                                  <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                    {segment.sublabel || segment.label}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
-                          </>
-                        );
-                      })()
-                    )}
-                  </div>
-                  
-                  <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-snug hidden sm:block">
-                    {metric.description}
-                  </p>
-                </div>
-                
-                {/* AI Generated Icon */}
-                <div className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5">
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center">
-                    <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-first-line" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+                        <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-snug hidden sm:block">
+                          {metric.description}
+                        </p>
+                      </div>
+                      
+                      {/* AI Generated Icon */}
+                      <div className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5">
+                        <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full ${accentColors.bg} border ${accentColors.border} flex items-center justify-center`}>
+                          <Sparkles className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${accentColors.text}`} />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          );
+        })()}
 
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
