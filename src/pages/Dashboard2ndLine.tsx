@@ -1605,12 +1605,12 @@ const Dashboard2ndLine = () => {
                         </TableCell>
                         {/* Risk Hierarchy */}
                         <TableCell className="py-[2px] border-r border-b border-border">
-                          <div className="flex flex-col gap-0.5">
-                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} border text-[8px] font-medium`}>
+                          <div className="flex flex-col items-center gap-0.5">
+                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} w-fit rounded-md px-1.5 py-0 text-[8px] font-medium`}>
                               {risk.riskLevel}
                             </Badge>
                             {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} border text-[8px] font-medium`}>
+                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} w-fit rounded-md px-1.5 py-0 text-[8px] font-medium`}>
                                 {l2Risk.riskLevel}
                               </Badge>
                             ))}
