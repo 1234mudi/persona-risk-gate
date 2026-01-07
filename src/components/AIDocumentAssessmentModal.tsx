@@ -964,7 +964,7 @@ export function AIDocumentAssessmentModal({
           {step === "review" ? (
             <>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-second-line flex items-center justify-center">
+                <div className="w-10 h-10 rounded-none bg-second-line flex items-center justify-center">
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -973,7 +973,7 @@ export function AIDocumentAssessmentModal({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="gap-1">
+                <Badge variant="secondary" className="gap-1 rounded-none">
                   <Sparkles className="w-3 h-3" />
                   AI-Powered
                 </Badge>
@@ -981,6 +981,7 @@ export function AIDocumentAssessmentModal({
                   variant="outline"
                   size="sm"
                   onClick={handleClose}
+                  className="rounded-none"
                 >
                   Cancel
                 </Button>
