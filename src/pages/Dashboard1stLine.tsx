@@ -356,8 +356,10 @@ const Dashboard1stLine = () => {
             l2.parentRisk === l1Risk.title
           );
           
+          // Level 2 children are rendered INSIDE the Level 1 row via getLevel2Children()
+          // They should NOT be added as separate table rows
           childLevel2Risks.forEach(l2Risk => {
-            visible.push(l2Risk);
+            // DO NOT push l2Risk to visible - it's rendered inside Level 1 row
             if (expandedRows.has(l2Risk.id)) {
               // Only show Level 3 risks that belong to this Level 2
               const childLevel3Risks = level3Risks.filter(l3 => 
