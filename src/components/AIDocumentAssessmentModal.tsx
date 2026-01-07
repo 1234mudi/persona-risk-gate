@@ -1192,9 +1192,9 @@ export function AIDocumentAssessmentModal({
                   Document parsing complete. Review and edit below before importing.
                 </span>
                 <div className="ml-auto flex items-center gap-1.5">
-                  <Badge className="bg-second-line/10 text-second-line border-second-line/30 text-[10px] px-1.5 py-0.5 rounded-none">
+                  <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-700 text-[10px] px-1.5 py-0.5 rounded-none">
                     <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                    AI-parsed
+                    AI Powered
                   </Badge>
                 </div>
               </div>
@@ -1211,10 +1211,10 @@ export function AIDocumentAssessmentModal({
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5 text-xs">
-                    <Badge className="bg-second-line/10 text-second-line border-second-line/30 text-[10px] px-1.5 py-0.5 rounded-none">
+                    <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 border-teal-200 dark:border-teal-700 text-[10px] px-1.5 py-0.5 rounded-none">
                       <Plus className="w-2.5 h-2.5 mr-0.5" />{riskCounts.newCount} New
                     </Badge>
-                    <Badge className="bg-muted text-muted-foreground border-border/50 text-[10px] px-1.5 py-0.5 rounded-none">
+                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-700 text-[10px] px-1.5 py-0.5 rounded-none">
                       <Pencil className="w-2.5 h-2.5 mr-0.5" />{riskCounts.modifiedCount} Modified
                     </Badge>
                   </div>
@@ -1355,10 +1355,10 @@ export function AIDocumentAssessmentModal({
                         <React.Fragment key={originalIndex}>
                           <TableRow 
                             className={`transition-colors border-b border-border/30
-                              ${riskStatus === "new" ? "bg-second-line/5 hover:bg-second-line/10" : ""}
-                              ${riskStatus === "modified" ? "bg-muted/30 hover:bg-muted/50" : ""}
+                              ${riskStatus === "new" ? "bg-teal-50 dark:bg-teal-900/10 hover:bg-teal-100 dark:hover:bg-teal-900/20" : ""}
+                              ${riskStatus === "modified" ? "bg-amber-50 dark:bg-amber-900/10 hover:bg-amber-100 dark:hover:bg-amber-900/20" : ""}
                               ${riskStatus === "unchanged" ? "hover:bg-muted/20" : ""}
-                              ${selectedRiskIds.has(risk.id) ? "ring-1 ring-inset ring-second-line/50" : ""}
+                              ${selectedRiskIds.has(risk.id) ? "ring-1 ring-inset ring-primary/50" : ""}
                             `}
                           >
                             {/* Checkbox */}
@@ -1373,11 +1373,11 @@ export function AIDocumentAssessmentModal({
                             {/* Status Badge */}
                             <TableCell className="py-1.5 px-2">
                               {riskStatus === "new" ? (
-                                <Badge className="bg-second-line/10 text-second-line border-second-line/30 text-[10px] px-1.5 py-0.5 rounded-none">
+                                <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 border-teal-200 dark:border-teal-700 text-[10px] px-1.5 py-0.5 rounded-none">
                                   <Sparkles className="w-2.5 h-2.5 mr-0.5" />New
                                 </Badge>
                               ) : riskStatus === "modified" ? (
-                                <Badge className="bg-muted text-muted-foreground border-border/50 text-[10px] px-1.5 py-0.5 rounded-none">
+                                <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-700 text-[10px] px-1.5 py-0.5 rounded-none">
                                   <Pencil className="w-2.5 h-2.5 mr-0.5" />Modified
                                 </Badge>
                               ) : null}
@@ -1514,7 +1514,7 @@ export function AIDocumentAssessmentModal({
             {selectedRiskIds.size > 0 && (
               <Button
                 onClick={() => setShowBulkAssessmentModal(true)}
-                className="bg-second-line hover:bg-second-line/90 text-white gap-1.5 h-8 px-3 text-xs rounded-none"
+                className="bg-green-600 hover:bg-green-700 text-white gap-1.5 h-8 px-3 text-xs rounded-none"
               >
                 <Layers className="w-3.5 h-3.5" />
                 Assess Selected ({selectedRiskIds.size})
@@ -1523,7 +1523,7 @@ export function AIDocumentAssessmentModal({
             <Button 
               onClick={handleImport}
               disabled={parsedRisks.length === 0}
-              className="bg-second-line hover:bg-second-line/90 text-white px-4 h-8 text-xs rounded-none"
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 h-8 text-xs rounded-none"
             >
               Import {parsedRisks.length} Assessments
               <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
