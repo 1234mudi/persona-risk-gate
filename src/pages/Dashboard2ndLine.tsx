@@ -901,9 +901,9 @@ const Dashboard2ndLine = () => {
 
   const getRiskLevelColor = (level: string) => {
     switch(level) {
-      case "Level 1": return "bg-blue-100 text-blue-800 border-blue-300 dark:bg-blue-900/30 dark:text-blue-400";
-      case "Level 2": return "bg-purple-100 text-purple-800 border-purple-300 dark:bg-purple-900/30 dark:text-purple-400";
-      case "Level 3": return "bg-orange-100 text-orange-800 border-orange-300 dark:bg-orange-900/30 dark:text-orange-400";
+      case "Level 1": return "bg-[#6A75D8]/20 text-[#6A75D8] border-[#979EE4] dark:bg-[#6A75D8]/20 dark:text-[#979EE4]";
+      case "Level 2": return "bg-[#A361CF]/20 text-[#A361CF] border-[#A361CF]/50 dark:bg-[#A361CF]/20 dark:text-[#A361CF]";
+      case "Level 3": return "bg-[#F1BA50]/20 text-[#CE7900] border-[#F1BA50] dark:bg-[#F1BA50]/20 dark:text-[#F1BA50]";
       default: return "bg-muted text-muted-foreground";
     }
   };
@@ -935,11 +935,11 @@ const Dashboard2ndLine = () => {
   const getRiskBadgeColor = (color: string) => {
     switch (color) {
       case "red":
-        return "bg-destructive/20 text-destructive border-destructive/30";
+        return "bg-[#D21C1C]/20 text-[#D21C1C] border-[#D21C1C]/30 dark:bg-[#D21C1C]/20 dark:text-[#D21C1C]";
       case "yellow":
-        return "bg-yellow-100 text-yellow-800 border-yellow-300 dark:bg-yellow-900/20 dark:text-yellow-400";
+        return "bg-[#F1BA50]/20 text-[#CE7900] border-[#F1BA50]/50 dark:bg-[#F1BA50]/20 dark:text-[#F1BA50]";
       case "green":
-        return "bg-green-100 text-green-800 border-green-300 dark:bg-green-900/20 dark:text-green-400";
+        return "bg-[#46AF6A]/20 text-[#46AF6A] border-[#46AF6A]/30 dark:bg-[#46AF6A]/20 dark:text-[#46AF6A]";
       default:
         return "bg-muted text-muted-foreground";
     }
@@ -948,25 +948,30 @@ const Dashboard2ndLine = () => {
   const getRiskBadgeColorBg = (color: string) => {
     switch (color) {
       case "red":
-        return "bg-red-500/20 text-red-600 dark:text-red-400 border-red-300 dark:border-red-800";
+        return "bg-[#D21C1C]/20 text-[#D21C1C] border-[#D21C1C]/30 dark:text-[#D21C1C]";
       case "orange":
-        return "bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-800";
+        return "bg-[#F1BA50]/20 text-[#CE7900] border-[#CE7900]/30 dark:text-[#F1BA50]";
       case "yellow":
-        return "bg-yellow-500/20 text-yellow-600 dark:text-yellow-400 border-yellow-300 dark:border-yellow-800";
+        return "bg-[#F1BA50]/20 text-[#CE7900] border-[#F1BA50]/50 dark:text-[#F1BA50]";
       case "cyan":
-        return "bg-cyan-500/20 text-cyan-600 dark:text-cyan-400 border-cyan-300 dark:border-cyan-800";
+        return "bg-[#0A8078]/20 text-[#0A8078] border-[#0A8078]/30 dark:text-[#0A8078]";
       case "green":
-        return "bg-green-500/20 text-green-600 dark:text-green-400 border-green-300 dark:border-green-800";
+        return "bg-[#46AF6A]/20 text-[#46AF6A] border-[#46AF6A]/30 dark:text-[#46AF6A]";
       default:
         return "bg-muted text-muted-foreground";
     }
   };
 
   const getEffectivenessBadge = (label: string, color: string) => {
-    const colorClass = color === "green" 
-      ? "bg-green-500 text-white" 
-      : "bg-yellow-500 text-white";
-    return <Badge className={`${colorClass}`}>{label}</Badge>;
+    let colorClass = "bg-[#8B5993] text-white";
+    if (color === "green") {
+      colorClass = "bg-[#46AF6A] text-white";
+    } else if (color === "yellow" || label === "Partially Effective") {
+      colorClass = "bg-[#CE7900] text-white";
+    } else if (label === "Ineffective") {
+      colorClass = "bg-[#D21C1C] text-white";
+    }
+    return <Badge className={`${colorClass} rounded-full`}>{label}</Badge>;
   };
 
   return (
@@ -1548,13 +1553,13 @@ const Dashboard2ndLine = () => {
                               
                               {/* Level 2 Children (displayed within Level 1 row) */}
                               {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                              <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-0.5">
-                                  <span className="text-[10px] font-medium text-purple-600 dark:text-purple-400">{l2Risk.id}</span>
+                              <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-blue-300 dark:border-blue-600 ml-1 mt-0.5">
+                                  <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400">{l2Risk.id}</span>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
                                       <button 
                                         onClick={() => handleRiskNameClick(l2Risk)}
-                                      className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-[10px]"
+                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer text-[10px]"
                                     >
                                       └ {l2Risk.title}
                                     </button>
