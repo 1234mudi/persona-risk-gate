@@ -1145,7 +1145,7 @@ const Dashboard2ndLine = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
+                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10 rounded-none"
                   onClick={() => setActionDialog({ open: true, type: "reassign", riskId: null })}
                   disabled={selectedRisks.size === 0}
                 >
@@ -1155,7 +1155,7 @@ const Dashboard2ndLine = () => {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10"
+                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10 rounded-none"
                   onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: null })}
                   disabled={selectedRisks.size === 0}
                 >
@@ -1164,7 +1164,7 @@ const Dashboard2ndLine = () => {
                 </Button>
                 <Button 
                   size="sm"
-                  className="h-8 text-xs bg-primary text-white hover:bg-primary/90"
+                  className="h-8 text-xs bg-primary text-white hover:bg-primary/90 rounded-none"
                   onClick={() => setBulkAssessmentOpen(true)}
                   disabled={selectedRisks.size === 0}
                 >
