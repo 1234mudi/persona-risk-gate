@@ -1443,7 +1443,7 @@ const Dashboard1stLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-6 py-8">
       {/* Quick Links - Horizontal Strip */}
-        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-4 px-1 w-full">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-2 px-0 w-full">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
             <Link className="w-3 h-3 text-first-line" />
             Quick Links:
