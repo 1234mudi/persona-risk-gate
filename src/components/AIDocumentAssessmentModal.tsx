@@ -1188,38 +1188,22 @@ export function AIDocumentAssessmentModal({
         {step === "review" && (
           <TooltipProvider delayDuration={100}>
             <div className="flex-1 flex flex-col overflow-hidden min-h-0 px-4 py-3">
-              {/* Info Banner */}
-              <div className="bg-second-line/5 dark:bg-second-line/10 border border-second-line/30 rounded-none px-3 py-2 mb-3 flex items-center gap-2">
-                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-xs text-second-line">
-                  Document parsing complete. Review and edit below before importing.
-                </span>
-                <div className="ml-auto flex items-center gap-1.5">
-                  <Badge className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-700 text-[10px] px-1.5 py-0.5 rounded-none">
-                    <Sparkles className="w-2.5 h-2.5 mr-0.5" />
-                    AI Powered
-                  </Badge>
-                </div>
-              </div>
-
               {/* Combined Summary and Filter Bar */}
-              <div className="flex items-center justify-between mb-3 flex-shrink-0 gap-4">
+              <div className="flex items-center justify-between mb-2 flex-shrink-0 gap-4">
                 {/* Left: Summary info */}
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2">
                   <div className="flex items-center gap-1.5">
-                    <div className="w-6 h-6 rounded-none bg-second-line/10 flex items-center justify-center">
-                      <FileText className="w-3 h-3 text-second-line" />
-                    </div>
-                    <span className="text-sm font-medium text-[#10052F] dark:text-white">
+                    <FileText className="w-3.5 h-3.5 text-second-line" />
+                    <span className="text-xs font-medium text-foreground">
                       {parsedRisks.length} Risk Assessments Found
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs">
-                    <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 border-teal-200 dark:border-teal-700 text-[10px] px-1.5 py-0.5 rounded-none">
-                      <Plus className="w-2.5 h-2.5 mr-0.5" />{riskCounts.newCount} New
+                  <div className="flex items-center gap-1 text-xs">
+                    <Badge className="bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400 border-teal-200 dark:border-teal-700 text-[9px] px-1 py-0 h-4 rounded-none">
+                      <Plus className="w-2 h-2 mr-0.5" />{riskCounts.newCount} New
                     </Badge>
-                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-700 text-[10px] px-1.5 py-0.5 rounded-none">
-                      <Pencil className="w-2.5 h-2.5 mr-0.5" />{riskCounts.modifiedCount} Modified
+                    <Badge className="bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-700 text-[9px] px-1 py-0 h-4 rounded-none">
+                      <Pencil className="w-2 h-2 mr-0.5" />{riskCounts.modifiedCount} Modified
                     </Badge>
                   </div>
                 </div>
