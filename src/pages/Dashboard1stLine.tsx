@@ -1396,7 +1396,7 @@ const Dashboard1stLine = () => {
         <div className="container mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-first-line to-emerald-600 flex items-center justify-center">
+              <div className="w-10 h-10 bg-gradient-to-br from-first-line to-emerald-600 flex items-center justify-center">
                 <ClipboardCheck className="w-6 h-6 text-white" />
               </div>
               <div>
@@ -1497,7 +1497,7 @@ const Dashboard1stLine = () => {
           {metrics.map((metric, index) => (
             <Card 
               key={index}
-              className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer"
+              className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer rounded-none"
               onClick={() => {
                 setSelectedMetric(metric);
                 setMetricDetailsOpen(true);

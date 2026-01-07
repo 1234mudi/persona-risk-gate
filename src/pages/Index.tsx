@@ -142,7 +142,7 @@ const Index = () => {
         <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 py-2 overflow-y-auto">
           {/* Logo/Branding */}
           <div className="w-full max-w-sm flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+            <div className="w-10 h-10 bg-primary/10 flex items-center justify-center">
               <Shield className="w-6 h-6 text-primary" />
             </div>
             <div>
@@ -156,7 +156,7 @@ const Index = () => {
             <form onSubmit={handleLogin} className="space-y-4">
               {/* Username field with floating label and left accent */}
               <div className="relative">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[hsl(175,100%,42%)] rounded-l"></div>
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[hsl(175,100%,42%)]"></div>
                 <label className="absolute -top-2.5 left-3 bg-background px-1 text-xs text-muted-foreground z-10">
                   Username
                 </label>
@@ -165,7 +165,7 @@ const Index = () => {
                   type="text"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-11 pl-4 border-border rounded-none rounded-r focus:border-primary focus:ring-0 focus:ring-offset-0 bg-background"
+                  className="h-11 pl-4 border-border rounded-none focus:border-primary focus:ring-0 focus:ring-offset-0 bg-background"
                   required
                 />
               </div>
@@ -178,14 +178,14 @@ const Index = () => {
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 border-border rounded focus:border-primary focus:ring-0 focus:ring-offset-0 bg-background"
+                  className="h-11 border-border rounded-none focus:border-primary focus:ring-0 focus:ring-offset-0 bg-background"
                   required
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-36 h-10 bg-[#E87722] hover:bg-[#D06A1E] text-white font-semibold text-sm rounded"
+                className="w-36 h-10 bg-[#E87722] hover:bg-[#D06A1E] text-white font-semibold text-sm rounded-none"
               >
                 SIGN IN
               </Button>
@@ -212,7 +212,7 @@ const Index = () => {
           {/* Persona Cards */}
           <div className="w-full max-w-2xl space-y-3">
             {/* 1st Line Defense Section */}
-            <div className="rounded-lg border border-first-line/20 bg-first-line/5 p-2">
+            <div className="border border-first-line/20 bg-first-line/5 p-2">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-first-line"></div>
                 <h3 className="text-xs font-semibold text-first-line uppercase tracking-wide">
@@ -234,7 +234,7 @@ const Index = () => {
             </div>
 
             {/* 2nd Line Defense Section */}
-            <div className="rounded-lg border border-second-line/20 bg-second-line/5 p-2">
+            <div className="border border-second-line/20 bg-second-line/5 p-2">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-second-line"></div>
                 <h3 className="text-xs font-semibold text-second-line uppercase tracking-wide">
