@@ -54,7 +54,9 @@ import {
   HelpCircle,
   Paperclip,
   XCircle,
-  RefreshCw
+  RefreshCw,
+  Library,
+  PenLine
 } from "lucide-react";
 import {
   Tooltip,
@@ -193,6 +195,11 @@ const RiskAssessmentForm = () => {
   const [activeCellComment, setActiveCellComment] = useState<{factorId: string; field: string} | null>(null);
   const [expandedPanel, setExpandedPanel] = useState<string | null>(null);
   const [addControlModalOpen, setAddControlModalOpen] = useState(false);
+  const [showAddControlOptions, setShowAddControlOptions] = useState(false);
+  const [showNewControlForm, setShowNewControlForm] = useState(false);
+  const [newControlTitle, setNewControlTitle] = useState("");
+  const [newControlType, setNewControlType] = useState<"Preventive" | "Detective">("Preventive");
+  const [addToLibrary, setAddToLibrary] = useState(false);
   
   // Review/Challenge panel state
   const [resolvingItemId, setResolvingItemId] = useState<string | null>(null);
@@ -2477,6 +2484,47 @@ const RiskAssessmentForm = () => {
                   />
                 </div>
                   <div className="flex items-center gap-1.5">
+                    {/* Add Control Button with Options */}
+                    <Popover open={showAddControlOptions} onOpenChange={setShowAddControlOptions}>
+                      <PopoverTrigger asChild>
+                        <Button 
+                          variant="outline" 
+                          className="gap-1.5 h-7 text-xs px-2.5 border border-border"
+                        >
+                          <Plus className="w-3 h-3" />Add Control
+                        </Button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-56 p-1.5" align="end">
+                        <div className="space-y-0.5">
+                          <button
+                            className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded-md hover:bg-muted transition-colors text-left"
+                            onClick={() => {
+                              setShowAddControlOptions(false);
+                              setAddControlModalOpen(true);
+                            }}
+                          >
+                            <Library className="w-3.5 h-3.5 text-blue-500" />
+                            <div>
+                              <div className="font-medium">Select from Library</div>
+                              <div className="text-[10px] text-muted-foreground">Choose existing controls</div>
+                            </div>
+                          </button>
+                          <button
+                            className="w-full flex items-center gap-2 px-2 py-1.5 text-xs rounded-md hover:bg-muted transition-colors text-left"
+                            onClick={() => {
+                              setShowAddControlOptions(false);
+                              setShowNewControlForm(true);
+                            }}
+                          >
+                            <PenLine className="w-3.5 h-3.5 text-emerald-500" />
+                            <div>
+                              <div className="font-medium">Create New Control</div>
+                              <div className="text-[10px] text-muted-foreground">Add a custom control</div>
+                            </div>
+                          </button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
                     <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-1.5 h-7 text-xs px-2.5" onClick={handleAiAutofill} disabled={isAiLoading}>
                       <Sparkles className="w-3 h-3" />{isAiLoading ? "Analyzing..." : "AI Autofill All"}
                     </Button>
@@ -2720,13 +2768,6 @@ const RiskAssessmentForm = () => {
                     </tbody>
                   </table>
                 </div>
-                <Button 
-                  variant="outline" 
-                  className="mt-3 gap-2 h-8 text-sm"
-                  onClick={() => setAddControlModalOpen(true)}
-                >
-                  <Plus className="w-3.5 h-3.5" />Add Control
-                </Button>
                 
                 {/* Add Control Modal */}
                 <AddControlModal 
@@ -2750,6 +2791,99 @@ const RiskAssessmentForm = () => {
                     toast.success(`${newControls.length} control(s) added successfully`);
                   }}
                 />
+
+                {/* Create New Control Dialog */}
+                <Dialog open={showNewControlForm} onOpenChange={setShowNewControlForm}>
+                  <DialogContent className="sm:max-w-md p-0">
+                    <div className="px-4 py-2 border-b bg-gradient-to-r from-emerald-500 to-teal-600">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-md bg-white/20 flex items-center justify-center">
+                          <PenLine className="w-4 h-4 text-white" />
+                        </div>
+                        <DialogTitle className="text-white text-sm">Create New Control</DialogTitle>
+                      </div>
+                    </div>
+                    
+                    <div className="p-4 space-y-3">
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium">Control Title</label>
+                        <Input 
+                          placeholder="Enter control title..."
+                          value={newControlTitle}
+                          onChange={(e) => setNewControlTitle(e.target.value)}
+                          className="h-8 text-sm"
+                        />
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-xs font-medium">Control Type</label>
+                        <Select value={newControlType} onValueChange={(val) => setNewControlType(val as "Preventive" | "Detective")}>
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="Select type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="Preventive">Preventive</SelectItem>
+                            <SelectItem value="Detective">Detective</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      {/* Add to Library Checkbox */}
+                      <div className="flex items-center gap-2 p-2 bg-blue-50 dark:bg-blue-950/30 rounded-md border border-blue-200 dark:border-blue-800">
+                        <Checkbox 
+                          id="addToLibrary" 
+                          checked={addToLibrary}
+                          onCheckedChange={(checked) => setAddToLibrary(checked as boolean)}
+                          className="h-3.5 w-3.5"
+                        />
+                        <label htmlFor="addToLibrary" className="text-xs cursor-pointer">
+                          <span className="font-medium">Add to control library</span>
+                          <span className="block text-[10px] text-muted-foreground">
+                            Make this control available for future assessments
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-end gap-2 px-4 py-2 border-t bg-muted/30">
+                      <Button variant="outline" className="h-7 text-xs" onClick={() => setShowNewControlForm(false)}>
+                        Cancel
+                      </Button>
+                      <Button 
+                        className="gap-1.5 h-7 text-xs bg-emerald-600 hover:bg-emerald-700"
+                        onClick={() => {
+                          if (!newControlTitle.trim()) return;
+                          const newId = `CTL-${String(controls.length + 4).padStart(3, '0')}`;
+                          const newControl = {
+                            id: newId,
+                            name: newControlTitle,
+                            description: `${newControlTitle} - Custom control`,
+                            type: newControlType,
+                            owner: "Assigned Owner",
+                            designRating: 3,
+                            operatingRating: 3,
+                            testingRating: 3,
+                            evidences: [],
+                            cellComments: []
+                          };
+                          setControls([...controls, newControl]);
+                          if (addToLibrary) {
+                            toast.success(`Control "${newControlTitle}" created and added to library`);
+                          } else {
+                            toast.success(`Control "${newControlTitle}" created`);
+                          }
+                          setNewControlTitle("");
+                          setNewControlType("Preventive");
+                          setAddToLibrary(false);
+                          setShowNewControlForm(false);
+                        }}
+                        disabled={!newControlTitle.trim()}
+                      >
+                        <Plus className="w-3 h-3" />Create Control
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </Card>
 
               <div className="flex items-center justify-between">
