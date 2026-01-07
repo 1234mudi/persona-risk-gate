@@ -2169,13 +2169,13 @@ const Dashboard1stLine = () => {
                               
                               {/* Level 2 Children - displayed within Level 1 row */}
                               {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
-                                <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-purple-300 dark:border-purple-600 ml-1 mt-0.5">
-                                  <span className="text-[10px] font-medium text-purple-600 dark:text-purple-400">{l2Risk.id}</span>
+                                <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-blue-300 dark:border-blue-600 ml-1 mt-0.5">
+                                  <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400">{l2Risk.id}</span>
                                   <Tooltip>
                                     <TooltipTrigger asChild>
                                       <button 
                                         onClick={() => handleRiskNameClick(l2Risk)}
-                                        className="text-left hover:text-primary transition-colors font-medium text-purple-600 dark:text-purple-400 hover:underline cursor-pointer text-[10px]"
+                                        className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer text-[10px]"
                                       >
                                         {l2Risk.title}
                                       </button>
