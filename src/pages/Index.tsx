@@ -140,63 +140,76 @@ const Index = () => {
 
         {/* Main Content */}
         <div className="flex-1 flex flex-col items-center justify-start px-4 sm:px-8 lg:px-12 pb-6">
-          {/* Logo/Branding */}
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <Shield className="w-6 h-6 text-primary-foreground" />
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-foreground">RCSA Platform</h1>
-              <p className="text-xs text-muted-foreground">Risk & Control Self-Assessment</p>
-            </div>
+          {/* MetricStream-style Logo */}
+          <div className="flex items-center gap-2 mb-10">
+            <svg width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+              {/* M shape */}
+              <path 
+                d="M8 38V14L18 28L24 18L30 28L40 14V38" 
+                stroke="hsl(175, 100%, 42%)" 
+                strokeWidth="4" 
+                strokeLinecap="round" 
+                strokeLinejoin="round"
+                fill="none"
+              />
+              {/* Sparkle top right */}
+              <circle cx="42" cy="8" r="2" fill="hsl(175, 100%, 42%)" />
+              <path d="M42 4V12M38 8H46" stroke="hsl(175, 100%, 42%)" strokeWidth="1.5" strokeLinecap="round" />
+              {/* Small sparkle */}
+              <circle cx="36" cy="14" r="1" fill="hsl(175, 100%, 50%)" />
+            </svg>
+            <span className="text-2xl font-light tracking-wide">
+              <span className="text-[hsl(175,100%,35%)]">metric</span>
+              <span className="text-muted-foreground">stream</span>
+            </span>
           </div>
 
           {/* Login Form */}
-          <div className="w-full max-w-sm space-y-4 mb-8">
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="username" className="text-sm text-muted-foreground">
+          <div className="w-full max-w-sm space-y-5 mb-8">
+            <form onSubmit={handleLogin} className="space-y-5">
+              {/* Username field with floating label and left accent */}
+              <div className="relative">
+                <div className="absolute left-0 top-0 bottom-0 w-1 bg-[hsl(175,100%,42%)] rounded-l"></div>
+                <label className="absolute -top-2.5 left-3 bg-background px-1 text-xs text-muted-foreground z-10">
                   Username
-                </Label>
+                </label>
                 <Input
                   id="username"
                   type="text"
-                  placeholder=""
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="h-11 border-border bg-background"
+                  className="h-11 pl-4 border-border rounded-none rounded-r focus:border-primary focus:ring-0 focus:ring-offset-0 bg-background"
                   required
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <Label htmlFor="password" className="text-sm text-muted-foreground">
-                  Password
-                </Label>
+              {/* Password field with placeholder only */}
+              <div>
                 <Input
                   id="password"
                   type="password"
-                  placeholder=""
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="h-11 border-border bg-background"
+                  className="h-11 border-border rounded focus:border-primary focus:ring-0 focus:ring-offset-0 bg-background"
                   required
                 />
               </div>
 
               <Button
                 type="submit"
-                className="w-full h-11 bg-warning hover:bg-warning/90 text-white font-semibold"
+                className="w-36 h-10 bg-[#E87722] hover:bg-[#D06A1E] text-white font-semibold text-sm rounded"
               >
                 SIGN IN
               </Button>
             </form>
 
-            <div className="text-center">
-              <a
-                href="#"
-                className="text-sm text-primary hover:text-primary/80 transition-colors"
-              >
+            <div>
+              <a href="#" className="text-sm text-primary hover:underline">
+                Recover Username
+              </a>
+              <span className="text-muted-foreground mx-2">|</span>
+              <a href="#" className="text-sm text-primary hover:underline">
                 Recover Password
               </a>
             </div>
