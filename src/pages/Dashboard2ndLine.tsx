@@ -1020,26 +1020,26 @@ const Dashboard2ndLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
         {/* Quick Links - Horizontal Strip */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 px-1">
-          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <Link className="w-4 h-4 text-primary" />
-            Quick Links:
+          <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-2 px-0 w-full">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#10052F] dark:text-white">
+              <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
+              Quick Links:
+            </div>
+            <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
+              <ClipboardCheck className="w-3 h-3" />
+              <span>Open Risk Assessments</span>
+            </button>
+            <span className="text-gray-400 dark:text-gray-500">|</span>
+            <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
+              <CheckCircle className="w-3 h-3" />
+              <span>Assessments Awaiting Approval</span>
+            </button>
+            <span className="text-gray-400 dark:text-gray-500">|</span>
+            <button onClick={handleOpenChallengesClick} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
+              <AlertTriangle className="w-3 h-3" />
+              <span>View 2nd Line Challenged Risks</span>
+            </button>
           </div>
-          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1.5 text-primary hover:underline text-sm">
-            <ClipboardCheck className="w-4 h-4" />
-            <span>Open Risk Assessments</span>
-          </button>
-          <span className="text-muted-foreground/50">|</span>
-          <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-1.5 text-primary hover:underline text-sm">
-            <CheckCircle className="w-4 h-4" />
-            <span>Assessments Awaiting Approval</span>
-          </button>
-          <span className="text-muted-foreground/50">|</span>
-          <button onClick={handleOpenChallengesClick} className="flex items-center gap-1.5 text-primary hover:underline text-sm">
-            <AlertTriangle className="w-4 h-4" />
-            <span>View 2nd Line Challenged Risks</span>
-          </button>
-        </div>
 
         {/* Scorecards - 2 rows x 3 columns */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
