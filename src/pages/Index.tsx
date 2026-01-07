@@ -6,7 +6,7 @@ import { PersonaCard } from "@/components/PersonaCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
 import { useNavigate } from "react-router-dom";
-import metricstreamLogo from "@/assets/metricstream-logo.png";
+
 
 const Index = () => {
   const [email, setEmail] = useState("");
@@ -142,13 +142,11 @@ const Index = () => {
         <div className="flex-1 flex flex-col items-center justify-start px-4 sm:px-8 lg:px-12 pb-6">
           {/* Logo/Branding */}
           <div className="w-full max-w-sm flex items-center gap-3 mb-6">
-            <img 
-              src={metricstreamLogo} 
-              alt="Logo" 
-              className="w-10 h-10 object-contain"
-            />
+            <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
+              <Shield className="w-6 h-6 text-primary" />
+            </div>
             <div>
-              <h1 className="text-xl font-bold text-foreground">RCSA Platform</h1>
+              <h1 className="text-xl font-bold text-black">RCSA Platform</h1>
               <p className="text-xs text-muted-foreground">Risk & Control Self-Assessment</p>
             </div>
           </div>
