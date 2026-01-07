@@ -961,7 +961,7 @@ export function AIDocumentAssessmentModal({
           {step === "review" ? (
             <>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-blue-500 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-lg bg-second-line flex items-center justify-center">
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div>
@@ -986,7 +986,7 @@ export function AIDocumentAssessmentModal({
           ) : step === "not-found" ? (
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
-                <Search className="w-5 h-5 text-amber-500" />
+                <Search className="w-5 h-5 text-second-line" />
                 AI Document Scan
               </DialogTitle>
               <DialogDescription>
@@ -998,12 +998,12 @@ export function AIDocumentAssessmentModal({
               <DialogTitle className="flex items-center gap-2">
                 {skipReviewScreen ? (
                   <>
-                    <Search className="w-5 h-5 text-blue-500" />
+                    <Search className="w-5 h-5 text-second-line" />
                     Find Risks in Document
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5 text-blue-500" />
+                    <Sparkles className="w-5 h-5 text-second-line" />
                     Document Parser
                   </>
                 )}
@@ -1028,8 +1028,8 @@ export function AIDocumentAssessmentModal({
                 onDrop={handleDrop}
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   isDragging 
-                    ? 'border-first-line bg-first-line/5' 
-                    : 'border-border hover:border-first-line/50'
+                    ? 'border-second-line bg-second-line/5' 
+                    : 'border-border hover:border-second-line/50'
                 }`}
               >
                 <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
@@ -1065,7 +1065,7 @@ export function AIDocumentAssessmentModal({
                       className="flex items-center justify-between p-3 bg-muted/50 rounded-lg"
                     >
                       <div className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-first-line" />
+                        <FileText className="w-5 h-5 text-second-line" />
                         <div>
                           <p className="text-sm font-medium">{file.name}</p>
                           <p className="text-xs text-muted-foreground">
@@ -1092,8 +1092,8 @@ export function AIDocumentAssessmentModal({
                   onDrop={handleDrop}
                   className={`border-2 border-dashed rounded-lg p-3 text-center transition-colors ${
                     isDragging 
-                      ? 'border-first-line bg-first-line/5' 
-                      : 'border-border hover:border-first-line/50'
+                      ? 'border-second-line bg-second-line/5' 
+                      : 'border-border hover:border-second-line/50'
                   }`}
                 >
                   <div className="flex items-center justify-center gap-2">

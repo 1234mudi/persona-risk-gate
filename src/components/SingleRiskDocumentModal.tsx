@@ -433,7 +433,7 @@ export function SingleRiskDocumentModal({
       <DialogContent className="max-w-2xl max-h-[85vh] overflow-hidden flex flex-col">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Search className="w-5 h-5 text-primary" />
+            <Search className="w-5 h-5 text-second-line" />
             Search Document for Risk
           </DialogTitle>
           <DialogDescription className="text-sm">
@@ -449,14 +449,14 @@ export function SingleRiskDocumentModal({
               <div
                 className={`border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
                   isDragging
-                    ? "border-primary bg-primary/5"
-                    : "border-muted-foreground/25 hover:border-primary/50"
+                    ? "border-second-line bg-second-line/5"
+                    : "border-border hover:border-second-line/50"
                 }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
               >
-                <Upload className="w-10 h-10 mx-auto mb-3 text-muted-foreground" />
+                <Upload className="w-10 h-10 mx-auto mb-3 text-second-line/60" />
                 <p className="text-sm font-medium mb-1">
                   Drop CSV or DOCX files here
                 </p>
@@ -494,7 +494,7 @@ export function SingleRiskDocumentModal({
                       className="flex items-center justify-between p-2 rounded-md bg-muted/50 border border-border"
                     >
                       <div className="flex items-center gap-2">
-                        <FileText className="w-4 h-4 text-muted-foreground" />
+                        <FileText className="w-4 h-4 text-second-line" />
                         <span className="text-sm truncate max-w-[300px]">
                           {file.name}
                         </span>
@@ -519,7 +519,7 @@ export function SingleRiskDocumentModal({
 
           {step === "processing" && (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader2 className="w-10 h-10 animate-spin text-primary mb-4" />
+              <Loader2 className="w-10 h-10 animate-spin text-second-line mb-4" />
               <p className="text-sm font-medium mb-2">
                 Searching for {risk.id}...
               </p>
@@ -611,7 +611,7 @@ export function SingleRiskDocumentModal({
                               >
                                 {comp.currentValue || "(empty)"}
                               </span>
-                              <ArrowRight className="w-3 h-3 text-primary shrink-0" />
+                              <ArrowRight className="w-3 h-3 text-second-line shrink-0" />
                               <span
                                 className={`font-medium ${
                                   comp.status === "new"
@@ -653,7 +653,7 @@ export function SingleRiskDocumentModal({
               <Button variant="outline" onClick={handleClose}>
                 Cancel
               </Button>
-              <Button onClick={searchForRisk} disabled={files.length === 0}>
+              <Button onClick={searchForRisk} disabled={files.length === 0} className="bg-second-line hover:bg-second-line/90">
                 <Search className="w-4 h-4 mr-2" />
                 Search Documents
               </Button>
