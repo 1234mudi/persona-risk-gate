@@ -1748,13 +1748,13 @@ const Dashboard1stLine = () => {
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
           {/* Title Bar with Tabs */}
           <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
-            <div className="flex items-center justify-between h-10">
+            <div className="flex items-center justify-between h-12">
               {/* Left: Title */}
-              <div className="flex items-center gap-1.5 px-3">
-                <span className="text-sm font-medium text-foreground">
+              <div className="flex items-center gap-1.5 px-4">
+                <span className="text-base font-semibold text-foreground">
                   My Risk Assessments
                 </span>
-                <span className="text-sm text-muted-foreground">
+                <span className="text-base text-muted-foreground">
                   ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
                 </span>
               </div>
@@ -1968,7 +1968,7 @@ const Dashboard1stLine = () => {
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
                       {activeTab !== "own" && (
-                        <TableHead className="w-14 min-w-[56px] py-2 border-r border-b border-border">
+                        <TableHead className="w-14 min-w-[56px] py-1 border-r border-b border-border">
                           <div className="flex items-center justify-center px-2">
                             <Checkbox 
                               checked={visibleRisks.length > 0 && selectedRisks.size === visibleRisks.length}
@@ -1977,9 +1977,9 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableHead>
                       )}
-                      <TableHead className="w-16 min-w-[64px] py-2 border-r border-b border-border text-xs text-center">Edit</TableHead>
-                      <TableHead className="min-w-[280px] py-2 border-r border-b border-border">Risk ID / Title</TableHead>
-                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">
+                      <TableHead className="w-16 min-w-[64px] py-1 border-r border-b border-border text-xs text-center">Edit</TableHead>
+                      <TableHead className="min-w-[280px] py-1 border-r border-b border-border">Risk ID / Title</TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <button className="flex items-center gap-2 hover:text-primary transition-colors">
@@ -2014,20 +2014,20 @@ const Dashboard1stLine = () => {
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableHead>
-                      <TableHead className="min-w-[120px] py-2 border-r border-b border-border">Due Date</TableHead>
+                      <TableHead className="min-w-[120px] py-1 border-r border-b border-border">Due Date</TableHead>
                       {activeTab === "own" && (
-                        <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Completion Date</TableHead>
+                        <TableHead className="min-w-[140px] py-1 border-r border-b border-border">Completion Date</TableHead>
                       )}
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Assessment Progress</TableHead>
-                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Business Unit</TableHead>
-                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Assessors/Collaborators</TableHead>
-                      <TableHead className="min-w-[140px] py-2 border-r border-b border-border">Last Assessed Date</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Inherent Risk</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Residual Risk</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Related Controls</TableHead>
-                      <TableHead className="min-w-[200px] py-2 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
-                      <TableHead className="min-w-[180px] py-2 border-r border-b border-border">Control Test Results</TableHead>
-                      <TableHead className="min-w-[160px] py-2 border-b border-border">Status</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Assessment Progress</TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border">Business Unit</TableHead>
+                      <TableHead className="min-w-[180px] py-1 border-r border-b border-border">Assessors/Collaborators</TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border">Last Assessed Date</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Inherent Risk</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Residual Risk</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Related Controls</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border">Calculated Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[180px] py-1 border-r border-b border-border">Control Test Results</TableHead>
+                      <TableHead className="min-w-[160px] py-1 border-b border-border">Status</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
