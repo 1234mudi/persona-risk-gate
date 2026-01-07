@@ -1484,7 +1484,7 @@ export function AIDocumentAssessmentModal({
                 className="bg-green-600 hover:bg-green-700 text-white gap-1.5 h-8 px-3 text-xs rounded-none"
               >
                 <Layers className="w-3.5 h-3.5" />
-                Assess Selected ({selectedRiskIds.size})
+                Review Selected ({selectedRiskIds.size})
               </Button>
             )}
             <Button 
