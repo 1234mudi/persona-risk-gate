@@ -924,11 +924,11 @@ const Dashboard2ndLine = () => {
 
   const getCategoryColor = (category: string) => {
     switch(category) {
-      case "Operational": return "bg-indigo-50 dark:bg-indigo-950/30";
-      case "Technology": return "bg-cyan-50 dark:bg-cyan-950/30";
-      case "Compliance": return "bg-purple-50 dark:bg-purple-950/30";
-      case "Financial": return "bg-green-50 dark:bg-green-950/30";
-      default: return "bg-muted/30";
+      case "Operational": return "bg-[#6A75D8]/10 dark:bg-[#6A75D8]/20 text-[#10052F] dark:text-white";
+      case "Technology": return "bg-[#0A8078]/10 dark:bg-[#0A8078]/20 text-[#10052F] dark:text-white";
+      case "Compliance": return "bg-[#A361CF]/10 dark:bg-[#A361CF]/20 text-[#10052F] dark:text-white";
+      case "Financial": return "bg-[#46AF6A]/10 dark:bg-[#46AF6A]/20 text-[#10052F] dark:text-white";
+      default: return "bg-muted/30 text-[#10052F] dark:text-white";
     }
   };
 
@@ -1328,7 +1328,7 @@ const Dashboard2ndLine = () => {
             {/* Table with horizontal scroll */}
             <div className="border overflow-hidden -mx-2 sm:mx-0">
               <div className="overflow-x-auto">
-                <Table className="border-collapse">
+                <Table className="border-collapse text-[#10052F] dark:text-white">
                   <TableHeader className="bg-muted/50 sticky top-0">
                     <TableRow>
                       <TableHead className="w-8 py-1 border-r border-b border-border">
@@ -1635,7 +1635,7 @@ const Dashboard2ndLine = () => {
                         </TableCell>
                         {/* Business Unit */}
                         <TableCell className="py-[2px] border-r border-b border-border">
-                          <Badge variant="outline" className="text-[8px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700">
+                          <Badge variant="outline" className="text-[8px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700 text-[#10052F] dark:text-white">
                             {risk.businessUnit}
                           </Badge>
                         </TableCell>
@@ -1752,7 +1752,7 @@ const Dashboard2ndLine = () => {
                                         <Tooltip>
                                           <TooltipTrigger asChild>
                                             <button
-                                              className="text-muted-foreground hover:text-primary hover:underline text-left truncate max-w-[90px] block text-[8px]"
+                                              className="text-[#10052F] dark:text-white hover:text-primary hover:underline text-left truncate max-w-[90px] block text-[8px]"
                                               onClick={() => {
                                                 setSelectedControl(control);
                                                 setControlDetailsOpen(true);
