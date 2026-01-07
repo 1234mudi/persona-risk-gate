@@ -1202,11 +1202,12 @@ export function AIDocumentAssessmentModal({
                 </div>
               </div>
 
-              {/* Summary Header */}
-              <div className="flex items-center justify-between mb-3 flex-shrink-0">
+              {/* Combined Summary and Filter Bar */}
+              <div className="flex items-center justify-between mb-3 flex-shrink-0 gap-4">
+                {/* Left: Summary info */}
                 <div className="flex items-center gap-3">
                   <div className="flex items-center gap-1.5">
-              <div className="w-6 h-6 rounded-none bg-second-line/10 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-none bg-second-line/10 flex items-center justify-center">
                       <FileText className="w-3 h-3 text-second-line" />
                     </div>
                     <span className="text-sm font-medium text-[#10052F] dark:text-white">
@@ -1222,93 +1223,71 @@ export function AIDocumentAssessmentModal({
                     </Badge>
                   </div>
                 </div>
-                <div className="flex items-center gap-3">
-                  {/* Highlight Toggle with Legend */}
-                  <div className="flex items-center gap-2 text-[10px] bg-muted/30 rounded-none px-2 py-1.5 border border-border/50">
-                    <div className="flex items-center gap-1">
-                      <div className="w-2.5 h-2.5 rounded-none border border-emerald-400 bg-emerald-100 dark:bg-emerald-900/30" />
-                      <span className="text-muted-foreground">Has data</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-2.5 h-2.5 rounded-none border border-amber-400 bg-amber-100 dark:bg-amber-900/30" />
-                      <span className="text-muted-foreground">Missing</span>
-                    </div>
-                    <div className="h-3 w-px bg-border/50" />
-                    <div className="flex items-center gap-1.5">
-                      <Switch 
-                        checked={showHighlights} 
-                        onCheckedChange={setShowHighlights}
-                        className="scale-[0.65]"
-                      />
-                      <span className="text-muted-foreground">Highlights</span>
-                    </div>
+
+                {/* Right: Search and Filters */}
+                <div className="flex items-center gap-2">
+                  {/* Search */}
+                  <div className="relative max-w-[200px]">
+                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
+                    <Input
+                      placeholder="Search ID, title, owner..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-8 h-7 text-xs border-border/50 bg-white dark:bg-card rounded-none"
+                    />
                   </div>
+
+                  {/* Status Filter Buttons */}
+                  <div className="flex items-center gap-0.5 bg-muted/30 rounded-none p-0.5 border border-border/50">
+                    <Button
+                      variant={statusFilter === "all" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setStatusFilter("all")}
+                      className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "all" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
+                    >
+                      All ({parsedRisks.length})
+                    </Button>
+                    <Button
+                      variant={statusFilter === "new" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setStatusFilter("new")}
+                      className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "new" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
+                    >
+                      <Plus className="w-2.5 h-2.5 mr-0.5" />
+                      New ({riskCounts.newCount})
+                    </Button>
+                    <Button
+                      variant={statusFilter === "modified" ? "default" : "ghost"}
+                      size="sm"
+                      onClick={() => setStatusFilter("modified")}
+                      className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "modified" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
+                    >
+                      <Pencil className="w-2.5 h-2.5 mr-0.5" />
+                      Modified ({riskCounts.modifiedCount})
+                    </Button>
+                  </div>
+
+                  {/* Source File Filter */}
+                  {sourceFiles.length > 1 && (
+                    <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                      <SelectTrigger className="w-[160px] h-7 text-[10px] bg-white dark:bg-card border-border/50 rounded-none">
+                        <Filter className="w-3 h-3 mr-1.5" />
+                        <SelectValue placeholder="All Documents" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Documents</SelectItem>
+                        {sourceFiles.map(file => (
+                          <SelectItem key={file} value={file}>{file}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+
+                  {/* Results count */}
+                  <span className="text-[10px] text-muted-foreground whitespace-nowrap">
+                    Showing {filteredRisks.length} of {parsedRisks.length}
+                  </span>
                 </div>
-              </div>
-
-              {/* Search and Filter Bar */}
-              <div className="flex items-center gap-2 mb-3 flex-shrink-0">
-                {/* Search */}
-                <div className="relative flex-1 max-w-sm">
-                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
-                  <Input
-                    placeholder="Search ID, title, owner..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-8 h-7 text-xs border-border/50 bg-white dark:bg-card rounded-none"
-                  />
-                </div>
-
-                {/* Status Filter Buttons */}
-                <div className="flex items-center gap-0.5 bg-muted/30 rounded-none p-0.5 border border-border/50">
-                  <Button
-                    variant={statusFilter === "all" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setStatusFilter("all")}
-                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "all" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
-                  >
-                    All ({parsedRisks.length})
-                  </Button>
-                  <Button
-                    variant={statusFilter === "new" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setStatusFilter("new")}
-                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "new" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
-                  >
-                    <Plus className="w-2.5 h-2.5 mr-0.5" />
-                    New ({riskCounts.newCount})
-                  </Button>
-                  <Button
-                    variant={statusFilter === "modified" ? "default" : "ghost"}
-                    size="sm"
-                    onClick={() => setStatusFilter("modified")}
-                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "modified" ? "bg-white dark:bg-card shadow-sm text-foreground" : ""}`}
-                  >
-                    <Pencil className="w-2.5 h-2.5 mr-0.5" />
-                    Modified ({riskCounts.modifiedCount})
-                  </Button>
-                </div>
-
-                {/* Source File Filter */}
-                {sourceFiles.length > 1 && (
-                  <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                    <SelectTrigger className="w-[160px] h-7 text-[10px] bg-white dark:bg-card border-border/50 rounded-none">
-                      <Filter className="w-3 h-3 mr-1.5" />
-                      <SelectValue placeholder="All Documents" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="all">All Documents</SelectItem>
-                      {sourceFiles.map(file => (
-                        <SelectItem key={file} value={file}>{file}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                )}
-
-                {/* Results count */}
-                <span className="text-[10px] text-muted-foreground whitespace-nowrap">
-                  Showing {filteredRisks.length} of {parsedRisks.length}
-                </span>
               </div>
 
               {/* Table View matching main dashboard */}
