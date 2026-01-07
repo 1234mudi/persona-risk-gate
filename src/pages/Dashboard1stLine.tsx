@@ -1390,20 +1390,20 @@ const Dashboard1stLine = () => {
 
   return (
     <TooltipProvider>
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
+      <div className="min-h-screen bg-[#F5F6FA] dark:bg-background">
+      {/* Header - MetricStream Style Dark Navy */}
+      <header className="bg-[#2D2554] dark:bg-[#1a1633] sticky top-0 z-10">
+        <div className="px-4 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-first-line to-emerald-600 flex items-center justify-center">
-                <ClipboardCheck className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 bg-white/10 flex items-center justify-center">
+                <ClipboardCheck className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-foreground">
+                <h1 className="text-base font-semibold text-white">
                   1st Line Risk Analyst Dashboard
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-white/70">
                   {selectedAssessor !== "all" 
                     ? `Viewing as: ${selectedAssessor}` 
                     : "Risk and Control Self Assessment"
@@ -1411,11 +1411,11 @@ const Dashboard1stLine = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
               <Select value={selectedAssessor} onValueChange={setSelectedAssessor}>
-                <SelectTrigger className="w-52 h-9">
-                  <User className="w-4 h-4 mr-2 flex-shrink-0" />
+                <SelectTrigger className="w-48 h-8 bg-white/10 border-white/20 text-white text-sm">
+                  <User className="w-3.5 h-3.5 mr-2 flex-shrink-0" />
                   <SelectValue placeholder="All Assessors" />
                 </SelectTrigger>
                 <SelectContent className="bg-popover border border-border shadow-lg z-50">
@@ -1429,10 +1429,10 @@ const Dashboard1stLine = () => {
               </Select>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
-                    <User className="w-4 h-4 mr-2" />
+                  <Button variant="ghost" size="sm" className="bg-white/10 hover:bg-white/20 text-white border-white/20 h-8 text-sm">
+                    <User className="w-3.5 h-3.5 mr-2" />
                     1st Line Analyst
-                    <ChevronDown className="w-4 h-4 ml-2" />
+                    <ChevronDown className="w-3.5 h-3.5 ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
@@ -1450,27 +1450,27 @@ const Dashboard1stLine = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="px-4 py-4">
       {/* Quick Links - Horizontal Strip */}
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 px-1">
-          <div className="flex items-center gap-2 text-sm font-semibold text-muted-foreground">
-            <Link className="w-4 h-4 text-first-line" />
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2 mb-3 bg-white dark:bg-card border border-border/50 px-3 py-2">
+          <div className="flex items-center gap-2 text-xs font-semibold text-muted-foreground uppercase">
+            <Link className="w-3.5 h-3.5 text-[#0A8078]" />
             Quick Links:
           </div>
-          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <ClipboardCheck className="w-4 h-4" />
+          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1.5 text-[#0A8078] hover:underline text-xs">
+            <ClipboardCheck className="w-3.5 h-3.5" />
             <span>View My Pending Assessments</span>
           </button>
-          <span className="text-muted-foreground/50">|</span>
-          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-            <CheckCircle className="w-4 h-4" />
+          <span className="text-muted-foreground/30">|</span>
+          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1.5 text-[#0A8078] hover:underline text-xs">
+            <CheckCircle className="w-3.5 h-3.5" />
             <span>View Completed Assessments</span>
           </button>
-          <span className="text-muted-foreground/50">|</span>
+          <span className="text-muted-foreground/30">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1.5 text-first-line hover:underline text-sm">
-                <FileText className="w-4 h-4" />
+              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1.5 text-[#0A8078] hover:underline text-xs">
+                <FileText className="w-3.5 h-3.5" />
                 <span>AI Document Parser</span>
               </button>
             </TooltipTrigger>
@@ -1478,11 +1478,11 @@ const Dashboard1stLine = () => {
               <p>Upload and parse documents to extract risk assessments using AI</p>
             </TooltipContent>
           </Tooltip>
-          <span className="text-muted-foreground/50">|</span>
+          <span className="text-muted-foreground/30">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-first-line hover:underline text-sm italic">
-                <FlaskConical className="w-4 h-4" />
+              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1.5 text-muted-foreground hover:text-[#0A8078] hover:underline text-xs italic">
+                <FlaskConical className="w-3.5 h-3.5" />
                 <span>Sample CSV for AI Assessment (Test Only)</span>
               </a>
             </TooltipTrigger>
@@ -1492,266 +1492,236 @@ const Dashboard1stLine = () => {
           </Tooltip>
         </div>
 
-        {/* Scorecards - 3 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {/* Scorecards - 3 columns - MetricStream flat style */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-4">
           {metrics.map((metric, index) => (
-            <Card 
+            <div 
               key={index}
-              className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-pointer"
+              className="bg-white dark:bg-card border border-border/50 p-3 cursor-pointer hover:border-[#0A8078]/50 transition-colors"
               onClick={() => {
                 setSelectedMetric(metric);
                 setMetricDetailsOpen(true);
               }}
             >
-                  <CardContent className="p-2 sm:p-2.5">
-                    <div className="flex items-start justify-between mb-0.5 sm:mb-1">
-                      <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center flex-shrink-0">
-                        <metric.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-first-line" />
-                      </div>
-                    </div>
-                
-                <div className="space-y-0.5">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-lg sm:text-xl font-bold text-foreground">
-                        {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {metric.trendUp ? (
-                        <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-red-600" />
-                      )}
-                      <span className={`text-[9px] sm:text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
-                        {metric.trend}
-                      </span>
-                    </div>
-                  </div>
-                  
-                  {/* Chart - Pie or Bar */}
-                  <div className="space-y-0.5">
-                    {'chartType' in metric && metric.chartType === 'pie' ? (
-                      // Filled Pie Chart
-                      (() => {
-                        const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string; chartColor?: string }>;
-                        let total = 0;
-                        for (const s of segments) total += s.value;
-                        
-                        // Calculate pie slices
-                        const slices: Array<{ path: string; color: string; percent: number }> = [];
-                        let currentAngle = 0;
-                        const cx = 18, cy = 18, r = 16;
-                        
-                        segments.forEach((segment) => {
-                          const percent = total > 0 ? (segment.value / total) * 100 : 0;
-                          const angle = (percent / 100) * 360;
-                          const startAngle = currentAngle;
-                          const endAngle = currentAngle + angle;
-                          
-                          // Convert angles to radians
-                          const startRad = (startAngle - 90) * (Math.PI / 180);
-                          const endRad = (endAngle - 90) * (Math.PI / 180);
-                          
-                          // Calculate arc points
-                          const x1 = cx + r * Math.cos(startRad);
-                          const y1 = cy + r * Math.sin(startRad);
-                          const x2 = cx + r * Math.cos(endRad);
-                          const y2 = cy + r * Math.sin(endRad);
-                          
-                          // Large arc flag
-                          const largeArc = angle > 180 ? 1 : 0;
-                          
-                          // Create path
-                          const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-                          
-                          slices.push({ path, color: segment.chartColor || '#888', percent });
-                          currentAngle = endAngle;
-                        });
-                        
-                        return (
-                          <div className="flex items-center gap-2">
-                            <div className="relative w-10 h-10 sm:w-12 sm:h-12">
-                              <svg viewBox="0 0 36 36" className="w-10 h-10 sm:w-12 sm:h-12">
-                                {slices.map((slice, idx) => (
-                                  <path
-                                    key={idx}
-                                    d={slice.path}
-                                    fill={slice.color}
-                                    className="transition-all duration-500"
-                                  />
-                                ))}
-                              </svg>
-                            </div>
-                            <div className="flex flex-col gap-0.5">
-                              {segments.map((segment, idx) => {
-                                const percent = total > 0 ? Math.round((segment.value / total) * 100) : 0;
-                                return (
-                                  <div key={idx} className="flex items-center gap-1">
-                                    <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${segment.color}`} />
-                                    <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                      {segment.value} {segment.label} ({percent}%)
-                                    </span>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        );
-                      })()
+              <div className="flex items-start justify-between mb-1">
+                <h3 className="text-xs font-bold text-foreground">{metric.title}</h3>
+                <div className="w-6 h-6 bg-[#0A8078]/10 flex items-center justify-center flex-shrink-0">
+                  <metric.icon className="w-3 h-3 text-[#0A8078]" />
+                </div>
+              </div>
+              
+              <div className="space-y-1">
+                <div className="flex items-baseline justify-between gap-2">
+                  <span className="text-xl font-bold text-foreground">
+                    {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    {metric.trendUp ? (
+                      <TrendingUp className="w-2.5 h-2.5 text-green-600" />
                     ) : (
-                      // Bar Chart (default) - with clickable segments for Assessment Status
-                      (() => {
-                        const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
-                        const isAssessmentStatus = metric.title === "Assessment Status";
-                        const segmentRows = 'segmentRows' in metric ? (metric as any).segmentRows : null;
-                        let total = 0;
-                        for (const s of segments) total += s.value;
-                        
-                        // If this card has segmentRows (dual progress bars), render them
-                        if (segmentRows) {
-                          return (
-                            <div className="space-y-1.5">
-                              {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
-                                let rowTotal = 0;
-                                for (const s of row.segments) rowTotal += s.value;
-                                
-                                return (
-                                  <div key={rowIdx} className="space-y-0.5">
-                                    <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
-                                    <div className="flex h-2 sm:h-2.5 rounded-md overflow-hidden">
-                                      {row.segments.map((segment, idx) => {
-                                        const percentage = rowTotal > 0 ? (segment.value / rowTotal) * 100 : 0;
-                                        if (percentage === 0) return null;
-                                        return (
-                                          <Tooltip key={idx}>
-                                            <TooltipTrigger asChild>
-                                              <div
-                                                className={`${segment.color} cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center`}
-                                                style={{ width: `${percentage}%` }}
-                                                onClick={(e) => handleSegmentClick(segment.label, e)}
-                                              >
-                                                {percentage > 20 && (
-                                                  <span className="text-[7px] sm:text-[8px] font-medium text-white truncate px-0.5">
-                                                    {segment.value}
-                                                  </span>
-                                                )}
-                                              </div>
-                                            </TooltipTrigger>
-                                            <TooltipContent>
-                                              <p>{segment.label}: {segment.value} ({Math.round(percentage)}%)</p>
-                                              <p className="text-xs text-muted-foreground">Click to filter</p>
-                                            </TooltipContent>
-                                          </Tooltip>
-                                        );
-                                      })}
-                                    </div>
-                                    {/* Row Legend */}
-                                    <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                                      {row.segments.map((segment, idx) => (
-                                        <button 
-                                          key={idx} 
-                                          className="flex items-center gap-0.5 hover:bg-muted/50 rounded px-0.5 py-0 transition-colors"
-                                          onClick={(e) => handleSegmentClick(segment.label, e)}
-                                        >
-                                          <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
-                                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                            {segment.value} {segment.label}
-                                          </span>
-                                        </button>
-                                      ))}
-                                    </div>
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          );
-                        }
-                        
-                        return (
-                          <>
-                            <div className="flex h-2 sm:h-2.5 rounded overflow-hidden">
-                              {segments.map((segment, idx) => {
-                                const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                                return (
-                                  <div
-                                    key={idx}
-                                    className={segment.color}
-                                    style={{ width: `${percentage}%` }}
-                                  />
-                                );
-                              })}
-                            </div>
-                            
-                            {/* Legend */}
-                            <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                              {segments.map((segment, idx) => (
-                                <div key={idx} className="flex items-center gap-0.5">
-                                  <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
-                                  <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                    {segment.sublabel || segment.label}
+                      <TrendingDown className="w-2.5 h-2.5 text-red-600" />
+                    )}
+                    <span className={`text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
+                      {metric.trend}
+                    </span>
+                  </div>
+                </div>
+                
+                {/* Chart - MetricStream flat style */}
+                <div className="space-y-1">
+                  {'chartType' in metric && metric.chartType === 'pie' ? (
+                    (() => {
+                      const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string; chartColor?: string }>;
+                      let total = 0;
+                      for (const s of segments) total += s.value;
+                      
+                      const slices: Array<{ path: string; color: string; percent: number }> = [];
+                      let currentAngle = 0;
+                      const cx = 18, cy = 18, r = 16;
+                      
+                      segments.forEach((segment) => {
+                        const percent = total > 0 ? (segment.value / total) * 100 : 0;
+                        const angle = (percent / 100) * 360;
+                        const startAngle = currentAngle;
+                        const endAngle = currentAngle + angle;
+                        const startRad = (startAngle - 90) * (Math.PI / 180);
+                        const endRad = (endAngle - 90) * (Math.PI / 180);
+                        const x1 = cx + r * Math.cos(startRad);
+                        const y1 = cy + r * Math.sin(startRad);
+                        const x2 = cx + r * Math.cos(endRad);
+                        const y2 = cy + r * Math.sin(endRad);
+                        const largeArc = angle > 180 ? 1 : 0;
+                        const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
+                        slices.push({ path, color: segment.chartColor || '#888', percent });
+                        currentAngle = endAngle;
+                      });
+                      
+                      return (
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-10 h-10">
+                            <svg viewBox="0 0 36 36" className="w-10 h-10">
+                              {slices.map((slice, idx) => (
+                                <path key={idx} d={slice.path} fill={slice.color} />
+                              ))}
+                            </svg>
+                          </div>
+                          <div className="flex flex-col gap-0.5">
+                            {segments.map((segment, idx) => {
+                              const percent = total > 0 ? Math.round((segment.value / total) * 100) : 0;
+                              return (
+                                <div key={idx} className="flex items-center gap-1">
+                                  <div className={`w-1.5 h-1.5 ${segment.color}`} />
+                                  <span className="text-[9px] font-medium text-muted-foreground">
+                                    {segment.value} {segment.label} ({percent}%)
                                   </span>
                                 </div>
-                              ))}
-                            </div>
-                          </>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      );
+                    })()
+                  ) : (
+                    (() => {
+                      const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
+                      const segmentRows = 'segmentRows' in metric ? (metric as any).segmentRows : null;
+                      let total = 0;
+                      for (const s of segments) total += s.value;
+                      
+                      if (segmentRows) {
+                        return (
+                          <div className="space-y-1.5">
+                            {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
+                              let rowTotal = 0;
+                              for (const s of row.segments) rowTotal += s.value;
+                              
+                              return (
+                                <div key={rowIdx} className="space-y-0.5">
+                                  <span className="text-[9px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
+                                  <div className="flex h-2 overflow-hidden">
+                                    {row.segments.map((segment, idx) => {
+                                      const percentage = rowTotal > 0 ? (segment.value / rowTotal) * 100 : 0;
+                                      if (percentage === 0) return null;
+                                      return (
+                                        <Tooltip key={idx}>
+                                          <TooltipTrigger asChild>
+                                            <div
+                                              className={`${segment.color} cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center`}
+                                              style={{ width: `${percentage}%` }}
+                                              onClick={(e) => handleSegmentClick(segment.label, e)}
+                                            >
+                                              {percentage > 20 && (
+                                                <span className="text-[8px] font-medium text-white truncate px-0.5">
+                                                  {segment.value}
+                                                </span>
+                                              )}
+                                            </div>
+                                          </TooltipTrigger>
+                                          <TooltipContent>
+                                            <p>{segment.label}: {segment.value} ({Math.round(percentage)}%)</p>
+                                            <p className="text-xs text-muted-foreground">Click to filter</p>
+                                          </TooltipContent>
+                                        </Tooltip>
+                                      );
+                                    })}
+                                  </div>
+                                  <div className="flex flex-wrap gap-x-1.5 gap-y-0">
+                                    {row.segments.map((segment, idx) => (
+                                      <button 
+                                        key={idx} 
+                                        className="flex items-center gap-0.5 hover:bg-muted/50 px-0.5 py-0 transition-colors"
+                                        onClick={(e) => handleSegmentClick(segment.label, e)}
+                                      >
+                                        <div className={`w-1.5 h-1.5 ${segment.color}`} />
+                                        <span className="text-[9px] font-medium text-muted-foreground">
+                                          {segment.value} {segment.label}
+                                        </span>
+                                      </button>
+                                    ))}
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
                         );
-                      })()
-                    )}
-                  </div>
-                  
-                  <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-snug hidden sm:block">
-                    {metric.description}
-                  </p>
+                      }
+                      
+                      return (
+                        <>
+                          <div className="flex h-2 overflow-hidden">
+                            {segments.map((segment, idx) => {
+                              const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                              return (
+                                <div key={idx} className={segment.color} style={{ width: `${percentage}%` }} />
+                              );
+                            })}
+                          </div>
+                          <div className="flex flex-wrap gap-x-1.5 gap-y-0">
+                            {segments.map((segment, idx) => (
+                              <div key={idx} className="flex items-center gap-0.5">
+                                <div className={`w-1.5 h-1.5 ${segment.color}`} />
+                                <span className="text-[9px] font-medium text-muted-foreground">
+                                  {segment.sublabel || segment.label}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      );
+                    })()
+                  )}
                 </div>
                 
-                {/* AI Generated Icon */}
-                <div className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5">
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-first-line/10 border border-first-line/20 flex items-center justify-center">
-                    <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-first-line" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                <p className="text-[9px] text-muted-foreground leading-snug hidden sm:block">
+                  {metric.description}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
 
-        {/* Active Risk Profile Section */}
-        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
-          <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
-            <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
-          </CardHeader>
-          <CardContent className="p-4">
-            {/* Modern Segmented Tabs */}
-            <div className="mb-3">
-              <div className="inline-flex items-center gap-0 p-1 bg-muted/50 rounded-lg border border-border/50">
+        {/* Active Risk Profile Section - MetricStream flat style */}
+        <div ref={reportSectionRef} className="bg-white dark:bg-card border border-border/50">
+          {/* Section Header */}
+          <div className="border-b border-border/50 py-2 px-4 flex items-center justify-between bg-[#F8F9FA] dark:bg-muted/30">
+            <h2 className="text-sm font-semibold text-foreground">My Risk Assessments</h2>
+            <div className="flex items-center gap-2">
+              <Button size="sm" variant="ghost" className="h-7 text-xs bg-[#0A8078] hover:bg-[#0A8078]/90 text-white">
+                EXPORT
+              </Button>
+            </div>
+          </div>
+          
+          <div className="p-3">
+            {/* Flat Tabs - MetricStream Style */}
+            <div className="mb-3 border-b border-border/50">
+              <div className="flex items-center gap-0">
                 <button
                   onClick={() => setActiveTab("own")}
-                  className={`px-4 py-1.5 rounded-l-md font-medium text-sm transition-all border-r-2 border-muted-foreground/30 ${
+                  className={`px-4 py-2 text-sm font-medium transition-all border-b-2 ${
                     activeTab === "own"
-                      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
+                      ? "border-[#0A8078] text-[#0A8078] bg-[#0A8078]/5"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  } ${highlightedTab === "own" ? "ring-1 ring-[#0A8078]" : ""}`}
                 >
                   Completed Assessments
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "own" ? "bg-white/20" : "bg-muted"
+                  <span className={`ml-2 px-1.5 py-0.5 text-xs font-bold ${
+                    activeTab === "own" ? "bg-[#0A8078] text-white" : "bg-muted text-muted-foreground"
                   }`}>
                     {assessorFilteredRiskData.filter(r => r.tabCategory === "own").length}
                   </span>
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-1.5 rounded-r-md font-medium text-sm transition-all ${
+                  className={`px-4 py-2 text-sm font-medium transition-all border-b-2 ${
                     activeTab === "assess"
-                      ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-md"
-                      : "text-muted-foreground hover:text-foreground hover:bg-background/50"
-                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
+                      ? "border-[#0A8078] text-[#0A8078] bg-[#0A8078]/5"
+                      : "border-transparent text-muted-foreground hover:text-foreground hover:bg-muted/30"
+                  } ${highlightedTab === "assess" ? "ring-1 ring-[#0A8078]" : ""}`}
                 >
                   Risks to Assess
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "assess" ? "bg-white/20" : "bg-muted"
+                  <span className={`ml-2 px-1.5 py-0.5 text-xs font-bold ${
+                    activeTab === "assess" ? "bg-[#0A8078] text-white" : "bg-muted text-muted-foreground"
                   }`}>
                     {assessorFilteredRiskData.filter(r => r.tabCategory === "assess").length}
                   </span>
@@ -1759,24 +1729,25 @@ const Dashboard1stLine = () => {
               </div>
             </div>
 
-            {/* Info Banner */}
-            <div className="bg-emerald-50 dark:bg-emerald-900/10 border border-emerald-200 dark:border-emerald-800 rounded-lg p-2.5 mb-3">
+            {/* Info Banner - flat style */}
+            <div className="bg-[#E8F4F3] dark:bg-[#0A8078]/10 border-l-4 border-[#0A8078] p-2 mb-3">
               <div className="flex items-start gap-2">
-                <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-emerald-800 dark:text-emerald-200">
+                <AlertTriangle className="w-4 h-4 text-[#0A8078] flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-foreground">
                   {activeTab === "own" && "These completed risk assessments can be edited. Click the edit icon to update any field values as needed."}
                   {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
                 </p>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-1.5 sm:gap-2 mb-2">
+            {/* Filter Toolbar - MetricStream flat style */}
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 mb-3 p-2 bg-[#F8F9FA] dark:bg-muted/20 border border-border/50">
               <div className="flex flex-col gap-0.5">
-                <Label htmlFor="business-unit" className="text-[10px] font-medium text-muted-foreground">
+                <Label htmlFor="business-unit" className="text-[10px] font-medium text-muted-foreground uppercase">
                   Business Unit
                 </Label>
                 <Select value={businessUnitFilter} onValueChange={setBusinessUnitFilter}>
-                  <SelectTrigger id="business-unit" className="w-full sm:w-40 h-7 sm:h-6 text-[10px] sm:text-xs bg-primary text-primary-foreground border-primary">
+                  <SelectTrigger id="business-unit" className="w-full sm:w-40 h-7 text-xs border-border bg-white dark:bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border shadow-lg z-50 max-h-[300px]">
@@ -1789,11 +1760,11 @@ const Dashboard1stLine = () => {
               </div>
 
               <div className="flex flex-col gap-0.5">
-                <Label htmlFor="status-filter" className="text-[10px] font-medium text-muted-foreground">
+                <Label htmlFor="status-filter" className="text-[10px] font-medium text-muted-foreground uppercase">
                   Status
                 </Label>
                 <Select value={statusFilter} onValueChange={(val) => { setStatusFilter(val); if (val !== "all") setDeadlineFilter("all"); }}>
-                  <SelectTrigger id="status-filter" className="w-full sm:w-32 h-7 sm:h-6 text-[10px] sm:text-xs">
+                  <SelectTrigger id="status-filter" className="w-full sm:w-32 h-7 text-xs border-border bg-white dark:bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border shadow-lg z-50">
@@ -1814,11 +1785,11 @@ const Dashboard1stLine = () => {
               </div>
 
               <div className="flex flex-col gap-0.5">
-                <Label htmlFor="risk-hierarchy-filter" className="text-[10px] font-medium text-muted-foreground">
+                <Label htmlFor="risk-hierarchy-filter" className="text-[10px] font-medium text-muted-foreground uppercase">
                   Risk Hierarchy
                 </Label>
                 <Select value={riskLevelFilter} onValueChange={setRiskLevelFilter}>
-                  <SelectTrigger id="risk-hierarchy-filter" className="w-full sm:w-28 h-7 sm:h-6 text-[10px] sm:text-xs">
+                  <SelectTrigger id="risk-hierarchy-filter" className="w-full sm:w-28 h-7 text-xs border-border bg-white dark:bg-card">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent className="bg-popover border border-border shadow-lg z-50">
@@ -1831,13 +1802,17 @@ const Dashboard1stLine = () => {
               </div>
 
               <div className="relative flex-1 min-w-0 sm:min-w-[180px]">
-                <Input 
-                  placeholder="Search risks..." 
-                  className="pl-8 h-7 sm:h-6 w-full text-[10px] sm:text-xs" 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                />
-                <Shield className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                <Label className="text-[10px] font-medium text-muted-foreground uppercase mb-0.5 block">Search</Label>
+                <div className="relative">
+                  <Input 
+                    placeholder="Search risks..." 
+                    className="pl-8 h-7 w-full text-xs border-border bg-white dark:bg-card" 
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                  />
+                  <Shield className="w-3 h-3 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
+                </div>
+              </div>
               </div>
 
               {/* Clear Filters Button - show when any filter is active */}
@@ -1862,16 +1837,16 @@ const Dashboard1stLine = () => {
               )}
             </div>
 
-            {/* Row Count Display */}
-            <div className="flex items-center justify-between mb-4">
-              <span className="text-sm text-muted-foreground">
-                Showing {visibleRisks.length} of {totalTabRisks} risk(s)
+            {/* Row Count Display - MetricStream style */}
+            <div className="flex items-center justify-between mb-3 text-xs">
+              <span className="text-muted-foreground">
+                Showing <strong>{visibleRisks.length}</strong> of <strong>{totalTabRisks}</strong> risk(s)
               </span>
             </div>
 
-            {/* Bulk Action Toolbar */}
+            {/* Bulk Action Toolbar - MetricStream flat style */}
             {selectedRisks.size > 0 && (
-              <div className="mb-4 p-3 bg-first-line/5 border border-first-line/20 rounded-lg shadow-sm animate-in slide-in-from-top-2 duration-200">
+              <div className="mb-3 p-2 bg-[#E8F4F3] dark:bg-[#0A8078]/10 border-l-4 border-[#0A8078]">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <Badge variant="secondary" className="font-medium">
@@ -1935,11 +1910,11 @@ const Dashboard1stLine = () => {
               </div>
             )}
 
-            {/* Table */}
-            <div className="border rounded-lg overflow-hidden">
+            {/* Table - MetricStream flat grid style */}
+            <div className="border border-border/50 overflow-hidden">
               <div className="overflow-x-auto">
                 <Table className="border-collapse">
-                  <TableHeader className="bg-muted/50 sticky top-0">
+                  <TableHeader className="bg-[#F5F6FA] dark:bg-muted/30 sticky top-0">
                     <TableRow>
                       {activeTab !== "own" && (
                         <TableHead className="w-14 min-w-[56px] py-2 border-r border-b border-border">
@@ -2015,10 +1990,8 @@ const Dashboard1stLine = () => {
                       const level1Agg = calculateLevel1Aggregations(risk);
                       
                       return (
-                      <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
-                        risk.riskLevel === "Level 1" ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
-                        risk.riskLevel === "Level 2" ? 'bg-purple-50/30 dark:bg-purple-950/10' :
-                        'bg-orange-50/30 dark:bg-orange-950/10'
+                      <TableRow key={index} className={`hover:bg-[#F8F9FA] dark:hover:bg-muted/30 transition-colors ${
+                        index % 2 === 0 ? 'bg-white dark:bg-card' : 'bg-[#FAFBFC] dark:bg-muted/10'
                       }`}>
                         {activeTab !== "own" && (
                           <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
@@ -2605,8 +2578,8 @@ const Dashboard1stLine = () => {
                 </Table>
               </div>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </main>
 
       {/* Modals */}
