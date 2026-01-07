@@ -703,25 +703,11 @@ This risk is currently being managed within established parameters. No immediate
         {/* Header */}
         <div className="px-3 py-2 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0 pr-10">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div>
-                <h2 className="text-sm font-semibold text-foreground">{risk.title}</h2>
-                <p className="text-[10px] text-muted-foreground mt-0.5">
-                  <span className="font-medium text-foreground">{risk.id}</span> · To-Do: Risk Assessment Overview
-                </p>
-              </div>
-              {showTraversal && onNext && onPrevious && (
-                <RiskTraversalNav
-                  currentIndex={currentIndex}
-                  totalCount={totalCount}
-                  isFirst={isFirst}
-                  isLast={isLast}
-                  onNext={onNext}
-                  onPrevious={onPrevious}
-                  isReviewMode={isReviewMode}
-                  reviewProgress={reviewProgress}
-                />
-              )}
+            <div>
+              <h2 className="text-sm font-semibold text-foreground">{risk.title}</h2>
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                <span className="font-medium text-foreground">{risk.id}</span> · To-Do: Risk Assessment Overview
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <div className="flex items-center gap-2">
@@ -772,6 +758,22 @@ This risk is currently being managed within established parameters. No immediate
             ))}
           </div>
         </div>
+
+        {/* Footer with navigation */}
+        {showTraversal && onNext && onPrevious && (
+          <div className="px-3 py-2 border-t border-border bg-muted/30 shrink-0 flex justify-center">
+            <RiskTraversalNav
+              currentIndex={currentIndex}
+              totalCount={totalCount}
+              isFirst={isFirst}
+              isLast={isLast}
+              onNext={onNext}
+              onPrevious={onPrevious}
+              isReviewMode={isReviewMode}
+              reviewProgress={reviewProgress}
+            />
+          </div>
+        )}
 
         {/* AI Summary Modal */}
         <Dialog open={summaryModalOpen} onOpenChange={setSummaryModalOpen}>
