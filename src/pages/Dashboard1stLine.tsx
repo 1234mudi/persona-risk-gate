@@ -1405,7 +1405,7 @@ const Dashboard1stLine = () => {
                 <ClipboardCheck className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-base font-semibold text-foreground">
+                <h1 className="text-base font-semibold text-black dark:text-white">
                   1st Line Risk Analyst Dashboard
                 </h1>
                 <p className="text-xs text-muted-foreground">
@@ -1444,23 +1444,23 @@ const Dashboard1stLine = () => {
       <main className="container mx-auto px-6 py-8">
       {/* Quick Links - Horizontal Strip */}
         <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-2 px-0 w-full">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground">
-            <Link className="w-3 h-3 text-first-line" />
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-black dark:text-white">
+            <Link className="w-3 h-3 text-black dark:text-white" />
             Quick Links:
           </div>
-          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-first-line hover:underline text-xs">
+          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs">
             <ClipboardCheck className="w-3 h-3" />
             <span>View My Pending Assessments</span>
           </button>
-          <span className="text-muted-foreground/50">|</span>
-          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-first-line hover:underline text-xs">
+          <span className="text-black/50 dark:text-white/50">|</span>
+          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs">
             <CheckCircle className="w-3 h-3" />
             <span>View Completed Assessments</span>
           </button>
-          <span className="text-muted-foreground/50">|</span>
+          <span className="text-black/50 dark:text-white/50">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-first-line hover:underline text-xs">
+              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs">
                 <FileText className="w-3 h-3" />
                 <span>AI Document Parser</span>
               </button>
@@ -1469,10 +1469,10 @@ const Dashboard1stLine = () => {
               <p>Upload and parse documents to extract risk assessments using AI</p>
             </TooltipContent>
           </Tooltip>
-          <span className="text-muted-foreground/50">|</span>
+          <span className="text-black/50 dark:text-white/50">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-muted-foreground hover:text-first-line hover:underline text-xs italic">
+              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-black dark:text-white hover:underline text-xs italic">
                 <FlaskConical className="w-3 h-3" />
                 <span>Sample CSV for AI Assessment (Test Only)</span>
               </a>
@@ -1529,7 +1529,7 @@ const Dashboard1stLine = () => {
                   >
                     <CardContent className="p-2 sm:p-2.5">
                       <div className="flex items-start justify-between mb-0.5 sm:mb-1">
-                        <h3 className="text-xs sm:text-sm font-bold text-foreground leading-tight">{metric.title}</h3>
+                        <h3 className="text-xs sm:text-sm font-bold text-black dark:text-white leading-tight">{metric.title}</h3>
                         <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${accentColors.bg} border ${accentColors.border} flex items-center justify-center flex-shrink-0`}>
                           <metric.icon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${accentColors.text}`} />
                         </div>
@@ -1538,7 +1538,7 @@ const Dashboard1stLine = () => {
                       <div className="space-y-0.5">
                         <div className="flex items-baseline justify-between gap-2">
                           <div className="flex items-baseline gap-1">
-                            <span className="text-lg sm:text-xl font-bold text-foreground">
+                            <span className="text-lg sm:text-xl font-bold text-black dark:text-white">
                               {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
                             </span>
                           </div>
