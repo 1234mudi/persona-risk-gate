@@ -389,7 +389,7 @@ export const DocumentParserBulkAssessmentModal = ({
                 {value || 'N/A'}
               </Badge>
             ) : (
-              <p className="text-sm text-foreground py-1.5 px-3 bg-muted/50 rounded-md border border-border">
+              <p className="text-sm text-foreground py-1.5 px-3 bg-muted/50 rounded-none border border-border">
                 {value || <span className="text-muted-foreground italic">Not specified</span>}
               </p>
             )}
@@ -508,12 +508,12 @@ export const DocumentParserBulkAssessmentModal = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col bg-background p-0">
+      <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden flex flex-col bg-background p-0 [&>button]:hidden">
         <TooltipProvider delayDuration={100}>
           {/* Header */}
           <div className="px-6 py-4 flex items-center justify-between border-b border-border bg-muted/30">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-lg bg-emerald-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-none bg-emerald-500 flex items-center justify-center">
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
@@ -525,16 +525,17 @@ export const DocumentParserBulkAssessmentModal = ({
               <Button
                 variant="outline"
                 onClick={() => onOpenChange(false)}
+                className="rounded-none"
               >
                 Cancel
               </Button>
               <Button
                 onClick={handleApply}
                 disabled={checkedCount === 0}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-none"
               >
                 <Send className="w-4 h-4" />
-                {selectedRisks.length > 1 ? 'Import Selected Risks' : 'Import Risk'}
+                Save Changes
               </Button>
             </div>
           </div>
@@ -556,7 +557,7 @@ export const DocumentParserBulkAssessmentModal = ({
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="h-7 w-7 ml-auto"
+                    className="h-7 w-7 ml-auto rounded-none"
                     onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
                   >
                     {isSidebarCollapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
@@ -611,7 +612,7 @@ export const DocumentParserBulkAssessmentModal = ({
                       <div className="p-2 space-y-1">
                         {selectedRisks.length === 0 ? (
                           <div className="flex flex-col items-center justify-center py-12 px-4 text-center">
-                            <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-3">
+                            <div className="w-12 h-12 rounded-none bg-muted flex items-center justify-center mb-3">
                               <Search className="w-6 h-6 text-muted-foreground" />
                             </div>
                             <p className="text-sm font-medium text-foreground mb-1">No Matching Risks Found</p>
@@ -669,7 +670,7 @@ export const DocumentParserBulkAssessmentModal = ({
                             return (
                               <div
                                 key={risk.id}
-                                className={`p-3 rounded-lg border cursor-pointer transition-colors ${
+                                className={`p-3 rounded-none border cursor-pointer transition-colors ${
                                   isChecked 
                                     ? "bg-primary/5 border-primary/30" 
                                     : "bg-background border-border hover:border-primary/20"
@@ -717,7 +718,7 @@ export const DocumentParserBulkAssessmentModal = ({
                   <div className="flex-1 flex flex-col items-center pt-4 gap-2">
                     <Tooltip>
                       <TooltipTrigger>
-                        <Badge variant="secondary" className="w-8 h-8 rounded-full flex items-center justify-center p-0">
+                        <Badge variant="secondary" className="w-8 h-8 rounded-none flex items-center justify-center p-0">
                           {checkedCount}
                         </Badge>
                       </TooltipTrigger>
@@ -753,10 +754,10 @@ export const DocumentParserBulkAssessmentModal = ({
                       const colorClasses = getCategoryColorClasses(category.color);
                       
                       return (
-                        <div key={category.id} className={`border ${colorClasses.border} rounded-lg overflow-hidden`}>
+                        <div key={category.id} className={`border ${colorClasses.border} rounded-none overflow-hidden`}>
                           {/* Category Header */}
                           <div className={`bg-gradient-to-r ${colorClasses.bg} to-transparent px-4 py-3 border-b ${colorClasses.border} flex items-center gap-3`}>
-                            <div className={`w-7 h-7 rounded-full ${colorClasses.iconBg} text-white flex items-center justify-center text-sm font-semibold`}>
+                            <div className={`w-7 h-7 rounded-none ${colorClasses.iconBg} text-white flex items-center justify-center text-sm font-semibold`}>
                               {categoryIndex + 1}
                             </div>
                             <IconComponent className={`w-5 h-5 text-${category.color}-500`} />
