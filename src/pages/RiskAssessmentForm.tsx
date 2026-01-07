@@ -405,6 +405,54 @@ const RiskAssessmentForm = () => {
     return { label: "Low", color: "bg-emerald-100 text-emerald-700 border-emerald-200" };
   };
 
+  // Copy history handlers
+  const handleCopyHistoryToInherent = (historyItem: typeof inherentHistory[0]) => {
+    setInherentFactors(prevFactors => 
+      prevFactors.map(factor => {
+        const historyFactor = historyItem.factors.find(f => f.name === factor.name);
+        if (historyFactor) {
+          return { ...factor, rating: historyFactor.rating };
+        }
+        return factor;
+      })
+    );
+    setExpandedPreviousFloater(prev => ({ ...prev, inherent: false }));
+    toast.success(`Inherent risk values from ${historyItem.date} copied to current assessment`);
+  };
+
+  const handleCopyHistoryToControl = (historyItem: typeof controlHistory[0]) => {
+    setControls(prevControls => 
+      prevControls.map(control => {
+        const historyControl = historyItem.controls.find(c => c.name === control.name);
+        if (historyControl) {
+          return { 
+            ...control, 
+            designRating: historyControl.design, 
+            operatingRating: historyControl.operating,
+            testingRating: historyControl.overall
+          };
+        }
+        return control;
+      })
+    );
+    setExpandedPreviousFloater(prev => ({ ...prev, control: false }));
+    toast.success(`Control effectiveness values from ${historyItem.date} copied to current assessment`);
+  };
+
+  const handleCopyHistoryToResidual = (historyItem: typeof residualHistory[0]) => {
+    setResidualFactors(prevFactors => 
+      prevFactors.map(factor => {
+        const historyFactor = historyItem.factors.find(f => f.name === factor.name);
+        if (historyFactor) {
+          return { ...factor, rating: historyFactor.rating };
+        }
+        return factor;
+      })
+    );
+    setExpandedPreviousFloater(prev => ({ ...prev, residual: false }));
+    toast.success(`Residual risk values from ${historyItem.date} copied to current assessment`);
+  };
+
   // Previous Assessment Floater Component for tabs
   const FormPreviousAssessmentFloater = ({
     type,
@@ -419,89 +467,91 @@ const RiskAssessmentForm = () => {
   }) => {
     if (!historyData || historyData.length === 0) return null;
 
-    const recentData = historyData.slice(0, 3);
     const hasData = historyData.length > 0;
 
     return (
-      <Collapsible open={isExpanded} onOpenChange={onToggle}>
-        <CollapsibleTrigger asChild>
+      <Dialog open={isExpanded} onOpenChange={onToggle}>
+        <DialogTrigger asChild>
           <button className={`flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:underline transition-all ${hasData ? 'animate-pulse hover:animate-none' : ''}`}>
             <History className="w-3.5 h-3.5" />
             <span>Previous Assessments ({historyData.length})</span>
-            {isExpanded ? <ChevronDown className="w-3 h-3" /> : <ChevronRight className="w-3 h-3" />}
+            <ChevronRight className="w-3 h-3" />
           </button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="animate-accordion-down">
-          <div className="absolute z-50 mt-2 p-3 bg-popover border border-border rounded-lg shadow-lg min-w-[300px] animate-fade-in">
-            {/* Header */}
-            <div className="text-xs font-medium text-muted-foreground mb-2 border-b pb-2">
+        </DialogTrigger>
+        <DialogContent className="max-w-md max-h-[70vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="text-sm font-medium">
               {type === 'inherent' && 'Inherent Risk History'}
               {type === 'control' && 'Control Effectiveness History'}
               {type === 'residual' && 'Residual Risk History'}
-            </div>
-            {/* History items */}
-            <div className="space-y-2">
-              {recentData.map((item, idx) => (
-                <div key={idx} className="p-2 rounded bg-muted/50 hover:bg-muted transition-colors">
-                  <div className="flex items-center justify-between text-xs mb-1.5">
-                    <span className="text-muted-foreground font-medium">{item.date}</span>
-                    <Badge className={`${getHistoryRatingBadge(item.score).color} text-[10px]`}>
-                      Score: {item.score}
-                    </Badge>
-                  </div>
-                  {/* Factor/Control details based on type */}
-                  {type !== 'control' && item.factors && (
-                    <div className="space-y-1">
-                      {item.factors.map((factor: any, fIdx: number) => (
-                        <div key={fIdx} className="flex items-center justify-between text-[10px]">
-                          <span className="text-muted-foreground">{factor.name}</span>
-                          <div className="flex items-center gap-2">
-                            <Badge variant="outline" className={`${getHistoryRatingBadge(factor.rating).color} text-[9px] px-1.5 py-0`}>
-                              {factor.rating}
-                            </Badge>
-                            <span className="text-muted-foreground/70">({factor.weight}%)</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  {type === 'control' && item.controls && (
-                    <div className="space-y-1">
-                      {item.controls.slice(0, 2).map((control: any, cIdx: number) => (
-                        <div key={cIdx} className="flex items-center justify-between text-[10px]">
-                          <span className="text-muted-foreground truncate max-w-[140px]">{control.name}</span>
-                          <div className="flex items-center gap-1">
-                            <Badge variant="outline" className={`${getHistoryRatingBadge(control.design).color} text-[9px] px-1 py-0`}>
-                              D:{control.design}
-                            </Badge>
-                            <Badge variant="outline" className={`${getHistoryRatingBadge(control.operating).color} text-[9px] px-1 py-0`}>
-                              O:{control.operating}
-                            </Badge>
-                          </div>
-                        </div>
-                      ))}
-                      {item.controls.length > 2 && (
-                        <span className="text-[9px] text-muted-foreground">+{item.controls.length - 2} more controls</span>
-                      )}
-                    </div>
-                  )}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-3 mt-2">
+            {historyData.map((item, idx) => (
+              <div key={idx} className="p-3 rounded-lg border bg-muted/30 hover:bg-muted/50 transition-colors">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs text-muted-foreground font-medium">{item.date}</span>
+                  <Badge className={`${getHistoryRatingBadge(item.score).color} text-[10px]`}>
+                    Score: {item.score}
+                  </Badge>
                 </div>
-              ))}
-            </div>
-            {historyData.length > 3 && (
-              <button 
-                className="w-full text-center text-xs text-blue-600 dark:text-blue-400 hover:underline pt-2 mt-2 border-t"
-                onClick={() => {
-                  setExpandedPanel(type === 'inherent' ? 'inherent-rating' : type === 'control' ? 'control-effectiveness' : 'residual-rating');
-                  onToggle();
-                }}
-              >
-                View all {historyData.length} assessments
-              </button>
-            )}
+                {/* Factor/Control details based on type */}
+                {type !== 'control' && item.factors && (
+                  <div className="space-y-1 mb-2">
+                    {item.factors.map((factor: any, fIdx: number) => (
+                      <div key={fIdx} className="flex items-center justify-between text-[10px]">
+                        <span className="text-muted-foreground">{factor.name}</span>
+                        <div className="flex items-center gap-2">
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(factor.rating).color} text-[9px] px-1.5 py-0`}>
+                            {factor.rating}
+                          </Badge>
+                          <span className="text-muted-foreground/70">({factor.weight}%)</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {type === 'control' && item.controls && (
+                  <div className="space-y-1 mb-2">
+                    {item.controls.map((control: any, cIdx: number) => (
+                      <div key={cIdx} className="flex items-center justify-between text-[10px]">
+                        <span className="text-muted-foreground truncate max-w-[180px]">{control.name}</span>
+                        <div className="flex items-center gap-1">
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.design).color} text-[9px] px-1 py-0`}>
+                            D:{control.design}
+                          </Badge>
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.operating).color} text-[9px] px-1 py-0`}>
+                            O:{control.operating}
+                          </Badge>
+                          <Badge variant="outline" className={`${getHistoryRatingBadge(control.overall).color} text-[9px] px-1 py-0`}>
+                            Ov:{control.overall}
+                          </Badge>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {/* Copy Button */}
+                <div className="pt-2 border-t border-border">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="h-7 text-xs gap-1.5 w-full"
+                    onClick={() => {
+                      if (type === 'inherent') handleCopyHistoryToInherent(item);
+                      if (type === 'control') handleCopyHistoryToControl(item);
+                      if (type === 'residual') handleCopyHistoryToResidual(item);
+                    }}
+                  >
+                    <Copy className="w-3 h-3" />
+                    Copy to Current Assessment
+                  </Button>
+                </div>
+              </div>
+            ))}
           </div>
-        </CollapsibleContent>
-      </Collapsible>
+        </DialogContent>
+      </Dialog>
     );
   };
 
@@ -2298,7 +2348,7 @@ const RiskAssessmentForm = () => {
                     <thead className="bg-muted/50">
                       <tr>
                         <th className="w-10 p-1.5 text-left"><Checkbox /></th>
-                        <th className="p-1.5 text-left text-xs font-medium">Factor & Description</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-48">Factor & Description</th>
                         <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
                         <th className="p-1.5 text-left text-xs font-medium">Comments</th>
                         {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
@@ -2786,7 +2836,7 @@ const RiskAssessmentForm = () => {
                     <thead className="bg-muted/50">
                       <tr>
                         <th className="w-10 p-1.5 text-left"><Checkbox /></th>
-                        <th className="p-1.5 text-left text-xs font-medium">Factor & Description</th>
+                        <th className="p-1.5 text-left text-xs font-medium w-48">Factor & Description</th>
                         <th className="p-1.5 text-left text-xs font-medium w-32">Rating</th>
                         <th className="p-1.5 text-left text-xs font-medium">Comments</th>
                         {showWeights && <th className="p-1.5 text-left text-xs font-medium w-24">Weightage (%)</th>}
