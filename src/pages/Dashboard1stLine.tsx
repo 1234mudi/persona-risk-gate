@@ -2,7 +2,7 @@ import React, { useState, useRef, useMemo, useEffect, useCallback } from "react"
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1747,52 +1747,44 @@ const Dashboard1stLine = () => {
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
           {/* Title Bar with Tabs */}
-          <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0">
-            <div className="flex items-center justify-between">
-              {/* Left: Teal accent + Title */}
-              <div className="flex items-center">
-                <div className="bg-first-line w-2 self-stretch" />
-                <div className="flex items-center gap-2 px-3 py-2">
-                  <CardTitle className="text-sm font-medium text-foreground">
+          <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
+            <div className="flex items-center justify-between h-10">
+              {/* Left: Teal square icon + Title */}
+              <div className="flex items-center h-full">
+                <div className="bg-first-line w-10 h-full flex items-center justify-center">
+                  <LayoutList className="w-5 h-5 text-white" />
+                </div>
+                <div className="flex items-center gap-1.5 px-3">
+                  <span className="text-sm font-medium text-foreground">
                     My Risk Assessments
-                  </CardTitle>
-                  <span className="text-xs text-muted-foreground">
+                  </span>
+                  <span className="text-sm text-muted-foreground">
                     ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
                   </span>
                 </div>
               </div>
               
-              {/* Right: Segmented Tabs */}
-              <div className="flex items-center gap-0 pr-0">
+              {/* Right: Button-styled Tabs */}
+              <div className="flex items-center gap-2 pr-3">
                 <button
                   onClick={() => setActiveTab("own")}
-                  className={`px-4 py-2 font-medium text-sm transition-all border-l border-border/50 ${
+                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
                     activeTab === "own"
-                      ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      ? "bg-first-line text-white border-first-line"
+                      : "bg-transparent text-first-line border-first-line hover:bg-first-line/10"
                   } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
                 >
-                  Completed Assessments
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "own" ? "bg-white/20" : "bg-muted"
-                  }`}>
-                    {assessorFilteredRiskData.filter(r => r.tabCategory === "own").length}
-                  </span>
+                  Completed Assessments ({assessorFilteredRiskData.filter(r => r.tabCategory === "own").length})
                 </button>
                 <button
                   onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-2 font-medium text-sm transition-all border-l border-border/50 ${
+                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
                     activeTab === "assess"
-                      ? "bg-gradient-to-br from-emerald-500 to-teal-600 text-white"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+                      ? "bg-first-line text-white border-first-line"
+                      : "bg-transparent text-first-line border-first-line hover:bg-first-line/10"
                   } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-emerald-400 ring-offset-2" : ""}`}
                 >
-                  Risks to Assess
-                  <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold ${
-                    activeTab === "assess" ? "bg-white/20" : "bg-muted"
-                  }`}>
-                    {assessorFilteredRiskData.filter(r => r.tabCategory === "assess").length}
-                  </span>
+                  Risks to Assess ({assessorFilteredRiskData.filter(r => r.tabCategory === "assess").length})
                 </button>
               </div>
             </div>
