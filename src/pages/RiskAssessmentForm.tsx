@@ -2250,62 +2250,62 @@ const RiskAssessmentForm = () => {
           {/* Tabs */}
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-2">
             <TabsList className="bg-transparent border border-border rounded-md w-full justify-start gap-0 p-0 h-auto flex-wrap">
-              <TabsTrigger value="inherent-rating" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-orange-500 px-4 py-3 gap-2">
-                <AlertTriangle className="w-4 h-4" />
+              <TabsTrigger value="inherent-rating" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-orange-500 px-2.5 py-1.5 gap-1.5 text-xs">
+                <AlertTriangle className="w-3.5 h-3.5" />
                 Inherent Rating
-                <Badge variant="outline" className="ml-1 text-xs">1</Badge>
+                <Badge variant="outline" className="ml-0.5 text-[10px] px-1 py-0">1</Badge>
               </TabsTrigger>
-              <TabsTrigger value="control-effectiveness" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-blue-500 px-4 py-3 gap-2">
-                <Shield className="w-4 h-4" />
+              <TabsTrigger value="control-effectiveness" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-blue-500 px-2.5 py-1.5 gap-1.5 text-xs">
+                <Shield className="w-3.5 h-3.5" />
                 Control Effectiveness
-                <Badge variant="outline" className="ml-1 text-xs">2</Badge>
+                <Badge variant="outline" className="ml-0.5 text-[10px] px-1 py-0">2</Badge>
               </TabsTrigger>
-              <TabsTrigger value="residual-rating" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-emerald-500 px-4 py-3 gap-2">
-                <CheckCircle className="w-4 h-4" />
+              <TabsTrigger value="residual-rating" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-emerald-500 px-2.5 py-1.5 gap-1.5 text-xs">
+                <CheckCircle className="w-3.5 h-3.5" />
                 Residual Rating
-                <Badge variant="outline" className="ml-1 text-xs">3</Badge>
+                <Badge variant="outline" className="ml-0.5 text-[10px] px-1 py-0">3</Badge>
               </TabsTrigger>
-              <TabsTrigger value="heat-map" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-purple-500 px-4 py-3 gap-2">
+              <TabsTrigger value="heat-map" className="rounded-none border-r border-border data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-purple-500 px-2.5 py-1.5 gap-1.5 text-xs">
                 Heat Map
               </TabsTrigger>
-              <TabsTrigger value="issues" className="rounded-none data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-red-500 px-4 py-3 gap-2">
-                <AlertCircle className="w-4 h-4" />
+              <TabsTrigger value="issues" className="rounded-none data-[state=active]:bg-muted/50 data-[state=active]:border-b-2 data-[state=active]:border-b-red-500 px-2.5 py-1.5 gap-1.5 text-xs">
+                <AlertCircle className="w-3.5 h-3.5" />
                 Issues
               </TabsTrigger>
             </TabsList>
 
             {/* Inherent Rating Tab */}
             <TabsContent value="inherent-rating" className="space-y-2">
-              <Card className="p-3 border border-border shadow-sm">
-                <div className="flex items-center justify-between mb-3">
+              <Card className="p-2 border border-border shadow-sm">
+                <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h2 className="text-lg font-semibold">Overall Inherent Risk Rating</h2>
-                    <p className="text-sm text-muted-foreground">Calculated based on weighted impact factors</p>
+                    <h2 className="text-sm font-semibold">Overall Inherent Risk Rating</h2>
+                    <p className="text-[11px] text-muted-foreground">Calculated based on weighted impact factors</p>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-2" onClick={handleAiAutofill} disabled={isAiLoading}>
-                      <Sparkles className="w-4 h-4" />
+                  <div className="flex items-center gap-1.5">
+                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-1.5 h-7 text-xs px-2.5" onClick={handleAiAutofill} disabled={isAiLoading}>
+                      <Sparkles className="w-3 h-3" />
                       {isAiLoading ? "Analyzing..." : "AI Autofill All"}
                     </Button>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('inherent-rating')}>
-                            <Maximize2 className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setExpandedPanel('inherent-rating')}>
+                            <Maximize2 className="w-3 h-3" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Expand to full screen</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(inherentScore).color} text-white flex-shrink-0`}>
-                      <div className="text-[10px] opacity-90">Score: {inherentScore}</div>
-                      <div className="font-semibold text-xs">{getRatingLabel(inherentScore).label}</div>
+                    <div className={`px-2 py-0.5 rounded-md ${getRatingLabel(inherentScore).color} text-white flex-shrink-0 min-w-fit`}>
+                      <div className="text-[9px] opacity-90 whitespace-nowrap">Score: {inherentScore}</div>
+                      <div className="font-semibold text-[10px] whitespace-nowrap">{getRatingLabel(inherentScore).label}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Previous Assessments Floater */}
-                <div className="relative mb-3">
+                <div className="relative mb-2">
                   <FormPreviousAssessmentFloater
                     type="inherent"
                     historyData={inherentHistory}
@@ -2320,26 +2320,26 @@ const RiskAssessmentForm = () => {
                 </div>
 
                 {/* Collaboration Notice */}
-                <div className="flex items-center justify-between p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs text-emerald-700 dark:text-emerald-300">
+                <div className="flex items-center justify-between px-2 py-1 bg-emerald-50 dark:bg-emerald-950/30 rounded-md border border-emerald-200 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-300">
                       Live collaboration active! Watch for colored badges on cells showing who's editing in real time.
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="flex -space-x-1.5">
+                    <div className="flex -space-x-1">
                       {getCollaboratorsForSection('inherent').map((pos, idx) => (
                         <div 
                           key={idx}
-                          className={`w-5 h-5 rounded-full ${pos.collaborator.color} border-2 border-white dark:border-background flex items-center justify-center text-[8px] font-semibold text-white`}
+                          className={`w-4 h-4 rounded-full ${pos.collaborator.color} border border-white dark:border-background flex items-center justify-center text-[7px] font-semibold text-white`}
                           title={pos.collaborator.name}
                         >
                           {pos.collaborator.avatar}
                         </div>
                       ))}
                       {getCollaboratorsForSection('inherent').length === 0 && (
-                        <span className="text-xs text-muted-foreground">No active editors</span>
+                        <span className="text-[10px] text-muted-foreground">No active editors</span>
                       )}
                     </div>
                   </div>
@@ -2350,11 +2350,11 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-8 px-1 py-1 text-left border-r border-border"><Checkbox /></th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-36 border-r border-border">Factor & Description</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-28 border-r border-border">Rating</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-48 border-r border-border">Comments</th>
-                        {showWeights && <th className="px-1.5 py-1 text-left text-xs font-medium w-20">Weightage (%)</th>}
+                        <th className="w-6 px-0.5 py-0.5 text-left border-r border-border"><Checkbox className="h-3 w-3" /></th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-36 border-r border-border">Factor & Description</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-28 border-r border-border">Rating</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-48 border-r border-border">Comments</th>
+                        {showWeights && <th className="px-1 py-0.5 text-left text-[10px] font-medium w-20">Weightage (%)</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -2461,23 +2461,23 @@ const RiskAssessmentForm = () => {
               </Card>
 
               <div className="flex items-center justify-end">
-                <Button className="gap-1.5 bg-blue-600 hover:bg-blue-700 h-8 text-sm px-3" onClick={() => setActiveTab("control-effectiveness")}>
-                  Continue to Control Effectiveness<ChevronRight className="w-3.5 h-3.5" />
+                <Button className="gap-1 bg-blue-600 hover:bg-blue-700 h-7 text-xs px-2.5" onClick={() => setActiveTab("control-effectiveness")}>
+                  Continue to Control Effectiveness<ChevronRight className="w-3 h-3" />
                 </Button>
               </div>
             </TabsContent>
 
             {/* Control Effectiveness Tab */}
             <TabsContent value="control-effectiveness" className="space-y-2">
-              <Card className="p-3 border border-border shadow-sm">
+              <Card className="p-2 border border-border shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h2 className="text-base font-semibold">Control Effectiveness Assessment</h2>
-                    <p className="text-xs text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
+                    <h2 className="text-sm font-semibold">Control Effectiveness Assessment</h2>
+                    <p className="text-[11px] text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
                 </div>
 
                 {/* Previous Assessments Floater */}
-                <div className="relative mb-3">
+                <div className="relative mb-2">
                   <FormPreviousAssessmentFloater
                     type="control"
                     historyData={controlHistory}
@@ -2490,48 +2490,48 @@ const RiskAssessmentForm = () => {
                     }))}
                   />
                 </div>
-                  <div className="flex items-center gap-2">
-                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-2 h-8 text-sm" onClick={handleAiAutofill} disabled={isAiLoading}>
-                      <Sparkles className="w-3.5 h-3.5" />{isAiLoading ? "Analyzing..." : "AI Autofill All"}
+                  <div className="flex items-center gap-1.5">
+                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-1.5 h-7 text-xs px-2.5" onClick={handleAiAutofill} disabled={isAiLoading}>
+                      <Sparkles className="w-3 h-3" />{isAiLoading ? "Analyzing..." : "AI Autofill All"}
                     </Button>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('control-effectiveness')}>
-                            <Maximize2 className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setExpandedPanel('control-effectiveness')}>
+                            <Maximize2 className="w-3 h-3" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Expand to full screen</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(controlScore).color} text-white`}>
-                      <div className="text-[10px] opacity-90">Score: {controlScore}</div>
-                      <div className="font-semibold text-xs">{getRatingLabel(controlScore).label}</div>
+                    <div className={`px-2 py-0.5 rounded-md ${getRatingLabel(controlScore).color} text-white min-w-fit`}>
+                      <div className="text-[9px] opacity-90 whitespace-nowrap">Score: {controlScore}</div>
+                      <div className="font-semibold text-[10px] whitespace-nowrap">{getRatingLabel(controlScore).label}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Collaboration Notice */}
-                <div className="flex items-center justify-between p-2 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-500 animate-pulse" />
-                    <span className="text-xs text-blue-700 dark:text-blue-300">
+                <div className="flex items-center justify-between px-2 py-1 bg-blue-50 dark:bg-blue-950/30 rounded-md border border-blue-200 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-500 animate-pulse" />
+                    <span className="text-[10px] text-blue-700 dark:text-blue-300">
                       Results displayed are from the latest control test performed on this control, with detailed responses to questions and samples.
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="flex -space-x-1.5">
+                    <div className="flex -space-x-1">
                       {getCollaboratorsForSection('control').map((pos, idx) => (
                         <div 
                           key={idx}
-                          className={`w-5 h-5 rounded-full ${pos.collaborator.color} border-2 border-white dark:border-background flex items-center justify-center text-[8px] font-semibold text-white`}
+                          className={`w-4 h-4 rounded-full ${pos.collaborator.color} border border-white dark:border-background flex items-center justify-center text-[7px] font-semibold text-white`}
                           title={pos.collaborator.name}
                         >
                           {pos.collaborator.avatar}
                         </div>
                       ))}
                       {getCollaboratorsForSection('control').length === 0 && (
-                        <span className="text-xs text-muted-foreground">No active editors</span>
+                        <span className="text-[10px] text-muted-foreground">No active editors</span>
                       )}
                     </div>
                   </div>
@@ -2541,15 +2541,15 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-8 px-1 py-1 text-left border-r border-border"><Checkbox /></th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-16 border-r border-border">Control ID</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-32 border-r border-border">Control Name</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-20 border-r border-border">Type</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-32 border-r border-border">Owner</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-24 border-r border-border">Design</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-24 border-r border-border">Operating</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-24 border-r border-border">Overall</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-16">Score</th>
+                        <th className="w-6 px-0.5 py-0.5 text-left border-r border-border"><Checkbox className="h-3 w-3" /></th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-16 border-r border-border">Control ID</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-32 border-r border-border">Control Name</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-20 border-r border-border">Type</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-32 border-r border-border">Owner</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-24 border-r border-border">Design</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-24 border-r border-border">Operating</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-24 border-r border-border">Overall</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-16">Score</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -2768,15 +2768,15 @@ const RiskAssessmentForm = () => {
 
             {/* Residual Rating Tab */}
             <TabsContent value="residual-rating" className="space-y-2">
-              <Card className="p-3 border border-border shadow-sm">
+              <Card className="p-2 border border-border shadow-sm">
                 <div className="flex items-center justify-between mb-2">
                   <div>
-                    <h2 className="text-base font-semibold">Residual Risk Rating</h2>
-                    <p className="text-xs text-muted-foreground">Risk rating after applying controls</p>
+                    <h2 className="text-sm font-semibold">Residual Risk Rating</h2>
+                    <p className="text-[11px] text-muted-foreground">Risk rating after applying controls</p>
                 </div>
 
                 {/* Previous Assessments Floater */}
-                <div className="relative mb-3">
+                <div className="relative mb-2">
                   <FormPreviousAssessmentFloater
                     type="residual"
                     historyData={residualHistory}
@@ -2789,45 +2789,45 @@ const RiskAssessmentForm = () => {
                     }))}
                   />
                 </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1.5">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setExpandedPanel('residual-rating')}>
-                            <Maximize2 className="w-4 h-4" />
+                          <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => setExpandedPanel('residual-rating')}>
+                            <Maximize2 className="w-3 h-3" />
                           </Button>
                         </TooltipTrigger>
                         <TooltipContent>Expand to full screen</TooltipContent>
                       </Tooltip>
                     </TooltipProvider>
-                    <div className={`px-2.5 py-1 rounded-lg ${getRatingLabel(residualScore).color} text-white`}>
-                      <div className="text-[10px] opacity-90">Score: {residualScore}</div>
-                      <div className="font-semibold text-xs">{getRatingLabel(residualScore).label}</div>
+                    <div className={`px-2 py-0.5 rounded-md ${getRatingLabel(residualScore).color} text-white min-w-fit`}>
+                      <div className="text-[9px] opacity-90 whitespace-nowrap">Score: {residualScore}</div>
+                      <div className="font-semibold text-[10px] whitespace-nowrap">{getRatingLabel(residualScore).label}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Collaboration Notice */}
-                <div className="flex items-center justify-between p-2 bg-emerald-50 dark:bg-emerald-950/30 rounded-lg border border-emerald-200 mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-xs text-emerald-700 dark:text-emerald-300">
+                <div className="flex items-center justify-between px-2 py-1 bg-emerald-50 dark:bg-emerald-950/30 rounded-md border border-emerald-200 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[10px] text-emerald-700 dark:text-emerald-300">
                       Live collaboration active! Watch for colored badges on cells showing who's editing in real time.
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
-                    <div className="flex -space-x-1.5">
+                    <div className="flex -space-x-1">
                       {getCollaboratorsForSection('residual').map((pos, idx) => (
                         <div 
                           key={idx}
-                          className={`w-5 h-5 rounded-full ${pos.collaborator.color} border-2 border-white dark:border-background flex items-center justify-center text-[8px] font-semibold text-white`}
+                          className={`w-4 h-4 rounded-full ${pos.collaborator.color} border border-white dark:border-background flex items-center justify-center text-[7px] font-semibold text-white`}
                           title={pos.collaborator.name}
                         >
                           {pos.collaborator.avatar}
                         </div>
                       ))}
                       {getCollaboratorsForSection('residual').length === 0 && (
-                        <span className="text-xs text-muted-foreground">No active editors</span>
+                        <span className="text-[10px] text-muted-foreground">No active editors</span>
                       )}
                     </div>
                   </div>
@@ -2837,11 +2837,11 @@ const RiskAssessmentForm = () => {
                   <table className="w-full">
                     <thead className="bg-muted/50">
                       <tr>
-                        <th className="w-8 px-1 py-1 text-left border-r border-border"><Checkbox /></th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-36 border-r border-border">Factor & Description</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-28 border-r border-border">Rating</th>
-                        <th className="px-1.5 py-1 text-left text-xs font-medium w-48 border-r border-border">Comments</th>
-                        {showWeights && <th className="px-1.5 py-1 text-left text-xs font-medium w-20">Weightage (%)</th>}
+                        <th className="w-6 px-0.5 py-0.5 text-left border-r border-border"><Checkbox className="h-3 w-3" /></th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-36 border-r border-border">Factor & Description</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-28 border-r border-border">Rating</th>
+                        <th className="px-1 py-0.5 text-left text-[10px] font-medium w-48 border-r border-border">Comments</th>
+                        {showWeights && <th className="px-1 py-0.5 text-left text-[10px] font-medium w-20">Weightage (%)</th>}
                       </tr>
                     </thead>
                     <tbody>
@@ -2942,9 +2942,9 @@ const RiskAssessmentForm = () => {
               </Card>
 
               <div className="flex items-center justify-between">
-                <Button variant="outline" className="gap-1.5 h-8 text-sm px-3" onClick={() => setActiveTab("control-effectiveness")}><ChevronLeft className="w-3.5 h-3.5" />Back to Previous Section</Button>
-                <Button className="gap-1.5 bg-purple-600 hover:bg-purple-700 h-8 text-sm px-3" onClick={() => setActiveTab("heat-map")}>
-                  View Heat Map<ChevronRight className="w-3.5 h-3.5" />
+                <Button variant="outline" className="gap-1 h-7 text-xs px-2.5" onClick={() => setActiveTab("control-effectiveness")}><ChevronLeft className="w-3 h-3" />Back to Previous Section</Button>
+                <Button className="gap-1 bg-purple-600 hover:bg-purple-700 h-7 text-xs px-2.5" onClick={() => setActiveTab("heat-map")}>
+                  View Heat Map<ChevronRight className="w-3 h-3" />
                 </Button>
               </div>
             </TabsContent>
