@@ -1,10 +1,8 @@
 import { useState } from "react";
-import { Shield, Users, BarChart3, UserCheck, ClipboardCheck, Menu, X } from "lucide-react";
+import { Shield, Users, BarChart3, UserCheck, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Card } from "@/components/ui/card";
 import { PersonaCard } from "@/components/PersonaCard";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { toast } from "sonner";
@@ -13,8 +11,6 @@ import { useNavigate } from "react-router-dom";
 const Index = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = (e: React.FormEvent) => {
@@ -37,21 +33,21 @@ const Index = () => {
     {
       icon: UserCheck,
       name: "Risk Owner",
-      description: "Approves the Risk & Control Self- Assessment(RCSA) results and oversee the status of critical risk remediation actions within the assigned business area.",
+      description: "Approves RCSA results and oversees critical risk remediation.",
       line: "first" as const,
       route: "/dashboard/risk-owner",
     },
     {
       icon: ClipboardCheck,
       name: "1st Line Risk Analyst",
-      description: "Executes the Risk & Control Self- Assessment(RCSA) process, involves rating inherent risk, documenting control evidence, and identifying control weaknesses or gaps.",
+      description: "Executes RCSA process, rates risk, and documents control evidence.",
       line: "first" as const,
       route: "/dashboard/1st-line-analyst",
     },
     {
       icon: Users,
       name: "1st Line Risk Manager",
-      description: "Review, validate, and submit the team's completed Risk & Control Self- Assessment(RCSA) package, plus actively manage and track all assigned remediation action plans.",
+      description: "Reviews and submits RCSA packages, manages action plans.",
       line: "first" as const,
     },
   ];
@@ -60,149 +56,170 @@ const Index = () => {
     {
       icon: BarChart3,
       name: "2nd Line Risk Analyst",
-      description: "Independently review and challenge 1st Line Risk & Control Self- Assessment(RCSA) submissions, validate control effectiveness ratings, and log formal findings or corrections.",
+      description: "Reviews and challenges 1st Line RCSA submissions.",
       line: "second" as const,
       route: "/dashboard/2nd-line-analyst",
     },
     {
       icon: Shield,
       name: "Chief Risk Officer",
-      description: "Monitor the enterprise-wide aggregated risk posture via dashboards, and authorize organizational risk strategies and material control investments.",
+      description: "Monitors enterprise risk posture and authorizes strategies.",
       line: "second" as const,
     },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-secondary/20">
-      {/* Header */}
-      <header className="border-b border-border/50 bg-gradient-to-r from-primary/5 to-first-line/10 backdrop-blur-sm">
-        <div className="container mx-auto px-4 sm:px-6 py-2">
-          <div className="space-y-1">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 sm:gap-2.5">
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-lg bg-gradient-to-br from-primary to-first-line flex items-center justify-center">
-                  <Shield className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                </div>
-                <h1 className="text-base sm:text-lg font-semibold text-foreground leading-tight">
-                  <span className="hidden sm:inline">Risk & Control Self- Assessment (RCSA)</span>
-                  <span className="sm:hidden">RCSA</span>
-                </h1>
-              </div>
-              <div className="flex items-center gap-2">
-                <ThemeToggle />
-                {/* Mobile menu button */}
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="lg:hidden"
-                  onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                >
-                  {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-                </Button>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground pl-9 sm:pl-10.5 hidden sm:block">
-              A comprehensive platform for managing enterprise risk assessments, control evaluations, and remediation tracking across your organization.
-            </p>
-          </div>
+    <div className="min-h-screen flex flex-col lg:flex-row">
+      {/* Left Panel - Teal with Wave Pattern */}
+      <div className="hidden lg:flex lg:w-[42%] bg-primary relative overflow-hidden">
+        {/* Wave Pattern SVG */}
+        <svg
+          className="absolute inset-0 w-full h-full"
+          viewBox="0 0 400 800"
+          preserveAspectRatio="xMidYMid slice"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Multiple wavy lines */}
+          <path
+            d="M-50,100 Q100,150 50,250 T100,400 T50,550 T100,700 T50,850"
+            fill="none"
+            stroke="rgba(255,255,255,0.15)"
+            strokeWidth="2"
+          />
+          <path
+            d="M0,80 Q150,130 100,230 T150,380 T100,530 T150,680 T100,830"
+            fill="none"
+            stroke="rgba(255,255,255,0.12)"
+            strokeWidth="2"
+          />
+          <path
+            d="M50,120 Q200,170 150,270 T200,420 T150,570 T200,720 T150,870"
+            fill="none"
+            stroke="rgba(255,255,255,0.1)"
+            strokeWidth="2"
+          />
+          <path
+            d="M100,60 Q250,110 200,210 T250,360 T200,510 T250,660 T200,810"
+            fill="none"
+            stroke="rgba(255,255,255,0.08)"
+            strokeWidth="2"
+          />
+          <path
+            d="M150,140 Q300,190 250,290 T300,440 T250,590 T300,740 T250,890"
+            fill="none"
+            stroke="rgba(255,255,255,0.06)"
+            strokeWidth="2"
+          />
+          <path
+            d="M200,100 Q350,150 300,250 T350,400 T300,550 T350,700 T300,850"
+            fill="none"
+            stroke="rgba(255,255,255,0.05)"
+            strokeWidth="2"
+          />
+          <path
+            d="M250,80 Q400,130 350,230 T400,380 T350,530 T400,680 T350,830"
+            fill="none"
+            stroke="rgba(255,255,255,0.04)"
+            strokeWidth="2"
+          />
+          <path
+            d="M300,120 Q450,170 400,270 T450,420 T400,570 T450,720 T400,870"
+            fill="none"
+            stroke="rgba(255,255,255,0.03)"
+            strokeWidth="2"
+          />
+        </svg>
+      </div>
+
+      {/* Right Panel - Content */}
+      <div className="flex-1 flex flex-col min-h-screen bg-background">
+        {/* Top Bar */}
+        <div className="flex justify-end items-center p-4">
+          <ThemeToggle />
         </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 py-2 sm:py-4">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-8 max-w-7xl mx-auto items-start">
-          {/* Login Form Section */}
-          <div className="flex items-start justify-center lg:justify-end order-1 lg:order-1">
-            <Card className="w-full max-w-md p-3 sm:p-5 shadow-lg border-border/50">
-              <div className="space-y-4">
-                <div className="space-y-0.5 text-center">
-                  <h2 className="text-lg sm:text-xl font-bold text-foreground">Welcome Back</h2>
-                  <p className="text-xs text-muted-foreground">
-                    Sign in to your workspace to continue
-                  </p>
-                </div>
-
-                <form onSubmit={handleLogin} className="space-y-4">
-                  <div className="space-y-1.5">
-                    <Label htmlFor="email" className="text-sm">Email or Username</Label>
-                    <Input
-                      id="email"
-                      type="text"
-                      placeholder="Enter your email or username"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="h-10 sm:h-9"
-                      required
-                    />
-                  </div>
-
-                  <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                      <Label htmlFor="password" className="text-sm">Password</Label>
-                      <a
-                        href="#"
-                        className="text-xs text-primary hover:text-primary/80 transition-colors"
-                      >
-                        Forgot password?
-                      </a>
-                    </div>
-                    <Input
-                      id="password"
-                      type="password"
-                      placeholder="Enter your password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="h-10 sm:h-9"
-                      required
-                    />
-                  </div>
-
-                  <div className="flex items-center space-x-2 min-h-[44px]">
-                    <Checkbox
-                      id="remember"
-                      checked={rememberMe}
-                      onCheckedChange={(checked) => setRememberMe(checked as boolean)}
-                      className="h-5 w-5"
-                    />
-                    <Label
-                      htmlFor="remember"
-                      className="text-sm font-normal cursor-pointer"
-                    >
-                      Remember me for 30 days
-                    </Label>
-                  </div>
-
-                  <Button type="submit" className="w-full h-11 sm:h-9 text-sm font-medium">
-                    Sign In
-                  </Button>
-                </form>
-
-                <div className="text-center text-sm text-muted-foreground">
-                  Need help? Contact{" "}
-                  <a href="#" className="text-primary hover:text-primary/80 transition-colors">
-                    support@rcsa.com
-                  </a>
-                </div>
-              </div>
-            </Card>
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col items-center justify-start px-4 sm:px-8 lg:px-12 pb-6">
+          {/* Logo/Branding */}
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
+              <Shield className="w-6 h-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold text-foreground">RCSA Platform</h1>
+              <p className="text-xs text-muted-foreground">Risk & Control Self-Assessment</p>
+            </div>
           </div>
 
-          {/* Persona Cards Section */}
-          <div className="space-y-3 order-2 lg:order-2">
-            <div className="space-y-1">
-              <h2 className="text-lg sm:text-xl font-bold text-foreground">Quick Access</h2>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                Select your role to access the test environment
-              </p>
-            </div>
-
-            {/* 1st Line Defense Section */}
-            <div className="rounded-xl border border-first-line/20 bg-first-line/5 p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-first-line"></div>
-                <h3 className="text-sm font-semibold text-first-line">1st Line Defense</h3>
+          {/* Login Form */}
+          <div className="w-full max-w-sm space-y-4 mb-8">
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div className="space-y-1.5">
+                <Label htmlFor="username" className="text-sm text-muted-foreground">
+                  Username
+                </Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder=""
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-11 border-border bg-background"
+                  required
+                />
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+
+              <div className="space-y-1.5">
+                <Label htmlFor="password" className="text-sm text-muted-foreground">
+                  Password
+                </Label>
+                <Input
+                  id="password"
+                  type="password"
+                  placeholder=""
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="h-11 border-border bg-background"
+                  required
+                />
+              </div>
+
+              <Button
+                type="submit"
+                className="w-full h-11 bg-warning hover:bg-warning/90 text-white font-semibold"
+              >
+                SIGN IN
+              </Button>
+            </form>
+
+            <div className="text-center">
+              <a
+                href="#"
+                className="text-sm text-primary hover:text-primary/80 transition-colors"
+              >
+                Recover Password
+              </a>
+            </div>
+          </div>
+
+          {/* Divider */}
+          <div className="w-full max-w-md flex items-center gap-3 mb-6">
+            <div className="flex-1 h-px bg-border"></div>
+            <span className="text-xs text-muted-foreground font-medium">Quick Access</span>
+            <div className="flex-1 h-px bg-border"></div>
+          </div>
+
+          {/* Persona Cards */}
+          <div className="w-full max-w-2xl space-y-4">
+            {/* 1st Line Defense Section */}
+            <div className="rounded-lg border border-first-line/20 bg-first-line/5 p-3">
+              <div className="flex items-center gap-2 mb-2">
+                <div className="w-2 h-2 rounded-full bg-first-line"></div>
+                <h3 className="text-xs font-semibold text-first-line uppercase tracking-wide">
+                  1st Line Defense
+                </h3>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                 {firstColumnPersonas.map((persona, index) => (
                   <PersonaCard
                     key={index}
@@ -217,12 +234,14 @@ const Index = () => {
             </div>
 
             {/* 2nd Line Defense Section */}
-            <div className="rounded-xl border border-second-line/20 bg-second-line/5 p-3">
+            <div className="rounded-lg border border-second-line/20 bg-second-line/5 p-3">
               <div className="flex items-center gap-2 mb-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-second-line"></div>
-                <h3 className="text-sm font-semibold text-second-line">2nd Line Defense</h3>
+                <div className="w-2 h-2 rounded-full bg-second-line"></div>
+                <h3 className="text-xs font-semibold text-second-line uppercase tracking-wide">
+                  2nd Line Defense
+                </h3>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-2xl">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-md">
                 {secondColumnPersonas.map((persona, index) => (
                   <PersonaCard
                     key={index}
@@ -237,7 +256,25 @@ const Index = () => {
             </div>
           </div>
         </div>
-      </main>
+
+        {/* Footer */}
+        <footer className="py-4 px-6 border-t border-border">
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
+            <span>Copyright © 2025. All rights reserved.</span>
+            <div className="flex items-center gap-4">
+              <a href="#" className="hover:text-foreground transition-colors">
+                Privacy Policy
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                Terms of Service
+              </a>
+              <a href="#" className="hover:text-foreground transition-colors">
+                Support
+              </a>
+            </div>
+          </div>
+        </footer>
+      </div>
     </div>
   );
 };
