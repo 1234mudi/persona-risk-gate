@@ -2147,7 +2147,7 @@ const Dashboard1stLine = () => {
                             <div className="flex flex-col gap-2">
                               {/* Risk Title and Info */}
                               <div className="flex flex-col gap-1">
-                                <span className="font-mono text-xs text-first-line">{risk.id}</span>
+                                <span className="font-mono text-xs text-black dark:text-white">{risk.id}</span>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <button 
@@ -2217,7 +2217,7 @@ const Dashboard1stLine = () => {
                               
                             return (
                               <>
-                                <div className={`text-sm font-medium ${isOverdue ? 'text-destructive' : 'text-foreground'}`}>
+                                <div className={`text-sm font-medium ${isOverdue ? 'text-destructive' : 'text-black dark:text-white'}`}>
                                   {format(dueDate, 'MMM dd, yyyy')}
                                 </div>
                                 {isOverdue && (
@@ -2233,7 +2233,7 @@ const Dashboard1stLine = () => {
                             {risk.completionDate ? (
                               <div className="flex items-center gap-2">
                                 <CalendarCheck className="w-4 h-4 text-emerald-500" />
-                                <span className="text-sm">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
+                                <span className="text-sm text-black dark:text-white">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
                               </div>
                             ) : (
                               <span className="text-muted-foreground text-sm">-</span>
@@ -2270,9 +2270,9 @@ const Dashboard1stLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded mt-1">
-                                      <span className="text-green-600 font-medium">{level1Agg.progressBreakdown.completed}</span>
-                                      <span>/</span>
-                                      <span>{level1Agg.childCount}</span>
+                                      <span className="text-black dark:text-white font-medium">{level1Agg.progressBreakdown.completed}</span>
+                                      <span className="text-black dark:text-white">/</span>
+                                      <span className="text-black dark:text-white">{level1Agg.childCount}</span>
                                       <span className="ml-1">completed</span>
                                     </div>
                                   </TooltipTrigger>
@@ -2389,9 +2389,9 @@ const Dashboard1stLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
-                                      <span className="font-medium">Σ Avg: {inherentAgg.avgScore}</span>
-                                      <span>|</span>
-                                      <span>Max: {inherentAgg.maxScore}</span>
+                                      <span className="font-medium text-black dark:text-white">Σ Avg: {inherentAgg.avgScore}</span>
+                                      <span className="text-black dark:text-white">|</span>
+                                      <span className="text-black dark:text-white">Max: {inherentAgg.maxScore}</span>
                                       <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(inherentAgg.avgScore).color)}`}>
                                         {getRiskLevelFromScore(inherentAgg.avgScore).level}
                                       </Badge>
@@ -2432,9 +2432,9 @@ const Dashboard1stLine = () => {
                                 <Tooltip>
                                   <TooltipTrigger asChild>
                                     <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
-                                      <span className="font-medium">Σ Avg: {residualAgg.avgScore}</span>
-                                      <span>|</span>
-                                      <span>Max: {residualAgg.maxScore}</span>
+                                      <span className="font-medium text-black dark:text-white">Σ Avg: {residualAgg.avgScore}</span>
+                                      <span className="text-black dark:text-white">|</span>
+                                      <span className="text-black dark:text-white">Max: {residualAgg.maxScore}</span>
                                       <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(residualAgg.avgScore).color)}`}>
                                         {getRiskLevelFromScore(residualAgg.avgScore).level}
                                       </Badge>
