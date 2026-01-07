@@ -69,7 +69,7 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
+    <div className="h-screen flex flex-col lg:flex-row overflow-hidden">
       {/* Left Panel - Teal with Wave Pattern */}
       <div className="hidden lg:flex lg:w-[42%] bg-primary relative overflow-hidden">
         {/* Wave Pattern SVG */}
@@ -132,16 +132,16 @@ const Index = () => {
       </div>
 
       {/* Right Panel - Content */}
-      <div className="flex-1 flex flex-col min-h-screen bg-background">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden bg-background">
         {/* Top Bar */}
-        <div className="flex justify-end items-center p-4">
+        <div className="flex justify-end items-center p-3">
           <ThemeToggle />
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col items-center justify-start px-4 sm:px-8 lg:px-12 pb-6">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 lg:px-12 py-2 overflow-y-auto">
           {/* Logo/Branding */}
-          <div className="w-full max-w-sm flex items-center gap-3 mb-6">
+          <div className="w-full max-w-sm flex items-center gap-3 mb-4">
             <div className="w-10 h-10 bg-primary/10 rounded-lg flex items-center justify-center">
               <Shield className="w-6 h-6 text-primary" />
             </div>
@@ -152,8 +152,8 @@ const Index = () => {
           </div>
 
           {/* Login Form */}
-          <div className="w-full max-w-sm space-y-5 mb-8">
-            <form onSubmit={handleLogin} className="space-y-5">
+          <div className="w-full max-w-sm space-y-4 mb-4">
+            <form onSubmit={handleLogin} className="space-y-4">
               {/* Username field with floating label and left accent */}
               <div className="relative">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-[hsl(175,100%,42%)] rounded-l"></div>
@@ -203,16 +203,16 @@ const Index = () => {
           </div>
 
           {/* Divider */}
-          <div className="w-full max-w-md flex items-center gap-3 mb-6">
+          <div className="w-full max-w-md flex items-center gap-3 mb-4">
             <div className="flex-1 h-px bg-border"></div>
             <span className="text-xs text-muted-foreground font-medium">Quick Access</span>
             <div className="flex-1 h-px bg-border"></div>
           </div>
 
           {/* Persona Cards */}
-          <div className="w-full max-w-2xl space-y-4">
+          <div className="w-full max-w-2xl space-y-3">
             {/* 1st Line Defense Section */}
-            <div className="rounded-lg border border-first-line/20 bg-first-line/5 p-3">
+            <div className="rounded-lg border border-first-line/20 bg-first-line/5 p-2">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-first-line"></div>
                 <h3 className="text-xs font-semibold text-first-line uppercase tracking-wide">
@@ -234,7 +234,7 @@ const Index = () => {
             </div>
 
             {/* 2nd Line Defense Section */}
-            <div className="rounded-lg border border-second-line/20 bg-second-line/5 p-3">
+            <div className="rounded-lg border border-second-line/20 bg-second-line/5 p-2">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-2 h-2 rounded-full bg-second-line"></div>
                 <h3 className="text-xs font-semibold text-second-line uppercase tracking-wide">
@@ -258,7 +258,7 @@ const Index = () => {
         </div>
 
         {/* Footer */}
-        <footer className="py-4 px-6 border-t border-border">
+        <footer className="py-3 px-6 border-t border-border">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-muted-foreground">
             <span>Copyright © 2025. All rights reserved.</span>
             <div className="flex items-center gap-4">
