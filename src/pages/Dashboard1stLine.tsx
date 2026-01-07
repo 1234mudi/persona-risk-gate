@@ -1398,14 +1398,14 @@ const Dashboard1stLine = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-2">
+        <div className="container mx-auto px-6 py-1">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-first-line flex items-center justify-center">
-                <ClipboardCheck className="w-4 h-4 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 bg-first-line flex items-center justify-center">
+                <ClipboardCheck className="w-3 h-3 text-white" />
               </div>
               <div>
-                <h1 className="text-base font-semibold text-black dark:text-white">
+                <h1 className="text-sm font-semibold text-black dark:text-white">
                   1st Line Risk Analyst Dashboard
                 </h1>
                 <p className="text-xs text-muted-foreground">
@@ -1416,14 +1416,14 @@ const Dashboard1stLine = () => {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-8 px-3 rounded-none">
-                    <User className="w-4 h-4 mr-2" />
+                  <Button variant="outline" size="sm" className="h-7 px-3 rounded-none">
+                    <User className="w-3.5 h-3.5 mr-2" />
                     1st Line Analyst
-                    <ChevronDown className="w-4 h-4 ml-2" />
+                    <ChevronDown className="w-3.5 h-3.5 ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
