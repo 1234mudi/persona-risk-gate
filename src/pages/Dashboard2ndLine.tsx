@@ -1158,6 +1158,23 @@ const Dashboard2ndLine = () => {
                       <p>{selectedRisks.size === 0 ? "Select risks to begin" : "Review and challenge risk assessments"}</p>
                     </TooltipContent>
                   </Tooltip>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <Button 
+                        size="sm" 
+                        className="h-6 sm:h-6 text-[10px] sm:text-xs bg-primary hover:bg-primary/90 text-primary-foreground disabled:opacity-50 disabled:cursor-not-allowed"
+                        disabled={selectedRisks.size === 0}
+                        onClick={startReviewMode}
+                      >
+                        <Eye className="h-2.5 w-2.5 sm:h-3 sm:w-3 sm:mr-1" />
+                        <span className="hidden sm:inline">Review Selected ({selectedRisks.size})</span>
+                        <span className="sm:hidden">{selectedRisks.size}</span>
+                      </Button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <p>{selectedRisks.size === 0 ? "Select risks to begin review" : `Review ${selectedRisks.size} selected risk${selectedRisks.size > 1 ? "s" : ""} with Next/Previous navigation`}</p>
+                    </TooltipContent>
+                  </Tooltip>
                 </div>
               </TooltipProvider>
             </div>
@@ -2173,7 +2190,7 @@ const Dashboard2ndLine = () => {
       {/* Risk Assessment Overview Modal */}
       <RiskAssessmentOverviewModal
         open={riskOverviewModalOpen}
-        onOpenChange={setRiskOverviewModalOpen}
+        onOpenChange={handleModalClose}
         risk={selectedRiskForOverview}
         assessmentIssues={[
           { id: "ISS-2025-001", title: "Control testing failure identified", description: "KYC verification control failed 3 out of 10 sample tests", severity: "High", status: "Open", dateIdentified: "2025-01-15", owner: "Compliance Team" },
@@ -2184,6 +2201,15 @@ const Dashboard2ndLine = () => {
           { id: "ISS-2024-022", title: "Delayed verification process", description: "Average verification time exceeds SLA by 40%", severity: "Medium", status: "Open", dateIdentified: "2024-09-10", owner: "Operations" },
           { id: "ISS-2024-028", title: "Missing audit trail records", description: "Transaction monitoring gaps identified during internal audit", severity: "High", status: "Open", dateIdentified: "2024-10-05", owner: "Compliance Team" },
         ]}
+        showTraversal={true}
+        currentIndex={currentTraversalIndex}
+        totalCount={traversableRisks.length}
+        isFirst={isFirstRisk}
+        isLast={isLastRisk}
+        onNext={goToNextRisk}
+        onPrevious={goToPreviousRisk}
+        isReviewMode={isReviewMode}
+        reviewProgress={isReviewMode ? { current: currentTraversalIndex + 1, total: traversableRisks.length } : null}
       />
 
       {/* Control Details Dialog */}
