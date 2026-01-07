@@ -2162,7 +2162,7 @@ const Dashboard1stLine = () => {
                                   </TooltipContent>
                                 </Tooltip>
                                 <span className="text-xs text-muted-foreground">{risk.owner}</span>
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
+                                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium inline-block w-fit text-black dark:text-white ${getCategoryColor(risk.category)}`}>
                                   {risk.category}
                                 </span>
                               </div>
@@ -2300,7 +2300,7 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Business Unit */}
                         <TableCell className="py-2 border-r border-b border-border">
-                          <Badge variant="outline" className="text-[10px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700">
+                          <Badge variant="outline" className="text-[10px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700 text-black dark:text-white">
                             {risk.businessUnit}
                           </Badge>
                         </TableCell>
