@@ -792,9 +792,9 @@ export function AIDocumentAssessmentModal({
   const getStatusBadge = (status: "new" | "modified" | "unchanged") => {
     switch (status) {
       case "new":
-        return <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700 text-xs"><Sparkles className="w-3 h-3 mr-1" />New</Badge>;
+        return <Badge className="bg-second-line/10 text-second-line border-second-line/30 text-[10px] px-1.5 py-0.5 rounded-none"><Sparkles className="w-2.5 h-2.5 mr-0.5" />New</Badge>;
       case "modified":
-        return <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-700 text-xs"><Pencil className="w-3 h-3 mr-1" />Modified</Badge>;
+        return <Badge className="bg-muted text-muted-foreground border-border/50 text-[10px] px-1.5 py-0.5 rounded-none"><Pencil className="w-2.5 h-2.5 mr-0.5" />Modified</Badge>;
       default:
         return null;
     }
@@ -1184,58 +1184,58 @@ export function AIDocumentAssessmentModal({
 
         {step === "review" && (
           <TooltipProvider delayDuration={100}>
-            <div className="flex-1 flex flex-col overflow-hidden min-h-0 px-6 py-4">
+            <div className="flex-1 flex flex-col overflow-hidden min-h-0 px-4 py-3">
               {/* Info Banner */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg px-4 py-3 mb-4 flex items-center gap-3">
-                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                <span className="text-sm text-blue-700 dark:text-blue-300">
-                  Document parsing complete. Review and edit the extracted data below before importing.
+              <div className="bg-second-line/5 dark:bg-second-line/10 border border-second-line/30 rounded-none px-3 py-2 mb-3 flex items-center gap-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
+                <span className="text-xs text-second-line">
+                  Document parsing complete. Review and edit below before importing.
                 </span>
-                <div className="ml-auto flex items-center gap-2">
-                  <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700">
-                    <Sparkles className="w-3 h-3 mr-1" />
+                <div className="ml-auto flex items-center gap-1.5">
+                  <Badge className="bg-second-line/10 text-second-line border-second-line/30 text-[10px] px-1.5 py-0.5 rounded-none">
+                    <Sparkles className="w-2.5 h-2.5 mr-0.5" />
                     AI-parsed
                   </Badge>
                 </div>
               </div>
 
               {/* Summary Header */}
-              <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                      <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="flex items-center justify-between mb-3 flex-shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-1.5">
+              <div className="w-6 h-6 rounded-none bg-second-line/10 flex items-center justify-center">
+                      <FileText className="w-3 h-3 text-second-line" />
                     </div>
-                    <span className="font-semibold text-foreground">
+                    <span className="text-sm font-medium text-[#10052F] dark:text-white">
                       {parsedRisks.length} Risk Assessments Found
                     </span>
                   </div>
-                  <div className="flex items-center gap-2 text-sm">
-                    <Badge className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700">
-                      <Plus className="w-3 h-3 mr-1" />{riskCounts.newCount} New
+                  <div className="flex items-center gap-1.5 text-xs">
+                    <Badge className="bg-second-line/10 text-second-line border-second-line/30 text-[10px] px-1.5 py-0.5 rounded-none">
+                      <Plus className="w-2.5 h-2.5 mr-0.5" />{riskCounts.newCount} New
                     </Badge>
-                    <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-700">
-                      <Pencil className="w-3 h-3 mr-1" />{riskCounts.modifiedCount} Modified
+                    <Badge className="bg-muted text-muted-foreground border-border/50 text-[10px] px-1.5 py-0.5 rounded-none">
+                      <Pencil className="w-2.5 h-2.5 mr-0.5" />{riskCounts.modifiedCount} Modified
                     </Badge>
                   </div>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-3">
                   {/* Highlight Toggle with Legend */}
-                  <div className="flex items-center gap-3 text-xs bg-muted/50 rounded-lg px-3 py-2">
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded border border-emerald-400 bg-emerald-100 dark:bg-emerald-900/30" />
+                  <div className="flex items-center gap-2 text-[10px] bg-muted/30 rounded-none px-2 py-1.5 border border-border/50">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2.5 h-2.5 rounded-none border border-emerald-400 bg-emerald-100 dark:bg-emerald-900/30" />
                       <span className="text-muted-foreground">Has data</span>
                     </div>
-                    <div className="flex items-center gap-1.5">
-                      <div className="w-3 h-3 rounded border border-amber-400 bg-amber-100 dark:bg-amber-900/30" />
+                    <div className="flex items-center gap-1">
+                      <div className="w-2.5 h-2.5 rounded-none border border-amber-400 bg-amber-100 dark:bg-amber-900/30" />
                       <span className="text-muted-foreground">Missing</span>
                     </div>
-                    <div className="h-4 w-px bg-border" />
-                    <div className="flex items-center gap-2">
+                    <div className="h-3 w-px bg-border/50" />
+                    <div className="flex items-center gap-1.5">
                       <Switch 
                         checked={showHighlights} 
                         onCheckedChange={setShowHighlights}
-                        className="scale-75"
+                        className="scale-[0.65]"
                       />
                       <span className="text-muted-foreground">Highlights</span>
                     </div>
@@ -1244,25 +1244,25 @@ export function AIDocumentAssessmentModal({
               </div>
 
               {/* Search and Filter Bar */}
-              <div className="flex items-center gap-3 mb-4 flex-shrink-0">
+              <div className="flex items-center gap-2 mb-3 flex-shrink-0">
                 {/* Search */}
-                <div className="relative flex-1 max-w-md">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                <div className="relative flex-1 max-w-sm">
+                  <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground" />
                   <Input
-                    placeholder="Search by ID, title, owner, or category..."
+                    placeholder="Search ID, title, owner..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-9 h-10 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900"
+                    className="pl-8 h-7 text-xs border-border/50 bg-white dark:bg-card rounded-none"
                   />
                 </div>
 
                 {/* Status Filter Buttons */}
-                <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                <div className="flex items-center gap-0.5 bg-muted/30 rounded-none p-0.5 border border-border/50">
                   <Button
                     variant={statusFilter === "all" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setStatusFilter("all")}
-                    className={`h-8 px-4 text-xs ${statusFilter === "all" ? "bg-white dark:bg-gray-700 shadow-sm" : ""}`}
+                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "all" ? "bg-white dark:bg-card shadow-sm" : ""}`}
                   >
                     All ({parsedRisks.length})
                   </Button>
@@ -1270,18 +1270,18 @@ export function AIDocumentAssessmentModal({
                     variant={statusFilter === "new" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setStatusFilter("new")}
-                    className={`h-8 px-4 text-xs ${statusFilter === "new" ? "bg-white dark:bg-gray-700 shadow-sm" : ""}`}
+                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "new" ? "bg-white dark:bg-card shadow-sm" : ""}`}
                   >
-                    <Plus className="w-3 h-3 mr-1" />
+                    <Plus className="w-2.5 h-2.5 mr-0.5" />
                     New ({riskCounts.newCount})
                   </Button>
                   <Button
                     variant={statusFilter === "modified" ? "default" : "ghost"}
                     size="sm"
                     onClick={() => setStatusFilter("modified")}
-                    className={`h-8 px-4 text-xs ${statusFilter === "modified" ? "bg-white dark:bg-gray-700 shadow-sm" : ""}`}
+                    className={`h-6 px-2.5 text-[10px] rounded-none ${statusFilter === "modified" ? "bg-white dark:bg-card shadow-sm" : ""}`}
                   >
-                    <Pencil className="w-3 h-3 mr-1" />
+                    <Pencil className="w-2.5 h-2.5 mr-0.5" />
                     Modified ({riskCounts.modifiedCount})
                   </Button>
                 </div>
@@ -1289,8 +1289,8 @@ export function AIDocumentAssessmentModal({
                 {/* Source File Filter */}
                 {sourceFiles.length > 1 && (
                   <Select value={sourceFilter} onValueChange={setSourceFilter}>
-                    <SelectTrigger className="w-[200px] h-10 bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700">
-                      <Filter className="w-4 h-4 mr-2" />
+                    <SelectTrigger className="w-[160px] h-7 text-[10px] bg-white dark:bg-card border-border/50 rounded-none">
+                      <Filter className="w-3 h-3 mr-1.5" />
                       <SelectValue placeholder="All Documents" />
                     </SelectTrigger>
                     <SelectContent>
@@ -1303,29 +1303,30 @@ export function AIDocumentAssessmentModal({
                 )}
 
                 {/* Results count */}
-                <span className="text-sm text-muted-foreground whitespace-nowrap">
+                <span className="text-[10px] text-muted-foreground whitespace-nowrap">
                   Showing {filteredRisks.length} of {parsedRisks.length}
                 </span>
               </div>
 
               {/* Table View matching main dashboard */}
-              <ScrollArea className="flex-1 min-h-0 border border-gray-200 dark:border-gray-700 rounded-lg bg-white dark:bg-gray-900">
+              <ScrollArea className="flex-1 min-h-0 border border-border/50 rounded-none bg-white dark:bg-card">
                 <Table>
-                  <TableHeader className="sticky top-0 bg-gray-50 dark:bg-gray-800 z-10">
-                    <TableRow className="hover:bg-transparent border-b border-gray-200 dark:border-gray-700">
-                      <TableHead className="w-12 py-3 px-4">
+                  <TableHeader className="sticky top-0 bg-muted/30 z-10">
+                    <TableRow className="hover:bg-transparent border-b border-border/50">
+                      <TableHead className="w-10 py-1.5 px-2">
                         <Checkbox
                           checked={filteredRisks.length > 0 && filteredRisks.every(r => selectedRiskIds.has(r.id))}
                           onCheckedChange={toggleAllRisks}
+                          className="scale-90"
                         />
                       </TableHead>
-                      <TableHead className="w-20 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider"></TableHead>
-                      <TableHead className="w-24 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Risk ID</TableHead>
-                      <TableHead className="min-w-[280px] py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Risk Event / Owner</TableHead>
-                      <TableHead className="w-36 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Source</TableHead>
-                      <TableHead className="w-32 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Status</TableHead>
-                      <TableHead className="w-36 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Completeness</TableHead>
-                      <TableHead className="w-24 py-3 px-4 text-xs font-semibold text-gray-600 dark:text-gray-400 uppercase tracking-wider">Actions</TableHead>
+                      <TableHead className="w-16 py-1.5 px-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider"></TableHead>
+                      <TableHead className="w-20 py-1.5 px-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Risk ID</TableHead>
+                      <TableHead className="min-w-[200px] py-1.5 px-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Risk Event / Owner</TableHead>
+                      <TableHead className="w-28 py-1.5 px-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Source</TableHead>
+                      <TableHead className="w-24 py-1.5 px-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Status</TableHead>
+                      <TableHead className="w-28 py-1.5 px-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Completeness</TableHead>
+                      <TableHead className="w-20 py-1.5 px-2 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -1353,55 +1354,64 @@ export function AIDocumentAssessmentModal({
                       return (
                         <React.Fragment key={originalIndex}>
                           <TableRow 
-                            className={`transition-colors border-b border-gray-100 dark:border-gray-800
-                              ${riskStatus === "new" ? "bg-emerald-50/50 dark:bg-emerald-900/10 hover:bg-emerald-50 dark:hover:bg-emerald-900/20" : ""}
-                              ${riskStatus === "modified" ? "bg-blue-50/50 dark:bg-blue-900/10 hover:bg-blue-50 dark:hover:bg-blue-900/20" : ""}
-                              ${riskStatus === "unchanged" ? "hover:bg-gray-50 dark:hover:bg-gray-800/50" : ""}
-                              ${selectedRiskIds.has(risk.id) ? "ring-1 ring-inset ring-emerald-500/50" : ""}
+                            className={`transition-colors border-b border-border/30
+                              ${riskStatus === "new" ? "bg-second-line/5 hover:bg-second-line/10" : ""}
+                              ${riskStatus === "modified" ? "bg-muted/30 hover:bg-muted/50" : ""}
+                              ${riskStatus === "unchanged" ? "hover:bg-muted/20" : ""}
+                              ${selectedRiskIds.has(risk.id) ? "ring-1 ring-inset ring-second-line/50" : ""}
                             `}
                           >
                             {/* Checkbox */}
-                            <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                            <TableCell className="py-1.5 px-2" onClick={(e) => e.stopPropagation()}>
                               <Checkbox
                                 checked={selectedRiskIds.has(risk.id)}
                                 onCheckedChange={() => toggleRiskSelection(risk.id)}
+                                className="scale-90"
                               />
                             </TableCell>
                             
                             {/* Status Badge */}
-                            <TableCell className="py-3 px-4">
-                              {getStatusBadge(riskStatus)}
+                            <TableCell className="py-1.5 px-2">
+                              {riskStatus === "new" ? (
+                                <Badge className="bg-second-line/10 text-second-line border-second-line/30 text-[10px] px-1.5 py-0.5 rounded-none">
+                                  <Sparkles className="w-2.5 h-2.5 mr-0.5" />New
+                                </Badge>
+                              ) : riskStatus === "modified" ? (
+                                <Badge className="bg-muted text-muted-foreground border-border/50 text-[10px] px-1.5 py-0.5 rounded-none">
+                                  <Pencil className="w-2.5 h-2.5 mr-0.5" />Modified
+                                </Badge>
+                              ) : null}
                             </TableCell>
                             
                             {/* Risk ID */}
-                            <TableCell className="py-3 px-4">
-                              <span className="font-mono text-sm text-gray-600 dark:text-gray-400">{risk.id}</span>
+                            <TableCell className="py-1.5 px-2">
+                              <span className="font-mono text-[11px] text-muted-foreground">{risk.id}</span>
                             </TableCell>
                             
                             {/* Title and Owner */}
-                            <TableCell className="py-3 px-4">
-                              <div className="flex flex-col gap-0.5">
-                                <span className="font-medium text-gray-900 dark:text-gray-100">{risk.title}</span>
-                                <span className="text-xs text-gray-500 dark:text-gray-400">{risk.owner || 'No owner assigned'}</span>
+                            <TableCell className="py-1.5 px-2">
+                              <div className="flex flex-col">
+                                <span className="text-xs font-medium text-foreground line-clamp-1">{risk.title}</span>
+                                <span className="text-[10px] text-muted-foreground">{risk.owner || 'No owner'}</span>
                               </div>
                             </TableCell>
                             
                             {/* Source File */}
-                            <TableCell className="py-3 px-4">
-                              <Badge variant="outline" className="text-xs font-normal bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700">
-                                <FileText className="w-3 h-3 mr-1" />
-                                {risk.sourceFile ? risk.sourceFile.split('.')[0].substring(0, 12) : '-'}
+                            <TableCell className="py-1.5 px-2">
+                              <Badge variant="outline" className="text-[10px] font-normal bg-muted/30 border-border/50 px-1.5 py-0.5 rounded-none">
+                                <FileText className="w-2.5 h-2.5 mr-0.5" />
+                                {risk.sourceFile ? risk.sourceFile.split('.')[0].substring(0, 10) : '-'}
                               </Badge>
                             </TableCell>
                             
                             {/* Status */}
-                            <TableCell className="py-3 px-4">
+                            <TableCell className="py-1.5 px-2">
                               <Badge 
                                 variant="outline" 
-                                className={`text-xs ${
+                                className={`text-[10px] px-1.5 py-0.5 rounded-none ${
                                   risk.status === 'Active' 
                                     ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border-green-200 dark:border-green-700' 
-                                    : 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-400 border-gray-200 dark:border-gray-700'
+                                    : 'bg-muted text-muted-foreground border-border/50'
                                 }`}
                               >
                                 {risk.status}
@@ -1409,25 +1419,25 @@ export function AIDocumentAssessmentModal({
                             </TableCell>
                             
                             {/* Completeness */}
-                            <TableCell className="py-3 px-4">
+                            <TableCell className="py-1.5 px-2">
                               <Tooltip>
                                 <TooltipTrigger asChild>
                                   <Badge 
                                     variant="outline" 
-                                    className={`text-xs cursor-help ${
+                                    className={`text-[10px] cursor-help px-1.5 py-0.5 rounded-none ${
                                       completenessPercent === 100
                                         ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-emerald-200 dark:border-emerald-700'
                                         : completenessPercent >= 75
-                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-700'
+                                        ? 'bg-second-line/10 text-second-line border-second-line/30'
                                         : completenessPercent >= 50
                                         ? 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-700'
                                         : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-700'
                                     }`}
                                   >
                                     {completenessPercent === 100 ? (
-                                      <CheckCircle className="w-3 h-3 mr-1" />
+                                      <CheckCircle className="w-2.5 h-2.5 mr-0.5" />
                                     ) : (
-                                      <AlertCircle className="w-3 h-3 mr-1" />
+                                      <AlertCircle className="w-2.5 h-2.5 mr-0.5" />
                                     )}
                                     {completenessPercent}%
                                   </Badge>
@@ -1449,26 +1459,26 @@ export function AIDocumentAssessmentModal({
                             </TableCell>
                             
                             {/* Actions */}
-                            <TableCell className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                              <div className="flex items-center gap-1">
+                            <TableCell className="py-1.5 px-2" onClick={(e) => e.stopPropagation()}>
+                              <div className="flex items-center gap-0.5">
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20"
+                                  className="h-6 w-6 text-muted-foreground hover:text-second-line hover:bg-second-line/10 rounded-none"
                                   onClick={() => {
                                     setSelectedRiskIds(new Set([risk.id]));
                                     setShowBulkAssessmentModal(true);
                                   }}
                                 >
-                                  <Pencil className="w-3.5 h-3.5" />
+                                  <Pencil className="w-3 h-3" />
                                 </Button>
                                 <Button
                                   variant="ghost"
                                   size="icon"
-                                  className="h-7 w-7 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                  className="h-6 w-6 text-muted-foreground hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-none"
                                   onClick={() => deleteRisk(originalIndex)}
                                 >
-                                  <Trash2 className="w-3.5 h-3.5" />
+                                  <Trash2 className="w-3 h-3" />
                                 </Button>
                               </div>
                             </TableCell>
@@ -1485,13 +1495,13 @@ export function AIDocumentAssessmentModal({
 
         {step === "upload" && (
           <DialogFooter className="mt-4 px-6 pb-6">
-            <Button variant="outline" onClick={handleClose}>
+            <Button variant="outline" onClick={handleClose} className="rounded-none">
               Cancel
             </Button>
             <Button 
               onClick={processFiles}
               disabled={files.length === 0}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
+              className="bg-second-line hover:bg-second-line/90 text-white rounded-none"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               Process with AI
@@ -1500,23 +1510,23 @@ export function AIDocumentAssessmentModal({
         )}
         
         {step === "review" && (
-          <div className="px-6 pb-6 pt-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 flex justify-end gap-3">
+          <div className="px-4 pb-4 pt-3 border-t border-border/50 bg-muted/30 flex justify-end gap-2">
             {selectedRiskIds.size > 0 && (
               <Button
                 onClick={() => setShowBulkAssessmentModal(true)}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2"
+                className="bg-second-line hover:bg-second-line/90 text-white gap-1.5 h-8 px-3 text-xs rounded-none"
               >
-                <Layers className="w-4 h-4" />
+                <Layers className="w-3.5 h-3.5" />
                 Assess Selected ({selectedRiskIds.size})
               </Button>
             )}
             <Button 
               onClick={handleImport}
               disabled={parsedRisks.length === 0}
-              className="bg-blue-600 hover:bg-blue-700 text-white px-6"
+              className="bg-second-line hover:bg-second-line/90 text-white px-4 h-8 text-xs rounded-none"
             >
               Import {parsedRisks.length} Assessments
-              <ArrowRight className="w-4 h-4 ml-2" />
+              <ArrowRight className="w-3.5 h-3.5 ml-1.5" />
             </Button>
           </div>
         )}
