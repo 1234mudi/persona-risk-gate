@@ -966,7 +966,7 @@ const Dashboard2ndLine = () => {
     const colorClass = color === "green" 
       ? "bg-green-500 text-white" 
       : "bg-yellow-500 text-white";
-    return <Badge className={`${colorClass} rounded-full`}>{label}</Badge>;
+    return <Badge className={`${colorClass}`}>{label}</Badge>;
   };
 
   return (
@@ -977,7 +977,7 @@ const Dashboard2ndLine = () => {
         <div className="container mx-auto px-3 sm:px-6 py-2 sm:py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg bg-gradient-to-br from-second-line to-primary flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-second-line flex items-center justify-center flex-shrink-0">
                 <Shield className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
               </div>
               <div className="min-w-0">
@@ -992,7 +992,7 @@ const Dashboard2ndLine = () => {
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 sm:h-9 px-2 sm:px-3">
+                  <Button variant="outline" size="sm" className="h-9 sm:h-9 px-2 sm:px-3 rounded-none">
                     <User className="w-4 h-4 sm:mr-2" />
                     <span className="hidden sm:inline">2nd Line Analyst</span>
                     <ChevronDown className="w-4 h-4 ml-1 sm:ml-2" />
@@ -1041,7 +1041,7 @@ const Dashboard2ndLine = () => {
           {metrics.map((metric, index) => (
             <Tooltip key={index}>
               <TooltipTrigger asChild>
-                <Card className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card relative cursor-help">
+                <Card className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-card relative cursor-help rounded-none">
                   <CardContent className="p-2 sm:p-2.5">
                     <div className="flex items-start justify-between mb-0.5 sm:mb-1">
                       <h3 className="text-[10px] sm:text-xs font-bold text-foreground leading-tight">{metric.title}</h3>
@@ -1077,7 +1077,7 @@ const Dashboard2ndLine = () => {
                   
                   {/* Status Bar */}
                   <div className="space-y-0.5">
-                    <div className="flex h-2 sm:h-2.5 rounded overflow-hidden">
+                    <div className="flex h-2 sm:h-2.5 overflow-hidden">
                       {metric.segments.filter(s => s.value > 0).map((segment, idx) => {
                         const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
                         const percentage = total > 0 ? (segment.value / total) * 100 : 0;
@@ -1126,7 +1126,7 @@ const Dashboard2ndLine = () => {
         </div>
 
         {/* Risk Coverage by Business Unit Section */}
-        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card">
+        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
           <CardHeader className="border-b border-border/50 space-y-0 py-1 sm:py-1.5 px-2 sm:px-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 sm:gap-0">
               <CardTitle className="text-xs sm:text-sm font-semibold">Risk Coverage by Business Unit</CardTitle>
@@ -1187,10 +1187,10 @@ const Dashboard2ndLine = () => {
             {/* Modern Segmented Tabs */}
             <div className="mb-2">
               <div className="flex overflow-x-auto scrollbar-hide -mx-2 px-2 sm:mx-0 sm:px-0">
-                <div className="inline-flex items-center gap-0 p-0.5 bg-muted/50 rounded-lg border border-border/50 min-w-max">
+                <div className="inline-flex items-center gap-0 p-0.5 bg-muted/50 border border-border/50 min-w-max">
                   <button
                     onClick={() => setActiveTab("own")}
-                    className={`px-2 sm:px-3 py-1 rounded-l-md font-medium text-[10px] sm:text-xs transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
+                    className={`px-2 sm:px-3 py-1 font-medium text-[10px] sm:text-xs transition-all border-r-2 border-muted-foreground/30 whitespace-nowrap ${
                       activeTab === "own"
                         ? "bg-green-600 text-white shadow-md"
                         : "bg-green-100 text-green-700 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400"
@@ -1198,7 +1198,7 @@ const Dashboard2ndLine = () => {
                   >
                     <span className="hidden sm:inline">Completed Assessments</span>
                     <span className="sm:hidden">Completed</span>
-                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${
+                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold ${
                       activeTab === "own" ? "bg-green-800/30" : "bg-green-200 dark:bg-green-800/40"
                     }`}>
                       {riskData.filter(r => r.tabCategory === "own").length}
@@ -1214,7 +1214,7 @@ const Dashboard2ndLine = () => {
                   >
                     <span className="hidden sm:inline">Risks to be Assessed</span>
                     <span className="sm:hidden">Assess</span>
-                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${
+                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold ${
                       activeTab === "assess" ? "bg-white/20" : "bg-muted"
                     }`}>
                       {riskData.filter(r => r.tabCategory === "assess").length}
@@ -1222,7 +1222,7 @@ const Dashboard2ndLine = () => {
                   </button>
                   <button
                     onClick={() => setActiveTab("approve")}
-                    className={`px-2 sm:px-3 py-1 rounded-r-md font-medium text-[10px] sm:text-xs transition-all whitespace-nowrap ${
+                    className={`px-2 sm:px-3 py-1 font-medium text-[10px] sm:text-xs transition-all whitespace-nowrap ${
                       activeTab === "approve"
                         ? "bg-primary text-primary-foreground shadow-md"
                         : "text-muted-foreground hover:text-foreground hover:bg-background/50"
@@ -1230,7 +1230,7 @@ const Dashboard2ndLine = () => {
                   >
                     <span className="hidden sm:inline">Risks to be Approved</span>
                     <span className="sm:hidden">Approve</span>
-                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${
+                    <span className={`ml-1 sm:ml-1.5 px-1 sm:px-1.5 py-0.5 text-[9px] sm:text-[10px] font-bold ${
                       activeTab === "approve" ? "bg-white/20" : "bg-muted"
                     }`}>
                       {riskData.filter(r => r.tabCategory === "approve").length}
@@ -1241,7 +1241,7 @@ const Dashboard2ndLine = () => {
             </div>
 
             {/* Info Banner */}
-            <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg p-1.5 sm:p-2 mb-2">
+            <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 p-1.5 sm:p-2 mb-2">
               <div className="flex items-start gap-1.5">
                 <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-yellow-600 dark:text-yellow-500 flex-shrink-0 mt-0.5" />
                 <div className="text-[9px] sm:text-[10px] text-yellow-800 dark:text-yellow-200 leading-snug">
@@ -1330,7 +1330,7 @@ const Dashboard2ndLine = () => {
 
             {/* Bulk Action Toolbar - Shows when items are selected */}
             {selectedRisks.size > 0 && (
-              <div className="mb-2 p-1.5 sm:p-2 bg-primary/5 border border-primary/20 rounded-lg shadow-sm animate-in slide-in-from-top-2 duration-200">
+              <div className="mb-2 p-1.5 sm:p-2 bg-primary/5 border border-primary/20 shadow-sm animate-in slide-in-from-top-2 duration-200">
                 <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-0">
                   <div className="flex items-center gap-1.5 sm:gap-2">
                     <Badge variant="secondary" className="font-medium text-[10px] sm:text-xs">
@@ -1359,7 +1359,7 @@ const Dashboard2ndLine = () => {
             )}
 
             {/* Table with horizontal scroll */}
-            <div className="border rounded-lg overflow-hidden -mx-2 sm:mx-0">
+            <div className="border overflow-hidden -mx-2 sm:mx-0">
               <div className="overflow-x-auto">
                 <Table className="border-collapse">
                   <TableHeader className="bg-muted/50 sticky top-0">
@@ -1457,12 +1457,12 @@ const Dashboard2ndLine = () => {
                                       <div className="h-3.5 w-px bg-border" />
                                       <div className="flex items-center gap-1 flex-wrap">
                                       {/* Inherent Rating Card */}
-                                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-background/80 border border-border shadow-sm">
+                                      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-background/80 border border-border shadow-sm">
                                         <div className="flex flex-col">
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Inherent Rating</span>
                                           <div className="flex items-center gap-1">
                                             <span className="text-[10px] font-bold text-foreground">{aggregation.avgInherentRisk.score.toFixed(1)}</span>
-                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border rounded-full px-1 text-[9px]`}>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border px-1 text-[9px]`}>
                                               {aggregation.avgInherentRisk.level}
                                             </Badge>
                                           </div>
@@ -1470,12 +1470,12 @@ const Dashboard2ndLine = () => {
                                       </div>
                                       
                                       {/* Control Effectiveness Card */}
-                                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-background/80 border border-border shadow-sm">
+                                      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-background/80 border border-border shadow-sm">
                                         <div className="flex flex-col">
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Control Effectiveness</span>
                                           <div className="flex items-center gap-1">
                                             <span className="text-[10px] font-bold text-foreground">{aggregation.avgControlEffectiveness.score.toFixed(1)}</span>
-                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border rounded-full px-1 text-[9px]`}>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border px-1 text-[9px]`}>
                                               {aggregation.avgControlEffectiveness.level}
                                             </Badge>
                                           </div>
@@ -1483,12 +1483,12 @@ const Dashboard2ndLine = () => {
                                       </div>
                                       
                                       {/* Residual Rating Card */}
-                                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-lg bg-background/80 border border-border shadow-sm">
+                                      <div className="flex items-center gap-1 px-1.5 py-0.5 bg-background/80 border border-border shadow-sm">
                                         <div className="flex flex-col">
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Residual Rating</span>
                                           <div className="flex items-center gap-1">
                                             <span className="text-[10px] font-bold text-foreground">{aggregation.avgResidualRisk.score.toFixed(1)}</span>
-                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border rounded-full px-1 text-[9px]`}>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border px-1 text-[9px]`}>
                                               {aggregation.avgResidualRisk.level}
                                             </Badge>
                                           </div>
@@ -1610,11 +1610,11 @@ const Dashboard2ndLine = () => {
                         {/* Risk Hierarchy */}
                         <TableCell className="py-[2px] border-r border-b border-border">
                           <div className="flex flex-col items-center gap-0.5">
-                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} w-fit rounded-md px-1.5 py-0 text-[8px] font-medium`}>
+                          <Badge className={`${getRiskLevelColor(risk.riskLevel)} w-fit px-1.5 py-0 text-[8px] font-medium`}>
                               {risk.riskLevel}
                             </Badge>
                             {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} w-fit rounded-md px-1.5 py-0 text-[8px] font-medium`}>
+                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} w-fit px-1.5 py-0 text-[8px] font-medium`}>
                                 {l2Risk.riskLevel}
                               </Badge>
                             ))}
@@ -1851,11 +1851,11 @@ const Dashboard2ndLine = () => {
                         <TableCell className="py-[2px] border-r border-b border-border">
                           <div className="space-y-0.5">
                             <div className="flex flex-wrap gap-0.5">
-                              <Badge className="bg-green-500 text-white rounded-full px-1.5 py-0 text-[8px]">
+                              <Badge className="bg-green-500 text-white px-1.5 py-0 text-[8px]">
                                 {risk.testResults.label}
                               </Badge>
                               {risk.testResults.sublabel && (
-                                <Badge className="bg-blue-500 text-white rounded-full px-1.5 py-0 text-[8px]">
+                                <Badge className="bg-blue-500 text-white px-1.5 py-0 text-[8px]">
                                   {risk.testResults.sublabel}
                                 </Badge>
                               )}
@@ -1868,7 +1868,7 @@ const Dashboard2ndLine = () => {
                         <TableCell className="py-[2px] border-r border-b border-border">
                           <div className="space-y-0.5">
                             <div className="flex items-center gap-1">
-                              <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-1 text-[8px]`}>
+                              <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border px-1 text-[8px]`}>
                                 {risk.residualRisk.level}
                               </Badge>
                               {risk.residualTrend.up ? (
@@ -1911,7 +1911,7 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-[2px] border-b border-border">
-                          <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm text-[8px]`}>
+                          <Badge className={`${getStatusColor(risk.status)} shadow-sm text-[8px]`}>
                             {risk.status}
                           </Badge>
                         </TableCell>
@@ -2033,7 +2033,7 @@ const Dashboard2ndLine = () => {
                             <span className="text-xs">{risk.lastAssessed}</span>
                           </TableCell>
                           <TableCell className="py-1 border-r border-b border-border">
-                            <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border rounded-full px-1.5 text-[10px]`}>
+                            <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border px-1.5 text-[10px]`}>
                               {risk.inherentRisk.level}
                             </Badge>
                           </TableCell>
@@ -2041,7 +2041,7 @@ const Dashboard2ndLine = () => {
                             <span className="text-xs">{risk.relatedControls[0]?.name || '-'}</span>
                           </TableCell>
                           <TableCell className="py-1 border-r border-b border-border">
-                            <Badge className={`${getRiskBadgeColor(risk.controlEffectiveness.color)} border rounded-full px-1.5 text-[10px]`}>
+                            <Badge className={`${getRiskBadgeColor(risk.controlEffectiveness.color)} border px-1.5 text-[10px]`}>
                               {risk.controlEffectiveness.label}
                             </Badge>
                           </TableCell>
@@ -2049,12 +2049,12 @@ const Dashboard2ndLine = () => {
                             <span className="text-xs">{risk.testResults.label}</span>
                           </TableCell>
                           <TableCell className="py-1 border-r border-b border-border">
-                            <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border rounded-full px-1.5 text-[10px]`}>
+                            <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border px-1.5 text-[10px]`}>
                               {risk.residualRisk.level}
                             </Badge>
                           </TableCell>
                           <TableCell className="py-1 border-b border-border">
-                            <Badge className={`${getStatusColor(risk.status)} rounded-full shadow-sm text-[10px]`}>
+                            <Badge className={`${getStatusColor(risk.status)} shadow-sm text-[10px]`}>
                               {risk.status}
                             </Badge>
                           </TableCell>
@@ -2351,7 +2351,7 @@ const Dashboard2ndLine = () => {
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-4">
+            <div className="bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 p-4">
               <h4 className="font-medium text-amber-800 dark:text-amber-200 mb-2">What happens next:</h4>
               <ul className="text-sm text-amber-700 dark:text-amber-300 space-y-1.5">
                 <li className="flex items-start gap-2">
