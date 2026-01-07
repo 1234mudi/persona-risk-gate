@@ -1398,17 +1398,17 @@ const Dashboard1stLine = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
+        <div className="container mx-auto px-6 py-2">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-first-line to-emerald-600 flex items-center justify-center">
-                <ClipboardCheck className="w-6 h-6 text-white" />
+              <div className="w-8 h-8 bg-first-line flex items-center justify-center">
+                <ClipboardCheck className="w-4 h-4 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-semibold text-foreground">
+                <h1 className="text-base font-semibold text-foreground">
                   1st Line Risk Analyst Dashboard
                 </h1>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-xs text-muted-foreground">
                   {selectedAssessor !== "all" 
                     ? `Viewing as: ${selectedAssessor}` 
                     : "Risk and Control Self Assessment"
@@ -1419,7 +1419,7 @@ const Dashboard1stLine = () => {
             <div className="flex items-center gap-3">
               <ThemeToggle />
               <Select value={selectedAssessor} onValueChange={setSelectedAssessor}>
-                <SelectTrigger className="w-52 h-9">
+                <SelectTrigger className="w-52 h-8 bg-first-line text-white border-first-line">
                   <User className="w-4 h-4 mr-2 flex-shrink-0" />
                   <SelectValue placeholder="All Assessors" />
                 </SelectTrigger>
@@ -1434,7 +1434,7 @@ const Dashboard1stLine = () => {
               </Select>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm">
+                  <Button className="bg-first-line hover:bg-first-line/90 text-white border-first-line h-8" size="sm">
                     <User className="w-4 h-4 mr-2" />
                     1st Line Analyst
                     <ChevronDown className="w-4 h-4 ml-2" />
@@ -1760,8 +1760,18 @@ const Dashboard1stLine = () => {
 
         {/* Active Risk Profile Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
-          <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
-            <CardTitle className="text-lg font-semibold">My Risk Assessments</CardTitle>
+          <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0">
+            <div className="flex items-center">
+              <div className="bg-first-line w-2 self-stretch" />
+              <div className="flex items-center gap-2 px-3 py-2">
+                <CardTitle className="text-sm font-medium text-foreground">
+                  My Risk Assessments
+                </CardTitle>
+                <span className="text-xs text-muted-foreground">
+                  ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
+                </span>
+              </div>
+            </div>
           </CardHeader>
           <CardContent className="p-4">
             {/* Modern Segmented Tabs */}
