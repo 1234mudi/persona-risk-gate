@@ -1034,26 +1034,26 @@ const Dashboard1stLine = () => {
         {
           label: "Workflow Progress",
           segments: [
-            { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-success" },
-            { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, color: "bg-secondary" },
-            { label: "Challenge", value: assessmentStatusCounts.challenge, color: "bg-warning" },
-            { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-warning-light" },
-            { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-muted-foreground" },
+            { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-[#2e8b2e]" },
+            { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, color: "bg-[#6A75D8]" },
+            { label: "Challenge", value: assessmentStatusCounts.challenge, color: "bg-[#CE7900]" },
+            { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-[#FFE980]" },
+            { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-[#8B5993]" },
           ]
         },
         {
           label: "Deadline Status",
           segments: [
-            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-error" },
-            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-warning" },
-            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-success" },
+            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-[#D21C1C]" },
+            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-[#CE7900]" },
+            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-[#2e8b2e]" },
           ]
         }
       ],
       segments: [
-        { label: "Overdue", value: assessmentStatusCounts.overdue, sublabel: `${assessmentStatusCounts.overdue} Overdue`, color: "bg-error" },
-        { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, sublabel: `${assessmentStatusCounts.dueThisWeek} Due This Week`, color: "bg-warning" },
-        { label: "Completed", value: assessmentStatusCounts.completed, sublabel: `${assessmentStatusCounts.completed} Completed`, color: "bg-success" },
+        { label: "Overdue", value: assessmentStatusCounts.overdue, sublabel: `${assessmentStatusCounts.overdue} Overdue`, color: "bg-[#D21C1C]" },
+        { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, sublabel: `${assessmentStatusCounts.dueThisWeek} Due This Week`, color: "bg-[#CE7900]" },
+        { label: "Completed", value: assessmentStatusCounts.completed, sublabel: `${assessmentStatusCounts.completed} Completed`, color: "bg-[#2e8b2e]" },
       ],
       description: "Track assessment deadlines and workflow progress together.",
       tooltip: "Combined view of assessment timing and workflow status.",
@@ -1086,25 +1086,25 @@ const Dashboard1stLine = () => {
         {
           label: "Risk Level Distribution",
           segments: [
-            { label: "Critical", value: inherentRiskCounts.critical, color: "bg-error" },
-            { label: "High", value: inherentRiskCounts.high, color: "bg-warning" },
-            { label: "Medium", value: inherentRiskCounts.medium, color: "bg-warning-light" },
-            { label: "Low", value: inherentRiskCounts.low, color: "bg-success" },
+            { label: "Critical", value: inherentRiskCounts.critical, color: "bg-[#D21C1C]" },
+            { label: "High", value: inherentRiskCounts.high, color: "bg-[#CE7900]" },
+            { label: "Medium", value: inherentRiskCounts.medium, color: "bg-[#F1BA50]" },
+            { label: "Low", value: inherentRiskCounts.low, color: "bg-[#46AF6A]" },
           ]
         },
         {
           label: "Trend Analysis",
           segments: [
-            { label: "Increasing", value: inherentTrendCounts.increasing, color: "bg-error" },
-            { label: "Stable", value: inherentTrendCounts.stable, color: "bg-primary" },
-            { label: "Decreasing", value: inherentTrendCounts.decreasing, color: "bg-success" },
+            { label: "Increasing", value: inherentTrendCounts.increasing, color: "bg-[#D21C1C]" },
+            { label: "Stable", value: inherentTrendCounts.stable, color: "bg-[#0A8078]" },
+            { label: "Decreasing", value: inherentTrendCounts.decreasing, color: "bg-[#46AF6A]" },
           ]
         }
       ],
       segments: [
-        { label: "Critical", value: inherentRiskCounts.critical, sublabel: `${inherentRiskCounts.critical} Critical`, color: "bg-error" },
-        { label: "High", value: inherentRiskCounts.high, sublabel: `${inherentRiskCounts.high} High`, color: "bg-warning" },
-        { label: "Medium", value: inherentRiskCounts.medium, sublabel: `${inherentRiskCounts.medium} Medium`, color: "bg-success" },
+        { label: "Critical", value: inherentRiskCounts.critical, sublabel: `${inherentRiskCounts.critical} Critical`, color: "bg-[#D21C1C]" },
+        { label: "High", value: inherentRiskCounts.high, sublabel: `${inherentRiskCounts.high} High`, color: "bg-[#CE7900]" },
+        { label: "Medium", value: inherentRiskCounts.medium, sublabel: `${inherentRiskCounts.medium} Medium`, color: "bg-[#46AF6A]" },
       ],
       description: "Review Critical and High ratings for control adequacy.",
       tooltip: "Distribution of inherent risk ratings across your assigned risks. Higher ratings require stronger controls to mitigate.",
@@ -1131,25 +1131,25 @@ const Dashboard1stLine = () => {
         {
           label: "Effectiveness Rating",
           segments: [
-            { label: "Effective", value: controlEvidenceCounts.effective, color: "bg-green-600" },
-            { label: "Partially", value: controlEvidenceCounts.partiallyEffective, color: "bg-amber-500" },
-            { label: "Ineffective", value: controlEvidenceCounts.ineffective, color: "bg-red-600" },
-            { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, color: "bg-gray-400" },
+            { label: "Effective", value: controlEvidenceCounts.effective, color: "bg-[#46AF6A]" },
+            { label: "Partially", value: controlEvidenceCounts.partiallyEffective, color: "bg-[#CE7900]" },
+            { label: "Ineffective", value: controlEvidenceCounts.ineffective, color: "bg-[#D21C1C]" },
+            { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, color: "bg-[#8B5993]" },
           ]
         },
         {
           label: "Control Type",
           segments: [
-            { label: "Key Controls", value: controlTypeCounts.keyControls, color: "bg-purple-600" },
-            { label: "Non-Key", value: controlTypeCounts.nonKeyControls, color: "bg-slate-400" },
+            { label: "Key Controls", value: controlTypeCounts.keyControls, color: "bg-[#A361CF]" },
+            { label: "Non-Key", value: controlTypeCounts.nonKeyControls, color: "bg-[#979EE4]" },
           ]
         }
       ],
       segments: [
-        { label: "Effective", value: controlEvidenceCounts.effective, sublabel: `${controlEvidenceCounts.effective} Effective`, color: "bg-green-600" },
-        { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, sublabel: `${controlEvidenceCounts.partiallyEffective} Partially Effective`, color: "bg-amber-500" },
-        { label: "Ineffective", value: controlEvidenceCounts.ineffective, sublabel: `${controlEvidenceCounts.ineffective} Ineffective`, color: "bg-red-600" },
-        { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, sublabel: `${controlEvidenceCounts.notAssessed} Not Assessed`, color: "bg-gray-400" },
+        { label: "Effective", value: controlEvidenceCounts.effective, sublabel: `${controlEvidenceCounts.effective} Effective`, color: "bg-[#46AF6A]" },
+        { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, sublabel: `${controlEvidenceCounts.partiallyEffective} Partially Effective`, color: "bg-[#CE7900]" },
+        { label: "Ineffective", value: controlEvidenceCounts.ineffective, sublabel: `${controlEvidenceCounts.ineffective} Ineffective`, color: "bg-[#D21C1C]" },
+        { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, sublabel: `${controlEvidenceCounts.notAssessed} Not Assessed`, color: "bg-[#8B5993]" },
       ],
       description: "Review ineffective and not assessed controls.",
       tooltip: "Control effectiveness ratings across your assigned risks. Focus on improving ineffective controls.",
@@ -1500,33 +1500,25 @@ const Dashboard1stLine = () => {
                 return {
                   bg: "bg-[#6A75D8]/10",
                   border: "border-[#6A75D8]/20",
-                  text: "text-[#6A75D8]",
-                  cardBorder: "border-[#979EE4]/50",
-                  cardGradient: "bg-gradient-to-br from-[#979EE4]/10 to-white dark:from-[#6A75D8]/10 dark:to-card"
+                  text: "text-[#6A75D8]"
                 };
               case "Inherent Risk Ratings":
                 return {
                   bg: "bg-[#CE7900]/10",
                   border: "border-[#CE7900]/20",
-                  text: "text-[#CE7900]",
-                  cardBorder: "border-[#FFE980]/50",
-                  cardGradient: "bg-gradient-to-br from-[#FFE980]/20 to-white dark:from-[#CE7900]/10 dark:to-card"
+                  text: "text-[#CE7900]"
                 };
               case "Control Effectiveness by Risk":
                 return {
                   bg: "bg-[#0A8078]/10",
                   border: "border-[#0A8078]/20",
-                  text: "text-[#0A8078]",
-                  cardBorder: "border-[#A0E0E1]/50",
-                  cardGradient: "bg-gradient-to-br from-[#A0E0E1]/20 to-white dark:from-[#0A8078]/10 dark:to-card"
+                  text: "text-[#0A8078]"
                 };
               default:
                 return {
                   bg: "bg-first-line/10",
                   border: "border-first-line/20",
-                  text: "text-first-line",
-                  cardBorder: "border-border/50",
-                  cardGradient: "bg-gradient-to-br from-white to-slate-50/50 dark:from-card dark:to-card"
+                  text: "text-first-line"
                 };
             }
           };
@@ -1538,7 +1530,7 @@ const Dashboard1stLine = () => {
                 return (
                   <Card 
                     key={index}
-                    className={`border-2 ${accentColors.cardBorder} shadow-sm hover:shadow-md transition-shadow ${accentColors.cardGradient} relative cursor-pointer rounded-none`}
+                    className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-card relative cursor-pointer rounded-none"
                     onClick={() => {
                       setSelectedMetric(metric);
                       setMetricDetailsOpen(true);
