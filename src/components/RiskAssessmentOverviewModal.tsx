@@ -175,23 +175,23 @@ const AssessmentCard = ({
   return (
     <div className="flex">
       {/* Timeline indicator */}
-      <div className="flex flex-col items-center mr-2">
-        <div className="flex items-center justify-center w-6 h-6 rounded-full bg-muted border border-border text-muted-foreground font-bold text-[10px]">
+      <div className="flex flex-col items-center mr-1.5">
+        <div className="flex items-center justify-center w-5 h-5 rounded-full bg-muted border border-border text-muted-foreground font-bold text-[9px]">
           {stepNumber}
         </div>
         {!isLast && (
-          <div className="w-0.5 flex-1 mt-1 bg-border" />
+          <div className="w-0.5 flex-1 mt-0.5 bg-border" />
         )}
       </div>
 
       {/* Card content */}
       <div 
-        className="flex-1 mb-2 rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
+        className="flex-1 mb-1 rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer"
         onClick={handleNavigate}
       >
-        <div className="p-2">
+        <div className="p-1.5">
           {/* Header row */}
-          <div className="flex items-start justify-between mb-1.5">
+          <div className="flex items-start justify-between mb-1">
             <div className="flex items-center gap-1.5">
               <div className="p-1 rounded-md bg-muted/50">
                 {icon}
@@ -247,7 +247,7 @@ const AssessmentCard = ({
 
               {/* Review Comments Progress */}
               {totalReviewComments > 0 && (
-                <div className="flex items-center gap-2 mt-2 pt-2 border-t border-border/30">
+                <div className="flex items-center gap-2 mt-1 pt-1 border-t border-border/30">
                   <MessageSquare className="w-3 h-3 text-muted-foreground shrink-0" />
                   <span className="text-[10px] text-muted-foreground">
                     <span className="font-medium text-foreground">{reviewCommentsAddressed}</span> out of <span className="font-medium text-foreground">{totalReviewComments}</span> review comments addressed
@@ -603,9 +603,9 @@ This risk is currently being managed within established parameters. No immediate
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-2xl w-[95vw] p-0 flex flex-col max-h-[85vh]">
+      <DialogContent className="sm:max-w-2xl w-[95vw] p-0 flex flex-col">
         {/* Header */}
-        <div className="px-3 py-2 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0 pr-10">
+        <div className="px-2 py-1.5 border-b border-border bg-gradient-to-r from-muted/50 to-background shrink-0 pr-10">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-sm font-semibold text-foreground">{risk.title}</h2>
@@ -646,7 +646,7 @@ This risk is currently being managed within established parameters. No immediate
         </div>
         
         {/* Content - Vertical timeline layout */}
-        <div className="flex-1 min-h-0 overflow-y-auto p-3 bg-gradient-to-b from-background to-muted/20">
+        <div className="flex-1 min-h-0 p-2 bg-gradient-to-b from-background to-muted/20">
           <div>
             {cards.map((card, index) => (
               <AssessmentCard 
@@ -662,7 +662,7 @@ This risk is currently being managed within established parameters. No immediate
 
         {/* Footer with navigation */}
         {showTraversal && onNext && onPrevious && (
-          <div className="px-3 py-1.5 border-t border-border bg-muted/30 shrink-0 flex justify-center">
+          <div className="px-2 py-1 border-t border-border bg-muted/30 shrink-0 flex justify-center">
             <RiskTraversalNav
               currentIndex={currentIndex}
               totalCount={totalCount}
