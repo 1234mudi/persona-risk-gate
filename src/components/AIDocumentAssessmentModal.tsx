@@ -949,13 +949,16 @@ export function AIDocumentAssessmentModal({
   return (
     <>
     <Dialog open={open && !shouldHideParentDialog} onOpenChange={handleClose}>
-      <DialogContent className={
-        step === "review" 
-          ? "w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col bg-background p-0" 
-          : step === "not-found"
-          ? "sm:max-w-md"
-          : "sm:max-w-lg"
-      }>
+      <DialogContent 
+        hideCloseButton={step === "review"}
+        className={
+          step === "review" 
+            ? "w-screen h-screen max-w-none max-h-none rounded-none overflow-hidden flex flex-col bg-background p-0 inset-0 translate-x-0 translate-y-0 left-0 top-0" 
+            : step === "not-found"
+            ? "sm:max-w-md"
+            : "sm:max-w-lg"
+        }
+      >
         {/* Header Bar */}
         <div className={step === "review" ? "px-6 py-4 flex items-center justify-between border-b border-border bg-muted/30" : "px-6 pt-6"}>
           {step === "review" ? (
