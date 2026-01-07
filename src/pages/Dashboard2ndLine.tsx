@@ -974,28 +974,28 @@ const Dashboard2ndLine = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-3 sm:px-6 py-2 sm:py-4">
+        <div className="container mx-auto px-3 sm:px-6 py-1 sm:py-1.5">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-second-line flex items-center justify-center flex-shrink-0">
-                <Shield className="w-4 h-4 sm:w-6 sm:h-6 text-white" />
+            <div className="flex items-center gap-2">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 bg-second-line flex items-center justify-center flex-shrink-0">
+                <Shield className="w-3 h-3 sm:w-4 sm:h-4 text-white" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-base sm:text-xl font-semibold text-[#10052F] dark:text-white truncate">
+                <h1 className="text-sm sm:text-base font-semibold text-[#10052F] dark:text-white truncate">
                   <span className="hidden sm:inline">2nd Line Risk Analyst Dashboard</span>
                   <span className="sm:hidden">2nd Line Dashboard</span>
                 </h1>
-                <p className="text-xs sm:text-sm text-muted-foreground hidden sm:block">Risk and Control Self Assessment</p>
+                <p className="text-xs text-muted-foreground hidden sm:block">Risk and Control Self Assessment</p>
               </div>
             </div>
-            <div className="flex items-center gap-2 sm:gap-3">
+            <div className="flex items-center gap-2">
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="outline" size="sm" className="h-9 sm:h-9 px-2 sm:px-3 rounded-none">
-                    <User className="w-4 h-4 sm:mr-2" />
+                  <Button variant="outline" size="sm" className="h-7 px-2 sm:px-3 rounded-none">
+                    <User className="w-3.5 h-3.5 sm:mr-2" />
                     <span className="hidden sm:inline">2nd Line Analyst</span>
-                    <ChevronDown className="w-4 h-4 ml-1 sm:ml-2" />
+                    <ChevronDown className="w-3.5 h-3.5 ml-1 sm:ml-2" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
