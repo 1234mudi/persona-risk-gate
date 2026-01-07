@@ -512,11 +512,11 @@ This risk is currently being managed within established parameters. No immediate
 
   const cards = [
     {
-      title: "Inherent Rating Review",
+      title: "Inherent Rating",
       riskId: risk.id,
       riskName: risk.title,
       completion: risk.sectionCompletion.inherentRating,
-      descriptor: "Review risk scoring without controls",
+      descriptor: "Risk scoring without controls",
       icon: <AlertTriangle className="w-4 h-4 text-muted-foreground" />,
       sectionKey: "inherent-rating",
       primaryCta: {
@@ -531,7 +531,7 @@ This risk is currently being managed within established parameters. No immediate
       totalReviewComments: 5,
     },
     {
-      title: "Control Effectiveness Review",
+      title: "Control Effectiveness",
       riskId: risk.id,
       riskName: risk.title,
       completion: risk.sectionCompletion.controlEffectiveness,
@@ -550,11 +550,11 @@ This risk is currently being managed within established parameters. No immediate
       totalReviewComments: 8,
     },
     {
-      title: "Residual Rating Validation",
+      title: "Residual Rating",
       riskId: risk.id,
       riskName: risk.title,
       completion: risk.sectionCompletion.residualRating,
-      descriptor: "Validate post-control risk scoring",
+      descriptor: "Post-control risk scoring",
       icon: <CheckCircle className="w-4 h-4 text-muted-foreground" />,
       sectionKey: "residual-rating",
       primaryCta: {
