@@ -1127,55 +1127,91 @@ const Dashboard2ndLine = () => {
 
         {/* Risk Coverage by Business Unit Section */}
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
-          {/* Title Bar with Tabs */}
+          {/* Row 1: Title + Action Buttons */}
           <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
             <div className="flex items-center justify-between h-12">
               {/* Left: Title */}
               <div className="flex items-center gap-1.5 px-4">
-                <span className="text-base font-semibold text-[#10052F] dark:text-white">
+                <span className="text-base font-semibold text-foreground">
                   Risk Coverage by Business Unit
                 </span>
-                <span className="text-base text-[#10052F] dark:text-white">
+                <span className="text-base text-foreground">
                   ({filteredRiskData.length})
                 </span>
               </div>
               
-              {/* Right: Button-styled Tabs */}
+              {/* Right: Action Buttons */}
               <div className="flex items-center gap-2 pr-3">
-                <button
-                  onClick={() => setActiveTab("own")}
-                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
-                    activeTab === "own"
-                      ? "bg-second-line text-white border-second-line"
-                      : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
-                  } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="h-8 text-xs border-second-line/30 text-second-line hover:bg-second-line/10"
+                  onClick={() => setActionDialog({ open: true, type: "reassign", riskId: null })}
+                  disabled={selectedRisks.size === 0}
                 >
-                  Completed Assessments ({riskData.filter(r => r.tabCategory === "own").length})
-                </button>
-                <button
-                  onClick={() => setActiveTab("assess")}
-                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
-                    activeTab === "assess"
-                      ? "bg-second-line text-white border-second-line"
-                      : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
-                  } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                  <UserPlus className="w-3.5 h-3.5 mr-1.5" />
+                  Reassign
+                </Button>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  className="h-8 text-xs border-second-line/30 text-second-line hover:bg-second-line/10"
+                  onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: null })}
+                  disabled={selectedRisks.size === 0}
                 >
-                  Risks to be Assessed ({riskData.filter(r => r.tabCategory === "assess").length})
-                </button>
-                <button
-                  onClick={() => setActiveTab("approve")}
-                  className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
-                    activeTab === "approve"
-                      ? "bg-second-line text-white border-second-line"
-                      : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
-                  } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+                  <UsersIcon className="w-3.5 h-3.5 mr-1.5" />
+                  Collaborate
+                </Button>
+                <Button 
+                  size="sm"
+                  className="h-8 text-xs bg-second-line text-white hover:bg-second-line/90"
+                  onClick={() => setBulkAssessmentOpen(true)}
+                  disabled={selectedRisks.size === 0}
                 >
-                  Risks to be Approved ({riskData.filter(r => r.tabCategory === "approve").length})
-                </button>
+                  <Eye className="w-3.5 h-3.5 mr-1.5" />
+                  Review Selected ({selectedRisks.size})
+                </Button>
               </div>
             </div>
           </CardHeader>
-          {/* Info Banner */}
+
+          {/* Row 2: Tabs */}
+          <div className="border-b border-border/50 bg-muted/10 px-4 py-2">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveTab("own")}
+                className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                  activeTab === "own"
+                    ? "bg-second-line text-white border-second-line"
+                    : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
+                } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+              >
+                Completed Assessments ({riskData.filter(r => r.tabCategory === "own").length})
+              </button>
+              <button
+                onClick={() => setActiveTab("assess")}
+                className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                  activeTab === "assess"
+                    ? "bg-second-line text-white border-second-line"
+                    : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
+                } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+              >
+                Risks to be Assessed ({riskData.filter(r => r.tabCategory === "assess").length})
+              </button>
+              <button
+                onClick={() => setActiveTab("approve")}
+                className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
+                  activeTab === "approve"
+                    ? "bg-second-line text-white border-second-line"
+                    : "bg-transparent text-second-line border-second-line hover:bg-second-line/10"
+                } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-second-line/50 ring-offset-2" : ""}`}
+              >
+                Risks to be Approved ({riskData.filter(r => r.tabCategory === "approve").length})
+              </button>
+            </div>
+          </div>
+
+          {/* Row 3: Info Banner */}
           <div className="bg-second-line/5 dark:bg-second-line/10 border-b border-second-line/20 dark:border-second-line/30 px-4 py-2">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-second-line dark:text-second-line flex-shrink-0 mt-0.5" />
@@ -1187,7 +1223,7 @@ const Dashboard2ndLine = () => {
             </div>
           </div>
 
-          {/* Filter Bar */}
+          {/* Row 4: Filter Bar */}
           <div className="bg-muted/20 border-b border-border/50 px-4 py-2">
             <div className="flex items-center gap-4">
               {/* Business Unit Filter */}
@@ -1281,37 +1317,8 @@ const Dashboard2ndLine = () => {
             </div>
           </div>
 
+          {/* Row 5: Table Headers + Content */}
           <CardContent className="p-0">
-
-            {/* Bulk Action Toolbar - Shows when items are selected */}
-            {selectedRisks.size > 0 && (
-              <div className="mb-2 p-1.5 sm:p-2 bg-primary/5 border border-primary/20 shadow-sm animate-in slide-in-from-top-2 duration-200">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-1.5 sm:gap-0">
-                  <div className="flex items-center gap-1.5 sm:gap-2">
-                    <Badge variant="secondary" className="font-medium text-[10px] sm:text-xs">
-                      {selectedRisks.size} selected
-                    </Badge>
-                    <button 
-                      onClick={clearSelection}
-                      className="text-[10px] sm:text-xs text-muted-foreground hover:text-foreground flex items-center gap-0.5 transition-colors"
-                    >
-                      <X className="w-2.5 h-2.5" />
-                      Clear
-                    </button>
-                  </div>
-                  <div className="flex items-center gap-1.5 w-full sm:w-auto">
-                    <Button 
-                      size="sm" 
-                      className="h-7 sm:h-6 flex-1 sm:flex-none bg-gradient-to-r from-primary to-primary/80 text-primary-foreground shadow-md hover:shadow-lg transition-all"
-                      onClick={() => setBulkAssessmentOpen(true)}
-                    >
-                      <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5 mr-1" />
-                      <span className="text-[10px] sm:text-xs">Assess Selected Risks</span>
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Table with horizontal scroll */}
             <div className="border overflow-hidden -mx-2 sm:mx-0">
