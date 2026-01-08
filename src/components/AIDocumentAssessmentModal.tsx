@@ -974,8 +974,8 @@ export function AIDocumentAssessmentModal({
               </div>
               <div className="flex items-center gap-3">
                 <Badge variant="secondary" className="gap-1 rounded-none">
-                  <Sparkles className="w-3 h-3" />
-                  AI-Powered
+                  <Sparkles className="w-3 h-3 text-second-line" />
+                  <span className="text-second-line">AI-Powered</span>
                 </Badge>
                 <Button
                   variant="outline"
