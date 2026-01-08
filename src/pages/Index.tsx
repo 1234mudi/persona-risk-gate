@@ -70,63 +70,93 @@ const Index = () => {
 
   return (
     <div className="h-screen flex flex-col lg:flex-row overflow-hidden">
-      {/* Left Panel - Teal with Wave Pattern */}
-      <div className="hidden lg:flex lg:w-[35%] bg-primary relative overflow-hidden">
+      {/* Left Panel - Teal Gradient with Wave Pattern */}
+      <div className="hidden lg:flex lg:w-[35%] relative overflow-hidden" style={{ background: 'linear-gradient(180deg, #00D4AA 0%, #00E5C0 50%, #00F5D4 100%)' }}>
         {/* Wave Pattern SVG */}
         <svg
           className="absolute inset-0 w-full h-full"
-          viewBox="0 0 400 800"
+          viewBox="0 0 400 900"
           preserveAspectRatio="xMidYMid slice"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Multiple wavy lines */}
+          {/* Flowing curved lines that sweep from left to right */}
           <path
-            d="M-50,100 Q100,150 50,250 T100,400 T50,550 T100,700 T50,850"
+            d="M-100,50 Q50,80 80,200 Q110,350 50,450 Q-10,550 40,700 Q90,850 30,950"
             fill="none"
-            stroke="rgba(255,255,255,0.15)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.35)"
+            strokeWidth="1.5"
           />
           <path
-            d="M0,80 Q150,130 100,230 T150,380 T100,530 T150,680 T100,830"
+            d="M-80,80 Q70,110 100,230 Q130,380 70,480 Q10,580 60,730 Q110,880 50,980"
             fill="none"
-            stroke="rgba(255,255,255,0.12)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.32)"
+            strokeWidth="1.5"
           />
           <path
-            d="M50,120 Q200,170 150,270 T200,420 T150,570 T200,720 T150,870"
+            d="M-60,110 Q90,140 120,260 Q150,410 90,510 Q30,610 80,760 Q130,910 70,1010"
             fill="none"
-            stroke="rgba(255,255,255,0.1)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.29)"
+            strokeWidth="1.5"
           />
           <path
-            d="M100,60 Q250,110 200,210 T250,360 T200,510 T250,660 T200,810"
+            d="M-40,140 Q110,170 140,290 Q170,440 110,540 Q50,640 100,790 Q150,940 90,1040"
             fill="none"
-            stroke="rgba(255,255,255,0.08)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.26)"
+            strokeWidth="1.5"
           />
           <path
-            d="M150,140 Q300,190 250,290 T300,440 T250,590 T300,740 T250,890"
+            d="M-20,170 Q130,200 160,320 Q190,470 130,570 Q70,670 120,820 Q170,970 110,1070"
             fill="none"
-            stroke="rgba(255,255,255,0.06)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.23)"
+            strokeWidth="1.5"
           />
           <path
-            d="M200,100 Q350,150 300,250 T350,400 T300,550 T350,700 T300,850"
+            d="M0,200 Q150,230 180,350 Q210,500 150,600 Q90,700 140,850 Q190,1000 130,1100"
             fill="none"
-            stroke="rgba(255,255,255,0.05)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.20)"
+            strokeWidth="1.5"
           />
           <path
-            d="M250,80 Q400,130 350,230 T400,380 T350,530 T400,680 T350,830"
+            d="M20,230 Q170,260 200,380 Q230,530 170,630 Q110,730 160,880 Q210,1030 150,1130"
             fill="none"
-            stroke="rgba(255,255,255,0.04)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.17)"
+            strokeWidth="1.5"
           />
           <path
-            d="M300,120 Q450,170 400,270 T450,420 T400,570 T450,720 T400,870"
+            d="M40,260 Q190,290 220,410 Q250,560 190,660 Q130,760 180,910 Q230,1060 170,1160"
             fill="none"
-            stroke="rgba(255,255,255,0.03)"
-            strokeWidth="2"
+            stroke="rgba(0,180,160,0.14)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M60,290 Q210,320 240,440 Q270,590 210,690 Q150,790 200,940 Q250,1090 190,1190"
+            fill="none"
+            stroke="rgba(0,180,160,0.12)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M80,320 Q230,350 260,470 Q290,620 230,720 Q170,820 220,970 Q270,1120 210,1220"
+            fill="none"
+            stroke="rgba(0,180,160,0.10)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M100,350 Q250,380 280,500 Q310,650 250,750 Q190,850 240,1000 Q290,1150 230,1250"
+            fill="none"
+            stroke="rgba(0,180,160,0.08)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M120,380 Q270,410 300,530 Q330,680 270,780 Q210,880 260,1030 Q310,1180 250,1280"
+            fill="none"
+            stroke="rgba(0,180,160,0.06)"
+            strokeWidth="1.5"
+          />
+          <path
+            d="M140,410 Q290,440 320,560 Q350,710 290,810 Q230,910 280,1060 Q330,1210 270,1310"
+            fill="none"
+            stroke="rgba(0,180,160,0.05)"
+            strokeWidth="1.5"
           />
         </svg>
       </div>
