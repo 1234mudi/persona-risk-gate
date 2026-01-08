@@ -92,7 +92,7 @@ const RISK_FIELD_CATEGORIES = [
     id: 'assessment',
     label: 'Assessment',
     icon: ClipboardCheck,
-    color: 'emerald',
+    color: 'purple',
     readOnly: false,
     fields: [
       { key: 'inherentRisk', label: 'Inherent Risk Rating', type: 'rating-dropdown' },
@@ -389,7 +389,7 @@ export const DocumentParserBulkAssessmentModal = ({
                 {value || 'N/A'}
               </Badge>
             ) : (
-              <p className="text-sm text-foreground py-1.5 px-3 bg-muted/50 rounded-none border border-border">
+              <p className="text-sm text-[hsl(210,17%,24%)] py-1.5 px-3 bg-muted/50 rounded-none border border-border">
                 {value || <span className="text-muted-foreground italic">Not specified</span>}
               </p>
             )}
@@ -513,11 +513,11 @@ export const DocumentParserBulkAssessmentModal = ({
           {/* Header */}
           <div className="px-6 py-4 flex items-center justify-between border-b border-border bg-muted/30">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-none bg-emerald-500 flex items-center justify-center">
+              <div className="w-10 h-10 rounded-none bg-second-line flex items-center justify-center">
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-foreground">Review Selected Risks</h2>
+                <h2 className="text-lg font-semibold text-[hsl(210,17%,24%)]">Review Selected Risks</h2>
                 <p className="text-sm text-muted-foreground">Review and edit {selectedRisks.length} risk{selectedRisks.length !== 1 ? 's' : ''} before import</p>
               </div>
             </div>
@@ -532,7 +532,7 @@ export const DocumentParserBulkAssessmentModal = ({
               <Button
                 onClick={handleApply}
                 disabled={checkedCount === 0}
-                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-none"
+                className="bg-second-line hover:bg-second-line/90 text-white gap-2 rounded-none"
               >
                 <Send className="w-4 h-4" />
                 Save Changes
@@ -760,8 +760,8 @@ export const DocumentParserBulkAssessmentModal = ({
                             <div className={`w-7 h-7 rounded-none ${colorClasses.iconBg} text-white flex items-center justify-center text-sm font-semibold`}>
                               {categoryIndex + 1}
                             </div>
-                            <IconComponent className={`w-5 h-5 text-${category.color}-500`} />
-                            <span className="font-semibold text-foreground">{category.label}</span>
+                            <IconComponent className="w-5 h-5 text-[hsl(210,17%,24%)]" />
+                            <span className="font-semibold text-[hsl(210,17%,24%)]">{category.label}</span>
                             {category.readOnly && (
                               <Badge variant="secondary" className="text-xs">Read-only</Badge>
                             )}
@@ -775,7 +775,7 @@ export const DocumentParserBulkAssessmentModal = ({
                             {category.fields.map((field) => (
                               <div key={field.key} className="space-y-2">
                                 <div className="flex items-center gap-2">
-                                  <label className="text-sm font-medium text-foreground">{field.label}</label>
+                                  <label className="text-sm font-medium text-[hsl(210,17%,24%)]">{field.label}</label>
                                 </div>
                                 
                                 {/* Show each selected risk's field value */}
