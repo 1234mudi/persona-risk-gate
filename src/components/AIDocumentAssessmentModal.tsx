@@ -1468,7 +1468,7 @@ export function AIDocumentAssessmentModal({
             <Button 
               onClick={processFiles}
               disabled={files.length === 0}
-              className="bg-second-line hover:bg-second-line/90 text-white rounded-none"
+              className="bg-primary hover:bg-primary/90 text-white rounded-none"
             >
               <Sparkles className="w-4 h-4 mr-2" />
               Process with AI
