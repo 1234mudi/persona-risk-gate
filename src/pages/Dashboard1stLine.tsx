@@ -1448,19 +1448,19 @@ const Dashboard1stLine = () => {
             <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
             Quick Links:
           </div>
-          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
+          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
             <ClipboardCheck className="w-3 h-3" />
             <span>View My Pending Assessments</span>
           </button>
           <span className="text-gray-400 dark:text-gray-500">|</span>
-          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
+          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
             <CheckCircle className="w-3 h-3" />
             <span>View Completed Assessments</span>
           </button>
           <span className="text-gray-400 dark:text-gray-500">|</span>
           <Tooltip>
             <TooltipTrigger asChild>
-              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs">
+              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
                 <FileText className="w-3 h-3" />
                 <span>AI Document Parser</span>
               </button>
