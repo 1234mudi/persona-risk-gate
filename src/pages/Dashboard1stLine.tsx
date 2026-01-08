@@ -1902,7 +1902,7 @@ const Dashboard1stLine = () => {
               <div className="mx-4 mt-3 p-3 bg-first-line/5 border border-first-line/20 rounded-none shadow-sm animate-in slide-in-from-top-2 duration-200">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <Badge variant="secondary" className="font-medium">
+                    <Badge variant="secondary" className="font-medium rounded-none">
                       {selectedRisks.size} risk{selectedRisks.size !== 1 ? 's' : ''} selected
                     </Badge>
                     <button 
@@ -1917,7 +1917,7 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10 rounded-none"
                       onClick={startReviewMode}
                     >
                       <Eye className="w-4 h-4 mr-1.5" />
@@ -1926,7 +1926,7 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10 rounded-none"
                       onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: Array.from(selectedRisks).join(",") })}
                     >
                       <UsersIcon className="w-4 h-4 mr-1.5" />
@@ -1935,7 +1935,7 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10 rounded-none"
                       onClick={() => setActionDialog({ open: true, type: "reassign", riskId: Array.from(selectedRisks).join(",") })}
                     >
                       <UserPlus className="w-4 h-4 mr-1.5" />
@@ -1944,7 +1944,7 @@ const Dashboard1stLine = () => {
                     <Button 
                       size="sm" 
                       variant="outline"
-                      className="h-8 border-primary/50 text-primary hover:bg-primary/10"
+                      className="h-8 border-primary/50 text-primary hover:bg-primary/10 rounded-none"
                       onClick={() => setDirectAssessmentModalOpen(true)}
                     >
                       <Sparkles className="w-4 h-4 mr-1.5" />
@@ -1952,7 +1952,7 @@ const Dashboard1stLine = () => {
                     </Button>
                     <Button
                       size="sm" 
-                      className="h-8 bg-primary hover:bg-primary/90 text-white"
+                      className="h-8 bg-primary hover:bg-primary/90 text-white rounded-none"
                       onClick={handleSubmitForReview}
                     >
                       <Send className="w-4 h-4 mr-1.5" />
