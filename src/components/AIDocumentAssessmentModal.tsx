@@ -999,15 +999,15 @@ export function AIDocumentAssessmentModal({
             </DialogHeader>
           ) : (
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2 text-second-line">
+              <DialogTitle className="flex items-center gap-2 text-[hsl(210,17%,24%)]">
                 {skipReviewScreen ? (
                   <>
-                    <Search className="w-5 h-5 text-second-line" />
+                    <Search className="w-5 h-5 text-[hsl(210,17%,24%)]" />
                     Find Risks in Document
                   </>
                 ) : (
                   <>
-                    <Sparkles className="w-5 h-5 text-second-line" />
+                    <Sparkles className="w-5 h-5 text-[hsl(210,17%,24%)]" />
                     Document Parser
                   </>
                 )}
