@@ -1170,7 +1170,7 @@ const Dashboard2ndLine = () => {
                 <Button 
                   size="sm"
                   className="h-8 text-xs bg-primary text-white hover:bg-primary/90 rounded-none"
-                  onClick={() => setBulkAssessmentOpen(true)}
+                  onClick={startReviewMode}
                   disabled={selectedRisks.size === 0}
                 >
                   <Eye className="w-3.5 h-3.5 mr-1.5" />
