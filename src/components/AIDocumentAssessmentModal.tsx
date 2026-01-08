@@ -999,7 +999,7 @@ export function AIDocumentAssessmentModal({
             </DialogHeader>
           ) : (
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
+              <DialogTitle className="flex items-center gap-2 text-second-line">
                 {skipReviewScreen ? (
                   <>
                     <Search className="w-5 h-5 text-second-line" />
@@ -1037,7 +1037,7 @@ export function AIDocumentAssessmentModal({
                 }`}
               >
                 <Upload className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-lg font-medium mb-2">
+                <p className="text-lg font-medium mb-2 text-second-line">
                   Drag and drop files here
                 </p>
                 <p className="text-sm text-muted-foreground mb-4">
@@ -1051,7 +1051,7 @@ export function AIDocumentAssessmentModal({
                     onChange={handleFileSelect}
                     className="hidden"
                   />
-                  <Button variant="outline" className="cursor-pointer" asChild>
+                  <Button variant="outline" className="cursor-pointer text-blue-600 border-blue-600 hover:bg-blue-50" asChild>
                     <span>Browse Files</span>
                   </Button>
                 </label>
