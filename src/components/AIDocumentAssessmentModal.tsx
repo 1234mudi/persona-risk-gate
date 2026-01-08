@@ -989,7 +989,7 @@ export function AIDocumentAssessmentModal({
             </>
           ) : step === "not-found" ? (
             <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
+              <DialogTitle className="flex items-center gap-2 text-second-line">
                 <Search className="w-5 h-5 text-second-line" />
                 AI Document Scan
               </DialogTitle>
@@ -1143,7 +1143,7 @@ export function AIDocumentAssessmentModal({
             <div className="w-16 h-16 rounded-full bg-amber-100 dark:bg-amber-900/30 flex items-center justify-center mb-4">
               <AlertCircle className="w-8 h-8 text-amber-600 dark:text-amber-400" />
             </div>
-            <p className="text-lg font-semibold mb-2 text-foreground">No Matching Risks Found</p>
+            <p className="text-lg font-semibold mb-2 text-second-line">No Matching Risks Found</p>
             <p className="text-sm text-muted-foreground text-center max-w-md mb-6">
               The uploaded documents were analyzed, but none of the selected risks were found in them.
             </p>
@@ -1177,7 +1177,7 @@ export function AIDocumentAssessmentModal({
                   setStep("upload");
                   setFiles([]);
                 }}
-                className="bg-first-line hover:bg-first-line/90 text-white"
+                className="bg-second-line hover:bg-second-line/90 text-white"
               >
                 <Upload className="w-4 h-4 mr-2" />
                 Try Different Files
