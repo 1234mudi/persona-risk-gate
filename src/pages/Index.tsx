@@ -139,14 +139,14 @@ const Index = () => {
           <div className="w-full max-w-xl mb-3">
             <div className="grid grid-cols-2 gap-3">
               {personas.map((persona, index) => (
-                <div
-                  key={index}
-                  className={`border p-2 ${
-                    persona.line === "first"
-                      ? "border-first-line/20 bg-first-line/5"
-                      : "border-second-line/20 bg-second-line/5"
-                  }`}
-                >
+                  <div
+                    key={index}
+                    className={`border p-2 h-full ${
+                      persona.line === "first"
+                        ? "border-first-line/20 bg-first-line/5"
+                        : "border-second-line/20 bg-second-line/5"
+                    }`}
+                  >
                   <PersonaCard
                     icon={persona.icon}
                     name={persona.name}

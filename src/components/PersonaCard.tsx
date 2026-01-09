@@ -20,7 +20,7 @@ export const PersonaCard = ({ icon: Icon, name, description, line, onSelect }: P
 
   return (
     <Card 
-      className={`${lineClass} border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer p-2 group touch-manipulation rounded-none`}
+      className={`${lineClass} border transition-all duration-200 hover:shadow-md hover:-translate-y-0.5 cursor-pointer p-2 group touch-manipulation rounded-none h-full`}
       onClick={onSelect}
       role="button"
       tabIndex={0}
