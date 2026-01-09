@@ -324,6 +324,10 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
             <span className="text-[8px] text-muted-foreground">Low</span>
           </div>
         </div>
+        {/* Interpretation help text */}
+        <p className="text-[8px] text-muted-foreground/70 italic mt-1.5 pt-1 border-t border-border/20 text-center">
+          How to read: Cell color intensity indicates risk concentration. Darker shades = more risks at that level. Compare rows to identify high-risk business units.
+        </p>
       </div>
     </div>
   );

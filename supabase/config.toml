@@ -2,3 +2,6 @@ project_id = "ontxoyngslqijqufcwfc"
 
 [functions.parse-risk-document]
 verify_jwt = false
+
+[functions.generate-dashboard-narrative]
+verify_jwt = false

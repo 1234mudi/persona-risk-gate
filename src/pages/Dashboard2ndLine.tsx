@@ -4,7 +4,9 @@ import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu, Grid3x3, ArrowLeft } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu, Grid3x3, ArrowLeft, Download, FileText, Presentation, Loader2 } from "lucide-react";
+import { generateDashboardDocx, generateDashboardPptx, downloadBlob } from "@/lib/generateDashboardExport";
+import { supabase } from "@/integrations/supabase/client";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { ChallengeHeatmap } from "@/components/ChallengeHeatmap";
 import { OrganizationHeatmap } from "@/components/OrganizationHeatmap";
@@ -206,6 +208,10 @@ const Dashboard2ndLine = () => {
 
   // Risk Coverage Report modal state
   const [riskCoverageModalOpen, setRiskCoverageModalOpen] = useState(false);
+
+  // Export state
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
 
   // Previous assessment floater state
   const [expandedPreviousAssessments, setExpandedPreviousAssessments] = useState<Record<string, { inherent: boolean; control: boolean; residual: boolean }>>({});
@@ -409,6 +415,73 @@ const Dashboard2ndLine = () => {
       setReviewRiskIds([]);
     }
   }, []);
+
+  // Export handler function
+  const handleExport = async (exportFormat: 'docx' | 'pptx') => {
+    setIsExporting(true);
+    try {
+      // Prepare dashboard data for AI narrative generation
+      const dashboardData = {
+        metrics: metrics.map(m => ({
+          title: m.title,
+          value: m.value,
+          trend: m.trend,
+          segments: m.segments,
+        })),
+        filters: {
+          businessUnit: globalBusinessUnitFilter === 'all' ? 'All Business Units' : globalBusinessUnitFilter,
+          timePeriod: timePeriodOptions.find(o => o.value === timePeriodFilter)?.label || 'All Time',
+        },
+        riskAppetiteData,
+        velocityMetrics,
+        agingMetrics,
+        workflowStatusCounts,
+        heatmaps: {
+          organizationHeatmap: "Residual Risk Distribution by Business Unit",
+          controlScopingVariance: "N/A Controls % by Business Unit vs Enterprise Average",
+        }
+      };
+
+      // Call edge function to generate AI narratives
+      const response = await supabase.functions.invoke('generate-dashboard-narrative', {
+        body: { dashboardData },
+      });
+
+      if (response.error) {
+        console.error('Edge function error:', response.error);
+        throw new Error(response.error.message || 'Failed to generate narratives');
+      }
+
+      if (!response.data?.success) {
+        throw new Error(response.data?.error || 'Failed to generate narratives');
+      }
+
+      const exportData = {
+        narratives: response.data.narratives || [],
+        executiveSummary: response.data.executiveSummary || 'Dashboard summary not available.',
+        metrics: dashboardData.metrics,
+        exportDate: format(new Date(), 'MMMM d, yyyy'),
+        filters: dashboardData.filters,
+      };
+
+      // Generate and download file
+      if (exportFormat === 'docx') {
+        const blob = await generateDashboardDocx(exportData);
+        downloadBlob(blob, `Risk-Dashboard-Report-${format(new Date(), 'yyyy-MM-dd')}.docx`);
+      } else {
+        const blob = await generateDashboardPptx(exportData);
+        downloadBlob(blob, `Risk-Dashboard-Report-${format(new Date(), 'yyyy-MM-dd')}.pptx`);
+      }
+
+      toast.success(`${exportFormat.toUpperCase()} report generated successfully!`);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate report');
+    } finally {
+      setIsExporting(false);
+      setExportModalOpen(false);
+    }
+  };
 
   const toggleRow = (riskId: string) => {
     setExpandedRows(prev => {
@@ -851,6 +924,7 @@ const Dashboard2ndLine = () => {
       ],
       description: "Track assessment workflow stages. Address overdue and pending items promptly.",
       tooltip: "Displays open risk assessments by workflow status. Monitor each stage to ensure timely completion.",
+      interpretation: "Bars represent workflow stages. Taller bars indicate bottlenecks. Red (Overdue) needs immediate attention. Compare organizations to identify lagging units.",
     },
     {
       title: "Risks Outside Appetite",
@@ -867,6 +941,7 @@ const Dashboard2ndLine = () => {
       ],
       description: "Risks exceeding defined tolerance require escalation and additional mitigation.",
       tooltip: "Shows risks outside the organization's defined risk appetite (Critical and High residual risks). Click to view details and remediation priorities.",
+      interpretation: "Red bars show risks exceeding tolerance. A high ratio of red to green indicates elevated enterprise risk. Compare organizations to focus remediation efforts.",
     },
     {
       title: "Ongoing Review & Challenge",
@@ -882,6 +957,7 @@ const Dashboard2ndLine = () => {
       ],
       description: "Focus on challenged & pending items to maintain robust oversight.",
       tooltip: "Tracks the 2nd Line review and challenge completion rate. A higher percentage indicates stronger oversight and quality assurance of 1st Line risk assessments.",
+      interpretation: "Green indicates completed reviews. Yellow shows pending items. Red shows challenged assessments requiring resolution. Higher green percentage means stronger oversight.",
     },
     {
       title: "Operational Loss Events",
@@ -900,6 +976,7 @@ const Dashboard2ndLine = () => {
       ],
       description: "Quarterly loss trend with root cause breakdown.",
       tooltip: "Shows operational loss trends across quarters with breakdown by root cause category to identify patterns and escalating risks.",
+      interpretation: "Line trend shows quarterly loss trajectory. Rising trend indicates worsening losses. Legend breakdown helps identify root causes (Process, System, External).",
     },
     {
       title: "Issues Velocity & Efficiency",
@@ -916,6 +993,7 @@ const Dashboard2ndLine = () => {
       ],
       description: "High ATTR suggests resource gaps. Late completions indicate planning issues.",
       tooltip: "Tracks remediation speed and discipline. Average Time to Remediate shows how quickly issues are resolved. On-time completion rate indicates accountability in business units.",
+      interpretation: "Lower avg days is better. Green (On Time) shows discipline. Red (Still Overdue) requires escalation. Compare against SLA targets.",
     },
     {
       title: "Issue Aging by Source",
@@ -937,6 +1015,7 @@ const Dashboard2ndLine = () => {
       ],
       description: "Aged issues by originating source. Prioritize high-volume sources.",
       tooltip: "Shows the distribution of aged issues by their originating source. Use this to identify which processes are generating the most backlog.",
+      interpretation: "Longer bars indicate more aged issues from that source. Use this to prioritize remediation by targeting high-volume sources first.",
     },
   ];
 
@@ -1383,7 +1462,8 @@ const Dashboard2ndLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
         {/* Quick Links - Horizontal Strip */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5 px-0">
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-1.5 px-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#10052F] dark:text-white">
               <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
               Quick Links:
@@ -1398,6 +1478,18 @@ const Dashboard2ndLine = () => {
               <span>Assess Now</span>
             </button>
           </div>
+          
+          {/* Summarize and Export Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setExportModalOpen(true)}
+            className="h-7 text-xs rounded-none border-primary text-primary hover:bg-primary/10 gap-1.5"
+          >
+            <Sparkles className="w-3.5 h-3.5" />
+            Summarize and Export
+          </Button>
+        </div>
 
         {/* Scorecards - 2 columns (50/50) layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
@@ -1922,6 +2014,11 @@ const Dashboard2ndLine = () => {
                         </>
                       )}
                       <p className="text-[10px] text-muted-foreground leading-tight">{metric.description}</p>
+                      {'interpretation' in metric && metric.interpretation && (
+                        <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                          How to read: {(metric as { interpretation: string }).interpretation}
+                        </p>
+                      )}
                     </CardContent>
                   </Card>
                 </TooltipTrigger>
@@ -3213,6 +3310,56 @@ const Dashboard2ndLine = () => {
               <RefreshCw className="w-4 h-4 mr-2" />
               Proceed
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      {/* Export Modal */}
+      <Dialog open={exportModalOpen} onOpenChange={setExportModalOpen}>
+        <DialogContent className="max-w-md rounded-none">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Summarize and Export Dashboard
+            </DialogTitle>
+            <DialogDescription>
+              Generate an AI-powered executive summary with narratives for each chart. 
+              Choose your preferred format below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <Button
+              variant="outline"
+              className="h-24 flex-col gap-2 rounded-none"
+              onClick={() => handleExport('docx')}
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <Loader2 className="w-8 h-8 animate-spin" />
+              ) : (
+                <FileText className="w-8 h-8 text-blue-600" />
+              )}
+              <span>Word Document</span>
+              <span className="text-xs text-muted-foreground">.docx</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-24 flex-col gap-2 rounded-none"
+              onClick={() => handleExport('pptx')}
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <Loader2 className="w-8 h-8 animate-spin" />
+              ) : (
+                <Presentation className="w-8 h-8 text-orange-600" />
+              )}
+              <span>PowerPoint</span>
+              <span className="text-xs text-muted-foreground">.pptx</span>
+            </Button>
+          </div>
+          <DialogFooter>
+            <p className="text-xs text-muted-foreground">
+              Reports include AI-generated narratives for all {metrics.length + 2} dashboard components.
+            </p>
           </DialogFooter>
         </DialogContent>
       </Dialog>
