@@ -8,6 +8,7 @@ import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { ChallengeHeatmap } from "@/components/ChallengeHeatmap";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { PreviousAssessmentFloater } from "@/components/PreviousAssessmentFloater";
+import { RiskAssessmentTaskModal } from "@/components/RiskAssessmentTaskModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -104,6 +105,7 @@ const Dashboard2ndLine = () => {
   const [selectedRisks, setSelectedRisks] = useState<Set<string>>(new Set());
   const [bulkAssessmentOpen, setBulkAssessmentOpen] = useState(false);
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
+  const [riskAssessmentTaskOpen, setRiskAssessmentTaskOpen] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
     title: string;
@@ -1302,7 +1304,7 @@ const Dashboard2ndLine = () => {
               <span>Schedule Risk Assessments</span>
             </button>
             <span className="text-gray-400 dark:text-gray-500">|</span>
-            <button onClick={handleOpenChallengesClick} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
+            <button onClick={() => setRiskAssessmentTaskOpen(true)} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
               <AlertTriangle className="w-3 h-3" />
               <span>Assess Now</span>
             </button>
@@ -2714,6 +2716,16 @@ const Dashboard2ndLine = () => {
         selectedRisks={getSelectedRiskData()}
         onComplete={clearSelection}
         userType="2nd-line"
+      />
+
+      {/* Risk Assessment Task Modal */}
+      <RiskAssessmentTaskModal
+        open={riskAssessmentTaskOpen}
+        onOpenChange={setRiskAssessmentTaskOpen}
+        onSubmit={(data) => {
+          toast.success(`Risk Assessment Task created: ${data.planTitle}`);
+          setRiskAssessmentTaskOpen(false);
+        }}
       />
 
       {/* Risk Assessment Overview Modal */}
