@@ -81,6 +81,7 @@ export interface SharedRiskData {
   previousAssessments: number;
   tabCategory: "own" | "assess" | "approve";
   historicalAssessments?: HistoricalAssessment[];
+  hasActionPlan?: boolean;
 }
 
 // Based on 2nd Line dashboard data with orgLevel fields added
@@ -399,12 +400,13 @@ export const initialRiskData: SharedRiskData[] = [
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
-    residualRisk: { level: "High", color: "red", score: 12 },
+    residualRisk: { level: "Critical", color: "red", score: 15 },
     residualTrend: { value: "18%", up: true },
     status: "Pending Approval",
     lastAssessed: "2025-10-22",
     previousAssessments: 12,
     tabCategory: "approve",
+    hasActionPlan: true,
     historicalAssessments: [
       { 
         date: "2025-10-22", 
@@ -636,13 +638,14 @@ export const initialRiskData: SharedRiskData[] = [
     ],
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "" },
-    residualRisk: { level: "High", color: "red", score: 11 },
+    residualRisk: { level: "Critical", color: "red", score: 14 },
     residualTrend: { value: "19%", up: true },
     status: "Completed",
     lastAssessed: "2025-09-28",
     completionDate: "2025-09-28",
     previousAssessments: 11,
     tabCategory: "own",
+    hasActionPlan: true,
     historicalAssessments: [
       { date: "2025-09-28", assessor: "Patricia Adams", inherentRisk: { level: "Critical", score: 18 }, residualRisk: { level: "High", score: 11 }, controlEffectiveness: "Operating Effective", status: "Completed" },
       { date: "2025-06-22", assessor: "Daniel Foster", inherentRisk: { level: "Critical", score: 17 }, residualRisk: { level: "High", score: 10 }, controlEffectiveness: "Operating Effective", status: "Completed" }
@@ -1096,6 +1099,7 @@ export const initialRiskData: SharedRiskData[] = [
     controlEffectiveness: { label: "Operating Effective", color: "green" },
     testResults: { label: "Operating Effective", sublabel: "Design Effective" },
     residualRisk: { level: "High", color: "red", score: 10 },
+    hasActionPlan: false,
     residualTrend: { value: "16%", up: false },
     status: "Pending Approval",
     lastAssessed: "2025-10-27",
