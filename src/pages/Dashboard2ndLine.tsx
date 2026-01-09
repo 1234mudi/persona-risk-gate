@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu, Grid3x3 } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { PreviousAssessmentFloater } from "@/components/PreviousAssessmentFloater";
@@ -1042,7 +1042,7 @@ const Dashboard2ndLine = () => {
           </div>
 
         {/* Scorecards - 2 rows x 3 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
           {metrics.map((metric, index) => (
             <Tooltip key={index}>
               <TooltipTrigger asChild>
@@ -1128,6 +1128,21 @@ const Dashboard2ndLine = () => {
           </TooltipContent>
         </Tooltip>
           ))}
+          
+          {/* Challenge Heatmap Placeholder */}
+          <Card className="border-2 border-dashed border-border/50 dark:border-border shadow-sm bg-muted/20 dark:bg-card/50 rounded-none">
+            <CardContent className="p-4 flex flex-col items-center justify-center min-h-[160px]">
+              <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-3">
+                <Grid3x3 className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="text-sm font-bold text-[#10052F] dark:text-white mb-1">
+                Challenge Heatmap
+              </h3>
+              <p className="text-xs text-muted-foreground text-center">
+                Coming Soon - Visual representation of 2nd Line challenges
+              </p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Risk Coverage by Business Unit Section */}
