@@ -174,6 +174,7 @@ const Dashboard2ndLine = () => {
         return true;
     }
   }, [timePeriodFilter, customDateRange]);
+
   
   // Risk traversal state for review mode
   const [isReviewMode, setIsReviewMode] = useState(false);
@@ -298,10 +299,21 @@ const Dashboard2ndLine = () => {
   });
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
+  // Time-period filtered base dataset for metrics
+  const timeFilteredRiskData = useMemo(() => {
+    if (timePeriodFilter === "all-time") return riskData;
+    
+    return riskData.filter(risk => {
+      const matchesDueDate = isWithinTimePeriod(risk.dueDate);
+      const matchesLastAssessed = isWithinTimePeriod(risk.lastAssessed);
+      return matchesDueDate || matchesLastAssessed;
+    });
+  }, [riskData, timePeriodFilter, isWithinTimePeriod]);
+
   // Selection helpers
   const visibleRisks = useMemo(() => {
     const visible: RiskData[] = [];
-    const filtered = riskData.filter(risk => risk.tabCategory === activeTab);
+    const filtered = timeFilteredRiskData.filter(risk => risk.tabCategory === activeTab);
     filtered.forEach(risk => {
       if (risk.riskLevel === "Level 1") {
         visible.push(risk);
@@ -315,7 +327,7 @@ const Dashboard2ndLine = () => {
       }
     });
     return visible;
-  }, [riskData, activeTab, expandedRows]);
+  }, [timeFilteredRiskData, activeTab, expandedRows]);
 
   // Helper to check if a risk is completed/closed
   const isRiskCompleted = (risk: RiskData): boolean => {
@@ -483,7 +495,7 @@ const Dashboard2ndLine = () => {
     const byBusinessUnit: Record<string, { onTime: number; late: number; overdue: number; totalDays: number; count: number }> = {};
     const slowestRisks: { id: string; title: string; days: number }[] = [];
     
-    riskData.forEach(risk => {
+    timeFilteredRiskData.forEach(risk => {
       const dueDate = new Date(risk.dueDate);
       const isCompleted = isRiskCompleted(risk);
       
@@ -551,7 +563,7 @@ const Dashboard2ndLine = () => {
       byBusinessUnit,
       slowestRisks: slowestRisks.slice(0, 5)
     };
-  }, [riskData]);
+  }, [timeFilteredRiskData]);
 
   // Risk Aging by Source calculations
   const agingMetrics = useMemo(() => {
@@ -567,7 +579,7 @@ const Dashboard2ndLine = () => {
     const byBusinessUnit: Record<string, number> = {};
     const byCategory: Record<string, number> = { Operational: 0, Technology: 0, Compliance: 0, Financial: 0, Strategic: 0 };
     
-    riskData.forEach(risk => {
+    timeFilteredRiskData.forEach(risk => {
       const dueDate = new Date(risk.dueDate);
       const isCompleted = isRiskCompleted(risk);
       
@@ -628,7 +640,7 @@ const Dashboard2ndLine = () => {
       byCriticality,
       bySource
     };
-  }, [riskData]);
+  }, [timeFilteredRiskData]);
 
   // Quarterly Loss Events timeline data
   const quarterlyLossData = [
@@ -651,10 +663,10 @@ const Dashboard2ndLine = () => {
 
   // Risk Appetite calculation - Critical and High are outside appetite
   const riskAppetiteData = useMemo(() => {
-    const outsideAppetite = riskData.filter(r => 
+    const outsideAppetite = timeFilteredRiskData.filter(r => 
       r.residualRisk.level === "Critical" || r.residualRisk.level === "High"
     );
-    const withinAppetite = riskData.filter(r => 
+    const withinAppetite = timeFilteredRiskData.filter(r => 
       r.residualRisk.level === "Medium" || r.residualRisk.level === "Low"
     );
     
@@ -663,7 +675,7 @@ const Dashboard2ndLine = () => {
     const medium = withinAppetite.filter(r => r.residualRisk.level === "Medium").length;
     const low = withinAppetite.filter(r => r.residualRisk.level === "Low").length;
     
-    const total = riskData.length;
+    const total = timeFilteredRiskData.length;
     const outsidePercentage = total > 0 ? Math.round((outsideAppetite.length / total) * 100) : 0;
     const withinPercentage = total > 0 ? Math.round((withinAppetite.length / total) * 100) : 0;
     
@@ -696,7 +708,7 @@ const Dashboard2ndLine = () => {
         { name: "Within", value: withinAppetite.length, fill: "hsl(var(--success))" }
       ]
     };
-  }, [riskData]);
+  }, [timeFilteredRiskData]);
 
   const metrics = [
     {
@@ -1604,7 +1616,7 @@ const Dashboard2ndLine = () => {
                     : "bg-transparent text-primary border-primary hover:bg-primary/10"
                 } ${highlightedTab === "own" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
               >
-                Completed Assessments ({riskData.filter(r => r.tabCategory === "own").length})
+                Completed Assessments ({timeFilteredRiskData.filter(r => r.tabCategory === "own").length})
               </button>
               <button
                 onClick={() => setActiveTab("assess")}
@@ -1614,7 +1626,7 @@ const Dashboard2ndLine = () => {
                     : "bg-transparent text-primary border-primary hover:bg-primary/10"
                 } ${highlightedTab === "assess" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
               >
-                Risks to be Assessed ({riskData.filter(r => r.tabCategory === "assess").length})
+                Risks to be Assessed ({timeFilteredRiskData.filter(r => r.tabCategory === "assess").length})
               </button>
               <button
                 onClick={() => setActiveTab("approve")}
@@ -1624,7 +1636,7 @@ const Dashboard2ndLine = () => {
                     : "bg-transparent text-primary border-primary hover:bg-primary/10"
                 } ${highlightedTab === "approve" ? "animate-tab-flash animate-tab-pulse ring-2 ring-primary/50 ring-offset-2" : ""}`}
               >
-                Risks to be Approved ({riskData.filter(r => r.tabCategory === "approve").length})
+                Risks to be Approved ({timeFilteredRiskData.filter(r => r.tabCategory === "approve").length})
               </button>
             </div>
           </div>
