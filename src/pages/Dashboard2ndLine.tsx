@@ -1358,25 +1358,20 @@ const Dashboard2ndLine = () => {
             </button>
           </div>
 
-        {/* Scorecards - 3 columns x 4 rows with specific positioning */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-4 gap-2 sm:gap-3 mb-4">
-          {/* Render metrics in specific grid positions:
-              Row 1: metrics[0] (Open Risk Assessments) - spans Col 1-2
-              Row 2: metrics[1] (Risks Outside Appetite) - spans Col 1-2
-              Row 3: metrics[3] (Col 1), metrics[4] (Col 2)
-              Row 4: metrics[2] (Col 1), metrics[5] (Col 2)
-              Column 3: Organization Heat Map (rows 1-2), Control Scoping Variance (rows 3-4)
-          */}
+        {/* Scorecards - 2 columns (50/50) layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
+          {/* Left Column - Metrics Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-3 gap-2">
           {[0, 1, 3, 4, 2, 5].map((metricIndex, orderIndex) => {
             const metric = metrics[metricIndex];
-            // Grid positions for lg screens - adjusted for new layout
+            // Grid positions for sm+ screens within nested grid
             const gridPositions = [
-              'lg:col-start-1 lg:row-start-1 lg:col-span-2', // metrics[0] - Open Risk Assessments - spans 2 cols, Row 1
-              'lg:col-start-1 lg:row-start-2 lg:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols, Row 2
-              'lg:col-start-1 lg:row-start-3', // metrics[3] - Ongoing Review & Challenge - Col 1, Row 3
-              'lg:col-start-2 lg:row-start-3', // metrics[4] - Operational Loss Events - Col 2, Row 3
-              'lg:col-start-1 lg:row-start-4', // metrics[2] - Issues Velocity & Efficiency - Col 1, Row 4
-              'lg:col-start-2 lg:row-start-4', // metrics[5] - Risk Aging by Source - Col 2, Row 4
+              'sm:col-span-2', // metrics[0] - Open Risk Assessments - spans 2 cols, Row 1
+              'sm:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols, Row 2
+              '', // metrics[3] - Ongoing Review & Challenge - Col 1, Row 3
+              '', // metrics[4] - Operational Loss Events - Col 2, Row 3
+              '', // metrics[2] - Issues Velocity & Efficiency - Col 1, Row 4
+              '', // metrics[5] - Risk Aging by Source - Col 2, Row 4
             ];
             const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
             let total = 0;
@@ -1516,19 +1511,19 @@ const Dashboard2ndLine = () => {
                                   >
                                     <XAxis 
                                       dataKey="organization" 
-                                      tick={{ fontSize: 6, fill: 'hsl(var(--muted-foreground))' }}
+                                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={{ stroke: 'hsl(var(--border))' }}
                                       tickLine={{ stroke: 'hsl(var(--border))' }}
                                       interval={0}
-                                      tickFormatter={(value) => value.substring(0, 6)}
+                                      tickFormatter={(value) => value.substring(0, 8)}
                                       angle={-20}
                                       textAnchor="end"
                                     />
                                     <YAxis 
-                                      tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }}
+                                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={false}
                                       tickLine={false}
-                                      width={16}
+                                      width={20}
                                     />
                                     <RechartsTooltip 
                                       contentStyle={{ 
@@ -1681,19 +1676,19 @@ const Dashboard2ndLine = () => {
                                   >
                                     <XAxis 
                                       dataKey="organization" 
-                                      tick={{ fontSize: 6, fill: 'hsl(var(--muted-foreground))' }}
+                                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={{ stroke: 'hsl(var(--border))' }}
                                       tickLine={{ stroke: 'hsl(var(--border))' }}
                                       interval={0}
-                                      tickFormatter={(value) => value.substring(0, 6)}
+                                      tickFormatter={(value) => value.substring(0, 8)}
                                       angle={-20}
                                       textAnchor="end"
                                     />
                                     <YAxis 
-                                      tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }}
+                                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={false}
                                       tickLine={false}
-                                      width={16}
+                                      width={20}
                                     />
                                     <RechartsTooltip 
                                       contentStyle={{ 
@@ -1815,42 +1810,46 @@ const Dashboard2ndLine = () => {
               </Tooltip>
             );
           })}
+          </div>
           
-          {/* Column 3: Organization Heat Map spanning 2 rows (rows 1-2) */}
-          <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-2 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
-            <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
-              <div className="flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-primary" />
-                <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
-                  Organization Heat Map
-                </CardTitle>
-              </div>
-              <p className="text-[9px] text-muted-foreground mt-0.5">
-                Residual Risk Distribution by Business Unit
-              </p>
-            </CardHeader>
-            <CardContent className="p-2 h-[calc(100%-50px)]">
-              <OrganizationHeatmap riskData={riskData} />
-            </CardContent>
-          </Card>
+          {/* Right Column - Heatmaps stacked */}
+          <div className="flex flex-col gap-2">
+            {/* Organization Heat Map */}
+            <Card className="flex-1 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none overflow-hidden">
+              <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
+                <div className="flex items-center gap-1.5">
+                  <Building2 className="w-3.5 h-3.5 text-primary" />
+                  <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
+                    Organization Heat Map
+                  </CardTitle>
+                </div>
+                <p className="text-[9px] text-muted-foreground mt-0.5">
+                  Residual Risk Distribution by Business Unit
+                </p>
+              </CardHeader>
+              <CardContent className="p-2">
+                <OrganizationHeatmap riskData={riskData} />
+              </CardContent>
+            </Card>
 
-          {/* Column 3: Control Scoping Variance Report spanning 2 rows (rows 3-4) */}
-          <Card className="lg:col-start-3 lg:row-start-3 lg:row-span-2 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
-            <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
-              <div className="flex items-center gap-1.5">
-                <Grid3x3 className="w-3.5 h-3.5 text-primary" />
-                <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
-                  Control Scoping Variance Report
-                </CardTitle>
-              </div>
-              <p className="text-[9px] text-muted-foreground mt-0.5">
-                N/A Controls % by Business Unit vs Enterprise Average
-              </p>
-            </CardHeader>
-            <CardContent className="p-2 h-[calc(100%-50px)]">
-              <ChallengeHeatmap />
-            </CardContent>
-          </Card>
+            {/* Control Scoping Variance Report */}
+            <Card className="flex-1 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none overflow-hidden">
+              <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
+                <div className="flex items-center gap-1.5">
+                  <Grid3x3 className="w-3.5 h-3.5 text-primary" />
+                  <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
+                    Control Scoping Variance Report
+                  </CardTitle>
+                </div>
+                <p className="text-[9px] text-muted-foreground mt-0.5">
+                  N/A Controls % by Business Unit vs Enterprise Average
+                </p>
+              </CardHeader>
+              <CardContent className="p-2">
+                <ChallengeHeatmap />
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* Risk Coverage by Business Unit Modal */}
