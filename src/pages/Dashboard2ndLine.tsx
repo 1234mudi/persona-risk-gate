@@ -1361,17 +1361,17 @@ const Dashboard2ndLine = () => {
         {/* Scorecards - 2 columns (50/50) layout */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
           {/* Left Column - Metrics Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-3 gap-2">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {[0, 1, 2, 5, 3, 4].map((metricIndex, orderIndex) => {
             const metric = metrics[metricIndex];
             // Grid positions for sm+ screens within nested grid
             const gridPositions = [
-              'sm:col-span-2', // metrics[0] - Open Risk Assessments - spans 2 cols, Row 1
-              'sm:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols, Row 2
-              '', // metrics[2] - Ongoing Review & Challenge - Col 1, Row 3
-              '', // metrics[5] - Issue Aging by Source - Col 2, Row 3
-              'sm:col-span-2', // metrics[3] - Operational Loss Events - spans 2 cols, Row 4
-              'sm:col-span-2', // metrics[4] - Issues Velocity & Efficiency - spans 2 cols, Row 5
+              'sm:col-span-2', // metrics[0] - Open Risk Assessments - spans 2 cols
+              'sm:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols
+              'sm:col-span-2', // metrics[2] - Ongoing Review & Challenge - spans 2 cols
+              'sm:col-span-2', // metrics[5] - Issue Aging by Source - spans 2 cols
+              'sm:col-span-2', // metrics[3] - Operational Loss Events - spans 2 cols
+              'sm:col-span-2', // metrics[4] - Issues Velocity & Efficiency - spans 2 cols
             ];
             const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
             let total = 0;
@@ -1583,7 +1583,7 @@ const Dashboard2ndLine = () => {
                           {risksAppetiteView === 'org' ? (
                             <>
                               {/* Horizontal Stacked Bar Chart: Risks by Organization */}
-                              <div className="h-20">
+                              <div className="h-32">
                                 <ResponsiveContainer width="100%" height="100%">
                                   <BarChart 
                                     data={(metric as any).riskAppetiteData.byOrgData}
@@ -1602,7 +1602,8 @@ const Dashboard2ndLine = () => {
                                       tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={false}
                                       tickLine={false}
-                                      width={75}
+                                      width={85}
+                                      interval={0}
                                     />
                                     <RechartsTooltip 
                                       contentStyle={{ 
