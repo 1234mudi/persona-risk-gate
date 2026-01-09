@@ -101,6 +101,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/component
 import { toast } from "sonner";
 import { AIFieldIndicator } from "@/components/AIFieldIndicator";
 import { AddControlModal } from "@/components/AddControlModal";
+import { cn } from "@/lib/utils";
 
 // Types
 interface Factor {
@@ -130,6 +131,8 @@ interface Control {
   testingRating: number;
   evidences: ControlEvidence[];
   cellComments?: CellComment[];
+  isNotApplicable: boolean;
+  naJustification: string;
 }
 
 interface ChatMessage {
@@ -614,7 +617,9 @@ const RiskAssessmentForm = () => {
         { name: "Last Audit Report", type: "Report", date: "2024-09-20" },
         { name: "Testing Documentation", type: "Evidence", date: "2024-11-01" },
       ],
-      cellComments: [] 
+      cellComments: [],
+      isNotApplicable: false,
+      naJustification: "",
     },
     { 
       id: "CTL-002", 
@@ -629,7 +634,9 @@ const RiskAssessmentForm = () => {
         { name: "CDD Checklist Template", type: "Template", date: "2024-08-10" },
         { name: "Training Completion Records", type: "Record", date: "2024-10-25" },
       ],
-      cellComments: [] 
+      cellComments: [],
+      isNotApplicable: false,
+      naJustification: "",
     },
     { 
       id: "CTL-003", 
@@ -646,7 +653,9 @@ const RiskAssessmentForm = () => {
         { name: "Management Sign-off", type: "Approval", date: "2024-10-30" },
         { name: "Sample Testing Results", type: "Evidence", date: "2024-11-10" },
       ],
-      cellComments: [] 
+      cellComments: [],
+      isNotApplicable: false,
+      naJustification: "",
     },
   ]);
 
@@ -906,9 +915,24 @@ const RiskAssessmentForm = () => {
   };
 
   const calculateControlScore = () => {
-    if (controls.length === 0) return "0.0";
-    const avg = controls.reduce((sum, c) => sum + (c.designRating + c.operatingRating + c.testingRating) / 3, 0) / controls.length;
+    const applicableControls = controls.filter(c => !c.isNotApplicable);
+    if (applicableControls.length === 0) return "0.0";
+    const avg = applicableControls.reduce((sum, c) => sum + (c.designRating + c.operatingRating + c.testingRating) / 3, 0) / applicableControls.length;
     return avg.toFixed(1);
+  };
+
+  // Toggle control N/A status
+  const toggleControlNA = (controlId: string, isNA: boolean) => {
+    setControls(prev => prev.map(c => 
+      c.id === controlId ? { ...c, isNotApplicable: isNA, naJustification: isNA ? c.naJustification : "" } : c
+    ));
+  };
+
+  // Update control N/A justification
+  const updateControlNAJustification = (controlId: string, justification: string) => {
+    setControls(prev => prev.map(c => 
+      c.id === controlId ? { ...c, naJustification: justification } : c
+    ));
   };
 
   const calculateResidualScore = () => {
@@ -2580,6 +2604,7 @@ const RiskAssessmentForm = () => {
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-32 border-r border-border">Control Name</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-20 border-r border-border">Type</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-32 border-r border-border">Owner</th>
+                        <th className="px-1 py-0.5 text-center text-[10px] font-medium w-10 border-r border-border">N/A</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-28 border-r border-border">Design Effectiveness</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-28 border-r border-border">Operational Effectiveness</th>
                         <th className="px-1 py-0.5 text-left text-[10px] font-medium w-24 border-r border-border">Overall</th>
@@ -2593,7 +2618,7 @@ const RiskAssessmentForm = () => {
                         const isExpanded = expandedControls.has(control.id);
                         return (
                           <>
-                            <tr key={control.id} className="border-t hover:bg-muted/30">
+                            <tr key={control.id} className={cn("border-t hover:bg-muted/30", control.isNotApplicable && "bg-muted/20 opacity-75")}>
                               <td className="px-1 py-1 border-r border-border"><Checkbox /></td>
                               <td className="px-1.5 py-1 font-mono text-[10px] text-blue-600 border-r border-border">{control.id}</td>
                               <td className="px-1.5 py-1 border-r border-border">
@@ -2624,7 +2649,58 @@ const RiskAssessmentForm = () => {
                                   </div>
                                 </div>
                               </td>
-                              <td className="px-1.5 py-1 overflow-visible border-r border-border">
+                              {/* N/A Toggle Column */}
+                              <td className="px-1.5 py-1 border-r border-border">
+                                <div className="flex justify-center">
+                                  <Popover>
+                                    <PopoverTrigger asChild>
+                                      <button 
+                                        className={cn(
+                                          "w-5 h-5 rounded border flex items-center justify-center transition-colors",
+                                          control.isNotApplicable 
+                                            ? "bg-amber-100 border-amber-300 text-amber-700" 
+                                            : "bg-muted/30 border-border text-muted-foreground hover:bg-muted/50"
+                                        )}
+                                      >
+                                        {control.isNotApplicable ? (
+                                          <X className="w-3 h-3" />
+                                        ) : (
+                                          <span className="text-[8px] font-medium">—</span>
+                                        )}
+                                      </button>
+                                    </PopoverTrigger>
+                                    <PopoverContent className="w-64 p-3" align="start">
+                                      <div className="space-y-3">
+                                        <div className="flex items-center justify-between">
+                                          <span className="text-xs font-medium">Mark as Not Applicable</span>
+                                          <Checkbox
+                                            checked={control.isNotApplicable}
+                                            onCheckedChange={(checked) => toggleControlNA(control.id, checked as boolean)}
+                                          />
+                                        </div>
+                                        {control.isNotApplicable && (
+                                          <div className="space-y-1.5">
+                                            <label className="text-[10px] font-medium text-muted-foreground">
+                                              Justification <span className="text-red-500">*</span>
+                                            </label>
+                                            <Textarea
+                                              placeholder="Enter justification for marking as N/A..."
+                                              value={control.naJustification}
+                                              onChange={(e) => updateControlNAJustification(control.id, e.target.value)}
+                                              className="min-h-[60px] text-xs"
+                                            />
+                                            {control.isNotApplicable && !control.naJustification.trim() && (
+                                              <p className="text-[10px] text-red-500">Justification is required</p>
+                                            )}
+                                          </div>
+                                        )}
+                                      </div>
+                                    </PopoverContent>
+                                  </Popover>
+                                </div>
+                              </td>
+                              {/* Design Effectiveness */}
+                              <td className={cn("px-1.5 py-1 overflow-visible border-r border-border", control.isNotApplicable && "opacity-50 pointer-events-none")}>
                                 <CollaborativeCell cellId={`${controlCellId}-design`}>
                                   <CellCommentPopover factorName={control.id} field="Design">
                                     <UpdateVersionIndicator 
@@ -2641,6 +2717,7 @@ const RiskAssessmentForm = () => {
                                             markFieldAsEdited(`control-${control.id}-design`);
                                             updateControlRating(control.id, 'designRating', parseInt(v));
                                           }}
+                                          disabled={control.isNotApplicable}
                                         >
                                           <SelectTrigger className="w-full bg-background h-6 text-xs">
                                             <SelectValue />
@@ -2658,7 +2735,8 @@ const RiskAssessmentForm = () => {
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
-                              <td className="px-1.5 py-1 overflow-visible border-r border-border">
+                              {/* Operational Effectiveness */}
+                              <td className={cn("px-1.5 py-1 overflow-visible border-r border-border", control.isNotApplicable && "opacity-50 pointer-events-none")}>
                                 <CollaborativeCell cellId={`${controlCellId}-operating`}>
                                   <CellCommentPopover factorName={control.id} field="Operating">
                                     <UpdateVersionIndicator 
@@ -2675,6 +2753,7 @@ const RiskAssessmentForm = () => {
                                             markFieldAsEdited(`control-${control.id}-operating`);
                                             updateControlRating(control.id, 'operatingRating', parseInt(v));
                                           }}
+                                          disabled={control.isNotApplicable}
                                         >
                                           <SelectTrigger className="w-full bg-background h-6 text-xs">
                                             <SelectValue />
@@ -2692,7 +2771,8 @@ const RiskAssessmentForm = () => {
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
-                              <td className="px-1.5 py-1 overflow-visible border-r border-border">
+                              {/* Overall/Testing Effectiveness */}
+                              <td className={cn("px-1.5 py-1 overflow-visible border-r border-border", control.isNotApplicable && "opacity-50 pointer-events-none")}>
                                 <CollaborativeCell cellId={`${controlCellId}-testing`}>
                                   <CellCommentPopover factorName={control.id} field="Testing">
                                     <UpdateVersionIndicator 
@@ -2709,6 +2789,7 @@ const RiskAssessmentForm = () => {
                                             markFieldAsEdited(`control-${control.id}-testing`);
                                             updateControlRating(control.id, 'testingRating', parseInt(v));
                                           }}
+                                          disabled={control.isNotApplicable}
                                         >
                                           <SelectTrigger className="w-full bg-background h-6 text-xs">
                                             <SelectValue />
@@ -2722,8 +2803,13 @@ const RiskAssessmentForm = () => {
                                   </CellCommentPopover>
                                 </CollaborativeCell>
                               </td>
+                              {/* Score */}
                               <td className="px-1.5 py-1">
-                                <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white text-[10px] px-1.5 py-0`}>{avg}</Badge>
+                                {control.isNotApplicable ? (
+                                  <Badge className="bg-muted text-muted-foreground text-[10px] px-1.5 py-0">N/A</Badge>
+                                ) : (
+                                  <Badge className={`${getRatingLabel(parseFloat(avg)).color} text-white text-[10px] px-1.5 py-0`}>{avg}</Badge>
+                                )}
                               </td>
                             </tr>
                             {/* Expandable row for control details */}
@@ -2775,7 +2861,7 @@ const RiskAssessmentForm = () => {
                   onOpenChange={setAddControlModalOpen}
                   existingControlIds={controls.map(c => c.id)}
                   onAddControls={(newControls) => {
-                    const controlsToAdd = newControls.map(c => ({
+                    const controlsToAdd: Control[] = newControls.map(c => ({
                       id: c.id,
                       name: c.name,
                       description: `${c.name} - Control added from available controls library`,
@@ -2785,7 +2871,9 @@ const RiskAssessmentForm = () => {
                       operatingRating: c.prevOperating,
                       testingRating: Math.round((c.prevDesign + c.prevOperating) / 2),
                       evidences: [],
-                      cellComments: []
+                      cellComments: [],
+                      isNotApplicable: false,
+                      naJustification: "",
                     }));
                     setControls([...controls, ...controlsToAdd]);
                     toast.success(`${newControls.length} control(s) added successfully`);
@@ -2854,7 +2942,7 @@ const RiskAssessmentForm = () => {
                         onClick={() => {
                           if (!newControlTitle.trim()) return;
                           const newId = `CTL-${String(controls.length + 4).padStart(3, '0')}`;
-                          const newControl = {
+                          const newControl: Control = {
                             id: newId,
                             name: newControlTitle,
                             description: `${newControlTitle} - Custom control`,
@@ -2864,7 +2952,9 @@ const RiskAssessmentForm = () => {
                             operatingRating: 3,
                             testingRating: 3,
                             evidences: [],
-                            cellComments: []
+                            cellComments: [],
+                            isNotApplicable: false,
+                            naJustification: "",
                           };
                           setControls([...controls, newControl]);
                           if (addToLibrary) {
