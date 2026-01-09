@@ -928,12 +928,12 @@ const Dashboard2ndLine = () => {
       icon: FileCheck,
       chartType: "workflowStatus" as const,
       segments: [
-        { label: "Sent for Assessment", value: workflowStatusCounts.sentForAssessment, color: "bg-[hsl(210,100%,45%)]" },
-        { label: "Pending Review", value: workflowStatusCounts.pendingReview, color: "bg-[hsl(35,100%,55%)]" },
-        { label: "Pending Approval", value: workflowStatusCounts.pendingApproval, color: "bg-[hsl(280,70%,50%)]" },
-        { label: "Completed", value: workflowStatusCounts.completed, color: "bg-[hsl(145,80%,40%)]" },
-        { label: "Overdue", value: workflowStatusCounts.overdue, color: "bg-[hsl(0,85%,55%)]" },
-        { label: "Reassigned", value: workflowStatusCounts.reassigned, color: "bg-[hsl(220,15%,55%)]" },
+        { label: "Sent for Assessment", value: workflowStatusCounts.sentForAssessment, color: "#0A84FF" },
+        { label: "Pending Review", value: workflowStatusCounts.pendingReview, color: "#FF9F0A" },
+        { label: "Pending Approval", value: workflowStatusCounts.pendingApproval, color: "#BF5AF2" },
+        { label: "Completed", value: workflowStatusCounts.completed, color: "#34C759" },
+        { label: "Overdue", value: workflowStatusCounts.overdue, color: "#FF453A" },
+        { label: "Reassigned", value: workflowStatusCounts.reassigned, color: "#64D2FF" },
       ],
       description: "Track assessment workflow stages. Address overdue and pending items promptly.",
       tooltip: "Displays open risk assessments by workflow status. Monitor each stage to ensure timely completion.",
@@ -1897,7 +1897,7 @@ const Dashboard2ndLine = () => {
                           {openAssessmentsView === 'org' ? (
                             <>
                               {/* Stacked bar chart for workflow status by organization */}
-                              <div className="h-20 mb-1">
+                              <div className="h-28 mb-1">
                                 <ResponsiveContainer width="100%" height="100%">
                                   <BarChart 
                                     data={openAssessmentsByOrg}
@@ -1924,12 +1924,12 @@ const Dashboard2ndLine = () => {
                                         fontSize: '10px'
                                       }}
                                     />
-                                    <Bar dataKey="sentForAssessment" stackId="a" fill="hsl(210, 100%, 45%)" name="Sent" radius={[0, 0, 0, 0]} />
-                                    <Bar dataKey="pendingReview" stackId="a" fill="hsl(35, 100%, 55%)" name="Review" />
-                                    <Bar dataKey="pendingApproval" stackId="a" fill="hsl(280, 70%, 50%)" name="Approval" />
-                                    <Bar dataKey="completed" stackId="a" fill="hsl(145, 80%, 40%)" name="Completed" />
-                                    <Bar dataKey="overdue" stackId="a" fill="hsl(0, 85%, 55%)" name="Overdue" />
-                                    <Bar dataKey="reassigned" stackId="a" fill="hsl(220, 15%, 55%)" name="Reassigned" radius={[2, 2, 0, 0]} />
+                                    <Bar dataKey="sentForAssessment" stackId="a" fill="#0A84FF" name="Sent" stroke="hsl(var(--card))" strokeWidth={1} radius={[0, 0, 0, 0]} />
+                                    <Bar dataKey="pendingReview" stackId="a" fill="#FF9F0A" name="Review" stroke="hsl(var(--card))" strokeWidth={1} />
+                                    <Bar dataKey="pendingApproval" stackId="a" fill="#BF5AF2" name="Approval" stroke="hsl(var(--card))" strokeWidth={1} />
+                                    <Bar dataKey="completed" stackId="a" fill="#34C759" name="Completed" stroke="hsl(var(--card))" strokeWidth={1} />
+                                    <Bar dataKey="overdue" stackId="a" fill="#FF453A" name="Overdue" stroke="hsl(var(--card))" strokeWidth={1} />
+                                    <Bar dataKey="reassigned" stackId="a" fill="#64D2FF" name="Reassigned" stroke="hsl(var(--card))" strokeWidth={1} radius={[2, 2, 0, 0]} />
                                   </BarChart>
                                 </ResponsiveContainer>
                               </div>
@@ -1937,16 +1937,16 @@ const Dashboard2ndLine = () => {
                           ) : (
                             <>
                               {/* Aggregate View: Horizontal bar chart by status */}
-                              <div className="h-20 mb-1">
+                              <div className="h-28 mb-1">
                                 <ResponsiveContainer width="100%" height="100%">
                                   <BarChart 
                                     data={[
-                                      { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(210, 100%, 45%)" },
-                                      { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(35, 100%, 55%)" },
-                                      { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(280, 70%, 50%)" },
-                                      { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(145, 80%, 40%)" },
-                                      { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 85%, 55%)" },
-                                      { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(220, 15%, 55%)" },
+                                      { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "#0A84FF" },
+                                      { status: "Review", value: workflowStatusCounts.pendingReview, fill: "#FF9F0A" },
+                                      { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "#BF5AF2" },
+                                      { status: "Completed", value: workflowStatusCounts.completed, fill: "#34C759" },
+                                      { status: "Overdue", value: workflowStatusCounts.overdue, fill: "#FF453A" },
+                                      { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "#64D2FF" },
                                     ]}
                                     layout="vertical"
                                     margin={{ top: 0, right: 8, bottom: 0, left: 0 }}
@@ -1970,12 +1970,12 @@ const Dashboard2ndLine = () => {
                                     />
                                     <Bar dataKey="value" radius={[0, 3, 3, 0]} maxBarSize={10}>
                                       {[
-                                        { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(210, 100%, 45%)" },
-                                        { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(35, 100%, 55%)" },
-                                        { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(280, 70%, 50%)" },
-                                        { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(145, 80%, 40%)" },
-                                        { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 85%, 55%)" },
-                                        { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(220, 15%, 55%)" },
+                                        { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "#0A84FF" },
+                                        { status: "Review", value: workflowStatusCounts.pendingReview, fill: "#FF9F0A" },
+                                        { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "#BF5AF2" },
+                                        { status: "Completed", value: workflowStatusCounts.completed, fill: "#34C759" },
+                                        { status: "Overdue", value: workflowStatusCounts.overdue, fill: "#FF453A" },
+                                        { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "#64D2FF" },
                                       ].map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.fill} />
                                       ))}
@@ -1990,7 +1990,7 @@ const Dashboard2ndLine = () => {
                           <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 mb-1">
                             {segments.map((segment, idx) => (
                               <div key={idx} className="flex items-center gap-0.5">
-                                <div className={`w-1.5 h-1.5 rounded-sm flex-shrink-0 ${segment.color}`} />
+                                <div className="w-1.5 h-1.5 rounded-sm flex-shrink-0" style={{ backgroundColor: segment.color }} />
                                 <span className="text-[8px] font-medium text-muted-foreground truncate">
                                   {segment.value} {segment.label.split(' ')[0]}
                                 </span>
