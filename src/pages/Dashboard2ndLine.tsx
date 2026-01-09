@@ -928,12 +928,12 @@ const Dashboard2ndLine = () => {
       icon: FileCheck,
       chartType: "workflowStatus" as const,
       segments: [
-        { label: "Sent for Assessment", value: workflowStatusCounts.sentForAssessment, color: "bg-blue-500" },
-        { label: "Pending Review", value: workflowStatusCounts.pendingReview, color: "bg-amber-500" },
-        { label: "Pending Approval", value: workflowStatusCounts.pendingApproval, color: "bg-purple-500" },
-        { label: "Completed", value: workflowStatusCounts.completed, color: "bg-emerald-500" },
-        { label: "Overdue", value: workflowStatusCounts.overdue, color: "bg-error" },
-        { label: "Reassigned", value: workflowStatusCounts.reassigned, color: "bg-slate-500" },
+        { label: "Sent for Assessment", value: workflowStatusCounts.sentForAssessment, color: "bg-[hsl(210,100%,45%)]" },
+        { label: "Pending Review", value: workflowStatusCounts.pendingReview, color: "bg-[hsl(35,100%,55%)]" },
+        { label: "Pending Approval", value: workflowStatusCounts.pendingApproval, color: "bg-[hsl(280,70%,50%)]" },
+        { label: "Completed", value: workflowStatusCounts.completed, color: "bg-[hsl(145,80%,40%)]" },
+        { label: "Overdue", value: workflowStatusCounts.overdue, color: "bg-[hsl(0,85%,55%)]" },
+        { label: "Reassigned", value: workflowStatusCounts.reassigned, color: "bg-[hsl(220,15%,55%)]" },
       ],
       description: "Track assessment workflow stages. Address overdue and pending items promptly.",
       tooltip: "Displays open risk assessments by workflow status. Monitor each stage to ensure timely completion.",
@@ -1924,12 +1924,12 @@ const Dashboard2ndLine = () => {
                                         fontSize: '10px'
                                       }}
                                     />
-                                    <Bar dataKey="sentForAssessment" stackId="a" fill="hsl(217, 91%, 60%)" name="Sent" radius={[0, 0, 0, 0]} />
-                                    <Bar dataKey="pendingReview" stackId="a" fill="hsl(38, 92%, 50%)" name="Review" />
-                                    <Bar dataKey="pendingApproval" stackId="a" fill="hsl(271, 91%, 65%)" name="Approval" />
-                                    <Bar dataKey="completed" stackId="a" fill="hsl(160, 84%, 39%)" name="Completed" />
-                                    <Bar dataKey="overdue" stackId="a" fill="hsl(var(--destructive))" name="Overdue" />
-                                    <Bar dataKey="reassigned" stackId="a" fill="hsl(215, 16%, 47%)" name="Reassigned" radius={[2, 2, 0, 0]} />
+                                    <Bar dataKey="sentForAssessment" stackId="a" fill="hsl(210, 100%, 45%)" name="Sent" radius={[0, 0, 0, 0]} />
+                                    <Bar dataKey="pendingReview" stackId="a" fill="hsl(35, 100%, 55%)" name="Review" />
+                                    <Bar dataKey="pendingApproval" stackId="a" fill="hsl(280, 70%, 50%)" name="Approval" />
+                                    <Bar dataKey="completed" stackId="a" fill="hsl(145, 80%, 40%)" name="Completed" />
+                                    <Bar dataKey="overdue" stackId="a" fill="hsl(0, 85%, 55%)" name="Overdue" />
+                                    <Bar dataKey="reassigned" stackId="a" fill="hsl(220, 15%, 55%)" name="Reassigned" radius={[2, 2, 0, 0]} />
                                   </BarChart>
                                 </ResponsiveContainer>
                               </div>
@@ -1941,12 +1941,12 @@ const Dashboard2ndLine = () => {
                                 <ResponsiveContainer width="100%" height="100%">
                                   <BarChart 
                                     data={[
-                                      { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(217, 91%, 60%)" },
-                                      { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(38, 92%, 50%)" },
-                                      { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(271, 91%, 65%)" },
-                                      { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(160, 84%, 39%)" },
-                                      { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 84%, 60%)" },
-                                      { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(215, 16%, 47%)" },
+                                      { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(210, 100%, 45%)" },
+                                      { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(35, 100%, 55%)" },
+                                      { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(280, 70%, 50%)" },
+                                      { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(145, 80%, 40%)" },
+                                      { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 85%, 55%)" },
+                                      { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(220, 15%, 55%)" },
                                     ]}
                                     layout="vertical"
                                     margin={{ top: 0, right: 8, bottom: 0, left: 0 }}
@@ -1970,12 +1970,12 @@ const Dashboard2ndLine = () => {
                                     />
                                     <Bar dataKey="value" radius={[0, 3, 3, 0]} maxBarSize={10}>
                                       {[
-                                        { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(217, 91%, 60%)" },
-                                        { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(38, 92%, 50%)" },
-                                        { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(271, 91%, 65%)" },
-                                        { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(160, 84%, 39%)" },
-                                        { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 84%, 60%)" },
-                                        { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(215, 16%, 47%)" },
+                                        { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(210, 100%, 45%)" },
+                                        { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(35, 100%, 55%)" },
+                                        { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(280, 70%, 50%)" },
+                                        { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(145, 80%, 40%)" },
+                                        { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 85%, 55%)" },
+                                        { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(220, 15%, 55%)" },
                                       ].map((entry, index) => (
                                         <Cell key={`cell-${index}`} fill={entry.fill} />
                                       ))}
