@@ -1403,15 +1403,15 @@ const Dashboard2ndLine = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
           {/* Left Column - Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {[0, 1, 2, 5, 3, 4].map((metricIndex, orderIndex) => {
+          {[0, 1, 2, 3, 5, 4].map((metricIndex, orderIndex) => {
             const metric = metrics[metricIndex];
             // Grid positions for sm+ screens within nested grid
             const gridPositions = [
               'sm:col-span-2', // metrics[0] - Open Risk Assessments - spans 2 cols
               'sm:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols
               'sm:col-span-2', // metrics[2] - Ongoing Review & Challenge - spans 2 cols
-              'sm:col-span-2', // metrics[5] - Issue Aging by Source - spans 2 cols
               'sm:col-span-2', // metrics[3] - Operational Loss Events - spans 2 cols
+              'sm:col-span-2', // metrics[5] - Issue Aging by Source - spans 2 cols
               'sm:col-span-2', // metrics[4] - Issues Velocity & Efficiency - spans 2 cols
             ];
             const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
