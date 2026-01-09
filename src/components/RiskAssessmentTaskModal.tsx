@@ -240,12 +240,12 @@ export function RiskAssessmentTaskModal({
           hideCloseButton
         >
           {/* Header */}
-          <div className="flex items-center justify-between px-3 py-2 border-b border-primary/30 bg-muted/30">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded bg-primary/10 flex items-center justify-center">
-                <FileText className="w-4 h-4 text-primary" />
-              </div>
-              <h2 className="text-base font-semibold text-foreground">Risk Assessment Task</h2>
+        <div className="flex items-center justify-between px-3 py-1.5 border-b border-primary/30 bg-muted/30">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
+              <FileText className="w-3.5 h-3.5 text-primary" />
+            </div>
+            <h2 className="text-sm font-semibold text-foreground">Risk Assessment Task</h2>
               <button className="text-muted-foreground hover:text-foreground">
                 <HelpCircle className="w-4 h-4" />
               </button>
@@ -255,7 +255,7 @@ export function RiskAssessmentTaskModal({
                 variant="outline"
                 size="sm"
                 onClick={() => onOpenChange(false)}
-                className="h-7 px-3 text-xs"
+                className="h-6 px-2 text-[10px]"
               >
                 CLOSE
               </Button>
@@ -263,7 +263,7 @@ export function RiskAssessmentTaskModal({
                 size="sm"
                 onClick={handleSubmit}
                 disabled={!selectedPlanId}
-                className="h-7 px-3 text-xs"
+                className="h-6 px-2 text-[10px]"
               >
                 SUBMIT
               </Button>
@@ -292,12 +292,12 @@ export function RiskAssessmentTaskModal({
                       value={selectedPlanId}
                       onValueChange={setSelectedPlanId}
                     >
-                      <SelectTrigger className="h-8 text-sm">
+                      <SelectTrigger className="h-8 text-xs">
                         <SelectValue placeholder="Select a risk assessment plan" />
                       </SelectTrigger>
                       <SelectContent>
                         {mockPlans.map((plan) => (
-                          <SelectItem key={plan.id} value={plan.id}>
+                          <SelectItem key={plan.id} value={plan.id} className="text-xs">
                             {plan.title}
                           </SelectItem>
                         ))}
@@ -309,15 +309,15 @@ export function RiskAssessmentTaskModal({
                   <div className="grid grid-cols-2 gap-3">
                     <div className="space-y-1">
                       <Label className="text-primary font-medium text-xs">Perspective</Label>
-                      <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                        {selectedPlan?.perspective || "Select a plan to view perspective"}
-                      </div>
+                    <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+                      {selectedPlan?.perspective || "Ad-Hoc Assessment"}
+                    </div>
                     </div>
                     <div className="space-y-1">
                       <Label className="text-primary font-medium text-xs">Assessment Type</Label>
-                      <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                        {selectedPlan?.type || "Select a plan to view assessment type"}
-                      </div>
+                    <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+                      {selectedPlan?.type || "Org-Risk"}
+                    </div>
                     </div>
                   </div>
 
@@ -476,9 +476,6 @@ export function RiskAssessmentTaskModal({
                             Organization <span className="text-destructive">*</span>
                           </TableHead>
                           <TableHead className="text-primary text-xs font-semibold py-1.5">
-                            Assessable Items
-                          </TableHead>
-                          <TableHead className="text-primary text-xs font-semibold py-1.5">
                             Risks
                           </TableHead>
                           <TableHead className="w-10 py-1.5"></TableHead>
@@ -488,7 +485,7 @@ export function RiskAssessmentTaskModal({
                         {scopes.length === 0 ? (
                           <TableRow>
                             <TableCell
-                              colSpan={5}
+                              colSpan={4}
                               className="text-center text-muted-foreground py-4 text-xs"
                             >
                               No scopes added. Click "ADD SCOPE" to begin.
@@ -518,17 +515,17 @@ export function RiskAssessmentTaskModal({
                               </TableCell>
                               <TableCell className="py-1.5">
                                 <Input
-                                  value={scope.assessableItems}
+                                  value={scope.risks || ""}
                                   onChange={(e) => {
                                     setScopes(
                                       scopes.map((s) =>
                                         s.id === scope.id
-                                          ? { ...s, assessableItems: e.target.value }
+                                          ? { ...s, risks: e.target.value }
                                           : s
                                       )
                                     );
                                   }}
-                                  placeholder="Enter assessable items..."
+                                  placeholder="Enter risks..."
                                   className="h-7 text-xs"
                                 />
                               </TableCell>
