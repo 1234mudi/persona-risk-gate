@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from "recharts";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -495,15 +496,14 @@ const Dashboard2ndLine = () => {
     };
   }, [riskData]);
 
-  // Risk Exposure & Aging calculations
+  // Risk Aging by Source calculations
   const agingMetrics = useMemo(() => {
     const today = new Date();
     const byCriticality = { critical: 0, high: 0, medium: 0, low: 0 };
-    const agingBuckets = {
-      critical: { '30': 0, '60': 0, '90+': 0 },
-      high: { '30': 0, '60': 0, '90+': 0 },
-      medium: { '30': 0, '60': 0, '90+': 0 },
-      low: { '30': 0, '60': 0, '90+': 0 }
+    const bySource = { 
+      'Risk Assessments': 0, 
+      'Loss Events': 0, 
+      'Control Testing': 0 
     };
     
     const overdueRisks90Plus: { id: string; title: string; daysOverdue: number; level: string }[] = [];
@@ -525,14 +525,18 @@ const Dashboard2ndLine = () => {
         
         byCriticality[criticalityKey]++;
         
-        // Bucket by age
+        // Assign to source based on category
+        if (risk.category === 'Financial') {
+          bySource['Loss Events']++;
+        } else if (risk.category === 'Technology') {
+          bySource['Control Testing']++;
+        } else {
+          bySource['Risk Assessments']++;
+        }
+        
+        // Track 90+ day overdue risks
         if (daysOverdue > 90) {
-          agingBuckets[criticalityKey]['90+']++;
           overdueRisks90Plus.push({ id: risk.id, title: risk.title, daysOverdue, level });
-        } else if (daysOverdue > 60) {
-          agingBuckets[criticalityKey]['60']++;
-        } else if (daysOverdue > 30) {
-          agingBuckets[criticalityKey]['30']++;
         }
         
         // Aggregate by business unit
@@ -542,7 +546,7 @@ const Dashboard2ndLine = () => {
         if (risk.category in byCategory) {
           byCategory[risk.category]++;
         } else {
-          byCategory['Operational']++; // Default fallback
+          byCategory['Operational']++;
         }
       }
     });
@@ -565,13 +569,13 @@ const Dashboard2ndLine = () => {
       byBusinessUnit: sortedBusinessUnits,
       byCategory: sortedCategories,
       byCriticality,
-      agingBuckets
+      bySource
     };
   }, [riskData]);
 
   const metrics = [
     {
-      title: "Assessments Pending Review/Approval",
+      title: "Open Risk Assessments",
       value: 24,
       trend: "+12% since last month",
       trendUp: true,
@@ -599,7 +603,7 @@ const Dashboard2ndLine = () => {
       tooltip: "Displays risks that remain elevated even after controls are applied. Critical and High residual risks indicate areas where additional mitigation strategies may be needed.",
     },
     {
-      title: "2nd Line Challenges",
+      title: "Ongoing Review & Challenge",
       value: 88,
       isPercentage: true,
       trend: "+7% since last month",
@@ -645,20 +649,25 @@ const Dashboard2ndLine = () => {
       tooltip: "Tracks remediation speed and discipline. Average Time to Remediate shows how quickly issues are resolved. On-time completion rate indicates accountability in business units.",
     },
     {
-      title: "Risk Exposure & Aging",
+      title: "Risk Aging by Source",
       value: agingMetrics.totalOverdue,
       subLabel: "Total Aged Issues",
       trend: `${agingMetrics.overdueRisks90Plus.length} overdue 90+ days`,
       trendUp: false,
       icon: BarChart3,
-      segments: [
-        { label: "Critical", value: agingMetrics.byCriticality.critical, sublabel: `${agingMetrics.byCriticality.critical} Critical`, color: "bg-error-dark" },
-        { label: "High", value: agingMetrics.byCriticality.high, sublabel: `${agingMetrics.byCriticality.high} High`, color: "bg-error" },
-        { label: "Medium", value: agingMetrics.byCriticality.medium, sublabel: `${agingMetrics.byCriticality.medium} Medium`, color: "bg-warning" },
-        { label: "Low", value: agingMetrics.byCriticality.low, sublabel: `${agingMetrics.byCriticality.low} Low`, color: "bg-success" },
+      chartType: "bar" as const,
+      barData: [
+        { source: "Risk Assessments", count: agingMetrics.bySource['Risk Assessments'] },
+        { source: "Loss Events", count: agingMetrics.bySource['Loss Events'] },
+        { source: "Control Testing", count: agingMetrics.bySource['Control Testing'] },
       ],
-      description: "Focus on Critical & High items past 30+ days. Escalate 90+ day items.",
-      tooltip: "Highlights backlog risks by criticality and age. Items overdue 90+ days are candidates for immediate escalation to Risk Committee or senior management.",
+      segments: [
+        { label: "Risk Assessments", value: agingMetrics.bySource['Risk Assessments'], sublabel: `${agingMetrics.bySource['Risk Assessments']} Risk Assessments`, color: "bg-primary" },
+        { label: "Loss Events", value: agingMetrics.bySource['Loss Events'], sublabel: `${agingMetrics.bySource['Loss Events']} Loss Events`, color: "bg-warning" },
+        { label: "Control Testing", value: agingMetrics.bySource['Control Testing'], sublabel: `${agingMetrics.bySource['Control Testing']} Control Testing`, color: "bg-accent" },
+      ],
+      description: "Aged issues by originating source. Prioritize high-volume sources.",
+      tooltip: "Shows the distribution of aged issues by their originating source. Use this to identify which processes are generating the most backlog.",
     },
   ];
 
@@ -1102,30 +1111,63 @@ const Dashboard2ndLine = () => {
                           <span className="text-xs text-muted-foreground">{(metric as any).subLabel}</span>
                         )}
                       </div>
-                      {/* Progress bar */}
-                      <div className="flex h-1.5 rounded overflow-hidden mb-1">
-                        {segments.map((segment, idx) => {
-                          const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                          return (
-                            <div
-                              key={idx}
-                              className={segment.color}
-                              style={{ width: `${percentage}%` }}
-                            />
-                          );
-                        })}
-                      </div>
-                      {/* Legend */}
-                      <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-1">
-                        {segments.map((segment, idx) => (
-                          <div key={idx} className="flex items-center gap-0.5">
-                            <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
-                            <span className="text-[9px] font-medium text-muted-foreground">
-                              {segment.sublabel || segment.label}
-                            </span>
+                      {/* Chart visualization */}
+                      {'chartType' in metric && metric.chartType === 'bar' ? (
+                        <div className="h-14 mb-1">
+                          <ResponsiveContainer width="100%" height="100%">
+                            <BarChart 
+                              data={(metric as any).barData} 
+                              layout="vertical"
+                              margin={{ top: 0, right: 8, bottom: 0, left: 0 }}
+                            >
+                              <XAxis type="number" hide />
+                              <YAxis 
+                                type="category" 
+                                dataKey="source" 
+                                width={75} 
+                                tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} 
+                                axisLine={false}
+                                tickLine={false}
+                              />
+                              <Bar dataKey="count" radius={[0, 3, 3, 0]} maxBarSize={12}>
+                                {(metric as any).barData.map((entry: any, index: number) => (
+                                  <Cell 
+                                    key={`cell-${index}`} 
+                                    fill={index === 0 ? 'hsl(var(--primary))' : index === 1 ? 'hsl(var(--warning))' : 'hsl(var(--accent))'}
+                                  />
+                                ))}
+                              </Bar>
+                            </BarChart>
+                          </ResponsiveContainer>
+                        </div>
+                      ) : (
+                        <>
+                          {/* Progress bar */}
+                          <div className="flex h-1.5 rounded overflow-hidden mb-1">
+                            {segments.map((segment, idx) => {
+                              const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                              return (
+                                <div
+                                  key={idx}
+                                  className={segment.color}
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              );
+                            })}
                           </div>
-                        ))}
-                      </div>
+                          {/* Legend */}
+                          <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-1">
+                            {segments.map((segment, idx) => (
+                              <div key={idx} className="flex items-center gap-0.5">
+                                <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
+                                <span className="text-[9px] font-medium text-muted-foreground">
+                                  {segment.sublabel || segment.label}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </>
+                      )}
                       <p className="text-[10px] text-muted-foreground leading-tight">{metric.description}</p>
                     </CardContent>
                   </Card>
