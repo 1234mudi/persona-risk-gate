@@ -33,14 +33,14 @@ const Index = () => {
     {
       icon: ClipboardCheck,
       name: "1st Line Risk Analyst",
-      description: "Executes RCSA process, rates risk, and documents control evidence.",
+      description: "Your daily dashboard for managing controls. See what needs attention, upload documents, and keep your department on track.",
       line: "first" as const,
       route: "/dashboard/1st-line-analyst",
     },
     {
       icon: BarChart3,
       name: "2nd Line Risk Analyst",
-      description: "Reviews and challenges 1st Line RCSA submissions.",
+      description: "See the big picture across all business units. Review submissions, spot gaps, and ensure consistent quality company-wide.",
       line: "second" as const,
       route: "/dashboard/2nd-line-analyst",
     },
