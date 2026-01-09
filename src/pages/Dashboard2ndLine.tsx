@@ -1244,12 +1244,12 @@ const Dashboard2ndLine = () => {
             </div>
             <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
               <CheckCircle className="w-3 h-3" />
-              <span>Assessments Awaiting Approval</span>
+              <span>Schedule Risk Assessments</span>
             </button>
             <span className="text-gray-400 dark:text-gray-500">|</span>
             <button onClick={handleOpenChallengesClick} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
               <AlertTriangle className="w-3 h-3" />
-              <span>View 2nd Line Challenged Risks</span>
+              <span>Assess Now</span>
             </button>
           </div>
 
