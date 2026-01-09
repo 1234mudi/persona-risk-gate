@@ -48,6 +48,8 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Calendar } from "@/components/ui/calendar";
 
 interface RiskData {
   id: string;
@@ -117,6 +119,60 @@ const Dashboard2ndLine = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [riskHierarchyFilter, setRiskHierarchyFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  
+  // Global time period filter state
+  const [timePeriodFilter, setTimePeriodFilter] = useState<string>("all-time");
+  const [customDateRange, setCustomDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
+  const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
+
+  const timePeriodOptions = [
+    { value: "all-time", label: "All Time" },
+    { value: "this-month", label: "This Month" },
+    { value: "last-month", label: "Last Month" },
+    { value: "this-quarter", label: "This Quarter" },
+    { value: "last-quarter", label: "Last Quarter" },
+    { value: "this-year", label: "This Year" },
+    { value: "last-year", label: "Last Year" },
+    { value: "custom", label: "Custom Range..." },
+  ];
+
+  // Helper to check if a date falls within the selected time period
+  const isWithinTimePeriod = useCallback((dateString: string): boolean => {
+    if (timePeriodFilter === "all-time") return true;
+    
+    const date = new Date(dateString);
+    const now = new Date();
+    
+    switch (timePeriodFilter) {
+      case "this-month":
+        return date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+      case "last-month": {
+        const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        return date.getMonth() === lastMonth.getMonth() && date.getFullYear() === lastMonth.getFullYear();
+      }
+      case "this-quarter": {
+        const currentQuarter = Math.floor(now.getMonth() / 3);
+        const dateQuarter = Math.floor(date.getMonth() / 3);
+        return dateQuarter === currentQuarter && date.getFullYear() === now.getFullYear();
+      }
+      case "last-quarter": {
+        let lqQuarter = Math.floor(now.getMonth() / 3) - 1;
+        let lqYear = now.getFullYear();
+        if (lqQuarter < 0) { lqQuarter = 3; lqYear--; }
+        const dateQ = Math.floor(date.getMonth() / 3);
+        return dateQ === lqQuarter && date.getFullYear() === lqYear;
+      }
+      case "this-year":
+        return date.getFullYear() === now.getFullYear();
+      case "last-year":
+        return date.getFullYear() === now.getFullYear() - 1;
+      case "custom":
+        if (!customDateRange.start || !customDateRange.end) return true;
+        return date >= customDateRange.start && date <= customDateRange.end;
+      default:
+        return true;
+    }
+  }, [timePeriodFilter, customDateRange]);
   
   // Risk traversal state for review mode
   const [isReviewMode, setIsReviewMode] = useState(false);
@@ -769,9 +825,14 @@ const Dashboard2ndLine = () => {
         if (!matchesSearch) return false;
       }
       
+      // Time period filter (using dueDate as primary date field)
+      if (timePeriodFilter !== "all-time" && !isWithinTimePeriod(risk.dueDate)) {
+        return false;
+      }
+      
       return true;
     });
-  }, [riskData, activeTab, businessUnitFilter, statusFilter, riskHierarchyFilter, searchQuery]);
+  }, [riskData, activeTab, businessUnitFilter, statusFilter, riskHierarchyFilter, searchQuery, timePeriodFilter, isWithinTimePeriod]);
 
   // Risk traversal logic - must be after filteredRiskData is declared
   const traversableRisks = useMemo(() => {
@@ -1063,6 +1124,63 @@ const Dashboard2ndLine = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Global Time Period Filter */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground hidden md:inline">View Data For:</span>
+                <Popover open={showCustomDatePicker} onOpenChange={setShowCustomDatePicker}>
+                  <PopoverTrigger asChild>
+                    <div className="flex items-center">
+                      <Select 
+                        value={timePeriodFilter} 
+                        onValueChange={(value) => {
+                          setTimePeriodFilter(value);
+                          if (value === "custom") {
+                            setShowCustomDatePicker(true);
+                          }
+                        }}
+                      >
+                        <SelectTrigger className="h-7 w-[130px] text-xs rounded-none">
+                          <SelectValue placeholder="Select period" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-popover z-50">
+                          {timePeriodOptions.map((option) => (
+                            <SelectItem key={option.value} value={option.value}>
+                              {option.label}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </PopoverTrigger>
+                  {timePeriodFilter === "custom" && (
+                    <PopoverContent className="w-auto p-4 bg-popover z-50" align="end">
+                      <div className="space-y-3">
+                        <div className="flex flex-col gap-2">
+                          <Label className="text-xs font-medium">Start Date</Label>
+                          <Calendar
+                            mode="single"
+                            selected={customDateRange.start || undefined}
+                            onSelect={(date) => setCustomDateRange(prev => ({ ...prev, start: date || null }))}
+                            className="pointer-events-auto border rounded-md"
+                          />
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <Label className="text-xs font-medium">End Date</Label>
+                          <Calendar
+                            mode="single"
+                            selected={customDateRange.end || undefined}
+                            onSelect={(date) => setCustomDateRange(prev => ({ ...prev, end: date || null }))}
+                            className="pointer-events-auto border rounded-md"
+                          />
+                        </div>
+                        <Button size="sm" className="w-full rounded-none" onClick={() => setShowCustomDatePicker(false)}>
+                          Apply Range
+                        </Button>
+                      </div>
+                    </PopoverContent>
+                  )}
+                </Popover>
+              </div>
               <ThemeToggle />
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -1094,11 +1212,6 @@ const Dashboard2ndLine = () => {
               <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
               Quick Links:
             </div>
-            <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
-              <ClipboardCheck className="w-3 h-3" />
-              <span>Open Risk Assessments</span>
-            </button>
-            <span className="text-gray-400 dark:text-gray-500">|</span>
             <button onClick={() => handleQuickLinkClick("approve")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
               <CheckCircle className="w-3 h-3" />
               <span>Assessments Awaiting Approval</span>
