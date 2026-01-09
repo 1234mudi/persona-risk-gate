@@ -1530,10 +1530,21 @@ const Dashboard1stLine = () => {
                   
                       <div className="space-y-0.5">
                         <div className="flex items-baseline justify-between gap-2">
-                          <div className="flex items-baseline gap-1">
-                            <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
-                              {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
-                            </span>
+                          <div className="flex items-baseline gap-1.5">
+                            {typeof metric.value === 'string' ? (
+                              <>
+                                <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
+                                  {metric.value.split(' ')[0]}
+                                </span>
+                                <span className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                  {metric.value.split(' ').slice(1).join(' ')}
+                                </span>
+                              </>
+                            ) : (
+                              <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
+                                {metric.value}{'isPercentage' in metric && metric.isPercentage ? "%" : ""}
+                              </span>
+                            )}
                           </div>
                           <div className="flex items-center gap-1">
                             {metric.trendUp ? (
