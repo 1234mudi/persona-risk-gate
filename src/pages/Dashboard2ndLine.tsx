@@ -130,6 +130,9 @@ const Dashboard2ndLine = () => {
   const [customDateRange, setCustomDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
   
+  // Global business unit filter state
+  const [globalBusinessUnitFilter, setGlobalBusinessUnitFilter] = useState<string>("all");
+  
   // Chart view toggle states
   const [openAssessmentsView, setOpenAssessmentsView] = useState<'org' | 'aggregate'>('org');
   const [risksAppetiteView, setRisksAppetiteView] = useState<'org' | 'aggregate'>('org');
@@ -143,6 +146,15 @@ const Dashboard2ndLine = () => {
     { value: "this-year", label: "This Year" },
     { value: "last-year", label: "Last Year" },
     { value: "custom", label: "Custom Range..." },
+  ];
+
+  const businessUnitOptions = [
+    { value: "all", label: "All Business Units" },
+    { value: "Retail Banking", label: "Retail Banking" },
+    { value: "Corporate Banking", label: "Corporate Banking" },
+    { value: "Treasury", label: "Treasury" },
+    { value: "Operations", label: "Operations" },
+    { value: "Risk Analytics", label: "Risk Analytics" },
   ];
 
   // Helper to check if a date falls within the selected time period
@@ -307,16 +319,26 @@ const Dashboard2ndLine = () => {
   });
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
-  // Time-period filtered base dataset for metrics
+  // Time-period and business unit filtered base dataset for metrics
   const timeFilteredRiskData = useMemo(() => {
-    if (timePeriodFilter === "all-time") return riskData;
+    let filtered = riskData;
     
-    return riskData.filter(risk => {
-      const matchesDueDate = isWithinTimePeriod(risk.dueDate);
-      const matchesLastAssessed = isWithinTimePeriod(risk.lastAssessed);
-      return matchesDueDate || matchesLastAssessed;
-    });
-  }, [riskData, timePeriodFilter, isWithinTimePeriod]);
+    // Apply time period filter
+    if (timePeriodFilter !== "all-time") {
+      filtered = filtered.filter(risk => {
+        const matchesDueDate = isWithinTimePeriod(risk.dueDate);
+        const matchesLastAssessed = isWithinTimePeriod(risk.lastAssessed);
+        return matchesDueDate || matchesLastAssessed;
+      });
+    }
+    
+    // Apply global business unit filter
+    if (globalBusinessUnitFilter !== "all") {
+      filtered = filtered.filter(risk => risk.businessUnit === globalBusinessUnitFilter);
+    }
+    
+    return filtered;
+  }, [riskData, timePeriodFilter, isWithinTimePeriod, globalBusinessUnitFilter]);
 
   // Selection helpers
   const visibleRisks = useMemo(() => {
@@ -1259,6 +1281,25 @@ const Dashboard2ndLine = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              {/* Global Business Unit Filter */}
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-muted-foreground hidden md:inline">Business Unit:</span>
+                <Select 
+                  value={globalBusinessUnitFilter} 
+                  onValueChange={setGlobalBusinessUnitFilter}
+                >
+                  <SelectTrigger className="h-7 w-[150px] text-xs rounded-none">
+                    <SelectValue placeholder="All Business Units" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-popover z-50">
+                    {businessUnitOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
               {/* Global Time Period Filter */}
               <div className="flex items-center gap-2">
                 <span className="text-xs text-muted-foreground hidden md:inline">View Data For:</span>

@@ -324,9 +324,6 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
             <span className="text-[8px] text-muted-foreground">Low</span>
           </div>
         </div>
-        <p className="text-[7px] text-muted-foreground text-center mt-1">
-          Color intensity = count relative to max in column
-        </p>
       </div>
     </div>
   );
