@@ -1069,31 +1069,31 @@ const Dashboard2ndLine = () => {
               <Tooltip key={metricIndex}>
                 <TooltipTrigger asChild>
                   <Card className={`${gridPositions[orderIndex]} border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 bg-card dark:bg-card cursor-pointer rounded-none`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <IconComponent className="w-4 h-4 text-primary" />
+                    <CardContent className="p-2.5">
+                      <div className="flex items-center justify-between mb-1.5">
+                        <div className="flex items-center gap-1.5">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <IconComponent className="w-3 h-3 text-primary" />
                           </div>
-                          <h3 className="text-xs font-bold text-[#10052F] dark:text-white uppercase tracking-wide">{metric.title}</h3>
+                          <h3 className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">{metric.title}</h3>
                         </div>
                         {metric.trend && (
-                          <span className={`text-xs font-medium ${metric.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                          <span className={`text-[10px] font-medium ${metric.trendUp ? 'text-green-600' : 'text-red-600'}`}>
                             {metric.trend}
                           </span>
                         )}
                       </div>
-                      <div className="flex items-baseline gap-2 mb-2">
-                        <p className="text-2xl font-bold text-[#10052F] dark:text-white">
+                      <div className="flex items-baseline gap-1.5 mb-1">
+                        <p className="text-xl font-bold text-[#10052F] dark:text-white">
                           {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
                           {'valueSuffix' in metric && (metric as any).valueSuffix}
                         </p>
                         {'subLabel' in metric && (
-                          <span className="text-sm text-muted-foreground">{(metric as any).subLabel}</span>
+                          <span className="text-xs text-muted-foreground">{(metric as any).subLabel}</span>
                         )}
                       </div>
                       {/* Progress bar */}
-                      <div className="flex h-2 rounded overflow-hidden mb-2">
+                      <div className="flex h-1.5 rounded overflow-hidden mb-1">
                         {segments.map((segment, idx) => {
                           const percentage = total > 0 ? (segment.value / total) * 100 : 0;
                           return (
@@ -1106,17 +1106,17 @@ const Dashboard2ndLine = () => {
                         })}
                       </div>
                       {/* Legend */}
-                      <div className="flex flex-wrap gap-x-2 gap-y-1 mb-2">
+                      <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-1">
                         {segments.map((segment, idx) => (
-                          <div key={idx} className="flex items-center gap-1">
-                            <div className={`w-2 h-2 rounded-sm ${segment.color}`} />
-                            <span className="text-[10px] font-medium text-muted-foreground">
+                          <div key={idx} className="flex items-center gap-0.5">
+                            <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
+                            <span className="text-[9px] font-medium text-muted-foreground">
                               {segment.sublabel || segment.label}
                             </span>
                           </div>
                         ))}
                       </div>
-                      <p className="text-xs text-muted-foreground">{metric.description}</p>
+                      <p className="text-[10px] text-muted-foreground leading-tight">{metric.description}</p>
                     </CardContent>
                   </Card>
                 </TooltipTrigger>
