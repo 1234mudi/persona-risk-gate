@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Tooltip as RechartsTooltip, Legend } from "recharts";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -573,24 +573,22 @@ const Dashboard2ndLine = () => {
     };
   }, [riskData]);
 
-  // Loss Events data with root cause analysis
-  const lossEventsData = [
-    { id: "LE-001", title: "Payment Fraud", amount: 1200000, rootCause: "Insufficient fraud detection", category: "External Fraud" },
-    { id: "LE-002", title: "Settlement Error", amount: 950000, rootCause: "Manual reconciliation failure", category: "Process Error" },
-    { id: "LE-003", title: "System Outage", amount: 820000, rootCause: "Infrastructure limits exceeded", category: "System Failures" },
-    { id: "LE-004", title: "Wire Misdirection", amount: 680000, rootCause: "Inadequate dual approval", category: "Process Error" },
-    { id: "LE-005", title: "Data Incident", amount: 550000, rootCause: "Backup system failure", category: "System Failures" },
+  // Quarterly Loss Events timeline data
+  const quarterlyLossData = [
+    { quarter: "Q1 '24", total: 2.8, process: 1.1, system: 0.9, external: 0.8 },
+    { quarter: "Q2 '24", total: 3.2, process: 1.4, system: 1.0, external: 0.8 },
+    { quarter: "Q3 '24", total: 3.8, process: 1.6, system: 1.1, external: 1.1 },
+    { quarter: "Q4 '24", total: 4.2, process: 1.8, system: 1.2, external: 1.2 },
   ];
 
-  // Calculate root cause percentages
+  // Calculate root cause percentages from latest quarter
   const rootCauseBreakdown = useMemo(() => {
-    const totals = { 'Process Error': 0, 'System Failures': 0, 'External Fraud': 0 };
-    const totalAmount = lossEventsData.reduce((sum, e) => sum + e.amount, 0);
-    lossEventsData.forEach(e => { totals[e.category as keyof typeof totals] += e.amount; });
+    const latestQuarter = quarterlyLossData[quarterlyLossData.length - 1];
+    const total = latestQuarter.total;
     return {
-      process: Math.round((totals['Process Error'] / totalAmount) * 100),
-      system: Math.round((totals['System Failures'] / totalAmount) * 100),
-      external: Math.round((totals['External Fraud'] / totalAmount) * 100),
+      process: Math.round((latestQuarter.process / total) * 100),
+      system: Math.round((latestQuarter.system / total) * 100),
+      external: Math.round((latestQuarter.external / total) * 100),
     };
   }, []);
 
@@ -641,20 +639,20 @@ const Dashboard2ndLine = () => {
     {
       title: "Operational Loss Events",
       value: "$4.2M",
-      subLabel: "Total Financial Loss",
-      trend: "+15% vs. Last Quarter",
+      subLabel: "Total Financial Loss (Q4)",
+      trend: "+50% YoY",
       trendUp: false,
       icon: DollarSign,
-      chartType: "lossEvents",
-      lossEventsData: lossEventsData,
+      chartType: "lossEventsTimeline",
+      quarterlyLossData: quarterlyLossData,
       rootCauseBreakdown: rootCauseBreakdown,
       segments: [
-        { label: "External Fraud", value: 1.2, sublabel: "External Fraud: $1.2M", color: "bg-error-dark" },
-        { label: "Process Error", value: 1.8, sublabel: "Process Error: $1.8M", color: "bg-warning" },
-        { label: "System Failures", value: 1.2, sublabel: "System Failures: $1.2M", color: "bg-warning-light" },
+        { label: "Q4 '24", value: 4.2, sublabel: "Q4 '24: $4.2M", color: "bg-error" },
+        { label: "Q3 '24", value: 3.8, sublabel: "Q3 '24: $3.8M", color: "bg-warning" },
+        { label: "Q2 '24", value: 3.2, sublabel: "Q2 '24: $3.2M", color: "bg-accent" },
       ],
-      description: "Top 5 loss events by impact with root cause analysis.",
-      tooltip: "Shows the highest-impact loss events and their root causes to validate RCSA coverage aligns with actual loss drivers.",
+      description: "Quarterly loss trend with root cause breakdown.",
+      tooltip: "Shows operational loss trends across quarters with breakdown by root cause category to identify patterns and escalating risks.",
     },
     {
       title: "Issues Velocity & Efficiency",
@@ -1136,39 +1134,57 @@ const Dashboard2ndLine = () => {
                         )}
                       </div>
                       {/* Chart visualization */}
-                      {'chartType' in metric && metric.chartType === 'lossEvents' ? (
+                      {'chartType' in metric && metric.chartType === 'lossEventsTimeline' ? (
                         <div className="space-y-1.5">
-                          {/* Horizontal bar chart for top 5 loss events */}
+                          {/* Timeline line chart for quarterly loss events */}
                           <div className="h-20">
                             <ResponsiveContainer width="100%" height="100%">
-                              <BarChart 
-                                data={(metric as any).lossEventsData} 
-                                layout="vertical"
-                                margin={{ top: 0, right: 4, bottom: 0, left: 0 }}
+                              <LineChart 
+                                data={(metric as any).quarterlyLossData} 
+                                margin={{ top: 5, right: 5, bottom: 0, left: -20 }}
                               >
-                                <XAxis type="number" hide />
-                                <YAxis 
-                                  type="category" 
-                                  dataKey="title" 
-                                  width={70} 
-                                  tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }} 
+                                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
+                                <XAxis 
+                                  dataKey="quarter" 
+                                  tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} 
                                   axisLine={false}
                                   tickLine={false}
                                 />
-                                <Bar dataKey="amount" radius={[0, 3, 3, 0]} maxBarSize={10}>
-                                  {(metric as any).lossEventsData.map((entry: any, index: number) => (
-                                    <Cell 
-                                      key={`cell-${index}`} 
-                                      fill={entry.category === 'External Fraud' ? 'hsl(var(--destructive))' : entry.category === 'Process Error' ? 'hsl(var(--warning))' : 'hsl(var(--accent))'}
-                                    />
-                                  ))}
-                                </Bar>
-                              </BarChart>
+                                <YAxis 
+                                  tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} 
+                                  axisLine={false}
+                                  tickLine={false}
+                                  tickFormatter={(value) => `$${value}M`}
+                                />
+                                <Line 
+                                  type="monotone" 
+                                  dataKey="total" 
+                                  stroke="hsl(var(--primary))" 
+                                  strokeWidth={2}
+                                  dot={{ r: 3, fill: 'hsl(var(--primary))' }}
+                                />
+                                <Line 
+                                  type="monotone" 
+                                  dataKey="process" 
+                                  stroke="hsl(var(--warning))" 
+                                  strokeWidth={1.5}
+                                  dot={{ r: 2, fill: 'hsl(var(--warning))' }}
+                                  strokeDasharray="4 2"
+                                />
+                                <Line 
+                                  type="monotone" 
+                                  dataKey="external" 
+                                  stroke="hsl(var(--destructive))" 
+                                  strokeWidth={1.5}
+                                  dot={{ r: 2, fill: 'hsl(var(--destructive))' }}
+                                  strokeDasharray="4 2"
+                                />
+                              </LineChart>
                             </ResponsiveContainer>
                           </div>
                           {/* Root Cause Analysis Summary */}
                           <div className="border-t border-border/30 pt-1">
-                            <p className="text-[8px] font-semibold text-muted-foreground uppercase mb-0.5">Root Cause Breakdown</p>
+                            <p className="text-[8px] font-semibold text-muted-foreground uppercase mb-0.5">Q4 Root Cause</p>
                             <div className="grid grid-cols-3 gap-1">
                               <div className="text-center">
                                 <p className="text-[10px] font-bold text-warning">{(metric as any).rootCauseBreakdown.process}%</p>
