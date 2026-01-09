@@ -1163,18 +1163,18 @@ const Dashboard2ndLine = () => {
             hideCloseButton={true}
           >
             {/* Header with Back Button */}
-            <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30 bg-muted/20 shrink-0">
+            <div className="flex items-center gap-1.5 px-3 py-1 border-b border-border/30 bg-muted/20 shrink-0">
               <Button 
                 variant="ghost" 
                 size="sm"
                 onClick={() => setRiskCoverageModalOpen(false)}
-                className="gap-2 rounded-none"
+                className="gap-1.5 rounded-none h-7 px-2 text-sm"
               >
-                <ArrowLeft className="w-4 h-4" />
+                <ArrowLeft className="w-3.5 h-3.5" />
                 Back to Dashboard
               </Button>
-              <div className="h-5 w-px bg-border" />
-              <span className="text-lg font-semibold text-foreground">
+              <div className="h-4 w-px bg-border/50" />
+              <span className="text-sm font-semibold text-foreground">
                 Risk Coverage by Business Unit ({filteredRiskData.length})
               </span>
             </div>
