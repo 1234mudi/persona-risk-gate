@@ -27,32 +27,33 @@ const BUSINESS_UNITS = [
 const CATEGORIES = ["Operational", "Technology", "Compliance", "Financial"];
 
 // Mock data simulating N/A controls per BU and Category
+// Adjusted to ensure all 4 legend colors are visible: Green (<-1%), Yellow (-1% to +1%), Orange (+1% to +3%), Red (>+3%)
 const mockHeatmapData: HeatmapCellData[] = [
-  // Retail Banking
-  { businessUnit: "Retail Banking", category: "Operational", naPercentage: 7.2, totalControls: 45, naControls: 3 },
-  { businessUnit: "Retail Banking", category: "Technology", naPercentage: 15.8, totalControls: 38, naControls: 6 },
-  { businessUnit: "Retail Banking", category: "Compliance", naPercentage: 5.1, totalControls: 39, naControls: 2 },
-  { businessUnit: "Retail Banking", category: "Financial", naPercentage: 8.9, totalControls: 45, naControls: 4 },
+  // Retail Banking - Avg: Ops=8.76, Tech=12.3, Comp=6.2, Fin=9.8
+  { businessUnit: "Retail Banking", category: "Operational", naPercentage: 5.2, totalControls: 45, naControls: 2 },   // -3.6% → Green
+  { businessUnit: "Retail Banking", category: "Technology", naPercentage: 16.5, totalControls: 38, naControls: 6 },  // +4.2% → Red
+  { businessUnit: "Retail Banking", category: "Compliance", naPercentage: 7.8, totalControls: 39, naControls: 3 },   // +1.6% → Orange
+  { businessUnit: "Retail Banking", category: "Financial", naPercentage: 10.2, totalControls: 45, naControls: 5 },   // +0.4% → Yellow
   // Corporate Banking
-  { businessUnit: "Corporate Banking", category: "Operational", naPercentage: 10.5, totalControls: 38, naControls: 4 },
-  { businessUnit: "Corporate Banking", category: "Technology", naPercentage: 11.2, totalControls: 45, naControls: 5 },
-  { businessUnit: "Corporate Banking", category: "Compliance", naPercentage: 8.3, totalControls: 36, naControls: 3 },
-  { businessUnit: "Corporate Banking", category: "Financial", naPercentage: 12.4, totalControls: 40, naControls: 5 },
+  { businessUnit: "Corporate Banking", category: "Operational", naPercentage: 10.8, totalControls: 38, naControls: 4 }, // +2.0% → Orange
+  { businessUnit: "Corporate Banking", category: "Technology", naPercentage: 14.2, totalControls: 45, naControls: 6 },  // +1.9% → Orange
+  { businessUnit: "Corporate Banking", category: "Compliance", naPercentage: 5.5, totalControls: 36, naControls: 2 },   // -0.7% → Yellow
+  { businessUnit: "Corporate Banking", category: "Financial", naPercentage: 14.0, totalControls: 40, naControls: 6 },   // +4.2% → Red
   // Treasury
-  { businessUnit: "Treasury", category: "Operational", naPercentage: 6.8, totalControls: 44, naControls: 3 },
-  { businessUnit: "Treasury", category: "Technology", naPercentage: 9.5, totalControls: 42, naControls: 4 },
-  { businessUnit: "Treasury", category: "Compliance", naPercentage: 4.2, totalControls: 48, naControls: 2 },
-  { businessUnit: "Treasury", category: "Financial", naPercentage: 11.1, totalControls: 36, naControls: 4 },
+  { businessUnit: "Treasury", category: "Operational", naPercentage: 4.8, totalControls: 44, naControls: 2 },    // -4.0% → Green
+  { businessUnit: "Treasury", category: "Technology", naPercentage: 8.5, totalControls: 42, naControls: 4 },     // -3.8% → Green
+  { businessUnit: "Treasury", category: "Compliance", naPercentage: 6.9, totalControls: 48, naControls: 3 },     // +0.7% → Yellow
+  { businessUnit: "Treasury", category: "Financial", naPercentage: 12.1, totalControls: 36, naControls: 4 },     // +2.3% → Orange
   // Operations
-  { businessUnit: "Operations", category: "Operational", naPercentage: 11.2, totalControls: 45, naControls: 5 },
-  { businessUnit: "Operations", category: "Technology", naPercentage: 14.8, totalControls: 41, naControls: 6 },
-  { businessUnit: "Operations", category: "Compliance", naPercentage: 7.9, totalControls: 38, naControls: 3 },
-  { businessUnit: "Operations", category: "Financial", naPercentage: 8.2, totalControls: 49, naControls: 4 },
+  { businessUnit: "Operations", category: "Operational", naPercentage: 12.5, totalControls: 45, naControls: 6 },   // +3.7% → Red
+  { businessUnit: "Operations", category: "Technology", naPercentage: 15.8, totalControls: 41, naControls: 6 },    // +3.5% → Red
+  { businessUnit: "Operations", category: "Compliance", naPercentage: 5.8, totalControls: 38, naControls: 2 },     // -0.4% → Yellow
+  { businessUnit: "Operations", category: "Financial", naPercentage: 8.0, totalControls: 49, naControls: 4 },      // -1.8% → Green
   // Risk Analytics
-  { businessUnit: "Risk Analytics", category: "Operational", naPercentage: 8.1, totalControls: 37, naControls: 3 },
-  { businessUnit: "Risk Analytics", category: "Technology", naPercentage: 10.2, totalControls: 49, naControls: 5 },
-  { businessUnit: "Risk Analytics", category: "Compliance", naPercentage: 5.5, totalControls: 36, naControls: 2 },
-  { businessUnit: "Risk Analytics", category: "Financial", naPercentage: 8.4, totalControls: 48, naControls: 4 },
+  { businessUnit: "Risk Analytics", category: "Operational", naPercentage: 10.5, totalControls: 37, naControls: 4 },  // +1.7% → Orange
+  { businessUnit: "Risk Analytics", category: "Technology", naPercentage: 6.5, totalControls: 49, naControls: 3 },    // -5.8% → Green
+  { businessUnit: "Risk Analytics", category: "Compliance", naPercentage: 5.0, totalControls: 36, naControls: 2 },    // -1.2% → Green
+  { businessUnit: "Risk Analytics", category: "Financial", naPercentage: 9.5, totalControls: 48, naControls: 5 },     // -0.3% → Yellow
 ];
 
 // Mock detailed N/A control data for drilldown - aligned with 2nd line dashboard
