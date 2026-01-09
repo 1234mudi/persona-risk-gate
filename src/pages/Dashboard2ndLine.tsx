@@ -1041,105 +1041,102 @@ const Dashboard2ndLine = () => {
             </button>
           </div>
 
-        {/* Scorecards - 2 rows x 3 columns */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-          {metrics.map((metric, index) => (
-            <Tooltip key={index}>
-              <TooltipTrigger asChild>
-                <Card className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-card relative cursor-help rounded-none">
-                  <CardContent className="p-2 sm:p-2.5">
-                    <div className="flex items-start justify-between mb-0.5 sm:mb-1">
-                      <h3 className="text-[10px] sm:text-xs font-bold text-[#10052F] dark:text-white leading-tight">{metric.title}</h3>
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0">
-                        <metric.icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-primary" />
-                      </div>
-                    </div>
-                
-                <div className="space-y-0.5">
-                  <div className="flex items-baseline justify-between gap-2">
-                    <div className="flex items-baseline gap-1">
-                      <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
-                        {typeof metric.value === 'string' ? metric.value : `${metric.value}${metric.isPercentage ? "%" : ""}`}
-                      </span>
-                      {metric.valueSuffix && (
-                        <span className="text-[10px] sm:text-xs font-medium text-muted-foreground">{metric.valueSuffix}</span>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      {metric.trendUp ? (
-                        <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-600" />
-                      ) : (
-                        <TrendingDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-red-600" />
-                      )}
-                      <span className={`text-[9px] sm:text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
-                        {metric.trend}
-                      </span>
-                    </div>
-                  </div>
-                  {metric.subLabel && (
-                    <p className="text-[9px] sm:text-[10px] font-medium text-muted-foreground">{metric.subLabel}</p>
-                  )}
-                  
-                  {/* Status Bar */}
-                  <div className="space-y-0.5">
-                    <div className="flex h-2 sm:h-2.5 overflow-hidden">
-                      {metric.segments.filter(s => s.value > 0).map((segment, idx) => {
-                        const total = metric.segments.reduce((sum, s) => sum + s.value, 0);
-                        const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                        return (
-                          <div
-                            key={idx}
-                            className={segment.color}
-                            style={{ width: `${percentage}%` }}
-                          />
-                        );
-                      })}
-                    </div>
-                    
-                    {/* Legend */}
-                    <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                      {metric.segments.filter(s => s.value > 0).map((segment, idx) => (
-                        <div key={idx} className="flex items-center gap-0.5">
-                          <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
-                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                            {segment.sublabel || segment.label}
-                          </span>
+        {/* Scorecards - 3 columns x 3 rows with specific positioning */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+          {/* Render metrics in specific grid positions:
+              Column 1: metrics[0] (row 1), metrics[3] (row 2), metrics[2] (row 3)
+              Column 2: metrics[4] (row 1), metrics[1] (row 2), metrics[5] (row 3)
+              Column 3: Challenge Heatmap (spans 3 rows)
+          */}
+          {[0, 4, 3, 1, 2, 5].map((metricIndex, orderIndex) => {
+            const metric = metrics[metricIndex];
+            // Grid positions for lg screens
+            const gridPositions = [
+              'lg:col-start-1 lg:row-start-1', // metrics[0] - Col 1, Row 1
+              'lg:col-start-2 lg:row-start-1', // metrics[4] - Col 2, Row 1
+              'lg:col-start-1 lg:row-start-2', // metrics[3] - Col 1, Row 2
+              'lg:col-start-2 lg:row-start-2', // metrics[1] - Col 2, Row 2
+              'lg:col-start-1 lg:row-start-3', // metrics[2] - Col 1, Row 3
+              'lg:col-start-2 lg:row-start-3', // metrics[5] - Col 2, Row 3
+            ];
+            const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
+            let total = 0;
+            for (const s of segments) total += s.value;
+            const IconComponent = metric.icon;
+            
+            return (
+              <Tooltip key={metricIndex}>
+                <TooltipTrigger asChild>
+                  <Card className={`${gridPositions[orderIndex]} border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 bg-card dark:bg-card cursor-pointer rounded-none`}>
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <IconComponent className="w-4 h-4 text-primary" />
+                          </div>
+                          <h3 className="text-xs font-bold text-[#10052F] dark:text-white uppercase tracking-wide">{metric.title}</h3>
                         </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-snug hidden sm:block">
-                    {metric.description}
-                  </p>
-                </div>
-                
-                {/* AI Generated Icon */}
-                <div className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5">
-                  <div className="w-4 h-4 sm:w-5 sm:h-5 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Sparkles className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-primary" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </TooltipTrigger>
-          <TooltipContent side="bottom" className="max-w-xs text-xs">
-            <p>{metric.tooltip}</p>
-          </TooltipContent>
-        </Tooltip>
-          ))}
+                        {metric.trend && (
+                          <span className={`text-xs font-medium ${metric.trendUp ? 'text-green-600' : 'text-red-600'}`}>
+                            {metric.trend}
+                          </span>
+                        )}
+                      </div>
+                      <div className="flex items-baseline gap-2 mb-2">
+                        <p className="text-2xl font-bold text-[#10052F] dark:text-white">
+                          {typeof metric.value === 'string' ? metric.value : `${metric.value}${'isPercentage' in metric && metric.isPercentage ? "%" : ""}`}
+                          {'valueSuffix' in metric && (metric as any).valueSuffix}
+                        </p>
+                        {'subLabel' in metric && (
+                          <span className="text-sm text-muted-foreground">{(metric as any).subLabel}</span>
+                        )}
+                      </div>
+                      {/* Progress bar */}
+                      <div className="flex h-2 rounded overflow-hidden mb-2">
+                        {segments.map((segment, idx) => {
+                          const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                          return (
+                            <div
+                              key={idx}
+                              className={segment.color}
+                              style={{ width: `${percentage}%` }}
+                            />
+                          );
+                        })}
+                      </div>
+                      {/* Legend */}
+                      <div className="flex flex-wrap gap-x-2 gap-y-1 mb-2">
+                        {segments.map((segment, idx) => (
+                          <div key={idx} className="flex items-center gap-1">
+                            <div className={`w-2 h-2 rounded-sm ${segment.color}`} />
+                            <span className="text-[10px] font-medium text-muted-foreground">
+                              {segment.sublabel || segment.label}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-muted-foreground">{metric.description}</p>
+                    </CardContent>
+                  </Card>
+                </TooltipTrigger>
+                <TooltipContent side="bottom" className="max-w-xs">
+                  <p className="text-sm">{metric.tooltip}</p>
+                </TooltipContent>
+              </Tooltip>
+            );
+          })}
           
-          {/* Challenge Heatmap Placeholder */}
-          <Card className="border-2 border-dashed border-border/50 dark:border-border shadow-sm bg-muted/20 dark:bg-card/50 rounded-none">
-            <CardContent className="p-4 flex flex-col items-center justify-center min-h-[160px]">
-              <div className="w-10 h-10 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-3">
-                <Grid3x3 className="w-5 h-5 text-primary" />
+          {/* Column 3: Challenge Heatmap spanning 3 rows */}
+          <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-3 border-2 border-dashed border-border/50 dark:border-border shadow-sm bg-muted/20 dark:bg-card/50 rounded-none order-last lg:order-none">
+            <CardContent className="p-4 flex flex-col items-center justify-center h-full min-h-[160px] lg:min-h-full">
+              <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
+                <Grid3x3 className="w-6 h-6 text-primary" />
               </div>
-              <h3 className="text-sm font-bold text-[#10052F] dark:text-white mb-1">
+              <h3 className="text-base font-bold text-[#10052F] dark:text-white mb-2">
                 Challenge Heatmap
               </h3>
-              <p className="text-xs text-muted-foreground text-center">
-                Coming Soon - Visual representation of 2nd Line challenges
+              <p className="text-sm text-muted-foreground text-center max-w-xs">
+                Coming Soon - Visual representation of 2nd Line challenges by category and severity
               </p>
             </CardContent>
           </Card>
