@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Shield, Users, BarChart3, UserCheck, ClipboardCheck } from "lucide-react";
+import { Shield, BarChart3, ClipboardCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PersonaCard } from "@/components/PersonaCard";
@@ -29,14 +29,7 @@ const Index = () => {
     }
   };
 
-  const firstColumnPersonas = [
-    {
-      icon: UserCheck,
-      name: "Risk Owner",
-      description: "Approves RCSA results and oversees critical risk remediation.",
-      line: "first" as const,
-      route: "/dashboard/risk-owner",
-    },
+  const personas = [
     {
       icon: ClipboardCheck,
       name: "1st Line Risk Analyst",
@@ -45,26 +38,11 @@ const Index = () => {
       route: "/dashboard/1st-line-analyst",
     },
     {
-      icon: Users,
-      name: "1st Line Risk Manager",
-      description: "Reviews and submits RCSA packages, manages action plans.",
-      line: "first" as const,
-    },
-  ];
-
-  const secondColumnPersonas = [
-    {
       icon: BarChart3,
       name: "2nd Line Risk Analyst",
       description: "Reviews and challenges 1st Line RCSA submissions.",
       line: "second" as const,
       route: "/dashboard/2nd-line-analyst",
-    },
-    {
-      icon: Shield,
-      name: "Chief Risk Officer",
-      description: "Monitors enterprise risk posture and authorizes strategies.",
-      line: "second" as const,
     },
   ];
 
@@ -157,50 +135,27 @@ const Index = () => {
             <div className="flex-1 h-px bg-border"></div>
           </div>
 
-          {/* Persona Cards */}
-          <div className="w-full max-w-xl space-y-1.5 mb-3">
-            {/* 1st Line Defense Section */}
-            <div className="border border-first-line/20 bg-first-line/5 p-1">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-first-line"></div>
-                <h3 className="text-xs font-semibold text-first-line uppercase tracking-wide">
-                  1st Line Defense
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-                {firstColumnPersonas.map((persona, index) => (
+          {/* Persona Cards - Side by Side */}
+          <div className="w-full max-w-xl mb-3">
+            <div className="grid grid-cols-2 gap-3">
+              {personas.map((persona, index) => (
+                <div
+                  key={index}
+                  className={`border p-2 ${
+                    persona.line === "first"
+                      ? "border-first-line/20 bg-first-line/5"
+                      : "border-second-line/20 bg-second-line/5"
+                  }`}
+                >
                   <PersonaCard
-                    key={index}
                     icon={persona.icon}
                     name={persona.name}
                     description={persona.description}
                     line={persona.line}
                     onSelect={() => handlePersonaLogin(persona.name, persona.route)}
                   />
-                ))}
-              </div>
-            </div>
-
-            {/* 2nd Line Defense Section */}
-            <div className="border border-second-line/20 bg-second-line/5 p-1">
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-2 h-2 rounded-full bg-second-line"></div>
-                <h3 className="text-xs font-semibold text-second-line uppercase tracking-wide">
-                  2nd Line Defense
-                </h3>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 max-w-md">
-                {secondColumnPersonas.map((persona, index) => (
-                  <PersonaCard
-                    key={index}
-                    icon={persona.icon}
-                    name={persona.name}
-                    description={persona.description}
-                    line={persona.line}
-                    onSelect={() => handlePersonaLogin(persona.name, persona.route)}
-                  />
-                ))}
-              </div>
+                </div>
+              ))}
             </div>
           </div>
         </div>
