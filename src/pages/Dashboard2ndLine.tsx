@@ -1587,12 +1587,14 @@ const Dashboard2ndLine = () => {
                                   </ResponsiveContainer>
                                 </div>
                                 
-                                {/* Legend grid for levels */}
-                                <div className="grid grid-cols-4 gap-1">
+                                {/* Legend grid for levels - 2 columns for better readability */}
+                                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                                   {(metric as any).riskAppetiteData.donutData.map((item: any, idx: number) => (
-                                    <div key={idx} className="flex items-center gap-0.5">
-                                      <div className="w-1.5 h-1.5 rounded-sm flex-shrink-0" style={{ backgroundColor: item.fill }} />
-                                      <span className="text-[7px] text-muted-foreground truncate">{item.value} {item.name.substring(0, 3)}</span>
+                                    <div key={idx} className="flex items-center gap-1">
+                                      <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: item.fill }} />
+                                      <span className="text-[9px] text-muted-foreground">
+                                        {item.name}: {item.value}
+                                      </span>
                                     </div>
                                   ))}
                                 </div>
