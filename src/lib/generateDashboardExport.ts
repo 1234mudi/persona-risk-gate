@@ -44,6 +44,10 @@ export interface ExportData {
 // Helper to map segment colors to hex
 function getColorHex(color?: string): string {
   if (!color) return '94A3B8';
+  // If it's already a hex color (with or without #), return it without the #
+  if (color.startsWith('#')) {
+    return color.slice(1);
+  }
   const colorMap: Record<string, string> = {
     'bg-error': 'EF4444',
     'bg-warning': 'F59E0B',
