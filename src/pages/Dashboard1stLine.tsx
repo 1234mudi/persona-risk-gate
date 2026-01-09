@@ -1985,9 +1985,9 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <button className="flex items-center gap-2 hover:text-primary transition-colors">
-                              <Menu className="w-4 h-4" />
+                            <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
                               <span>Risk Hierarchy</span>
+                              <ChevronDown className="w-3 h-3" />
                             </button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="start" className="bg-popover border border-border shadow-lg z-[100]">
@@ -2045,14 +2045,14 @@ const Dashboard1stLine = () => {
                       
                       return (
                       <TableRow key={index} className={cn(
-                        "hover:bg-muted/50 transition-colors",
+                        "hover:bg-muted/50 transition-all duration-200",
                         risk.riskLevel === "Level 1" && 'bg-[#6A75D8]/5 dark:bg-[#6A75D8]/10',
                         risk.riskLevel === "Level 2" && 'bg-[#A361CF]/5 dark:bg-[#A361CF]/10',
                         risk.riskLevel === "Level 3" && 'bg-[#F1BA50]/5 dark:bg-[#F1BA50]/10',
                         // Hierarchy indentation styling for dropdown rows
-                        risk.riskLevel === "Level 2" && hierarchyViewMode === "level1" && "border-l-4 border-l-blue-500",
-                        risk.riskLevel === "Level 3" && hierarchyViewMode === "level1" && "border-l-4 border-l-orange-500",
-                        risk.riskLevel === "Level 3" && hierarchyViewMode === "level2" && "border-l-4 border-l-orange-500"
+                        risk.riskLevel === "Level 2" && hierarchyViewMode === "level1" && "border-l-4 border-l-blue-500 animate-fade-in",
+                        risk.riskLevel === "Level 3" && hierarchyViewMode === "level1" && "border-l-4 border-l-orange-500 animate-fade-in",
+                        risk.riskLevel === "Level 3" && hierarchyViewMode === "level2" && "border-l-4 border-l-orange-500 animate-fade-in"
                       )}>
                         {activeTab !== "own" && (
                           <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
@@ -2091,11 +2091,10 @@ const Dashboard1stLine = () => {
                                 onClick={() => toggleRow(risk.id)}
                                 className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
                               >
-                                {isExpanded ? (
-                                  <ChevronDown className="w-3 h-3 text-muted-foreground" />
-                                ) : (
-                                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                                )}
+                                <ChevronRight className={cn(
+                                  "w-3 h-3 text-muted-foreground transition-transform duration-200",
+                                  isExpanded && "rotate-90"
+                                )} />
                               </button>
                             )}
                             
@@ -2110,11 +2109,10 @@ const Dashboard1stLine = () => {
                                 onClick={() => toggleRow(risk.id)}
                                 className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
                               >
-                                {isExpanded ? (
-                                  <ChevronDown className="w-3 h-3 text-muted-foreground" />
-                                ) : (
-                                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                                )}
+                                <ChevronRight className={cn(
+                                  "w-3 h-3 text-muted-foreground transition-transform duration-200",
+                                  isExpanded && "rotate-90"
+                                )} />
                               </button>
                             )}
 
@@ -2129,11 +2127,10 @@ const Dashboard1stLine = () => {
                                 onClick={() => toggleRow(risk.id)}
                                 className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
                               >
-                                {isExpanded ? (
-                                  <ChevronDown className="w-3 h-3 text-muted-foreground" />
-                                ) : (
-                                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
-                                )}
+                                <ChevronRight className={cn(
+                                  "w-3 h-3 text-muted-foreground transition-transform duration-200",
+                                  isExpanded && "rotate-90"
+                                )} />
                               </button>
                             )}
                             
@@ -2179,7 +2176,7 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         {/* Risk Hierarchy - moved next to Risk Title */}
-                        <TableCell className="py-2 border-r border-b border-border align-top">
+                        <TableCell className="py-2 border-r border-b border-border align-middle">
                           <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
                             {risk.riskLevel}
                           </Badge>
