@@ -605,7 +605,7 @@ const Dashboard2ndLine = () => {
         { label: "Not Due Yet", value: 17, sublabel: "17 Not Due Yet", color: "bg-success" },
       ],
       description: "Prioritize \"Overdue\" and \"Due Today\" to maintain timely risk validation.",
-      tooltip: "Shows the total number of risk assessments awaiting your review. Overdue items require immediate attention to ensure timely validation and compliance with assessment cycles.",
+      tooltip: "Displays open risk assessments that require action—whether to be worked upon, reviewed, or given final approval. Overdue items need immediate attention. Click this card to view and manage these assessments.",
     },
     {
       title: "High Residual Risks",
