@@ -896,13 +896,13 @@ const Dashboard2ndLine = () => {
       tooltip: "Tracks remediation speed and discipline. Average Time to Remediate shows how quickly issues are resolved. On-time completion rate indicates accountability in business units.",
     },
     {
-      title: "Risk Aging by Source",
+      title: "Issue Aging by Source",
       value: agingMetrics.totalOverdue,
       subLabel: "Total Aged Issues",
       trend: `${agingMetrics.overdueRisks90Plus.length} overdue 90+ days`,
       trendUp: false,
       icon: BarChart3,
-      chartType: "bar" as const,
+      chartType: "issueAging" as const,
       barData: [
         { source: "Risk Assessments", count: agingMetrics.bySource['Risk Assessments'] },
         { source: "Loss Events", count: agingMetrics.bySource['Loss Events'] },
@@ -1415,8 +1415,21 @@ const Dashboard2ndLine = () => {
                       {/* Chart visualization */}
                       {'chartType' in metric && metric.chartType === 'lossEventsTimeline' ? (
                         <div className="space-y-1.5">
-                          {/* Timeline line chart for quarterly loss events */}
-                          <div className="h-20">
+                          {/* Toggle between views - same as Open Risk Assessments */}
+                          <div className="flex justify-end mb-1">
+                            <ToggleGroup 
+                              type="single" 
+                              value="aggregate" 
+                              size="sm"
+                              className="h-5"
+                            >
+                              <ToggleGroupItem value="aggregate" className="text-[7px] px-1.5 h-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                                Quarterly
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          </div>
+                          {/* Timeline line chart for quarterly loss events - same height as Open Risk Assessments */}
+                          <div className="h-20 mb-1">
                             <ResponsiveContainer width="100%" height="100%">
                               <LineChart 
                                 data={(metric as any).quarterlyLossData} 
@@ -1461,23 +1474,90 @@ const Dashboard2ndLine = () => {
                               </LineChart>
                             </ResponsiveContainer>
                           </div>
-                          {/* Root Cause Analysis Summary */}
-                          <div className="border-t border-border/30 pt-1">
-                            <p className="text-[8px] font-semibold text-muted-foreground uppercase mb-0.5">Q4 Root Cause</p>
-                            <div className="grid grid-cols-3 gap-1">
-                              <div className="text-center">
-                                <p className="text-[10px] font-bold text-warning">{(metric as any).rootCauseBreakdown.process}%</p>
-                                <p className="text-[7px] text-muted-foreground">Process</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-[10px] font-bold text-accent">{(metric as any).rootCauseBreakdown.system}%</p>
-                                <p className="text-[7px] text-muted-foreground">System</p>
-                              </div>
-                              <div className="text-center">
-                                <p className="text-[10px] font-bold text-destructive">{(metric as any).rootCauseBreakdown.external}%</p>
-                                <p className="text-[7px] text-muted-foreground">External</p>
-                              </div>
+                          {/* Root Cause Analysis Summary - 3 col legend like Open Risk Assessments */}
+                          <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 mb-1">
+                            <div className="flex items-center gap-0.5">
+                              <div className="w-1.5 h-1.5 rounded-sm flex-shrink-0 bg-warning" />
+                              <span className="text-[8px] font-medium text-muted-foreground truncate">
+                                {(metric as any).rootCauseBreakdown.process}% Process
+                              </span>
                             </div>
+                            <div className="flex items-center gap-0.5">
+                              <div className="w-1.5 h-1.5 rounded-sm flex-shrink-0 bg-accent" />
+                              <span className="text-[8px] font-medium text-muted-foreground truncate">
+                                {(metric as any).rootCauseBreakdown.system}% System
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-0.5">
+                              <div className="w-1.5 h-1.5 rounded-sm flex-shrink-0 bg-destructive" />
+                              <span className="text-[8px] font-medium text-muted-foreground truncate">
+                                {(metric as any).rootCauseBreakdown.external}% External
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      ) : 'chartType' in metric && metric.chartType === 'issueAging' ? (
+                        <div className="space-y-1.5">
+                          {/* Toggle between views - same as Open Risk Assessments */}
+                          <div className="flex justify-end mb-1">
+                            <ToggleGroup 
+                              type="single" 
+                              value="aggregate" 
+                              size="sm"
+                              className="h-5"
+                            >
+                              <ToggleGroupItem value="aggregate" className="text-[7px] px-1.5 h-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                                By Source
+                              </ToggleGroupItem>
+                            </ToggleGroup>
+                          </div>
+                          {/* Horizontal bar chart for issue aging - same height as Open Risk Assessments */}
+                          <div className="h-20 mb-1">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart 
+                                data={(metric as any).barData} 
+                                layout="vertical"
+                                margin={{ top: 0, right: 8, bottom: 0, left: 0 }}
+                              >
+                                <XAxis type="number" hide />
+                                <YAxis 
+                                  type="category" 
+                                  dataKey="source" 
+                                  width={75} 
+                                  tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }} 
+                                  axisLine={false}
+                                  tickLine={false}
+                                />
+                                <RechartsTooltip 
+                                  contentStyle={{ 
+                                    backgroundColor: 'hsl(var(--card))', 
+                                    border: '1px solid hsl(var(--border))',
+                                    borderRadius: '6px',
+                                    fontSize: '10px'
+                                  }}
+                                />
+                                <Bar dataKey="count" radius={[0, 3, 3, 0]} maxBarSize={14}>
+                                  {(metric as any).barData.map((entry: any, index: number) => (
+                                    <Cell 
+                                      key={`cell-${index}`} 
+                                      fill={index === 0 ? 'hsl(var(--primary))' : index === 1 ? 'hsl(var(--warning))' : 'hsl(var(--accent))'}
+                                    />
+                                  ))}
+                                  <LabelList dataKey="count" position="right" fill="hsl(var(--muted-foreground))" fontSize={8} />
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                          {/* Legend - 3 col like Open Risk Assessments */}
+                          <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 mb-1">
+                            {(metric as any).barData.map((item: any, idx: number) => (
+                              <div key={idx} className="flex items-center gap-0.5">
+                                <div className={`w-1.5 h-1.5 rounded-sm flex-shrink-0 ${idx === 0 ? 'bg-primary' : idx === 1 ? 'bg-warning' : 'bg-accent'}`} />
+                                <span className="text-[8px] font-medium text-muted-foreground truncate">
+                                  {item.count} {item.source.split(' ')[0]}
+                                </span>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       ) : 'chartType' in metric && metric.chartType === 'riskAppetite' ? (
@@ -1502,28 +1582,28 @@ const Dashboard2ndLine = () => {
                           
                           {risksAppetiteView === 'org' ? (
                             <>
-                              {/* Grouped Bar Chart: Risks by Organization */}
+                              {/* Horizontal Stacked Bar Chart: Risks by Organization */}
                               <div className="h-20">
                                 <ResponsiveContainer width="100%" height="100%">
                                   <BarChart 
                                     data={(metric as any).riskAppetiteData.byOrgData}
-                                    margin={{ top: 4, right: 4, bottom: 16, left: 4 }}
+                                    layout="vertical"
+                                    margin={{ top: 4, right: 4, bottom: 4, left: 4 }}
                                   >
                                     <XAxis 
-                                      dataKey="organization" 
-                                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
-                                      axisLine={{ stroke: 'hsl(var(--border))' }}
-                                      tickLine={{ stroke: 'hsl(var(--border))' }}
-                                      interval={0}
-                                      tickFormatter={(value) => value.substring(0, 8)}
-                                      angle={-20}
-                                      textAnchor="end"
-                                    />
-                                    <YAxis 
-                                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                                      type="number"
+                                      tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={false}
                                       tickLine={false}
-                                      width={20}
+                                    />
+                                    <YAxis 
+                                      type="category"
+                                      dataKey="organization" 
+                                      tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
+                                      axisLine={false}
+                                      tickLine={false}
+                                      width={50}
+                                      tickFormatter={(value) => value.substring(0, 6)}
                                     />
                                     <RechartsTooltip 
                                       contentStyle={{ 
@@ -1533,68 +1613,71 @@ const Dashboard2ndLine = () => {
                                         fontSize: '10px'
                                       }}
                                     />
-                                    <Bar dataKey="outsideAppetite" fill="hsl(var(--destructive))" name="Outside Appetite" radius={[2, 2, 0, 0]} maxBarSize={14} />
-                                    <Bar dataKey="withinAppetite" fill="hsl(var(--success))" name="Within Appetite" radius={[2, 2, 0, 0]} maxBarSize={14} />
+                                    <Bar dataKey="outsideAppetite" stackId="a" fill="hsl(var(--destructive))" name="Outside Appetite" radius={[0, 0, 0, 0]} maxBarSize={12} />
+                                    <Bar dataKey="withinAppetite" stackId="a" fill="hsl(var(--success))" name="Within Appetite" radius={[0, 3, 3, 0]} maxBarSize={12} />
                                   </BarChart>
                                 </ResponsiveContainer>
                               </div>
                             </>
                           ) : (
                             <>
-                              {/* Aggregate View: Progress bar with donut breakdown */}
-                              <div className="space-y-2">
-                                {/* Progress bar showing outside vs within */}
-                                <div className="h-3 w-full bg-muted rounded-full overflow-hidden flex">
-                                  <div 
-                                    className="h-full bg-destructive transition-all" 
-                                    style={{ width: `${((metric as any).riskAppetiteData.outsideAppetite / ((metric as any).riskAppetiteData.outsideAppetite + (metric as any).riskAppetiteData.withinAppetite)) * 100}%` }}
-                                  />
-                                  <div 
-                                    className="h-full bg-success transition-all" 
-                                    style={{ width: `${((metric as any).riskAppetiteData.withinAppetite / ((metric as any).riskAppetiteData.outsideAppetite + (metric as any).riskAppetiteData.withinAppetite)) * 100}%` }}
-                                  />
+                              {/* Aggregate View: Horizontal stacked bar for risk levels */}
+                              <div className="h-20">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <BarChart 
+                                    data={[{
+                                      name: "Risk Levels",
+                                      critical: (metric as any).riskAppetiteData.breakdown.critical,
+                                      high: (metric as any).riskAppetiteData.breakdown.high,
+                                      medium: (metric as any).riskAppetiteData.breakdown.medium,
+                                      low: (metric as any).riskAppetiteData.breakdown.low,
+                                    }]}
+                                    layout="vertical"
+                                    margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+                                  >
+                                    <XAxis type="number" hide />
+                                    <YAxis type="category" dataKey="name" hide />
+                                    <RechartsTooltip 
+                                      contentStyle={{ 
+                                        backgroundColor: 'hsl(var(--card))', 
+                                        border: '1px solid hsl(var(--border))',
+                                        borderRadius: '6px',
+                                        fontSize: '10px'
+                                      }}
+                                    />
+                                    <Bar dataKey="critical" stackId="a" fill="hsl(var(--destructive))" name="Critical" radius={[3, 0, 0, 3]} maxBarSize={24} />
+                                    <Bar dataKey="high" stackId="a" fill="hsl(var(--warning))" name="High" maxBarSize={24} />
+                                    <Bar dataKey="medium" stackId="a" fill="hsl(var(--accent))" name="Medium" maxBarSize={24} />
+                                    <Bar dataKey="low" stackId="a" fill="hsl(var(--success))" name="Low" radius={[0, 3, 3, 0]} maxBarSize={24} />
+                                  </BarChart>
+                                </ResponsiveContainer>
+                              </div>
+                              
+                              {/* Legend grid for levels - 4 columns */}
+                              <div className="grid grid-cols-4 gap-x-2 gap-y-1">
+                                <div className="flex items-center gap-1">
+                                  <div className="w-2 h-2 rounded-sm flex-shrink-0 bg-destructive" />
+                                  <span className="text-[8px] text-muted-foreground">
+                                    Crit: {(metric as any).riskAppetiteData.breakdown.critical}
+                                  </span>
                                 </div>
-                                
-                                {/* Donut chart for risk level breakdown */}
-                                <div className="h-16">
-                                  <ResponsiveContainer width="100%" height="100%">
-                                    <PieChart>
-                                      <Pie
-                                        data={(metric as any).riskAppetiteData.donutData}
-                                        dataKey="value"
-                                        nameKey="name"
-                                        cx="50%"
-                                        cy="50%"
-                                        innerRadius={18}
-                                        outerRadius={28}
-                                        paddingAngle={2}
-                                      >
-                                        {(metric as any).riskAppetiteData.donutData.map((entry: any, index: number) => (
-                                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                                        ))}
-                                      </Pie>
-                                      <RechartsTooltip 
-                                        contentStyle={{ 
-                                          backgroundColor: 'hsl(var(--card))', 
-                                          border: '1px solid hsl(var(--border))',
-                                          borderRadius: '6px',
-                                          fontSize: '10px'
-                                        }}
-                                      />
-                                    </PieChart>
-                                  </ResponsiveContainer>
+                                <div className="flex items-center gap-1">
+                                  <div className="w-2 h-2 rounded-sm flex-shrink-0 bg-warning" />
+                                  <span className="text-[8px] text-muted-foreground">
+                                    High: {(metric as any).riskAppetiteData.breakdown.high}
+                                  </span>
                                 </div>
-                                
-                                {/* Legend grid for levels - 2 columns for better readability */}
-                                <div className="grid grid-cols-2 gap-x-3 gap-y-1">
-                                  {(metric as any).riskAppetiteData.donutData.map((item: any, idx: number) => (
-                                    <div key={idx} className="flex items-center gap-1">
-                                      <div className="w-2 h-2 rounded-sm flex-shrink-0" style={{ backgroundColor: item.fill }} />
-                                      <span className="text-[9px] text-muted-foreground">
-                                        {item.name}: {item.value}
-                                      </span>
-                                    </div>
-                                  ))}
+                                <div className="flex items-center gap-1">
+                                  <div className="w-2 h-2 rounded-sm flex-shrink-0 bg-accent" />
+                                  <span className="text-[8px] text-muted-foreground">
+                                    Med: {(metric as any).riskAppetiteData.breakdown.medium}
+                                  </span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <div className="w-2 h-2 rounded-sm flex-shrink-0 bg-success" />
+                                  <span className="text-[8px] text-muted-foreground">
+                                    Low: {(metric as any).riskAppetiteData.breakdown.low}
+                                  </span>
                                 </div>
                               </div>
                             </>

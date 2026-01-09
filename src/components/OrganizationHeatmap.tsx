@@ -179,19 +179,19 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
                 )}
               >
                 <span className={cn(
-                  "text-[9px] font-semibold uppercase tracking-wide",
+                  "text-[8px] font-semibold uppercase tracking-wide",
                   level === "Critical" && "text-red-600 dark:text-red-400",
                   level === "High" && "text-orange-600 dark:text-orange-400",
                   level === "Medium" && "text-yellow-600 dark:text-yellow-400",
                   level === "Low" && "text-green-600 dark:text-green-400"
                 )}>
-                  {level.slice(0, 4)}
+                  {level}
                 </span>
               </div>
             ))}
             <div className="p-1 text-center bg-muted/50 dark:bg-muted/30 border border-border/30">
               <span className="text-[9px] font-semibold text-muted-foreground uppercase tracking-wide">
-                Tot
+                Total
               </span>
             </div>
           </div>
