@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect, useCallback } from "react";
+import { cn } from "@/lib/utils";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -2043,11 +2044,16 @@ const Dashboard1stLine = () => {
                       const level1Agg = calculateLevel1Aggregations(risk);
                       
                       return (
-                      <TableRow key={index} className={`hover:bg-muted/50 transition-colors ${
-                        risk.riskLevel === "Level 1" ? 'bg-[#6A75D8]/5 dark:bg-[#6A75D8]/10' : 
-                        risk.riskLevel === "Level 2" ? 'bg-[#A361CF]/5 dark:bg-[#A361CF]/10' :
-                        'bg-[#F1BA50]/5 dark:bg-[#F1BA50]/10'
-                      }`}>
+                      <TableRow key={index} className={cn(
+                        "hover:bg-muted/50 transition-colors",
+                        risk.riskLevel === "Level 1" && 'bg-[#6A75D8]/5 dark:bg-[#6A75D8]/10',
+                        risk.riskLevel === "Level 2" && 'bg-[#A361CF]/5 dark:bg-[#A361CF]/10',
+                        risk.riskLevel === "Level 3" && 'bg-[#F1BA50]/5 dark:bg-[#F1BA50]/10',
+                        // Hierarchy indentation styling for dropdown rows
+                        risk.riskLevel === "Level 2" && hierarchyViewMode === "level1" && "border-l-4 border-l-blue-500",
+                        risk.riskLevel === "Level 3" && hierarchyViewMode === "level1" && "border-l-4 border-l-orange-500",
+                        risk.riskLevel === "Level 3" && hierarchyViewMode === "level2" && "border-l-4 border-l-orange-500"
+                      )}>
                         {activeTab !== "own" && (
                           <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
                             <div className="flex items-center justify-center px-2">
@@ -2169,41 +2175,14 @@ const Dashboard1stLine = () => {
                                 </span>
                               </div>
                               
-                              {/* Level 2 Children - displayed within Level 1 row */}
-                              {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
-                                <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-blue-300 dark:border-blue-600 ml-1 mt-0.5">
-                                  <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400">{l2Risk.id}</span>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button 
-                                        onClick={() => handleRiskNameClick(l2Risk)}
-                                        className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer text-[10px]"
-                                      >
-                                        {l2Risk.title}
-                                      </button>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Click to view risk assessment and open challenges/issues.</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                  <span className="text-[10px] text-muted-foreground">{l2Risk.owner}</span>
-                                </div>
-                              ))}
                             </div>
                           </div>
                         </TableCell>
                         {/* Risk Hierarchy - moved next to Risk Title */}
                         <TableCell className="py-2 border-r border-b border-border align-top">
-                          <div className="flex flex-col gap-0.5">
-                            <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
-                              {risk.riskLevel}
-                            </Badge>
-                            {risk.riskLevel === "Level 1" && getLevel2Children(risk).map((l2Risk) => (
-                              <Badge key={l2Risk.id} variant="outline" className={`text-[8px] ${getRiskLevelColor(l2Risk.riskLevel)}`}>
-                                {l2Risk.riskLevel}
-                              </Badge>
-                            ))}
-                          </div>
+                          <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
+                            {risk.riskLevel}
+                          </Badge>
                         </TableCell>
                         {/* Due Date */}
                         <TableCell className="py-2 border-r border-b border-border">
