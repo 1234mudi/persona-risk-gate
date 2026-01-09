@@ -1019,9 +1019,9 @@ const Dashboard2ndLine = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-3 sm:px-6 py-4 sm:py-8">
+      <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
         {/* Quick Links - Horizontal Strip */}
-          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2 px-0">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5 px-0">
             <div className="flex items-center gap-1.5 text-xs font-semibold text-[#10052F] dark:text-white">
               <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
               Quick Links:
@@ -1043,7 +1043,7 @@ const Dashboard2ndLine = () => {
           </div>
 
         {/* Scorecards - 3 columns x 3 rows with specific positioning */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-4">
           {/* Render metrics in specific grid positions:
               Column 1: metrics[0] (row 1), metrics[3] (row 2), metrics[2] (row 3)
               Column 2: metrics[4] (row 1), metrics[1] (row 2), metrics[5] (row 3)
@@ -1129,18 +1129,18 @@ const Dashboard2ndLine = () => {
           
           {/* Column 3: Challenge Heatmap spanning 3 rows */}
           <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-3 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
-            <CardHeader className="py-2 px-3 border-b border-border/50 bg-muted/30">
-              <div className="flex items-center gap-2">
-                <Grid3x3 className="w-4 h-4 text-primary" />
-                <CardTitle className="text-xs font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
+            <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
+              <div className="flex items-center gap-1.5">
+                <Grid3x3 className="w-3.5 h-3.5 text-primary" />
+                <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
                   Challenge Heatmap
                 </CardTitle>
               </div>
-              <p className="text-[10px] text-muted-foreground mt-0.5">
+              <p className="text-[9px] text-muted-foreground mt-0.5">
                 N/A Controls % by Business Unit vs Enterprise Average
               </p>
             </CardHeader>
-            <CardContent className="p-3 h-[calc(100%-60px)]">
+            <CardContent className="p-2 h-[calc(100%-50px)]">
               <ChallengeHeatmap />
             </CardContent>
           </Card>
