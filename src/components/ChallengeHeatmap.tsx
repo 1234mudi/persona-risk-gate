@@ -55,57 +55,83 @@ const mockHeatmapData: HeatmapCellData[] = [
   { businessUnit: "Risk Analytics", category: "Financial", naPercentage: 8.4, totalControls: 48, naControls: 4 },
 ];
 
-// Mock detailed N/A control data for drilldown
+// Mock detailed N/A control data for drilldown - aligned with 2nd line dashboard
 const naControlDetailsMap: Record<string, NAControlDetails[]> = {
   "Retail Banking-Operational": [
-    { id: "CTL-045", name: "Manual Reconciliation", riskId: "RISK-2025-012", riskName: "Settlement Risk", justification: "Control replaced by automated system in Q4 2024", markedBy: "John Smith", markedDate: "2024-12-15" },
-    { id: "CTL-089", name: "Physical Document Check", riskId: "RISK-2025-018", riskName: "Documentation Risk", justification: "Process fully digitized - physical checks no longer applicable", markedBy: "Sarah Lee", markedDate: "2024-11-20" },
-    { id: "CTL-112", name: "Branch Audit Trail", riskId: "RISK-2025-022", riskName: "Audit Risk", justification: "Branch operations consolidated to central hub", markedBy: "Mike Chen", markedDate: "2024-10-05" },
+    { id: "CTL-045", name: "Quality Assurance", riskId: "R-001", riskName: "Operational Process Failure", justification: "Control consolidated into automated quality monitoring system deployed in Q3 2024", markedBy: "John Smith", markedDate: "2024-12-15" },
+    { id: "CTL-089", name: "Process Documentation", riskId: "R-002", riskName: "Branch Transaction Processing", justification: "Migrated to centralized digital process repository - manual documentation deprecated", markedBy: "Sarah Lee", markedDate: "2024-11-20" },
+    { id: "CTL-112", name: "Staff Training Program", riskId: "R-003", riskName: "Cash Handling Errors", justification: "Replaced by mandatory e-learning platform with automated compliance tracking", markedBy: "Mike Chen", markedDate: "2024-10-05" },
   ],
   "Retail Banking-Technology": [
-    { id: "CTL-156", name: "Legacy System Patch", riskId: "RISK-2025-031", riskName: "Technology Obsolescence", justification: "Legacy system decommissioned and replaced with cloud solution", markedBy: "Anna Wong", markedDate: "2024-12-01" },
-    { id: "CTL-178", name: "On-premise Backup", riskId: "RISK-2025-035", riskName: "Data Loss Risk", justification: "Migrated to cloud-based backup solution", markedBy: "Tom Davis", markedDate: "2024-11-15" },
-    { id: "CTL-201", name: "Manual Code Review", riskId: "RISK-2025-041", riskName: "Code Quality Risk", justification: "Replaced by automated CI/CD pipeline with static analysis", markedBy: "Lisa Park", markedDate: "2024-10-28" },
-    { id: "CTL-215", name: "VPN Access Control", riskId: "RISK-2025-045", riskName: "Network Security Risk", justification: "Zero-trust architecture implemented - VPN no longer used", markedBy: "James Wilson", markedDate: "2024-09-30" },
-    { id: "CTL-228", name: "Desktop Antivirus", riskId: "RISK-2025-048", riskName: "Malware Risk", justification: "Replaced by EDR solution with cloud management", markedBy: "Emma Brown", markedDate: "2024-11-10" },
-    { id: "CTL-241", name: "Local Admin Rights", riskId: "RISK-2025-052", riskName: "Privilege Escalation Risk", justification: "PAM solution implemented - local admin removed", markedBy: "David Kim", markedDate: "2024-10-15" },
+    { id: "CTL-156", name: "Access Control Management", riskId: "R-004", riskName: "Cybersecurity Threat", justification: "Superseded by enterprise IAM solution with SSO integration", markedBy: "Anna Wong", markedDate: "2024-12-01" },
+    { id: "CTL-178", name: "Data Backup & Recovery", riskId: "R-005", riskName: "System Downtime", justification: "Cloud-native backup architecture implemented - on-premise backup retired", markedBy: "Tom Davis", markedDate: "2024-11-15" },
+    { id: "CTL-201", name: "Incident Response Plan", riskId: "R-006", riskName: "Data Breach", justification: "Integrated into 24/7 SOC managed service - standalone process discontinued", markedBy: "Lisa Park", markedDate: "2024-10-28" },
+    { id: "CTL-215", name: "Network Security Monitoring", riskId: "R-007", riskName: "Unauthorized Access", justification: "Zero-trust network architecture deployed - perimeter monitoring no longer applicable", markedBy: "James Wilson", markedDate: "2024-09-30" },
+    { id: "CTL-228", name: "Endpoint Protection", riskId: "R-008", riskName: "Ransomware Attack", justification: "Replaced by XDR solution with cloud-native threat intelligence", markedBy: "Emma Brown", markedDate: "2024-11-10" },
+    { id: "CTL-241", name: "Privileged Access Management", riskId: "R-009", riskName: "Insider Threat", justification: "Consolidated into enterprise PAM platform with just-in-time access", markedBy: "David Kim", markedDate: "2024-10-15" },
   ],
   "Retail Banking-Compliance": [
-    { id: "CTL-267", name: "Paper Record Retention", riskId: "RISK-2025-058", riskName: "Compliance Record Risk", justification: "Digital archival system implemented", markedBy: "Rachel Green", markedDate: "2024-12-05" },
-    { id: "CTL-289", name: "Manual Regulatory Filing", riskId: "RISK-2025-062", riskName: "Regulatory Reporting Risk", justification: "Automated regulatory reporting system deployed", markedBy: "Chris Martin", markedDate: "2024-11-25" },
+    { id: "CTL-267", name: "AML Transaction Monitoring", riskId: "R-010", riskName: "AML Compliance Failure", justification: "Real-time AI-powered transaction screening replaced rule-based manual review", markedBy: "Rachel Green", markedDate: "2024-12-05" },
+    { id: "CTL-289", name: "Regulatory Reporting", riskId: "R-011", riskName: "Regulatory Reporting Delays", justification: "Automated regulatory reporting platform deployed with real-time submission", markedBy: "Chris Martin", markedDate: "2024-11-25" },
   ],
   "Retail Banking-Financial": [
-    { id: "CTL-312", name: "Manual Interest Calculation", riskId: "RISK-2025-071", riskName: "Interest Rate Risk", justification: "Core banking system handles all calculations", markedBy: "Julia Roberts", markedDate: "2024-12-10" },
-    { id: "CTL-334", name: "Spreadsheet Reconciliation", riskId: "RISK-2025-075", riskName: "Financial Reporting Risk", justification: "Replaced by integrated reconciliation module", markedBy: "Kevin Hart", markedDate: "2024-11-18" },
-    { id: "CTL-356", name: "Dual Signature Check", riskId: "RISK-2025-079", riskName: "Authorization Risk", justification: "Digital workflow with electronic approvals implemented", markedBy: "Nancy Drew", markedDate: "2024-10-22" },
-    { id: "CTL-378", name: "Cash Handling Audit", riskId: "RISK-2025-083", riskName: "Cash Risk", justification: "Branch now operates as cashless - digital transactions only", markedBy: "Peter Parker", markedDate: "2024-09-28" },
+    { id: "CTL-312", name: "Dual Authorization", riskId: "R-012", riskName: "Credit Risk Exposure", justification: "Workflow automation with digital approval routing supersedes manual dual sign-off", markedBy: "Julia Roberts", markedDate: "2024-12-10" },
+    { id: "CTL-334", name: "Transaction Reconciliation", riskId: "R-013", riskName: "Liquidity Risk", justification: "Replaced by automated real-time reconciliation engine with exception handling", markedBy: "Kevin Hart", markedDate: "2024-11-18" },
+    { id: "CTL-356", name: "Cash Count Verification", riskId: "R-014", riskName: "Financial Statement Error", justification: "Branch now operates as cashless - digital transactions only", markedBy: "Nancy Drew", markedDate: "2024-10-22" },
+    { id: "CTL-378", name: "Branch Audits", riskId: "R-015", riskName: "Asset Misappropriation", justification: "Continuous monitoring system replaced periodic manual audits", markedBy: "Peter Parker", markedDate: "2024-09-28" },
   ],
   "Corporate Banking-Operational": [
-    { id: "CTL-401", name: "Manual Trade Confirmation", riskId: "RISK-2025-091", riskName: "Trade Settlement Risk", justification: "STP system handles all confirmations automatically", markedBy: "Tony Stark", markedDate: "2024-12-08" },
-    { id: "CTL-423", name: "Physical Collateral Check", riskId: "RISK-2025-095", riskName: "Collateral Risk", justification: "Digital collateral management system implemented", markedBy: "Bruce Wayne", markedDate: "2024-11-12" },
-    { id: "CTL-445", name: "Fax-based Instructions", riskId: "RISK-2025-099", riskName: "Communication Risk", justification: "Fax decommissioned - all instructions via secure portal", markedBy: "Clark Kent", markedDate: "2024-10-18" },
-    { id: "CTL-467", name: "Manual Limit Monitoring", riskId: "RISK-2025-103", riskName: "Credit Limit Risk", justification: "Real-time automated limit monitoring in place", markedBy: "Diana Prince", markedDate: "2024-09-25" },
+    { id: "CTL-401", name: "Trade Confirmation System", riskId: "R-016", riskName: "Operational Process Failure", justification: "STP implementation achieved 99.9% auto-matching - manual confirmation eliminated", markedBy: "Tony Stark", markedDate: "2024-12-08" },
+    { id: "CTL-423", name: "Collateral Management", riskId: "R-017", riskName: "Credit Risk Exposure", justification: "Digital collateral management platform with automated valuation deployed", markedBy: "Bruce Wayne", markedDate: "2024-11-12" },
+    { id: "CTL-445", name: "Credit Limit Monitoring", riskId: "R-018", riskName: "Liquidity Risk", justification: "Real-time exposure monitoring system replaced periodic limit reviews", markedBy: "Clark Kent", markedDate: "2024-10-18" },
+    { id: "CTL-467", name: "Liquidity Monitoring", riskId: "R-019", riskName: "Market Volatility", justification: "Intraday liquidity dashboard with automated alerts replaced manual tracking", markedBy: "Diana Prince", markedDate: "2024-09-25" },
   ],
   "Corporate Banking-Technology": [
-    { id: "CTL-489", name: "Mainframe Batch Jobs", riskId: "RISK-2025-111", riskName: "Processing Risk", justification: "Migrated to real-time event-driven architecture", markedBy: "Barry Allen", markedDate: "2024-12-03" },
-    { id: "CTL-511", name: "Manual DR Testing", riskId: "RISK-2025-115", riskName: "Disaster Recovery Risk", justification: "Automated DR testing with cloud failover", markedBy: "Hal Jordan", markedDate: "2024-11-08" },
-    { id: "CTL-533", name: "Physical Token Auth", riskId: "RISK-2025-119", riskName: "Authentication Risk", justification: "Replaced by mobile authenticator app", markedBy: "Arthur Curry", markedDate: "2024-10-14" },
-    { id: "CTL-555", name: "On-site Server Maintenance", riskId: "RISK-2025-123", riskName: "Infrastructure Risk", justification: "Cloud-native infrastructure - no on-site servers", markedBy: "Victor Stone", markedDate: "2024-09-20" },
-    { id: "CTL-577", name: "Manual Log Review", riskId: "RISK-2025-127", riskName: "Monitoring Risk", justification: "SIEM with automated anomaly detection deployed", markedBy: "Oliver Queen", markedDate: "2024-08-30" },
+    { id: "CTL-489", name: "System Change Management", riskId: "R-020", riskName: "System Downtime", justification: "Migrated to automated CI/CD pipeline with integrated change control", markedBy: "Barry Allen", markedDate: "2024-12-03" },
+    { id: "CTL-511", name: "Disaster Recovery Testing", riskId: "R-021", riskName: "Data Breach", justification: "Automated DR testing with cloud failover replaces annual manual tests", markedBy: "Hal Jordan", markedDate: "2024-11-08" },
+    { id: "CTL-533", name: "Multi-Factor Authentication", riskId: "R-022", riskName: "Unauthorized Access", justification: "Replaced by passwordless authentication with biometric verification", markedBy: "Arthur Curry", markedDate: "2024-10-14" },
+    { id: "CTL-555", name: "Patch Management", riskId: "R-023", riskName: "Cybersecurity Threat", justification: "Cloud-native auto-patching eliminated need for manual patch cycles", markedBy: "Victor Stone", markedDate: "2024-09-20" },
+    { id: "CTL-577", name: "Security Log Analysis", riskId: "R-024", riskName: "Ransomware Attack", justification: "SIEM with ML-based anomaly detection replaced manual log review", markedBy: "Oliver Queen", markedDate: "2024-08-30" },
   ],
   "Corporate Banking-Compliance": [
-    { id: "CTL-599", name: "Manual Sanctions Screening", riskId: "RISK-2025-135", riskName: "Sanctions Risk", justification: "Automated screening integrated with transaction flow", markedBy: "Kate Kane", markedDate: "2024-12-12" },
-    { id: "CTL-621", name: "Physical Audit Files", riskId: "RISK-2025-139", riskName: "Audit Trail Risk", justification: "Digital audit management system implemented", markedBy: "Selina Kyle", markedDate: "2024-11-22" },
-    { id: "CTL-643", name: "Manual CTR Filing", riskId: "RISK-2025-143", riskName: "AML Reporting Risk", justification: "Automated CTR generation and filing in place", markedBy: "Barbara Gordon", markedDate: "2024-10-28" },
+    { id: "CTL-599", name: "Sanctions Screening", riskId: "R-025", riskName: "AML Compliance Failure", justification: "Real-time sanctions screening integrated into transaction processing flow", markedBy: "Kate Kane", markedDate: "2024-12-12" },
+    { id: "CTL-621", name: "Audit Trail Management", riskId: "R-026", riskName: "Regulatory Reporting Delays", justification: "Immutable blockchain-based audit trail replaced file-based records", markedBy: "Selina Kyle", markedDate: "2024-11-22" },
+    { id: "CTL-643", name: "KYC Documentation Review", riskId: "R-027", riskName: "Third Party Dependency", justification: "AI-powered KYC automation with document verification deployed", markedBy: "Barbara Gordon", markedDate: "2024-10-28" },
   ],
   "Corporate Banking-Financial": [
-    { id: "CTL-665", name: "Manual FX Confirmation", riskId: "RISK-2025-151", riskName: "FX Settlement Risk", justification: "SWIFT confirmation matching automated", markedBy: "Alfred Pennyworth", markedDate: "2024-12-06" },
-    { id: "CTL-687", name: "Spreadsheet P&L", riskId: "RISK-2025-155", riskName: "Financial Accuracy Risk", justification: "Integrated front-to-back P&L system deployed", markedBy: "Lucius Fox", markedDate: "2024-11-16" },
-    { id: "CTL-709", name: "Manual Margin Calls", riskId: "RISK-2025-159", riskName: "Margin Risk", justification: "Automated margin call system with real-time monitoring", markedBy: "Harvey Dent", markedDate: "2024-10-22" },
-    { id: "CTL-731", name: "Paper Trade Tickets", riskId: "RISK-2025-163", riskName: "Trade Documentation Risk", justification: "Electronic trade capture - no paper tickets", markedBy: "Edward Nygma", markedDate: "2024-09-28" },
-    { id: "CTL-753", name: "Manual Nostro Recon", riskId: "RISK-2025-167", riskName: "Reconciliation Risk", justification: "Automated nostro reconciliation with exception handling", markedBy: "Oswald Cobblepot", markedDate: "2024-08-25" },
+    { id: "CTL-665", name: "FX Position Monitoring", riskId: "R-028", riskName: "Market Volatility", justification: "Real-time position monitoring dashboard replaced end-of-day reconciliation", markedBy: "Alfred Pennyworth", markedDate: "2024-12-06" },
+    { id: "CTL-687", name: "P&L Attribution", riskId: "R-029", riskName: "Financial Statement Error", justification: "Integrated front-to-back attribution system deployed with automated P&L explain", markedBy: "Lucius Fox", markedDate: "2024-11-16" },
+    { id: "CTL-709", name: "Margin Call Processing", riskId: "R-030", riskName: "Credit Risk Exposure", justification: "Automated margin call system with real-time collateral valuation", markedBy: "Harvey Dent", markedDate: "2024-10-22" },
+    { id: "CTL-731", name: "Trade Settlement", riskId: "R-031", riskName: "Operational Process Failure", justification: "T+0 settlement achieved through DLT integration - manual settlement eliminated", markedBy: "Edward Nygma", markedDate: "2024-09-28" },
+    { id: "CTL-753", name: "Nostro Reconciliation", riskId: "R-032", riskName: "Liquidity Risk", justification: "AI-powered auto-reconciliation with predictive exception handling", markedBy: "Oswald Cobblepot", markedDate: "2024-08-25" },
   ],
 };
+
+// Control names and risk names aligned with 2nd line dashboard
+const CONTROL_NAMES = [
+  "Quality Assurance", "Process Documentation", "Staff Training Program", "Access Control Management",
+  "Data Backup & Recovery", "Incident Response Plan", "Network Security Monitoring", "Endpoint Protection",
+  "Privileged Access Management", "AML Transaction Monitoring", "Regulatory Reporting", "Dual Authorization",
+  "Transaction Reconciliation", "Cash Count Verification", "Branch Audits", "Trade Confirmation System",
+  "Collateral Management", "Credit Limit Monitoring", "Liquidity Monitoring", "System Change Management"
+];
+
+const RISK_NAMES = [
+  "Operational Process Failure", "Branch Transaction Processing", "Cash Handling Errors", "Cybersecurity Threat",
+  "System Downtime", "Data Breach", "Unauthorized Access", "Ransomware Attack", "Insider Threat",
+  "AML Compliance Failure", "Regulatory Reporting Delays", "Credit Risk Exposure", "Liquidity Risk",
+  "Financial Statement Error", "Asset Misappropriation", "Market Volatility", "Third Party Dependency"
+];
+
+const JUSTIFICATIONS = [
+  "Control consolidated into automated monitoring system deployed in Q3 2024",
+  "Migrated to centralized digital platform - manual process deprecated",
+  "Replaced by enterprise-wide automated solution with real-time tracking",
+  "Superseded by cloud-native architecture with integrated controls",
+  "Continuous monitoring system replaced periodic manual reviews",
+  "AI-powered automation eliminated need for manual intervention",
+  "Integrated into enterprise platform with automated workflows"
+];
 
 // Helper to get or generate N/A control details for any BU-Category combination
 const getNAControlDetails = (bu: string, category: string, count: number): NAControlDetails[] => {
@@ -113,14 +139,14 @@ const getNAControlDetails = (bu: string, category: string, count: number): NACon
   if (naControlDetailsMap[key]) {
     return naControlDetailsMap[key].slice(0, count);
   }
-  // Generate mock data for combinations not explicitly defined
+  // Generate mock data for combinations not explicitly defined - using consistent naming
   return Array.from({ length: count }, (_, i) => ({
     id: `CTL-${Math.floor(Math.random() * 900) + 100}`,
-    name: `${category} Control ${i + 1}`,
-    riskId: `RISK-2025-${Math.floor(Math.random() * 100) + 100}`,
-    riskName: `${category} Risk - ${bu}`,
-    justification: "Control marked as N/A due to process changes or system updates",
-    markedBy: ["John Doe", "Jane Smith", "Alex Johnson", "Chris Lee"][Math.floor(Math.random() * 4)],
+    name: CONTROL_NAMES[(i + category.length + bu.length) % CONTROL_NAMES.length],
+    riskId: `R-${String(Math.floor(Math.random() * 50) + 33).padStart(3, '0')}`,
+    riskName: RISK_NAMES[(i + category.length) % RISK_NAMES.length],
+    justification: JUSTIFICATIONS[(i + bu.length) % JUSTIFICATIONS.length],
+    markedBy: ["John Smith", "Sarah Lee", "Mike Chen", "Anna Wong"][Math.floor(Math.random() * 4)],
     markedDate: `2024-${String(Math.floor(Math.random() * 3) + 10).padStart(2, '0')}-${String(Math.floor(Math.random() * 28) + 1).padStart(2, '0')}`,
   }));
 };
