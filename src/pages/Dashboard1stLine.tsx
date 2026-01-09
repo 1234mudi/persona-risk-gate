@@ -1982,41 +1982,7 @@ const Dashboard1stLine = () => {
                       )}
                       <TableHead className="w-16 min-w-[64px] py-1 border-r border-b border-border text-xs text-center">Edit</TableHead>
                       <TableHead className="min-w-[280px] py-1 border-r border-b border-border text-xs">Risk ID / Title</TableHead>
-                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <button className="flex items-center gap-1.5 hover:text-primary transition-colors">
-                              <span>Risk Hierarchy</span>
-                              <ChevronDown className="w-3 h-3" />
-                            </button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="start" className="bg-popover border border-border shadow-lg z-[100]">
-                            <DropdownMenuLabel>Group by Level</DropdownMenuLabel>
-                            <DropdownMenuSeparator />
-                            <DropdownMenuItem 
-                              onClick={() => setHierarchyViewMode("level1")}
-                              className={hierarchyViewMode === "level1" ? "bg-first-line/10 text-first-line" : ""}
-                            >
-                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level1" ? "opacity-100" : "opacity-0"}`} />
-                              Level 1 (with L2 → L3 dropdowns)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => setHierarchyViewMode("level2")}
-                              className={hierarchyViewMode === "level2" ? "bg-first-line/10 text-first-line" : ""}
-                            >
-                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level2" ? "opacity-100" : "opacity-0"}`} />
-                              Level 2 (with L3 dropdown)
-                            </DropdownMenuItem>
-                            <DropdownMenuItem 
-                              onClick={() => setHierarchyViewMode("level3")}
-                              className={hierarchyViewMode === "level3" ? "bg-first-line/10 text-first-line" : ""}
-                            >
-                              <Check className={`w-4 h-4 mr-2 ${hierarchyViewMode === "level3" ? "opacity-100" : "opacity-0"}`} />
-                              Level 3 only (flat list)
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">Risk Hierarchy</TableHead>
                       <TableHead className="min-w-[120px] py-1 border-r border-b border-border text-xs">Due Date</TableHead>
                       {activeTab === "own" && (
                         <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">Completion Date</TableHead>
