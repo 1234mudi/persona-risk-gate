@@ -39,7 +39,7 @@ export const PersonaCard = ({ icon: Icon, name, description, line, onSelect }: P
           <h3 className="font-medium text-xs text-[#10052F] dark:text-[#110F15] group-hover:text-primary transition-colors leading-tight">
             {name}
           </h3>
-          <p className="text-[9px] text-muted-foreground dark:text-[#110F15]/70 leading-snug mt-0.5 line-clamp-2">
+          <p className="text-[9px] text-muted-foreground dark:text-[#110F15]/70 leading-snug mt-0.5">
             {description}
           </p>
         </div>
