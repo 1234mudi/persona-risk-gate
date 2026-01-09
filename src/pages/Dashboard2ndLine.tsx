@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Tooltip as RechartsTooltip, Legend, PieChart, Pie } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Tooltip as RechartsTooltip, Legend, PieChart, Pie, LabelList } from "recharts";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -723,21 +723,59 @@ const Dashboard2ndLine = () => {
     return colorMap[colorClass] || 'hsl(var(--primary))';
   };
 
+  // Calculate workflow status counts from filtered data
+  const workflowStatusCounts = useMemo(() => {
+    const counts = {
+      sentForAssessment: 0,
+      pendingReview: 0,
+      pendingApproval: 0,
+      completed: 0,
+      overdue: 0,
+      reassigned: 0,
+    };
+    
+    timeFilteredRiskData.forEach(risk => {
+      const status = risk.status?.toLowerCase() || '';
+      
+      if (status.includes('sent') || status.includes('assessment')) {
+        counts.sentForAssessment++;
+      } else if (status.includes('review')) {
+        counts.pendingReview++;
+      } else if (status.includes('approval')) {
+        counts.pendingApproval++;
+      } else if (status.includes('completed')) {
+        counts.completed++;
+      } else if (status.includes('overdue')) {
+        counts.overdue++;
+      } else if (status.includes('reassigned')) {
+        counts.reassigned++;
+      }
+    });
+    
+    return counts;
+  }, [timeFilteredRiskData]);
+
+  const openAssessmentsTotal = workflowStatusCounts.sentForAssessment + 
+    workflowStatusCounts.pendingReview + 
+    workflowStatusCounts.pendingApproval + 
+    workflowStatusCounts.overdue + 
+    workflowStatusCounts.reassigned;
+
   const metrics = [
     {
       title: "Open Risk Assessments",
-      value: 24,
+      value: openAssessmentsTotal,
       trend: "+12% since last month",
       trendUp: true,
       icon: FileCheck,
       chartType: "workflowStatus" as const,
       segments: [
-        { label: "Sent for Assessment", value: 5, color: "bg-blue-500" },
-        { label: "Pending Review", value: 4, color: "bg-amber-500" },
-        { label: "Pending Approval", value: 3, color: "bg-purple-500" },
-        { label: "Completed", value: 8, color: "bg-emerald-500" },
-        { label: "Overdue", value: 2, color: "bg-error" },
-        { label: "Reassigned", value: 2, color: "bg-slate-500" },
+        { label: "Sent for Assessment", value: workflowStatusCounts.sentForAssessment, color: "bg-blue-500" },
+        { label: "Pending Review", value: workflowStatusCounts.pendingReview, color: "bg-amber-500" },
+        { label: "Pending Approval", value: workflowStatusCounts.pendingApproval, color: "bg-purple-500" },
+        { label: "Completed", value: workflowStatusCounts.completed, color: "bg-emerald-500" },
+        { label: "Overdue", value: workflowStatusCounts.overdue, color: "bg-error" },
+        { label: "Reassigned", value: workflowStatusCounts.reassigned, color: "bg-slate-500" },
       ],
       description: "Track assessment workflow stages. Address overdue and pending items promptly.",
       tooltip: "Displays open risk assessments by workflow status. Monitor each stage to ensure timely completion.",
@@ -1503,14 +1541,28 @@ const Dashboard2ndLine = () => {
                         </div>
                       ) : (metric as any).chartType === 'workflowStatus' ? (
                         <>
-                          {/* Vertical bar chart for workflow status */}
-                          <div className="h-14 mb-1">
+                          {/* Vertical bar chart for workflow status with visible axis */}
+                          <div className="h-20 mb-1">
                             <ResponsiveContainer width="100%" height="100%">
                               <BarChart 
                                 data={segments.map(s => ({ name: s.label, value: s.value, color: s.color }))}
-                                margin={{ top: 2, right: 0, bottom: 0, left: 0 }}
+                                margin={{ top: 14, right: 2, bottom: 18, left: 2 }}
                               >
-                                <Bar dataKey="value" radius={[2, 2, 0, 0]} maxBarSize={16}>
+                                <XAxis 
+                                  dataKey="name" 
+                                  tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }}
+                                  axisLine={{ stroke: 'hsl(var(--border))' }}
+                                  tickLine={{ stroke: 'hsl(var(--border))' }}
+                                  interval={0}
+                                  tickFormatter={(value) => value.split(' ')[0]}
+                                />
+                                <Bar dataKey="value" radius={[2, 2, 0, 0]} maxBarSize={18}>
+                                  <LabelList 
+                                    dataKey="value" 
+                                    position="top" 
+                                    fontSize={8}
+                                    fill="hsl(var(--foreground))"
+                                  />
                                   {segments.map((segment, index) => (
                                     <Cell 
                                       key={`cell-${index}`} 
