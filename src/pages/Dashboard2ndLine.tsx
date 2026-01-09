@@ -90,6 +90,7 @@ interface RiskData {
   previousAssessments: number;
   tabCategory: "own" | "assess" | "approve";
   historicalAssessments?: any[];
+  hasActionPlan?: boolean;
 }
 
 const Dashboard2ndLine = () => {
@@ -666,6 +667,20 @@ const Dashboard2ndLine = () => {
     const outsidePercentage = total > 0 ? Math.round((outsideAppetite.length / total) * 100) : 0;
     const withinPercentage = total > 0 ? Math.round((withinAppetite.length / total) * 100) : 0;
     
+    // Action plan coverage for risks outside appetite
+    const withActionPlan = outsideAppetite.filter(r => r.hasActionPlan === true).length;
+    const actionPlanCoverage = outsideAppetite.length > 0 
+      ? Math.round((withActionPlan / outsideAppetite.length) * 100) 
+      : 0;
+    
+    // Donut chart data for all risk levels
+    const donutData = [
+      { name: "Critical", value: critical, fill: "hsl(var(--destructive))" },
+      { name: "High", value: high, fill: "hsl(var(--warning))" },
+      { name: "Medium", value: medium, fill: "hsl(var(--accent))" },
+      { name: "Low", value: low, fill: "hsl(var(--success))" },
+    ].filter(d => d.value > 0);
+    
     return {
       total,
       outsideAppetite: outsideAppetite.length,
@@ -673,6 +688,9 @@ const Dashboard2ndLine = () => {
       outsidePercentage,
       withinPercentage,
       breakdown: { critical, high, medium, low },
+      withActionPlan,
+      actionPlanCoverage,
+      donutData,
       chartData: [
         { name: "Outside", value: outsideAppetite.length, fill: "hsl(var(--destructive))" },
         { name: "Within", value: withinAppetite.length, fill: "hsl(var(--success))" }
@@ -1350,38 +1368,61 @@ const Dashboard2ndLine = () => {
                         </div>
                       ) : 'chartType' in metric && metric.chartType === 'riskAppetite' ? (
                         <div className="space-y-1.5">
-                          {/* Horizontal stacked bar for appetite */}
-                          <div className="flex h-4 rounded overflow-hidden mb-1">
-                            <div 
-                              className="bg-destructive flex items-center justify-center"
-                              style={{ width: `${(metric as any).riskAppetiteData.outsidePercentage}%` }}
-                            >
-                              {(metric as any).riskAppetiteData.outsidePercentage >= 15 && (
-                                <span className="text-[8px] font-bold text-destructive-foreground">{(metric as any).riskAppetiteData.outsidePercentage}%</span>
-                              )}
+                          {/* Donut chart with action plan metric */}
+                          <div className="flex items-start gap-3">
+                            {/* Donut Chart */}
+                            <div className="h-16 w-16 relative flex-shrink-0">
+                              <ResponsiveContainer width="100%" height="100%">
+                                <PieChart>
+                                  <Pie
+                                    data={(metric as any).riskAppetiteData.donutData}
+                                    innerRadius={18}
+                                    outerRadius={30}
+                                    paddingAngle={2}
+                                    dataKey="value"
+                                    strokeWidth={0}
+                                  >
+                                    {(metric as any).riskAppetiteData.donutData.map((entry: any, index: number) => (
+                                      <Cell key={`cell-${index}`} fill={entry.fill} />
+                                    ))}
+                                  </Pie>
+                                </PieChart>
+                              </ResponsiveContainer>
+                              {/* Center label */}
+                              <div className="absolute inset-0 flex items-center justify-center">
+                                <span className="text-xs font-bold text-foreground">
+                                  {(metric as any).riskAppetiteData.outsideAppetite}
+                                </span>
+                              </div>
                             </div>
-                            <div 
-                              className="bg-success flex items-center justify-center"
-                              style={{ width: `${(metric as any).riskAppetiteData.withinPercentage}%` }}
-                            >
-                              {(metric as any).riskAppetiteData.withinPercentage >= 15 && (
-                                <span className="text-[8px] font-bold text-success-foreground">{(metric as any).riskAppetiteData.withinPercentage}%</span>
-                              )}
+                            
+                            {/* Secondary Metric: Action Plans */}
+                            <div className="flex-1 space-y-1">
+                              <p className="text-[8px] font-semibold text-muted-foreground uppercase">
+                                Action Plan Coverage
+                              </p>
+                              <div className="flex items-baseline gap-1">
+                                <span className="text-sm font-bold text-primary">
+                                  {(metric as any).riskAppetiteData.withActionPlan}
+                                </span>
+                                <span className="text-[9px] text-muted-foreground">
+                                  /{(metric as any).riskAppetiteData.outsideAppetite} with plans
+                                </span>
+                              </div>
+                              <div className="h-1 bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-primary rounded-full transition-all" 
+                                  style={{ width: `${(metric as any).riskAppetiteData.actionPlanCoverage}%` }}
+                                />
+                              </div>
+                              <p className="text-[8px] text-muted-foreground">
+                                {(metric as any).riskAppetiteData.actionPlanCoverage}% coverage
+                              </p>
                             </div>
                           </div>
-                          {/* Legend */}
-                          <div className="flex gap-3 mb-1">
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-sm bg-destructive" />
-                              <span className="text-[9px] font-medium text-muted-foreground">{(metric as any).riskAppetiteData.outsideAppetite} Outside</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-sm bg-success" />
-                              <span className="text-[9px] font-medium text-muted-foreground">{(metric as any).riskAppetiteData.withinAppetite} Within</span>
-                            </div>
-                          </div>
-                          {/* Breakdown */}
-                          <div className="border-t border-border/30 pt-1">
+                          
+                          {/* Breakdown by level */}
+                          <div className="border-t border-border/30 pt-1 mt-1">
                             <p className="text-[8px] font-semibold text-muted-foreground uppercase mb-0.5">Breakdown by Level</p>
                             <div className="grid grid-cols-4 gap-1">
                               <div className="text-center">
