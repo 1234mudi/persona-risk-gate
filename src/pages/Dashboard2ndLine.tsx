@@ -1,4 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Tooltip as RechartsTooltip, Legend, PieChart, Pie, LabelList } from "recharts";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
@@ -127,6 +128,10 @@ const Dashboard2ndLine = () => {
   const [timePeriodFilter, setTimePeriodFilter] = useState<string>("all-time");
   const [customDateRange, setCustomDateRange] = useState<{ start: Date | null; end: Date | null }>({ start: null, end: null });
   const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
+  
+  // Chart view toggle states
+  const [openAssessmentsView, setOpenAssessmentsView] = useState<'org' | 'aggregate'>('org');
+  const [risksAppetiteView, setRisksAppetiteView] = useState<'org' | 'aggregate'>('org');
 
   const timePeriodOptions = [
     { value: "all-time", label: "All Time" },
@@ -1479,42 +1484,121 @@ const Dashboard2ndLine = () => {
                         </div>
                       ) : 'chartType' in metric && metric.chartType === 'riskAppetite' ? (
                         <div className="space-y-1.5">
-                          {/* Grouped Bar Chart: Risks by Organization */}
-                          <div className="h-24">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart 
-                                data={(metric as any).riskAppetiteData.byOrgData}
-                                margin={{ top: 8, right: 4, bottom: 20, left: 4 }}
-                              >
-                                <XAxis 
-                                  dataKey="organization" 
-                                  tick={{ fontSize: 6, fill: 'hsl(var(--muted-foreground))' }}
-                                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                                  tickLine={{ stroke: 'hsl(var(--border))' }}
-                                  interval={0}
-                                  tickFormatter={(value) => value.substring(0, 6)}
-                                  angle={-20}
-                                  textAnchor="end"
-                                />
-                                <YAxis 
-                                  tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }}
-                                  axisLine={false}
-                                  tickLine={false}
-                                  width={16}
-                                />
-                                <RechartsTooltip 
-                                  contentStyle={{ 
-                                    backgroundColor: 'hsl(var(--card))', 
-                                    border: '1px solid hsl(var(--border))',
-                                    borderRadius: '6px',
-                                    fontSize: '10px'
-                                  }}
-                                />
-                                <Bar dataKey="outsideAppetite" fill="hsl(var(--destructive))" name="Outside Appetite" radius={[2, 2, 0, 0]} maxBarSize={14} />
-                                <Bar dataKey="withinAppetite" fill="hsl(var(--success))" name="Within Appetite" radius={[2, 2, 0, 0]} maxBarSize={14} />
-                              </BarChart>
-                            </ResponsiveContainer>
+                          {/* Toggle between views */}
+                          <div className="flex justify-end mb-1">
+                            <ToggleGroup 
+                              type="single" 
+                              value={risksAppetiteView} 
+                              onValueChange={(v) => v && setRisksAppetiteView(v as 'org' | 'aggregate')} 
+                              size="sm"
+                              className="h-5"
+                            >
+                              <ToggleGroupItem value="org" className="text-[7px] px-1.5 h-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                                By Org
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="aggregate" className="text-[7px] px-1.5 h-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                                Aggregate
+                              </ToggleGroupItem>
+                            </ToggleGroup>
                           </div>
+                          
+                          {risksAppetiteView === 'org' ? (
+                            <>
+                              {/* Grouped Bar Chart: Risks by Organization */}
+                              <div className="h-20">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <BarChart 
+                                    data={(metric as any).riskAppetiteData.byOrgData}
+                                    margin={{ top: 4, right: 4, bottom: 16, left: 4 }}
+                                  >
+                                    <XAxis 
+                                      dataKey="organization" 
+                                      tick={{ fontSize: 6, fill: 'hsl(var(--muted-foreground))' }}
+                                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                                      tickLine={{ stroke: 'hsl(var(--border))' }}
+                                      interval={0}
+                                      tickFormatter={(value) => value.substring(0, 6)}
+                                      angle={-20}
+                                      textAnchor="end"
+                                    />
+                                    <YAxis 
+                                      tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }}
+                                      axisLine={false}
+                                      tickLine={false}
+                                      width={16}
+                                    />
+                                    <RechartsTooltip 
+                                      contentStyle={{ 
+                                        backgroundColor: 'hsl(var(--card))', 
+                                        border: '1px solid hsl(var(--border))',
+                                        borderRadius: '6px',
+                                        fontSize: '10px'
+                                      }}
+                                    />
+                                    <Bar dataKey="outsideAppetite" fill="hsl(var(--destructive))" name="Outside Appetite" radius={[2, 2, 0, 0]} maxBarSize={14} />
+                                    <Bar dataKey="withinAppetite" fill="hsl(var(--success))" name="Within Appetite" radius={[2, 2, 0, 0]} maxBarSize={14} />
+                                  </BarChart>
+                                </ResponsiveContainer>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              {/* Aggregate View: Progress bar with donut breakdown */}
+                              <div className="space-y-2">
+                                {/* Progress bar showing outside vs within */}
+                                <div className="h-3 w-full bg-muted rounded-full overflow-hidden flex">
+                                  <div 
+                                    className="h-full bg-destructive transition-all" 
+                                    style={{ width: `${((metric as any).riskAppetiteData.outsideAppetite / ((metric as any).riskAppetiteData.outsideAppetite + (metric as any).riskAppetiteData.withinAppetite)) * 100}%` }}
+                                  />
+                                  <div 
+                                    className="h-full bg-success transition-all" 
+                                    style={{ width: `${((metric as any).riskAppetiteData.withinAppetite / ((metric as any).riskAppetiteData.outsideAppetite + (metric as any).riskAppetiteData.withinAppetite)) * 100}%` }}
+                                  />
+                                </div>
+                                
+                                {/* Donut chart for risk level breakdown */}
+                                <div className="h-16">
+                                  <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                      <Pie
+                                        data={(metric as any).riskAppetiteData.donutData}
+                                        dataKey="value"
+                                        nameKey="name"
+                                        cx="50%"
+                                        cy="50%"
+                                        innerRadius={18}
+                                        outerRadius={28}
+                                        paddingAngle={2}
+                                      >
+                                        {(metric as any).riskAppetiteData.donutData.map((entry: any, index: number) => (
+                                          <Cell key={`cell-${index}`} fill={entry.fill} />
+                                        ))}
+                                      </Pie>
+                                      <RechartsTooltip 
+                                        contentStyle={{ 
+                                          backgroundColor: 'hsl(var(--card))', 
+                                          border: '1px solid hsl(var(--border))',
+                                          borderRadius: '6px',
+                                          fontSize: '10px'
+                                        }}
+                                      />
+                                    </PieChart>
+                                  </ResponsiveContainer>
+                                </div>
+                                
+                                {/* Legend grid for levels */}
+                                <div className="grid grid-cols-4 gap-1">
+                                  {(metric as any).riskAppetiteData.donutData.map((item: any, idx: number) => (
+                                    <div key={idx} className="flex items-center gap-0.5">
+                                      <div className="w-1.5 h-1.5 rounded-sm flex-shrink-0" style={{ backgroundColor: item.fill }} />
+                                      <span className="text-[7px] text-muted-foreground truncate">{item.value} {item.name.substring(0, 3)}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </>
+                          )}
                           
                           {/* Legend and Summary */}
                           <div className="flex items-center justify-between border-t border-border/30 pt-1">
@@ -1563,46 +1647,119 @@ const Dashboard2ndLine = () => {
                         </div>
                       ) : (metric as any).chartType === 'workflowStatus' ? (
                         <>
-                          {/* Stacked bar chart for workflow status by organization */}
-                          <div className="h-24 mb-1">
-                            <ResponsiveContainer width="100%" height="100%">
-                              <BarChart 
-                                data={openAssessmentsByOrg}
-                                margin={{ top: 8, right: 4, bottom: 20, left: 4 }}
-                              >
-                                <XAxis 
-                                  dataKey="organization" 
-                                  tick={{ fontSize: 6, fill: 'hsl(var(--muted-foreground))' }}
-                                  axisLine={{ stroke: 'hsl(var(--border))' }}
-                                  tickLine={{ stroke: 'hsl(var(--border))' }}
-                                  interval={0}
-                                  tickFormatter={(value) => value.substring(0, 6)}
-                                  angle={-20}
-                                  textAnchor="end"
-                                />
-                                <YAxis 
-                                  tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }}
-                                  axisLine={false}
-                                  tickLine={false}
-                                  width={16}
-                                />
-                                <RechartsTooltip 
-                                  contentStyle={{ 
-                                    backgroundColor: 'hsl(var(--card))', 
-                                    border: '1px solid hsl(var(--border))',
-                                    borderRadius: '6px',
-                                    fontSize: '10px'
-                                  }}
-                                />
-                                <Bar dataKey="sentForAssessment" stackId="a" fill="hsl(217, 91%, 60%)" name="Sent" radius={[0, 0, 0, 0]} />
-                                <Bar dataKey="pendingReview" stackId="a" fill="hsl(38, 92%, 50%)" name="Review" />
-                                <Bar dataKey="pendingApproval" stackId="a" fill="hsl(271, 91%, 65%)" name="Approval" />
-                                <Bar dataKey="completed" stackId="a" fill="hsl(160, 84%, 39%)" name="Completed" />
-                                <Bar dataKey="overdue" stackId="a" fill="hsl(var(--destructive))" name="Overdue" />
-                                <Bar dataKey="reassigned" stackId="a" fill="hsl(215, 16%, 47%)" name="Reassigned" radius={[2, 2, 0, 0]} />
-                              </BarChart>
-                            </ResponsiveContainer>
+                          {/* Toggle between views */}
+                          <div className="flex justify-end mb-1">
+                            <ToggleGroup 
+                              type="single" 
+                              value={openAssessmentsView} 
+                              onValueChange={(v) => v && setOpenAssessmentsView(v as 'org' | 'aggregate')} 
+                              size="sm"
+                              className="h-5"
+                            >
+                              <ToggleGroupItem value="org" className="text-[7px] px-1.5 h-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                                By Org
+                              </ToggleGroupItem>
+                              <ToggleGroupItem value="aggregate" className="text-[7px] px-1.5 h-4 data-[state=on]:bg-primary data-[state=on]:text-primary-foreground">
+                                Aggregate
+                              </ToggleGroupItem>
+                            </ToggleGroup>
                           </div>
+                          
+                          {openAssessmentsView === 'org' ? (
+                            <>
+                              {/* Stacked bar chart for workflow status by organization */}
+                              <div className="h-20 mb-1">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <BarChart 
+                                    data={openAssessmentsByOrg}
+                                    margin={{ top: 4, right: 4, bottom: 16, left: 4 }}
+                                  >
+                                    <XAxis 
+                                      dataKey="organization" 
+                                      tick={{ fontSize: 6, fill: 'hsl(var(--muted-foreground))' }}
+                                      axisLine={{ stroke: 'hsl(var(--border))' }}
+                                      tickLine={{ stroke: 'hsl(var(--border))' }}
+                                      interval={0}
+                                      tickFormatter={(value) => value.substring(0, 6)}
+                                      angle={-20}
+                                      textAnchor="end"
+                                    />
+                                    <YAxis 
+                                      tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }}
+                                      axisLine={false}
+                                      tickLine={false}
+                                      width={16}
+                                    />
+                                    <RechartsTooltip 
+                                      contentStyle={{ 
+                                        backgroundColor: 'hsl(var(--card))', 
+                                        border: '1px solid hsl(var(--border))',
+                                        borderRadius: '6px',
+                                        fontSize: '10px'
+                                      }}
+                                    />
+                                    <Bar dataKey="sentForAssessment" stackId="a" fill="hsl(217, 91%, 60%)" name="Sent" radius={[0, 0, 0, 0]} />
+                                    <Bar dataKey="pendingReview" stackId="a" fill="hsl(38, 92%, 50%)" name="Review" />
+                                    <Bar dataKey="pendingApproval" stackId="a" fill="hsl(271, 91%, 65%)" name="Approval" />
+                                    <Bar dataKey="completed" stackId="a" fill="hsl(160, 84%, 39%)" name="Completed" />
+                                    <Bar dataKey="overdue" stackId="a" fill="hsl(var(--destructive))" name="Overdue" />
+                                    <Bar dataKey="reassigned" stackId="a" fill="hsl(215, 16%, 47%)" name="Reassigned" radius={[2, 2, 0, 0]} />
+                                  </BarChart>
+                                </ResponsiveContainer>
+                              </div>
+                            </>
+                          ) : (
+                            <>
+                              {/* Aggregate View: Horizontal bar chart by status */}
+                              <div className="h-20 mb-1">
+                                <ResponsiveContainer width="100%" height="100%">
+                                  <BarChart 
+                                    data={[
+                                      { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(217, 91%, 60%)" },
+                                      { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(38, 92%, 50%)" },
+                                      { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(271, 91%, 65%)" },
+                                      { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(160, 84%, 39%)" },
+                                      { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 84%, 60%)" },
+                                      { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(215, 16%, 47%)" },
+                                    ]}
+                                    layout="vertical"
+                                    margin={{ top: 0, right: 8, bottom: 0, left: 0 }}
+                                  >
+                                    <XAxis type="number" hide />
+                                    <YAxis 
+                                      type="category" 
+                                      dataKey="status" 
+                                      width={50} 
+                                      tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }} 
+                                      axisLine={false}
+                                      tickLine={false}
+                                    />
+                                    <RechartsTooltip 
+                                      contentStyle={{ 
+                                        backgroundColor: 'hsl(var(--card))', 
+                                        border: '1px solid hsl(var(--border))',
+                                        borderRadius: '6px',
+                                        fontSize: '10px'
+                                      }}
+                                    />
+                                    <Bar dataKey="value" radius={[0, 3, 3, 0]} maxBarSize={10}>
+                                      {[
+                                        { status: "Sent", value: workflowStatusCounts.sentForAssessment, fill: "hsl(217, 91%, 60%)" },
+                                        { status: "Review", value: workflowStatusCounts.pendingReview, fill: "hsl(38, 92%, 50%)" },
+                                        { status: "Approval", value: workflowStatusCounts.pendingApproval, fill: "hsl(271, 91%, 65%)" },
+                                        { status: "Completed", value: workflowStatusCounts.completed, fill: "hsl(160, 84%, 39%)" },
+                                        { status: "Overdue", value: workflowStatusCounts.overdue, fill: "hsl(0, 84%, 60%)" },
+                                        { status: "Reassigned", value: workflowStatusCounts.reassigned, fill: "hsl(215, 16%, 47%)" },
+                                      ].map((entry, index) => (
+                                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                                      ))}
+                                    </Bar>
+                                  </BarChart>
+                                </ResponsiveContainer>
+                              </div>
+                            </>
+                          )}
+                          
                           {/* 6-segment legend in 3 columns */}
                           <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 mb-1">
                             {segments.map((segment, idx) => (
