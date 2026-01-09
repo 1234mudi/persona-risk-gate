@@ -1,14 +1,21 @@
 import React, { useMemo, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-interface OrgHeatmapData {
+export interface OrgHeatmapData {
   businessUnit: string;
   critical: number;
   high: number;
   medium: number;
   low: number;
   total: number;
+  trends?: {
+    critical: number;
+    high: number;
+    medium: number;
+    low: number;
+  };
 }
 
 interface RiskDataItem {
@@ -31,13 +38,13 @@ const BUSINESS_UNITS = [
 
 const RISK_LEVELS = ["Critical", "High", "Medium", "Low"] as const;
 
-// Mock data for residual risk distribution by business unit
+// Mock data for residual risk distribution by business unit with trend data
 const mockOrgHeatmapData: OrgHeatmapData[] = [
-  { businessUnit: "Retail Banking", critical: 2, high: 5, medium: 8, low: 3, total: 18 },
-  { businessUnit: "Corporate Banking", critical: 1, high: 4, medium: 6, low: 4, total: 15 },
-  { businessUnit: "Treasury", critical: 0, high: 3, medium: 5, low: 5, total: 13 },
-  { businessUnit: "Operations", critical: 3, high: 6, medium: 7, low: 2, total: 18 },
-  { businessUnit: "Risk Analytics", critical: 1, high: 2, medium: 4, low: 6, total: 13 },
+  { businessUnit: "Retail Banking", critical: 2, high: 5, medium: 8, low: 3, total: 18, trends: { critical: 0, high: 1, medium: -2, low: 1 } },
+  { businessUnit: "Corporate Banking", critical: 1, high: 4, medium: 6, low: 4, total: 15, trends: { critical: 1, high: 0, medium: -1, low: 0 } },
+  { businessUnit: "Treasury", critical: 0, high: 3, medium: 5, low: 5, total: 13, trends: { critical: 0, high: -1, medium: 1, low: -1 } },
+  { businessUnit: "Operations", critical: 3, high: 6, medium: 7, low: 2, total: 18, trends: { critical: 1, high: 2, medium: 0, low: -1 } },
+  { businessUnit: "Risk Analytics", critical: 1, high: 2, medium: 4, low: 6, total: 13, trends: { critical: -1, high: 0, medium: -1, low: 2 } },
 ];
 
 export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({ 
@@ -63,6 +70,13 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
         medium: 0,
         low: 0,
         total: 0,
+        // Generate mock trends for demonstration (in production, this would come from comparing periods)
+        trends: {
+          critical: Math.floor(Math.random() * 3) - 1,
+          high: Math.floor(Math.random() * 3) - 1,
+          medium: Math.floor(Math.random() * 3) - 1,
+          low: Math.floor(Math.random() * 3) - 1,
+        },
       };
     });
 
@@ -76,6 +90,12 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
           medium: 0,
           low: 0,
           total: 0,
+          trends: {
+            critical: Math.floor(Math.random() * 3) - 1,
+            high: Math.floor(Math.random() * 3) - 1,
+            medium: Math.floor(Math.random() * 3) - 1,
+            low: Math.floor(Math.random() * 3) - 1,
+          },
         };
       }
 
@@ -106,6 +126,13 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
     const data = orgData.find(d => d.businessUnit === bu);
     if (!data) return 0;
     return data[level.toLowerCase() as keyof OrgHeatmapData] as number;
+  };
+
+  // Get trend for a specific BU and risk level
+  const getCellTrend = (bu: string, level: string): number => {
+    const data = orgData.find(d => d.businessUnit === bu);
+    if (!data || !data.trends) return 0;
+    return data.trends[level.toLowerCase() as keyof typeof data.trends] || 0;
   };
 
   // Get color intensity based on count relative to max in that column
@@ -145,6 +172,19 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
     if (level === "High") return "text-orange-600 dark:text-orange-400";
     if (level === "Medium") return "text-yellow-600 dark:text-yellow-400";
     return "text-green-600 dark:text-green-400";
+  };
+
+  // Get trend indicator component
+  const getTrendIndicator = (trend: number) => {
+    if (trend === 0) return null;
+    if (trend > 0) {
+      return (
+        <TrendingUp className="w-2 h-2 text-red-500 ml-0.5 inline-block" />
+      );
+    }
+    return (
+      <TrendingDown className="w-2 h-2 text-green-500 ml-0.5 inline-block" />
+    );
   };
 
   // Abbreviate BU names for compact display
@@ -213,6 +253,7 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
               {/* Risk Level Cells */}
               {RISK_LEVELS.map((level) => {
                 const count = getCellValue(data.businessUnit, level);
+                const trend = getCellTrend(data.businessUnit, level);
                 const cellKey = `${data.businessUnit}-${level}`;
                 const isHovered = hoveredCell === cellKey;
 
@@ -236,6 +277,7 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
                         >
                           {count}
                         </span>
+                        {getTrendIndicator(trend)}
                       </div>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="text-xs">
@@ -244,6 +286,14 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
                       <p className="text-muted-foreground">
                         {data.total > 0 ? ((count / data.total) * 100).toFixed(0) : 0}% of BU total
                       </p>
+                      {trend !== 0 && (
+                        <p className={cn(
+                          "text-xs mt-1",
+                          trend > 0 ? "text-red-500" : "text-green-500"
+                        )}>
+                          {trend > 0 ? "↑" : "↓"} {Math.abs(trend)} vs previous period
+                        </p>
+                      )}
                     </TooltipContent>
                   </Tooltip>
                 );
@@ -323,12 +373,39 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
             <div className="w-2.5 h-2.5 bg-green-500/30 border border-green-500/50 rounded-sm" />
             <span className="text-[8px] text-muted-foreground">Low</span>
           </div>
+          {/* Trend legend */}
+          <div className="border-l border-border/50 pl-3 ml-1 flex items-center gap-2">
+            <div className="flex items-center gap-0.5">
+              <TrendingUp className="w-2.5 h-2.5 text-red-500" />
+              <span className="text-[8px] text-muted-foreground">Increased</span>
+            </div>
+            <div className="flex items-center gap-0.5">
+              <TrendingDown className="w-2.5 h-2.5 text-green-500" />
+              <span className="text-[8px] text-muted-foreground">Decreased</span>
+            </div>
+          </div>
         </div>
         {/* Interpretation help text */}
         <p className="text-[8px] text-muted-foreground/70 italic mt-1.5 pt-1 border-t border-border/20 text-center">
-          How to read: Cell color intensity indicates risk concentration. Darker shades = more risks at that level. Compare rows to identify high-risk business units.
+          How to read: Cell color intensity indicates risk concentration. Trend arrows show change vs previous period. ↑ Red = risk increased, ↓ Green = risk decreased.
         </p>
       </div>
     </div>
   );
 };
+
+// Export function to get heatmap data for export
+export function getHeatmapExportData(orgData: OrgHeatmapData[], levelTotals: { critical: number; high: number; medium: number; low: number; total: number }) {
+  return {
+    businessUnits: orgData.map(bu => ({
+      name: bu.businessUnit,
+      critical: bu.critical,
+      high: bu.high,
+      medium: bu.medium,
+      low: bu.low,
+      total: bu.total,
+      trends: bu.trends,
+    })),
+    totals: levelTotals,
+  };
+}

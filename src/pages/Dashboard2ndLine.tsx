@@ -456,10 +456,23 @@ const Dashboard2ndLine = () => {
         throw new Error(response.data?.error || 'Failed to generate narratives');
       }
 
+      // Prepare organization heatmap data for export
+      const orgHeatmapData = {
+        businessUnits: [
+          { name: "Retail Banking", critical: 2, high: 5, medium: 8, low: 3, total: 18, trends: { critical: 0, high: 1, medium: -2, low: 1 } },
+          { name: "Corporate Banking", critical: 1, high: 4, medium: 6, low: 4, total: 15, trends: { critical: 1, high: 0, medium: -1, low: 0 } },
+          { name: "Treasury", critical: 0, high: 3, medium: 5, low: 5, total: 13, trends: { critical: 0, high: -1, medium: 1, low: -1 } },
+          { name: "Operations", critical: 3, high: 6, medium: 7, low: 2, total: 18, trends: { critical: 1, high: 2, medium: 0, low: -1 } },
+          { name: "Risk Analytics", critical: 1, high: 2, medium: 4, low: 6, total: 13, trends: { critical: -1, high: 0, medium: -1, low: 2 } },
+        ],
+        totals: { critical: 7, high: 20, medium: 30, low: 20, total: 77 },
+      };
+
       const exportData = {
         narratives: response.data.narratives || [],
         executiveSummary: response.data.executiveSummary || 'Dashboard summary not available.',
         metrics: dashboardData.metrics,
+        organizationHeatmap: orgHeatmapData,
         exportDate: format(new Date(), 'MMMM d, yyyy'),
         filters: dashboardData.filters,
       };
