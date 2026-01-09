@@ -122,10 +122,10 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
   return (
     <div className={cn("flex flex-col h-full", className)}>
       {/* Heatmap Grid */}
-      <div className="flex-1 overflow-auto">
-        <div className="min-w-[280px]">
+      <div className="flex-1">
+        <div>
           {/* Header Row */}
-          <div className="grid grid-cols-5 gap-0.5 mb-0.5">
+          <div className="grid gap-0.5 mb-0.5" style={{ gridTemplateColumns: "48px repeat(4, 1fr)" }}>
             <div className="p-1" /> {/* Empty corner cell */}
             {CATEGORIES.map((category) => (
               <div
@@ -141,7 +141,7 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
 
           {/* Data Rows */}
           {BUSINESS_UNITS.map((bu) => (
-            <div key={bu} className="grid grid-cols-5 gap-0.5 mb-0.5">
+            <div key={bu} className="grid gap-0.5 mb-0.5" style={{ gridTemplateColumns: "48px repeat(4, 1fr)" }}>
               {/* Row Header */}
               <div className="p-1 flex items-center bg-muted/50 dark:bg-muted/30 border border-border/30">
                 <span className="text-[10px] font-semibold text-muted-foreground truncate">
@@ -163,7 +163,7 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
                     <TooltipTrigger asChild>
                       <div
                         className={cn(
-                          "p-1.5 cursor-pointer transition-all duration-200 border",
+                          "p-1 cursor-pointer transition-all duration-200 border",
                           getCellColorClass(variance),
                           isHovered && "ring-2 ring-primary ring-offset-1"
                         )}
@@ -219,7 +219,7 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
           ))}
 
           {/* Enterprise Average Row */}
-          <div className="grid grid-cols-5 gap-0.5 mt-1 pt-1 border-t-2 border-primary/30">
+          <div className="grid gap-0.5 mt-1 pt-1 border-t-2 border-primary/30" style={{ gridTemplateColumns: "48px repeat(4, 1fr)" }}>
             <div className="p-1 flex items-center bg-primary/10 dark:bg-primary/20 border border-primary/30">
               <span className="text-[10px] font-bold text-primary uppercase">
                 Avg
@@ -228,7 +228,7 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
             {CATEGORIES.map((category) => (
               <div
                 key={`avg-${category}`}
-                className="p-1.5 bg-primary/10 dark:bg-primary/20 border border-primary/30"
+                className="p-1 bg-primary/10 dark:bg-primary/20 border border-primary/30"
               >
                 <div className="flex flex-col items-center justify-center">
                   <span className="text-xs font-bold text-primary">
@@ -243,22 +243,22 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
       </div>
 
       {/* Legend */}
-      <div className="mt-3 pt-2 border-t border-border/50">
-        <div className="flex flex-wrap items-center justify-center gap-2 text-[9px]">
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-green-500/30 border border-green-500/50" />
+      <div className="mt-2 pt-1.5 border-t border-border/50">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 text-[8px]">
+          <div className="flex items-center gap-0.5">
+            <div className="w-2.5 h-2.5 rounded-sm bg-green-500/30 border border-green-500/50" />
             <span className="text-muted-foreground">Below Avg</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-yellow-500/30 border border-yellow-500/50" />
+          <div className="flex items-center gap-0.5">
+            <div className="w-2.5 h-2.5 rounded-sm bg-yellow-500/30 border border-yellow-500/50" />
             <span className="text-muted-foreground">Near Avg</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-orange-500/30 border border-orange-500/50" />
+          <div className="flex items-center gap-0.5">
+            <div className="w-2.5 h-2.5 rounded-sm bg-orange-500/30 border border-orange-500/50" />
             <span className="text-muted-foreground">Above Avg</span>
           </div>
-          <div className="flex items-center gap-1">
-            <div className="w-3 h-3 rounded-sm bg-red-500/30 border border-red-500/50" />
+          <div className="flex items-center gap-0.5">
+            <div className="w-2.5 h-2.5 rounded-sm bg-red-500/30 border border-red-500/50" />
             <span className="text-muted-foreground">High</span>
           </div>
         </div>
