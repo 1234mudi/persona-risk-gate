@@ -1027,147 +1027,139 @@ const Dashboard1stLine = () => {
   const metrics = useMemo(() => [
     {
       title: "Assessment Status",
-      value: assessmentStatusCounts.total,
-      trend: `${assessmentStatusCounts.overdue} overdue, ${assessmentStatusCounts.completed} completed`,
-      trendUp: assessmentStatusCounts.overdue === 0 && assessmentStatusCounts.completed > 0,
+      value: "59 Requiring Action",
+      trend: "59 overdue",
+      trendUp: false,
       icon: CalendarCheck,
       segmentRows: [
         {
           label: "Workflow Progress",
           segments: [
-            { label: "Completed", value: assessmentStatusCounts.completed, color: "bg-[#2e8b2e]" },
-            { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, color: "bg-[#6A75D8]" },
-            { label: "Challenge", value: assessmentStatusCounts.challenge, color: "bg-[#CE7900]" },
-            { label: "In Progress", value: assessmentStatusCounts.inProgress, color: "bg-[#FFE980]" },
-            { label: "Not Started", value: assessmentStatusCounts.notStarted, color: "bg-[#8B5993]" },
+            { label: "Completed", value: 13, color: "bg-[#2e8b2e]" },
+            { label: "Pending Approval", value: 12, color: "bg-[#F1BA50]" },
+            { label: "Challenge", value: 5, color: "bg-[#CE7900]" },
+            { label: "In Progress", value: 0, color: "bg-[#6A75D8]" },
+            { label: "Not Started", value: 29, color: "bg-[#D21C1C]" },
           ]
         },
         {
           label: "Deadline Status",
           segments: [
-            { label: "Overdue", value: assessmentStatusCounts.overdue, color: "bg-[#D21C1C]" },
-            { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, color: "bg-[#CE7900]" },
-            { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth + assessmentStatusCounts.future, color: "bg-[#2e8b2e]" },
+            { label: "Overdue", value: 59, color: "bg-[#D21C1C]" },
+            { label: "Due This Week", value: 0, color: "bg-[#CE7900]" },
+            { label: "Due This Month", value: 0, color: "bg-[#2e8b2e]" },
           ]
         }
       ],
       segments: [
-        { label: "Overdue", value: assessmentStatusCounts.overdue, sublabel: `${assessmentStatusCounts.overdue} Overdue`, color: "bg-[#D21C1C]" },
-        { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, sublabel: `${assessmentStatusCounts.dueThisWeek} Due This Week`, color: "bg-[#CE7900]" },
-        { label: "Completed", value: assessmentStatusCounts.completed, sublabel: `${assessmentStatusCounts.completed} Completed`, color: "bg-[#2e8b2e]" },
+        { label: "Overdue", value: 59, sublabel: "59 Overdue", color: "bg-[#D21C1C]" },
+        { label: "Due This Week", value: 0, sublabel: "0 Due This Week", color: "bg-[#CE7900]" },
+        { label: "Completed", value: 13, sublabel: "13 Completed", color: "bg-[#2e8b2e]" },
       ],
       description: "Track assessment deadlines and workflow progress together.",
       tooltip: "Combined view of assessment timing and workflow status.",
       extendedDetails: {
         insight: "Assessment management requires balancing urgency with progress tracking. Monitor both deadlines and completion rates.",
         breakdown: [
-          { label: "Overdue", value: assessmentStatusCounts.overdue, action: "Immediate attention required" },
-          { label: "Due This Week", value: assessmentStatusCounts.dueThisWeek, action: "Schedule for completion" },
-          { label: "Due This Month", value: assessmentStatusCounts.dueThisMonth, action: "Plan ahead" },
-          { label: "Completed", value: assessmentStatusCounts.completed, action: "Ready for next cycle" },
-          { label: "Pending Approval", value: assessmentStatusCounts.pendingApproval, action: "Awaiting 2nd line review" },
-          { label: "Challenge", value: assessmentStatusCounts.challenge, action: "Address 2nd line challenges" },
-          { label: "In Progress", value: assessmentStatusCounts.inProgress, action: "Continue work" },
-          { label: "Not Started", value: assessmentStatusCounts.notStarted, action: "Prioritize initiation" },
+          { label: "Overdue", value: 59, action: "Immediate attention required" },
+          { label: "Due This Week", value: 0, action: "Schedule for completion" },
+          { label: "Due This Month", value: 0, action: "Plan ahead" },
+          { label: "Completed", value: 13, action: "Ready for next cycle" },
+          { label: "Pending Approval", value: 12, action: "Awaiting 2nd line review" },
+          { label: "Challenge", value: 5, action: "Address 2nd line challenges" },
+          { label: "In Progress", value: 0, action: "Continue work" },
+          { label: "Not Started", value: 29, action: "Prioritize initiation" },
         ],
-        recommendation: assessmentStatusCounts.overdue > 0
-          ? "Focus on clearing overdue assessments first to maintain compliance posture."
-          : assessmentStatusCounts.notStarted > assessmentStatusCounts.completed
-            ? "Many assessments haven't started. Create a schedule to ensure timely completion."
-            : "Great progress! Stay on track by completing in-progress assessments.",
+        recommendation: "Focus on clearing overdue assessments first to maintain compliance posture.",
       },
     },
     {
       title: "Inherent Risk Ratings",
-      value: inherentRiskCounts.total,
-      trend: `${inherentRiskCounts.critical + inherentRiskCounts.high} require attention`,
-      trendUp: inherentRiskCounts.critical === 0,
+      value: "30 Critical & High",
+      trend: "6 critical, 24 high",
+      trendUp: false,
       icon: AlertTriangle,
       segmentRows: [
         {
           label: "Risk Level Distribution",
           segments: [
-            { label: "Critical", value: inherentRiskCounts.critical, color: "bg-[#D21C1C]" },
-            { label: "High", value: inherentRiskCounts.high, color: "bg-[#CE7900]" },
-            { label: "Medium", value: inherentRiskCounts.medium, color: "bg-[#F1BA50]" },
-            { label: "Low", value: inherentRiskCounts.low, color: "bg-[#46AF6A]" },
+            { label: "Critical", value: 6, color: "bg-[#D21C1C]" },
+            { label: "High", value: 24, color: "bg-[#CE7900]" },
+            { label: "Medium", value: 29, color: "bg-[#F1BA50]" },
+            { label: "Low", value: 0, color: "bg-[#46AF6A]" },
           ]
         },
         {
           label: "Trend Analysis",
           segments: [
-            { label: "Increasing", value: inherentTrendCounts.increasing, color: "bg-[#D21C1C]" },
-            { label: "Stable", value: inherentTrendCounts.stable, color: "bg-[#0A8078]" },
-            { label: "Decreasing", value: inherentTrendCounts.decreasing, color: "bg-[#46AF6A]" },
+            { label: "Increasing", value: 37, color: "bg-[#D21C1C]" },
+            { label: "Stable", value: 0, color: "bg-[#F1BA50]" },
+            { label: "Decreasing", value: 22, color: "bg-[#46AF6A]" },
           ]
         }
       ],
       segments: [
-        { label: "Critical", value: inherentRiskCounts.critical, sublabel: `${inherentRiskCounts.critical} Critical`, color: "bg-[#D21C1C]" },
-        { label: "High", value: inherentRiskCounts.high, sublabel: `${inherentRiskCounts.high} High`, color: "bg-[#CE7900]" },
-        { label: "Medium", value: inherentRiskCounts.medium, sublabel: `${inherentRiskCounts.medium} Medium`, color: "bg-[#46AF6A]" },
+        { label: "Critical", value: 6, sublabel: "6 Critical", color: "bg-[#D21C1C]" },
+        { label: "High", value: 24, sublabel: "24 High", color: "bg-[#CE7900]" },
+        { label: "Medium", value: 29, sublabel: "29 Medium", color: "bg-[#46AF6A]" },
       ],
       description: "Review Critical and High ratings for control adequacy.",
       tooltip: "Distribution of inherent risk ratings across your assigned risks. Higher ratings require stronger controls to mitigate.",
       extendedDetails: {
         insight: "Inherent risk represents the natural exposure before any controls are applied. Critical and High risks need robust mitigation strategies.",
         breakdown: [
-          { label: "Critical", value: inherentRiskCounts.critical, action: "Requires executive oversight" },
-          { label: "High", value: inherentRiskCounts.high, action: "Enhanced monitoring needed" },
-          { label: "Medium", value: inherentRiskCounts.medium, action: "Standard controls apply" },
-          { label: "Low", value: inherentRiskCounts.low || 0, action: "Monitor periodically" },
+          { label: "Critical", value: 6, action: "Requires executive oversight" },
+          { label: "High", value: 24, action: "Enhanced monitoring needed" },
+          { label: "Medium", value: 29, action: "Standard controls apply" },
+          { label: "Low", value: 0, action: "Monitor periodically" },
         ],
-        recommendation: inherentRiskCounts.critical > 0
-          ? "Critical risks detected. Ensure adequate controls and escalate to risk committee if needed."
-          : "No critical inherent risks. Continue monitoring high-risk areas.",
+        recommendation: "Critical risks detected. Ensure adequate controls and escalate to risk committee if needed.",
       },
     },
     {
       title: "Control Effectiveness by Risk",
-      value: controlEvidenceCounts.total,
-      trend: `${controlEvidenceCounts.effective} effective`,
-      trendUp: controlEvidenceCounts.effective > controlEvidenceCounts.ineffective,
+      value: "14 Needing Attention",
+      trend: "45 effective",
+      trendUp: true,
       icon: FileCheck,
       segmentRows: [
         {
           label: "Effectiveness Rating",
           segments: [
-            { label: "Effective", value: controlEvidenceCounts.effective, color: "bg-[#46AF6A]" },
-            { label: "Partially", value: controlEvidenceCounts.partiallyEffective, color: "bg-[#CE7900]" },
-            { label: "Ineffective", value: controlEvidenceCounts.ineffective, color: "bg-[#D21C1C]" },
-            { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, color: "bg-[#8B5993]" },
+            { label: "Effective", value: 45, color: "bg-[#46AF6A]" },
+            { label: "Partially", value: 14, color: "bg-[#F1BA50]" },
+            { label: "Ineffective", value: 0, color: "bg-[#D21C1C]" },
+            { label: "Not Assessed", value: 0, color: "bg-[#8B8B8B]" },
           ]
         },
         {
           label: "Control Type",
           segments: [
-            { label: "Key Controls", value: controlTypeCounts.keyControls, color: "bg-[#A361CF]" },
-            { label: "Non-Key", value: controlTypeCounts.nonKeyControls, color: "bg-[#979EE4]" },
+            { label: "Key Controls", value: 72, color: "bg-[#A361CF]" },
+            { label: "Non-Key", value: 23, color: "bg-[#6A75D8]" },
           ]
         }
       ],
       segments: [
-        { label: "Effective", value: controlEvidenceCounts.effective, sublabel: `${controlEvidenceCounts.effective} Effective`, color: "bg-[#46AF6A]" },
-        { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, sublabel: `${controlEvidenceCounts.partiallyEffective} Partially Effective`, color: "bg-[#CE7900]" },
-        { label: "Ineffective", value: controlEvidenceCounts.ineffective, sublabel: `${controlEvidenceCounts.ineffective} Ineffective`, color: "bg-[#D21C1C]" },
-        { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, sublabel: `${controlEvidenceCounts.notAssessed} Not Assessed`, color: "bg-[#8B5993]" },
+        { label: "Effective", value: 45, sublabel: "45 Effective", color: "bg-[#46AF6A]" },
+        { label: "Partially Effective", value: 14, sublabel: "14 Partially Effective", color: "bg-[#F1BA50]" },
+        { label: "Ineffective", value: 0, sublabel: "0 Ineffective", color: "bg-[#D21C1C]" },
+        { label: "Not Assessed", value: 0, sublabel: "0 Not Assessed", color: "bg-[#8B8B8B]" },
       ],
       description: "Review ineffective and not assessed controls.",
       tooltip: "Control effectiveness ratings across your assigned risks. Focus on improving ineffective controls.",
       extendedDetails: {
         insight: "Control effectiveness directly impacts residual risk. Ineffective controls should be remediated or replaced.",
         breakdown: [
-          { label: "Effective", value: controlEvidenceCounts.effective, action: "Maintain current practices" },
-          { label: "Partially Effective", value: controlEvidenceCounts.partiallyEffective, action: "Identify improvement areas" },
-          { label: "Ineffective", value: controlEvidenceCounts.ineffective, action: "Remediation required" },
-          { label: "Not Assessed", value: controlEvidenceCounts.notAssessed, action: "Schedule assessment" },
+          { label: "Effective", value: 45, action: "Maintain current practices" },
+          { label: "Partially Effective", value: 14, action: "Identify improvement areas" },
+          { label: "Ineffective", value: 0, action: "Remediation required" },
+          { label: "Not Assessed", value: 0, action: "Schedule assessment" },
         ],
-        recommendation: controlEvidenceCounts.ineffective > 0
-          ? "Ineffective controls found. Prioritize remediation to reduce residual risk exposure."
-          : "Control effectiveness is healthy. Focus on assessing remaining controls.",
+        recommendation: "Control effectiveness is healthy. Focus on assessing remaining controls.",
       },
     },
-  ], [assessmentStatusCounts, inherentRiskCounts, controlEvidenceCounts, inherentTrendCounts, controlTypeCounts]);
+  ], []);
 
 
   const filteredRiskData = useMemo(() => {
