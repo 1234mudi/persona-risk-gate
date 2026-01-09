@@ -573,6 +573,27 @@ const Dashboard2ndLine = () => {
     };
   }, [riskData]);
 
+  // Loss Events data with root cause analysis
+  const lossEventsData = [
+    { id: "LE-001", title: "Payment Fraud", amount: 1200000, rootCause: "Insufficient fraud detection", category: "External Fraud" },
+    { id: "LE-002", title: "Settlement Error", amount: 950000, rootCause: "Manual reconciliation failure", category: "Process Error" },
+    { id: "LE-003", title: "System Outage", amount: 820000, rootCause: "Infrastructure limits exceeded", category: "System Failures" },
+    { id: "LE-004", title: "Wire Misdirection", amount: 680000, rootCause: "Inadequate dual approval", category: "Process Error" },
+    { id: "LE-005", title: "Data Incident", amount: 550000, rootCause: "Backup system failure", category: "System Failures" },
+  ];
+
+  // Calculate root cause percentages
+  const rootCauseBreakdown = useMemo(() => {
+    const totals = { 'Process Error': 0, 'System Failures': 0, 'External Fraud': 0 };
+    const totalAmount = lossEventsData.reduce((sum, e) => sum + e.amount, 0);
+    lossEventsData.forEach(e => { totals[e.category as keyof typeof totals] += e.amount; });
+    return {
+      process: Math.round((totals['Process Error'] / totalAmount) * 100),
+      system: Math.round((totals['System Failures'] / totalAmount) * 100),
+      external: Math.round((totals['External Fraud'] / totalAmount) * 100),
+    };
+  }, []);
+
   const metrics = [
     {
       title: "Open Risk Assessments",
@@ -624,13 +645,16 @@ const Dashboard2ndLine = () => {
       trend: "+15% vs. Last Quarter",
       trendUp: false,
       icon: DollarSign,
+      chartType: "lossEvents",
+      lossEventsData: lossEventsData,
+      rootCauseBreakdown: rootCauseBreakdown,
       segments: [
         { label: "External Fraud", value: 1.2, sublabel: "External Fraud: $1.2M", color: "bg-error-dark" },
         { label: "Process Error", value: 1.8, sublabel: "Process Error: $1.8M", color: "bg-warning" },
         { label: "System Failures", value: 1.2, sublabel: "System Failures: $1.2M", color: "bg-warning-light" },
       ],
-      description: "Top 3 drivers caused over 90% of losses. Validate RCSA focus.",
-      tooltip: "Summarizes financial losses from operational events across your risk portfolio. Use this to validate that your RCSA coverage aligns with actual loss drivers.",
+      description: "Top 5 loss events by impact with root cause analysis.",
+      tooltip: "Shows the highest-impact loss events and their root causes to validate RCSA coverage aligns with actual loss drivers.",
     },
     {
       title: "Issues Velocity & Efficiency",
@@ -1112,7 +1136,56 @@ const Dashboard2ndLine = () => {
                         )}
                       </div>
                       {/* Chart visualization */}
-                      {'chartType' in metric && metric.chartType === 'bar' ? (
+                      {'chartType' in metric && metric.chartType === 'lossEvents' ? (
+                        <div className="space-y-1.5">
+                          {/* Horizontal bar chart for top 5 loss events */}
+                          <div className="h-20">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart 
+                                data={(metric as any).lossEventsData} 
+                                layout="vertical"
+                                margin={{ top: 0, right: 4, bottom: 0, left: 0 }}
+                              >
+                                <XAxis type="number" hide />
+                                <YAxis 
+                                  type="category" 
+                                  dataKey="title" 
+                                  width={70} 
+                                  tick={{ fontSize: 7, fill: 'hsl(var(--muted-foreground))' }} 
+                                  axisLine={false}
+                                  tickLine={false}
+                                />
+                                <Bar dataKey="amount" radius={[0, 3, 3, 0]} maxBarSize={10}>
+                                  {(metric as any).lossEventsData.map((entry: any, index: number) => (
+                                    <Cell 
+                                      key={`cell-${index}`} 
+                                      fill={entry.category === 'External Fraud' ? 'hsl(var(--destructive))' : entry.category === 'Process Error' ? 'hsl(var(--warning))' : 'hsl(var(--accent))'}
+                                    />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                          {/* Root Cause Analysis Summary */}
+                          <div className="border-t border-border/30 pt-1">
+                            <p className="text-[8px] font-semibold text-muted-foreground uppercase mb-0.5">Root Cause Breakdown</p>
+                            <div className="grid grid-cols-3 gap-1">
+                              <div className="text-center">
+                                <p className="text-[10px] font-bold text-warning">{(metric as any).rootCauseBreakdown.process}%</p>
+                                <p className="text-[7px] text-muted-foreground">Process</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-[10px] font-bold text-accent">{(metric as any).rootCauseBreakdown.system}%</p>
+                                <p className="text-[7px] text-muted-foreground">System</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-[10px] font-bold text-destructive">{(metric as any).rootCauseBreakdown.external}%</p>
+                                <p className="text-[7px] text-muted-foreground">External</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : 'chartType' in metric && metric.chartType === 'bar' ? (
                         <div className="h-14 mb-1">
                           <ResponsiveContainer width="100%" height="100%">
                             <BarChart 
