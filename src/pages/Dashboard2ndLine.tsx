@@ -2,7 +2,7 @@ import { useState, useRef, useMemo, useEffect, useCallback } from "react";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu, Grid3x3 } from "lucide-react";
+import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu, Grid3x3, ArrowLeft } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { ChallengeHeatmap } from "@/components/ChallengeHeatmap";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
@@ -125,8 +125,8 @@ const Dashboard2ndLine = () => {
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
-  // Risk Coverage Report visibility state (hidden by default)
-  const [showRiskCoverageReport, setShowRiskCoverageReport] = useState(false);
+  // Risk Coverage Report modal state
+  const [riskCoverageModalOpen, setRiskCoverageModalOpen] = useState(false);
 
   // Previous assessment floater state
   const [expandedPreviousAssessments, setExpandedPreviousAssessments] = useState<Record<string, { inherent: boolean; control: boolean; residual: boolean }>>({});
@@ -1075,10 +1075,7 @@ const Dashboard2ndLine = () => {
                     className={`${gridPositions[orderIndex]} border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 bg-card dark:bg-card cursor-pointer rounded-none`}
                     onClick={() => {
                       if (metricIndex === 0) {
-                        setShowRiskCoverageReport(true);
-                        setTimeout(() => {
-                          reportSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        }, 100);
+                        setRiskCoverageModalOpen(true);
                       }
                     }}
                   >
@@ -1159,65 +1156,68 @@ const Dashboard2ndLine = () => {
           </Card>
         </div>
 
-        {/* Risk Coverage by Business Unit Section */}
-        {showRiskCoverageReport && (
-        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
-          {/* Row 1: Title + Action Buttons */}
-          <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
-            <div className="flex items-center justify-between h-12">
-              {/* Left: Title */}
-              <div className="flex items-center gap-1.5 px-4">
-              <span className="text-base font-semibold text-[#10052F] dark:text-white">
-                  Risk Coverage by Business Unit
-                </span>
-                <span className="text-base text-[#10052F] dark:text-white">
-                  ({filteredRiskData.length})
-                </span>
-              </div>
-              
-              {/* Right: Action Buttons */}
-              <div className="flex items-center gap-2 pr-3">
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10 rounded-none"
-                  onClick={() => setActionDialog({ open: true, type: "reassign", riskId: null })}
-                  disabled={selectedRisks.size === 0}
-                >
-                  <UserPlus className="w-3.5 h-3.5 mr-1.5" />
-                  Reassign
-                </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10 rounded-none"
-                  onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: null })}
-                  disabled={selectedRisks.size === 0}
-                >
-                  <UsersIcon className="w-3.5 h-3.5 mr-1.5" />
-                  Collaborate
-                </Button>
-                <Button 
-                  size="sm"
-                  className="h-8 text-xs bg-primary text-white hover:bg-primary/90 rounded-none"
-                  onClick={startReviewMode}
-                  disabled={selectedRisks.size === 0}
-                >
-                  <Eye className="w-3.5 h-3.5 mr-1.5" />
-                  Review Selected ({selectedRisks.size})
-                </Button>
-                <Button 
-                  variant="ghost" 
-                  size="sm"
-                  className="h-8 text-xs text-muted-foreground hover:text-foreground rounded-none"
-                  onClick={() => setShowRiskCoverageReport(false)}
-                >
-                  <X className="w-3.5 h-3.5 mr-1" />
-                  Hide Report
-                </Button>
-              </div>
+        {/* Risk Coverage by Business Unit Modal */}
+        <Dialog open={riskCoverageModalOpen} onOpenChange={setRiskCoverageModalOpen}>
+          <DialogContent 
+            className="max-w-[95vw] w-[95vw] h-[90vh] max-h-[90vh] p-0 flex flex-col"
+            hideCloseButton={true}
+          >
+            {/* Header with Back Button */}
+            <div className="flex items-center gap-3 px-4 py-3 border-b bg-muted/30 shrink-0">
+              <Button 
+                variant="ghost" 
+                size="sm"
+                onClick={() => setRiskCoverageModalOpen(false)}
+                className="gap-2 rounded-none"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Dashboard
+              </Button>
+              <div className="h-5 w-px bg-border" />
+              <span className="text-lg font-semibold text-foreground">
+                Risk Coverage by Business Unit ({filteredRiskData.length})
+              </span>
             </div>
-          </CardHeader>
+
+            {/* Scrollable Content Area */}
+            <div className="flex-1 overflow-auto">
+              <Card className="border-0 shadow-none bg-transparent rounded-none">
+                {/* Action Buttons Row */}
+                <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
+                  <div className="flex items-center justify-end h-12">
+                    <div className="flex items-center gap-2 pr-3">
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10 rounded-none"
+                        onClick={() => setActionDialog({ open: true, type: "reassign", riskId: null })}
+                        disabled={selectedRisks.size === 0}
+                      >
+                        <UserPlus className="w-3.5 h-3.5 mr-1.5" />
+                        Reassign
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        size="sm"
+                        className="h-8 text-xs border-primary/30 text-primary hover:bg-primary/10 rounded-none"
+                        onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: null })}
+                        disabled={selectedRisks.size === 0}
+                      >
+                        <UsersIcon className="w-3.5 h-3.5 mr-1.5" />
+                        Collaborate
+                      </Button>
+                      <Button 
+                        size="sm"
+                        className="h-8 text-xs bg-primary text-white hover:bg-primary/90 rounded-none"
+                        onClick={startReviewMode}
+                        disabled={selectedRisks.size === 0}
+                      >
+                        <Eye className="w-3.5 h-3.5 mr-1.5" />
+                        Review Selected ({selectedRisks.size})
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
 
           {/* Row 2: Tabs */}
           <div className="border-b border-border/50 bg-muted/10 px-4 py-2">
@@ -2098,8 +2098,10 @@ const Dashboard2ndLine = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
-        )}
+              </Card>
+            </div>
+          </DialogContent>
+        </Dialog>
       </main>
 
       {/* Edit Dialog */}
