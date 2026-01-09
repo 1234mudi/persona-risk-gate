@@ -243,9 +243,9 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
   };
 
   return (
-    <div className={cn("flex flex-col h-full", className)}>
+    <div className={cn("flex flex-col", className)}>
       {/* Heatmap Grid */}
-      <div className="flex-1">
+      <div>
         <div>
           {/* Header Row */}
           <div className="grid gap-0.5 mb-0.5" style={{ gridTemplateColumns: "48px repeat(4, 1fr)" }}>
