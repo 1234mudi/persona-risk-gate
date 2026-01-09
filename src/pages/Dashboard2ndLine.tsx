@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu, Grid3x3 } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
+import { ChallengeHeatmap } from "@/components/ChallengeHeatmap";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { PreviousAssessmentFloater } from "@/components/PreviousAssessmentFloater";
 import { ThemeToggle } from "@/components/ThemeToggle";
@@ -1127,17 +1128,20 @@ const Dashboard2ndLine = () => {
           })}
           
           {/* Column 3: Challenge Heatmap spanning 3 rows */}
-          <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-3 border-2 border-dashed border-border/50 dark:border-border shadow-sm bg-muted/20 dark:bg-card/50 rounded-none order-last lg:order-none">
-            <CardContent className="p-4 flex flex-col items-center justify-center h-full min-h-[160px] lg:min-h-full">
-              <div className="w-12 h-12 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center mb-4">
-                <Grid3x3 className="w-6 h-6 text-primary" />
+          <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-3 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
+            <CardHeader className="py-2 px-3 border-b border-border/50 bg-muted/30">
+              <div className="flex items-center gap-2">
+                <Grid3x3 className="w-4 h-4 text-primary" />
+                <CardTitle className="text-xs font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
+                  Challenge Heatmap
+                </CardTitle>
               </div>
-              <h3 className="text-base font-bold text-[#10052F] dark:text-white mb-2">
-                Challenge Heatmap
-              </h3>
-              <p className="text-sm text-muted-foreground text-center max-w-xs">
-                Coming Soon - Visual representation of 2nd Line challenges by category and severity
+              <p className="text-[10px] text-muted-foreground mt-0.5">
+                N/A Controls % by Business Unit vs Enterprise Average
               </p>
+            </CardHeader>
+            <CardContent className="p-3 h-[calc(100%-60px)]">
+              <ChallengeHeatmap />
             </CardContent>
           </Card>
         </div>
