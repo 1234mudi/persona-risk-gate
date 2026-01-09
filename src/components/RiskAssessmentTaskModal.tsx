@@ -246,9 +246,6 @@ export function RiskAssessmentTaskModal({
               <FileText className="w-3.5 h-3.5 text-primary" />
             </div>
             <h2 className="text-sm font-semibold text-foreground">Risk Assessment Task</h2>
-              <button className="text-muted-foreground hover:text-foreground">
-                <HelpCircle className="w-4 h-4" />
-              </button>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -265,7 +262,7 @@ export function RiskAssessmentTaskModal({
                 disabled={!selectedPlanId}
                 className="h-6 px-2 text-[10px]"
               >
-                SUBMIT
+                PROCEED
               </Button>
             </div>
           </div>
