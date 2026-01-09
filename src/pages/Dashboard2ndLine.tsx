@@ -1,5 +1,5 @@
 import { useState, useRef, useMemo, useEffect, useCallback } from "react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Tooltip as RechartsTooltip, Legend } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, LineChart, Line, CartesianGrid, Tooltip as RechartsTooltip, Legend, PieChart, Pie } from "recharts";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment } from "@/data/initialRiskData";
 import { format } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
@@ -592,6 +592,38 @@ const Dashboard2ndLine = () => {
     };
   }, []);
 
+  // Risk Appetite calculation - Critical and High are outside appetite
+  const riskAppetiteData = useMemo(() => {
+    const outsideAppetite = riskData.filter(r => 
+      r.residualRisk.level === "Critical" || r.residualRisk.level === "High"
+    );
+    const withinAppetite = riskData.filter(r => 
+      r.residualRisk.level === "Medium" || r.residualRisk.level === "Low"
+    );
+    
+    const critical = outsideAppetite.filter(r => r.residualRisk.level === "Critical").length;
+    const high = outsideAppetite.filter(r => r.residualRisk.level === "High").length;
+    const medium = withinAppetite.filter(r => r.residualRisk.level === "Medium").length;
+    const low = withinAppetite.filter(r => r.residualRisk.level === "Low").length;
+    
+    const total = riskData.length;
+    const outsidePercentage = total > 0 ? Math.round((outsideAppetite.length / total) * 100) : 0;
+    const withinPercentage = total > 0 ? Math.round((withinAppetite.length / total) * 100) : 0;
+    
+    return {
+      total,
+      outsideAppetite: outsideAppetite.length,
+      withinAppetite: withinAppetite.length,
+      outsidePercentage,
+      withinPercentage,
+      breakdown: { critical, high, medium, low },
+      chartData: [
+        { name: "Outside", value: outsideAppetite.length, fill: "hsl(var(--destructive))" },
+        { name: "Within", value: withinAppetite.length, fill: "hsl(var(--success))" }
+      ]
+    };
+  }, [riskData]);
+
   const metrics = [
     {
       title: "Open Risk Assessments",
@@ -608,18 +640,20 @@ const Dashboard2ndLine = () => {
       tooltip: "Displays open risk assessments that require action—whether to be worked upon, reviewed, or given final approval. Overdue items need immediate attention. Click this card to view and manage these assessments.",
     },
     {
-      title: "High Residual Risks",
-      value: 24,
-      trend: "+5 since last quarter",
+      title: "Risks Outside Appetite",
+      value: riskAppetiteData.outsideAppetite,
+      subLabel: `of ${riskAppetiteData.total} total risks`,
+      trend: `${riskAppetiteData.outsidePercentage}% outside tolerance`,
       trendUp: false,
       icon: AlertTriangle,
+      chartType: "riskAppetite" as const,
+      riskAppetiteData: riskAppetiteData,
       segments: [
-        { label: "Critical", value: 8, sublabel: "8 Critical", color: "bg-error" },
-        { label: "High", value: 16, sublabel: "16 High", color: "bg-warning" },
-        { label: "Medium", value: 45, sublabel: "45 Medium", color: "bg-success" },
+        { label: "Outside", value: riskAppetiteData.outsideAppetite, sublabel: `${riskAppetiteData.outsideAppetite} Outside`, color: "bg-error" },
+        { label: "Within", value: riskAppetiteData.withinAppetite, sublabel: `${riskAppetiteData.withinAppetite} Within`, color: "bg-success" },
       ],
-      description: "Immediately prioritize review of Critical & High risks.",
-      tooltip: "Displays risks that remain elevated even after controls are applied. Critical and High residual risks indicate areas where additional mitigation strategies may be needed.",
+      description: "Risks exceeding defined tolerance require escalation and additional mitigation.",
+      tooltip: "Shows risks outside the organization's defined risk appetite (Critical and High residual risks). Click to view details and remediation priorities.",
     },
     {
       title: "Ongoing Review & Challenge",
@@ -1197,6 +1231,61 @@ const Dashboard2ndLine = () => {
                               <div className="text-center">
                                 <p className="text-[10px] font-bold text-destructive">{(metric as any).rootCauseBreakdown.external}%</p>
                                 <p className="text-[7px] text-muted-foreground">External</p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : 'chartType' in metric && metric.chartType === 'riskAppetite' ? (
+                        <div className="space-y-1.5">
+                          {/* Horizontal stacked bar for appetite */}
+                          <div className="flex h-4 rounded overflow-hidden mb-1">
+                            <div 
+                              className="bg-destructive flex items-center justify-center"
+                              style={{ width: `${(metric as any).riskAppetiteData.outsidePercentage}%` }}
+                            >
+                              {(metric as any).riskAppetiteData.outsidePercentage >= 15 && (
+                                <span className="text-[8px] font-bold text-destructive-foreground">{(metric as any).riskAppetiteData.outsidePercentage}%</span>
+                              )}
+                            </div>
+                            <div 
+                              className="bg-success flex items-center justify-center"
+                              style={{ width: `${(metric as any).riskAppetiteData.withinPercentage}%` }}
+                            >
+                              {(metric as any).riskAppetiteData.withinPercentage >= 15 && (
+                                <span className="text-[8px] font-bold text-success-foreground">{(metric as any).riskAppetiteData.withinPercentage}%</span>
+                              )}
+                            </div>
+                          </div>
+                          {/* Legend */}
+                          <div className="flex gap-3 mb-1">
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-sm bg-destructive" />
+                              <span className="text-[9px] font-medium text-muted-foreground">{(metric as any).riskAppetiteData.outsideAppetite} Outside</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-sm bg-success" />
+                              <span className="text-[9px] font-medium text-muted-foreground">{(metric as any).riskAppetiteData.withinAppetite} Within</span>
+                            </div>
+                          </div>
+                          {/* Breakdown */}
+                          <div className="border-t border-border/30 pt-1">
+                            <p className="text-[8px] font-semibold text-muted-foreground uppercase mb-0.5">Breakdown by Level</p>
+                            <div className="grid grid-cols-4 gap-1">
+                              <div className="text-center">
+                                <p className="text-[10px] font-bold text-destructive">{(metric as any).riskAppetiteData.breakdown.critical}</p>
+                                <p className="text-[7px] text-muted-foreground">Critical</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-[10px] font-bold text-warning">{(metric as any).riskAppetiteData.breakdown.high}</p>
+                                <p className="text-[7px] text-muted-foreground">High</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-[10px] font-bold text-accent">{(metric as any).riskAppetiteData.breakdown.medium}</p>
+                                <p className="text-[7px] text-muted-foreground">Medium</p>
+                              </div>
+                              <div className="text-center">
+                                <p className="text-[10px] font-bold text-success">{(metric as any).riskAppetiteData.breakdown.low}</p>
+                                <p className="text-[7px] text-muted-foreground">Low</p>
                               </div>
                             </div>
                           </div>
