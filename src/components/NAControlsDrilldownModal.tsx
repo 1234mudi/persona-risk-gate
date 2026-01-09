@@ -253,15 +253,15 @@ export const NAControlsDrilldownModal: React.FC<NAControlsDrilldownModalProps> =
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-5xl max-h-[85vh] p-0 gap-0">
-        <DialogHeader className="p-4 pb-3 border-b">
+<DialogContent className="max-w-5xl h-[85vh] p-0 gap-0 flex flex-col">
+        <DialogHeader className="p-4 pb-3 border-b shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <AlertCircle className="w-5 h-5 text-amber-500" />
             N/A Controls - {businessUnit} / {category}
           </DialogTitle>
         </DialogHeader>
 
-        <div className="p-4 space-y-3">
+        <div className="flex-1 flex flex-col min-h-0 p-4 space-y-3 overflow-hidden">
           {/* Summary */}
           <div className="flex items-center justify-between">
             <Badge variant="outline" className="bg-amber-50 text-amber-700 border-amber-200">
@@ -484,8 +484,8 @@ export const NAControlsDrilldownModal: React.FC<NAControlsDrilldownModalProps> =
 
           {/* Table */}
           {filteredControls.length > 0 ? (
-            <div className="border rounded-lg overflow-hidden">
-              <ScrollArea className="h-[400px]">
+            <div className="flex-1 min-h-0 border rounded-lg overflow-hidden">
+              <ScrollArea className="h-full">
                 <div className="overflow-x-auto">
                   <table className="w-full border-collapse">
                     <thead className="bg-muted/70 sticky top-0 z-20">
@@ -639,12 +639,13 @@ export const NAControlsDrilldownModal: React.FC<NAControlsDrilldownModalProps> =
             </div>
           )}
 
-          {/* Footer */}
-          <div className="flex justify-end pt-2 border-t">
-            <Button variant="outline" onClick={onClose}>
-              Close
-            </Button>
-          </div>
+        </div>
+
+        {/* Footer - Fixed at bottom */}
+        <div className="flex justify-end p-4 border-t bg-background shrink-0">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
         </div>
       </DialogContent>
     </Dialog>
