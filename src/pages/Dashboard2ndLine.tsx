@@ -710,6 +710,19 @@ const Dashboard2ndLine = () => {
     };
   }, [timeFilteredRiskData]);
 
+  const getColorFromClass = (colorClass: string): string => {
+    const colorMap: Record<string, string> = {
+      'bg-blue-500': 'hsl(217, 91%, 60%)',
+      'bg-amber-500': 'hsl(38, 92%, 50%)',
+      'bg-purple-500': 'hsl(271, 91%, 65%)',
+      'bg-success': 'hsl(var(--success))',
+      'bg-error': 'hsl(var(--destructive))',
+      'bg-slate-500': 'hsl(215, 16%, 47%)',
+      'bg-emerald-500': 'hsl(160, 84%, 39%)',
+    };
+    return colorMap[colorClass] || 'hsl(var(--primary))';
+  };
+
   const metrics = [
     {
       title: "Open Risk Assessments",
@@ -717,13 +730,17 @@ const Dashboard2ndLine = () => {
       trend: "+12% since last month",
       trendUp: true,
       icon: FileCheck,
+      chartType: "workflowStatus" as const,
       segments: [
-        { label: "Overdue", value: 4, sublabel: "4 Overdue", color: "bg-error" },
-        { label: "Due Today", value: 3, sublabel: "3 Due Today", color: "bg-warning" },
-        { label: "Not Due Yet", value: 17, sublabel: "17 Not Due Yet", color: "bg-success" },
+        { label: "Sent for Assessment", value: 5, color: "bg-blue-500" },
+        { label: "Pending Review", value: 4, color: "bg-amber-500" },
+        { label: "Pending Approval", value: 3, color: "bg-purple-500" },
+        { label: "Completed", value: 8, color: "bg-emerald-500" },
+        { label: "Overdue", value: 2, color: "bg-error" },
+        { label: "Reassigned", value: 2, color: "bg-slate-500" },
       ],
-      description: "Prioritize \"Overdue\" and \"Due Today\" to maintain timely risk validation.",
-      tooltip: "Displays open risk assessments that require action—whether to be worked upon, reviewed, or given final approval. Overdue items need immediate attention. Click this card to view and manage these assessments.",
+      description: "Track assessment workflow stages. Address overdue and pending items promptly.",
+      tooltip: "Displays open risk assessments by workflow status. Monitor each stage to ensure timely completion.",
     },
     {
       title: "Risks Outside Appetite",
@@ -1484,6 +1501,38 @@ const Dashboard2ndLine = () => {
                             </BarChart>
                           </ResponsiveContainer>
                         </div>
+                      ) : (metric as any).chartType === 'workflowStatus' ? (
+                        <>
+                          {/* Vertical bar chart for workflow status */}
+                          <div className="h-14 mb-1">
+                            <ResponsiveContainer width="100%" height="100%">
+                              <BarChart 
+                                data={segments.map(s => ({ name: s.label, value: s.value, color: s.color }))}
+                                margin={{ top: 2, right: 0, bottom: 0, left: 0 }}
+                              >
+                                <Bar dataKey="value" radius={[2, 2, 0, 0]} maxBarSize={16}>
+                                  {segments.map((segment, index) => (
+                                    <Cell 
+                                      key={`cell-${index}`} 
+                                      fill={getColorFromClass(segment.color)}
+                                    />
+                                  ))}
+                                </Bar>
+                              </BarChart>
+                            </ResponsiveContainer>
+                          </div>
+                          {/* 6-segment legend in 3 columns */}
+                          <div className="grid grid-cols-3 gap-x-1 gap-y-0.5 mb-1">
+                            {segments.map((segment, idx) => (
+                              <div key={idx} className="flex items-center gap-0.5">
+                                <div className={`w-1.5 h-1.5 rounded-sm flex-shrink-0 ${segment.color}`} />
+                                <span className="text-[8px] font-medium text-muted-foreground truncate">
+                                  {segment.value} {segment.label.split(' ')[0]}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </>
                       ) : (
                         <>
                           {/* Progress bar */}
