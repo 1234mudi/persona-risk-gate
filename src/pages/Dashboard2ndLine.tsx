@@ -1358,23 +1358,25 @@ const Dashboard2ndLine = () => {
             </button>
           </div>
 
-        {/* Scorecards - 3 columns x 3 rows with specific positioning */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3 mb-4">
+        {/* Scorecards - 3 columns x 4 rows with specific positioning */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 lg:grid-rows-4 gap-2 sm:gap-3 mb-4">
           {/* Render metrics in specific grid positions:
-              Column 1: metrics[0] (row 1), metrics[3] (row 2), metrics[2] (row 3)
-              Column 2: metrics[4] (row 1), metrics[1] (row 2), metrics[5] (row 3)
-              Column 3: Challenge Heatmap (spans 3 rows)
+              Row 1: metrics[0] (Open Risk Assessments) - spans Col 1-2
+              Row 2: metrics[1] (Risks Outside Appetite) - spans Col 1-2
+              Row 3: metrics[3] (Col 1), metrics[4] (Col 2)
+              Row 4: metrics[2] (Col 1), metrics[5] (Col 2)
+              Column 3: Organization Heat Map (rows 1-2), Control Scoping Variance (rows 3-4)
           */}
-          {[0, 4, 3, 1, 2, 5].map((metricIndex, orderIndex) => {
+          {[0, 1, 3, 4, 2, 5].map((metricIndex, orderIndex) => {
             const metric = metrics[metricIndex];
-            // Grid positions for lg screens
+            // Grid positions for lg screens - adjusted for new layout
             const gridPositions = [
-              'lg:col-start-1 lg:row-start-1', // metrics[0] - Col 1, Row 1
-              'lg:col-start-2 lg:row-start-1', // metrics[4] - Col 2, Row 1
-              'lg:col-start-1 lg:row-start-2', // metrics[3] - Col 1, Row 2
-              'lg:col-start-2 lg:row-start-2', // metrics[1] - Col 2, Row 2
-              'lg:col-start-1 lg:row-start-3', // metrics[2] - Col 1, Row 3
-              'lg:col-start-2 lg:row-start-3', // metrics[5] - Col 2, Row 3
+              'lg:col-start-1 lg:row-start-1 lg:col-span-2', // metrics[0] - Open Risk Assessments - spans 2 cols, Row 1
+              'lg:col-start-1 lg:row-start-2 lg:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols, Row 2
+              'lg:col-start-1 lg:row-start-3', // metrics[3] - Ongoing Review & Challenge - Col 1, Row 3
+              'lg:col-start-2 lg:row-start-3', // metrics[4] - Operational Loss Events - Col 2, Row 3
+              'lg:col-start-1 lg:row-start-4', // metrics[2] - Issues Velocity & Efficiency - Col 1, Row 4
+              'lg:col-start-2 lg:row-start-4', // metrics[5] - Risk Aging by Source - Col 2, Row 4
             ];
             const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
             let total = 0;
@@ -1814,26 +1816,8 @@ const Dashboard2ndLine = () => {
             );
           })}
           
-          {/* Column 3: Control Scoping Variance Report spanning 2 rows */}
+          {/* Column 3: Organization Heat Map spanning 2 rows (rows 1-2) */}
           <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-2 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
-            <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
-              <div className="flex items-center gap-1.5">
-                <Grid3x3 className="w-3.5 h-3.5 text-primary" />
-                <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
-                  Control Scoping Variance Report
-                </CardTitle>
-              </div>
-              <p className="text-[9px] text-muted-foreground mt-0.5">
-                N/A Controls % by Business Unit vs Enterprise Average
-              </p>
-            </CardHeader>
-            <CardContent className="p-2 h-[calc(100%-50px)]">
-              <ChallengeHeatmap />
-            </CardContent>
-          </Card>
-
-          {/* Column 3: Organization Heat Map spanning 1 row */}
-          <Card className="lg:col-start-3 lg:row-start-3 lg:row-span-1 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
             <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
               <div className="flex items-center gap-1.5">
                 <Building2 className="w-3.5 h-3.5 text-primary" />
@@ -1847,6 +1831,24 @@ const Dashboard2ndLine = () => {
             </CardHeader>
             <CardContent className="p-2 h-[calc(100%-50px)]">
               <OrganizationHeatmap riskData={riskData} />
+            </CardContent>
+          </Card>
+
+          {/* Column 3: Control Scoping Variance Report spanning 2 rows (rows 3-4) */}
+          <Card className="lg:col-start-3 lg:row-start-3 lg:row-span-2 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
+            <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
+              <div className="flex items-center gap-1.5">
+                <Grid3x3 className="w-3.5 h-3.5 text-primary" />
+                <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
+                  Control Scoping Variance Report
+                </CardTitle>
+              </div>
+              <p className="text-[9px] text-muted-foreground mt-0.5">
+                N/A Controls % by Business Unit vs Enterprise Average
+              </p>
+            </CardHeader>
+            <CardContent className="p-2 h-[calc(100%-50px)]">
+              <ChallengeHeatmap />
             </CardContent>
           </Card>
         </div>

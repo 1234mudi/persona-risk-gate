@@ -370,7 +370,7 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
       </div>
 
       {/* Legend */}
-      <div className="mt-2 pt-1.5 border-t border-border/50">
+      <div className="mt-1 pt-1 border-t border-border/50">
         <div className="flex flex-wrap items-center justify-center gap-1.5 text-[8px]">
           <div className="flex items-center gap-0.5">
             <div className="w-2.5 h-2.5 rounded-sm bg-green-500/30 border border-green-500/50" />
