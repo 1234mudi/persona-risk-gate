@@ -1536,7 +1536,7 @@ const Dashboard1stLine = () => {
                                 <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
                                   {metric.value.split(' ')[0]}
                                 </span>
-                                <span className="text-xs sm:text-sm text-muted-foreground font-normal">
+                                <span className="text-[10px] sm:text-xs text-muted-foreground font-normal">
                                   {metric.value.split(' ').slice(1).join(' ')}
                                 </span>
                               </>
