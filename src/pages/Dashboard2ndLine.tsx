@@ -1159,11 +1159,11 @@ const Dashboard2ndLine = () => {
         {/* Risk Coverage by Business Unit Modal */}
         <Dialog open={riskCoverageModalOpen} onOpenChange={setRiskCoverageModalOpen}>
           <DialogContent 
-            className="max-w-[95vw] w-[95vw] h-[90vh] max-h-[90vh] p-0 flex flex-col"
+            className="max-w-full w-full h-full max-h-full p-0 flex flex-col rounded-none border-0"
             hideCloseButton={true}
           >
             {/* Header with Back Button */}
-            <div className="flex items-center gap-3 px-4 py-3 border-b bg-muted/30 shrink-0">
+            <div className="flex items-center gap-2 px-3 py-2 border-b border-border/30 bg-muted/20 shrink-0">
               <Button 
                 variant="ghost" 
                 size="sm"
@@ -1183,9 +1183,9 @@ const Dashboard2ndLine = () => {
             <div className="flex-1 overflow-auto">
               <Card className="border-0 shadow-none bg-transparent rounded-none">
                 {/* Action Buttons Row */}
-                <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
-                  <div className="flex items-center justify-end h-12">
-                    <div className="flex items-center gap-2 pr-3">
+            <CardHeader className="border-b border-border/30 space-y-0 py-0 px-0 bg-muted/20">
+              <div className="flex items-center justify-end h-10">
+                <div className="flex items-center gap-1.5 pr-2">
                       <Button 
                         variant="outline" 
                         size="sm"
@@ -1220,8 +1220,8 @@ const Dashboard2ndLine = () => {
                 </CardHeader>
 
           {/* Row 2: Tabs */}
-          <div className="border-b border-border/50 bg-muted/10 px-4 py-2">
-            <div className="flex items-center gap-2">
+          <div className="border-b border-border/30 bg-muted/10 px-3 py-1.5">
+            <div className="flex items-center gap-1.5">
               <button
                 onClick={() => setActiveTab("own")}
                 className={`px-4 py-1.5 text-xs font-semibold uppercase tracking-wide border transition-all ${
@@ -1256,7 +1256,7 @@ const Dashboard2ndLine = () => {
           </div>
 
           {/* Row 3: Info Banner */}
-          <div className="bg-indigo-50 dark:bg-indigo-900/10 border-b border-indigo-200 dark:border-indigo-800 px-4 py-2">
+          <div className="bg-indigo-50 dark:bg-indigo-900/10 border-b border-indigo-100 dark:border-indigo-800/50 px-3 py-1.5">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-indigo-600 dark:text-indigo-500 flex-shrink-0 mt-0.5" />
               <p className="text-xs text-indigo-800 dark:text-indigo-200">
@@ -1268,8 +1268,8 @@ const Dashboard2ndLine = () => {
           </div>
 
           {/* Row 4: Filter Bar */}
-          <div className="bg-muted/20 border-b border-border/50 px-4 py-2">
-            <div className="flex items-center gap-4">
+          <div className="bg-muted/20 border-b border-border/30 px-3 py-1.5">
+            <div className="flex items-center gap-3">
               {/* Business Unit Filter */}
               <div className="flex items-center gap-1.5">
                 <Building2 className="w-4 h-4 text-muted-foreground" />
