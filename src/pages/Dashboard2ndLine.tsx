@@ -3329,31 +3329,31 @@ const Dashboard2ndLine = () => {
           <div className="grid grid-cols-2 gap-4 py-4">
             <Button
               variant="outline"
-              className="h-24 flex-col gap-2 rounded-none"
+              className="h-24 flex-col gap-1.5 rounded-none bg-blue-50 hover:bg-blue-100 border-blue-200"
               onClick={() => handleExport('docx')}
               disabled={isExporting}
             >
               {isExporting ? (
-                <Loader2 className="w-8 h-8 animate-spin" />
+                <Loader2 className="w-7 h-7 animate-spin" />
               ) : (
-                <FileText className="w-8 h-8 text-blue-600" />
+                <FileText className="w-7 h-7 text-blue-600" />
               )}
-              <span>Word Document</span>
-              <span className="text-xs text-muted-foreground">.docx</span>
+              <span className="text-sm font-medium text-blue-700">Word Document</span>
+              <span className="text-[10px] text-blue-500">.docx</span>
             </Button>
             <Button
               variant="outline"
-              className="h-24 flex-col gap-2 rounded-none"
+              className="h-24 flex-col gap-1.5 rounded-none bg-orange-50 hover:bg-orange-100 border-orange-200"
               onClick={() => handleExport('pptx')}
               disabled={isExporting}
             >
               {isExporting ? (
-                <Loader2 className="w-8 h-8 animate-spin" />
+                <Loader2 className="w-7 h-7 animate-spin" />
               ) : (
-                <Presentation className="w-8 h-8 text-orange-600" />
+                <Presentation className="w-7 h-7 text-orange-600" />
               )}
-              <span>PowerPoint</span>
-              <span className="text-xs text-muted-foreground">.pptx</span>
+              <span className="text-sm font-medium text-orange-700">PowerPoint</span>
+              <span className="text-[10px] text-orange-500">.pptx</span>
             </Button>
           </div>
           <DialogFooter>
