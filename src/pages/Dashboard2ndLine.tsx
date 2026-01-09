@@ -1362,16 +1362,16 @@ const Dashboard2ndLine = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
           {/* Left Column - Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 grid-rows-3 gap-2">
-          {[0, 1, 3, 4, 2, 5].map((metricIndex, orderIndex) => {
+          {[0, 1, 2, 5, 3, 4].map((metricIndex, orderIndex) => {
             const metric = metrics[metricIndex];
             // Grid positions for sm+ screens within nested grid
             const gridPositions = [
               'sm:col-span-2', // metrics[0] - Open Risk Assessments - spans 2 cols, Row 1
               'sm:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols, Row 2
-              '', // metrics[3] - Ongoing Review & Challenge - Col 1, Row 3
-              '', // metrics[4] - Operational Loss Events - Col 2, Row 3
-              '', // metrics[2] - Issues Velocity & Efficiency - Col 1, Row 4
-              '', // metrics[5] - Risk Aging by Source - Col 2, Row 4
+              '', // metrics[2] - Ongoing Review & Challenge - Col 1, Row 3
+              '', // metrics[5] - Issue Aging by Source - Col 2, Row 3
+              'sm:col-span-2', // metrics[3] - Operational Loss Events - spans 2 cols, Row 4
+              'sm:col-span-2', // metrics[4] - Issues Velocity & Efficiency - spans 2 cols, Row 5
             ];
             const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
             let total = 0;
@@ -1602,8 +1602,7 @@ const Dashboard2ndLine = () => {
                                       tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={false}
                                       tickLine={false}
-                                      width={50}
-                                      tickFormatter={(value) => value.substring(0, 6)}
+                                      width={75}
                                     />
                                     <RechartsTooltip 
                                       contentStyle={{ 
@@ -1759,13 +1758,10 @@ const Dashboard2ndLine = () => {
                                   >
                                     <XAxis 
                                       dataKey="organization" 
-                                      tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
+                                      tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
                                       axisLine={{ stroke: 'hsl(var(--border))' }}
                                       tickLine={{ stroke: 'hsl(var(--border))' }}
                                       interval={0}
-                                      tickFormatter={(value) => value.substring(0, 8)}
-                                      angle={-20}
-                                      textAnchor="end"
                                     />
                                     <YAxis 
                                       tick={{ fontSize: 9, fill: 'hsl(var(--muted-foreground))' }}
