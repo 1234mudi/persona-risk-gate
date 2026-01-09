@@ -7,6 +7,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { Shield, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, DollarSign, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, ClipboardCheck, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Building2, ClipboardList, Layers, List, Timer, BarChart3, Eye, Search, Filter, Menu, Grid3x3, ArrowLeft } from "lucide-react";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { ChallengeHeatmap } from "@/components/ChallengeHeatmap";
+import { OrganizationHeatmap } from "@/components/OrganizationHeatmap";
 import { RiskAssessmentOverviewModal } from "@/components/RiskAssessmentOverviewModal";
 import { PreviousAssessmentFloater } from "@/components/PreviousAssessmentFloater";
 import { RiskAssessmentTaskModal } from "@/components/RiskAssessmentTaskModal";
@@ -1813,13 +1814,13 @@ const Dashboard2ndLine = () => {
             );
           })}
           
-          {/* Column 3: Challenge Heatmap spanning 3 rows */}
-          <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-3 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
+          {/* Column 3: Control Scoping Variance Report spanning 2 rows */}
+          <Card className="lg:col-start-3 lg:row-start-1 lg:row-span-2 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
             <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
               <div className="flex items-center gap-1.5">
                 <Grid3x3 className="w-3.5 h-3.5 text-primary" />
                 <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
-                  Challenge Heatmap
+                  Control Scoping Variance Report
                 </CardTitle>
               </div>
               <p className="text-[9px] text-muted-foreground mt-0.5">
@@ -1828,6 +1829,24 @@ const Dashboard2ndLine = () => {
             </CardHeader>
             <CardContent className="p-2 h-[calc(100%-50px)]">
               <ChallengeHeatmap />
+            </CardContent>
+          </Card>
+
+          {/* Column 3: Organization Heat Map spanning 1 row */}
+          <Card className="lg:col-start-3 lg:row-start-3 lg:row-span-1 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none order-last lg:order-none overflow-hidden">
+            <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
+              <div className="flex items-center gap-1.5">
+                <Building2 className="w-3.5 h-3.5 text-primary" />
+                <CardTitle className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white">
+                  Organization Heat Map
+                </CardTitle>
+              </div>
+              <p className="text-[9px] text-muted-foreground mt-0.5">
+                Residual Risk Distribution by Business Unit
+              </p>
+            </CardHeader>
+            <CardContent className="p-2 h-[calc(100%-50px)]">
+              <OrganizationHeatmap riskData={riskData} />
             </CardContent>
           </Card>
         </div>
