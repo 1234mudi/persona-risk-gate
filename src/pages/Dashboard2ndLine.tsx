@@ -125,6 +125,9 @@ const Dashboard2ndLine = () => {
   const [selectedControl, setSelectedControl] = useState<RiskData["relatedControls"][0] | null>(null);
   const [controlDetailsOpen, setControlDetailsOpen] = useState(false);
 
+  // Risk Coverage Report visibility state (hidden by default)
+  const [showRiskCoverageReport, setShowRiskCoverageReport] = useState(false);
+
   // Previous assessment floater state
   const [expandedPreviousAssessments, setExpandedPreviousAssessments] = useState<Record<string, { inherent: boolean; control: boolean; residual: boolean }>>({});
 
@@ -1068,7 +1071,17 @@ const Dashboard2ndLine = () => {
             return (
               <Tooltip key={metricIndex}>
                 <TooltipTrigger asChild>
-                  <Card className={`${gridPositions[orderIndex]} border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 bg-card dark:bg-card cursor-pointer rounded-none`}>
+                  <Card 
+                    className={`${gridPositions[orderIndex]} border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 bg-card dark:bg-card cursor-pointer rounded-none`}
+                    onClick={() => {
+                      if (metricIndex === 0) {
+                        setShowRiskCoverageReport(true);
+                        setTimeout(() => {
+                          reportSectionRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }, 100);
+                      }
+                    }}
+                  >
                     <CardContent className="p-2.5">
                       <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-1.5">
@@ -1147,6 +1160,7 @@ const Dashboard2ndLine = () => {
         </div>
 
         {/* Risk Coverage by Business Unit Section */}
+        {showRiskCoverageReport && (
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
           {/* Row 1: Title + Action Buttons */}
           <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
@@ -1191,6 +1205,15 @@ const Dashboard2ndLine = () => {
                 >
                   <Eye className="w-3.5 h-3.5 mr-1.5" />
                   Review Selected ({selectedRisks.size})
+                </Button>
+                <Button 
+                  variant="ghost" 
+                  size="sm"
+                  className="h-8 text-xs text-muted-foreground hover:text-foreground rounded-none"
+                  onClick={() => setShowRiskCoverageReport(false)}
+                >
+                  <X className="w-3.5 h-3.5 mr-1" />
+                  Hide Report
                 </Button>
               </div>
             </div>
@@ -2076,6 +2099,7 @@ const Dashboard2ndLine = () => {
             </div>
           </CardContent>
         </Card>
+        )}
       </main>
 
       {/* Edit Dialog */}
