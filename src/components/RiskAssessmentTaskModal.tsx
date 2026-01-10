@@ -294,7 +294,7 @@ export function RiskAssessmentTaskModal({
                     htmlFor="inheritScope"
                     className="text-primary font-medium text-xs cursor-pointer"
                   >
-                    Inherit Assessment Scope
+                    Inherit Existing Assessment Scope via Plan
                   </Label>
                   <p className="text-[10px] text-muted-foreground">
                     {inheritScope
