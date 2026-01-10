@@ -116,6 +116,7 @@ export function RiskAssessmentTaskModal({
   const [assessmentsOpen, setAssessmentsOpen] = useState(true);
   const [selectedPlanId, setSelectedPlanId] = useState("");
   const [inheritScope, setInheritScope] = useState(false);
+  const [showRiskList, setShowRiskList] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [scopeSearch, setScopeSearch] = useState("");
   const [newRiskTitle, setNewRiskTitle] = useState("");
@@ -240,12 +241,12 @@ export function RiskAssessmentTaskModal({
           hideCloseButton
         >
           {/* Header */}
-        <div className="flex items-center justify-between px-3 py-1.5 border-b border-primary/30 bg-muted/30">
+        <div className="flex items-center justify-between px-3 py-1 border-b border-primary/30 bg-muted/30">
           <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded bg-primary/10 flex items-center justify-center">
-              <FileText className="w-3.5 h-3.5 text-primary" />
+            <div className="w-5 h-5 rounded bg-primary/10 flex items-center justify-center">
+              <FileText className="w-3 h-3 text-primary" />
             </div>
-            <h2 className="text-sm font-semibold text-foreground">Risk Assessment Task</h2>
+            <h2 className="text-sm font-semibold text-foreground">Ad-Hoc Risk Assessment</h2>
             </div>
             <div className="flex items-center gap-2">
               <Button
@@ -357,29 +358,32 @@ export function RiskAssessmentTaskModal({
                             placeholder="Search risks..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
+                            onFocus={() => setShowRiskList(true)}
                             className="pl-7 h-8 text-sm"
                           />
                         </div>
-                        <div className="border rounded max-h-32 overflow-auto">
-                          {filteredLibraryRisks.slice(0, 10).map((risk) => (
-                            <div
-                              key={risk.id}
-                              className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 cursor-pointer border-b last:border-b-0"
-                              onClick={() => toggleLibraryRisk(risk.id)}
-                            >
-                              <Checkbox
-                                checked={selectedLibraryRisks.includes(risk.id)}
-                                onCheckedChange={() => toggleLibraryRisk(risk.id)}
-                              />
-                              <div className="flex-1">
-                                <p className="text-xs font-medium">{risk.title}</p>
-                                <p className="text-[10px] text-muted-foreground">
-                                  {risk.category}
-                                </p>
+                        {showRiskList && (
+                          <div className="border rounded max-h-32 overflow-auto">
+                            {filteredLibraryRisks.slice(0, 10).map((risk) => (
+                              <div
+                                key={risk.id}
+                                className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 cursor-pointer border-b last:border-b-0"
+                                onClick={() => toggleLibraryRisk(risk.id)}
+                              >
+                                <Checkbox
+                                  checked={selectedLibraryRisks.includes(risk.id)}
+                                  onCheckedChange={() => toggleLibraryRisk(risk.id)}
+                                />
+                                <div className="flex-1">
+                                  <p className="text-xs font-medium">{risk.title}</p>
+                                  <p className="text-[10px] text-muted-foreground">
+                                    {risk.category}
+                                  </p>
+                                </div>
                               </div>
-                            </div>
-                          ))}
-                        </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
 
                       {/* Or Add New Risk */}
