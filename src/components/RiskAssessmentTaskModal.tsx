@@ -1,4 +1,6 @@
 import React, { useState, useMemo, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -149,6 +151,7 @@ export function RiskAssessmentTaskModal({
   onOpenChange,
   onSubmit,
 }: RiskAssessmentTaskModalProps) {
+  const navigate = useNavigate();
   const [selectedPlanId, setSelectedPlanId] = useState("");
   const [selectionMode, setSelectionMode] = useState<"none" | "inherit" | "manual">("none");
   const [scopeData, setScopeData] = useState<OrganizationRiskScope[]>([]);
@@ -215,6 +218,18 @@ export function RiskAssessmentTaskModal({
   const handleSubmit = () => {
     if (!selectedPlan || !canProceed) return;
 
+    // Collect all selected risks from scopeData
+    const selectedRisks = scopeData.flatMap(org => 
+      org.risks.filter(r => r.selected).map(risk => ({
+        id: risk.id,
+        title: risk.title,
+        organization: org.organization,
+        organizationId: org.organizationId
+      }))
+    );
+
+    const assessmentCount = selectedRisks.length;
+
     const taskData: RiskAssessmentTaskData = {
       planId: selectedPlan.id,
       planTitle: selectedPlan.title,
@@ -223,6 +238,20 @@ export function RiskAssessmentTaskModal({
     };
 
     onSubmit?.(taskData);
+
+    // Show success alert
+    toast.success(`${assessmentCount} Risk Assessment${assessmentCount !== 1 ? 's' : ''} Generated`, {
+      description: `Assessments have been created for the selected risks. Redirecting to assessment report...`,
+    });
+
+    // Close the modal
+    onOpenChange(false);
+
+    // Navigate to the first risk assessment
+    if (selectedRisks.length > 0) {
+      const firstRisk = selectedRisks[0];
+      navigate(`/risk-assessment?riskId=${encodeURIComponent(firstRisk.id)}&riskName=${encodeURIComponent(firstRisk.title)}&section=inherent-rating&source=2nd-line&aiAssessed=true`);
+    }
   };
 
   const toggleOrgExpanded = (orgId: string) => {
