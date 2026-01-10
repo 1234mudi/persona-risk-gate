@@ -167,6 +167,15 @@ export function RiskAssessmentTaskModal({
     );
   }, [libraryRisks, searchQuery]);
 
+  const filteredScopes = useMemo(() => {
+    if (!scopeSearch) return scopes;
+    return scopes.filter(
+      (s) =>
+        s.organization.toLowerCase().includes(scopeSearch.toLowerCase()) ||
+        s.risks.toLowerCase().includes(scopeSearch.toLowerCase())
+    );
+  }, [scopes, scopeSearch]);
+
   const handleSubmit = () => {
     if (!selectedPlan) return;
 
@@ -270,289 +279,206 @@ export function RiskAssessmentTaskModal({
 
           <ScrollArea className="flex-1 p-3">
             <div className="space-y-3">
-              {/* General Section */}
-              <Collapsible open={generalOpen} onOpenChange={setGeneralOpen}>
-                <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
-                  {generalOpen ? (
-                    <ChevronDown className="w-4 h-4 text-primary" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-primary" />
-                  )}
-                  General
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3 pl-3 space-y-3">
-                  {/* Risk Assessment Plan */}
-                  <div className="space-y-1">
-                    <Label className="text-primary font-medium text-xs">
-                      Risk Assessment Plan <span className="text-destructive">*</span>
-                    </Label>
-                    <Select
-                      value={selectedPlanId}
-                      onValueChange={setSelectedPlanId}
-                    >
-                      <SelectTrigger className="h-8 text-xs">
-                        <SelectValue placeholder="Select a risk assessment plan" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {mockPlans.map((plan) => (
-                          <SelectItem key={plan.id} value={plan.id} className="text-xs">
-                            {plan.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
+              {/* Inherit Assessment Scope - Primary Control */}
+              <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
+                <Checkbox
+                  id="inheritScope"
+                  checked={inheritScope}
+                  onCheckedChange={(checked) =>
+                    handleInheritScopeChange(checked === true)
+                  }
+                  className="mt-0.5"
+                />
+                <div className="space-y-0.5">
+                  <Label
+                    htmlFor="inheritScope"
+                    className="text-primary font-medium text-xs cursor-pointer"
+                  >
+                    Inherit Assessment Scope
+                  </Label>
+                  <p className="text-[10px] text-muted-foreground">
+                    {inheritScope
+                      ? "The scope defined across an existing plan can be selected."
+                      : "Manually select a risk to begin assessment."}
+                  </p>
+                </div>
+              </div>
 
-                  {/* Perspective & Assessment Type */}
-                  <div className="grid grid-cols-2 gap-3">
-                    <div className="space-y-1">
-                      <Label className="text-primary font-medium text-xs">Perspective</Label>
-                    <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                      {selectedPlan?.perspective || "Ad-Hoc Assessment"}
-                    </div>
-                    </div>
-                    <div className="space-y-1">
-                      <Label className="text-primary font-medium text-xs">Assessment Type</Label>
-                    <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                      {selectedPlan?.type || "Org-Risk"}
-                    </div>
-                    </div>
-                  </div>
-
-                  {/* Inherit Assessment Scope */}
-                  <div className="flex items-start gap-2 pt-1">
-                    <Checkbox
-                      id="inheritScope"
-                      checked={inheritScope}
-                      onCheckedChange={(checked) =>
-                        handleInheritScopeChange(checked === true)
-                      }
-                      className="mt-0.5"
-                    />
-                    <div className="space-y-0.5">
-                      <Label
-                        htmlFor="inheritScope"
-                        className="text-primary font-medium text-xs cursor-pointer"
-                      >
-                        Inherit Assessment Scope
-                      </Label>
-                      <p className="text-[10px] text-muted-foreground">
-                        {inheritScope
-                          ? "Select/update risks to be assessed from the original scope of the selected plan."
-                          : "Select an existing library risk for assessment or type a new risk title."}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Conditional Content Based on Inherit Scope */}
-                  {!inheritScope && (
-                    <div className="space-y-3 pt-1">
-                      {/* Search Library Risks */}
-                      <div className="space-y-1.5">
+              {/* Only show remaining sections when inheritScope is true */}
+              {inheritScope && (
+                <>
+                  {/* General Section */}
+                  <Collapsible open={generalOpen} onOpenChange={setGeneralOpen}>
+                    <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
+                      {generalOpen ? (
+                        <ChevronDown className="w-4 h-4 text-primary" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-primary" />
+                      )}
+                      General
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3 pl-3 space-y-3">
+                      {/* Risk Assessment Plan */}
+                      <div className="space-y-1">
                         <Label className="text-primary font-medium text-xs">
-                          Select from Risk Library
+                          Risk Assessment Plan <span className="text-destructive">*</span>
                         </Label>
+                        <Select
+                          value={selectedPlanId}
+                          onValueChange={setSelectedPlanId}
+                        >
+                          <SelectTrigger className="h-8 text-xs">
+                            <SelectValue placeholder="Select a risk assessment plan" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {mockPlans.map((plan) => (
+                              <SelectItem key={plan.id} value={plan.id} className="text-xs">
+                                {plan.title}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      {/* Perspective & Assessment Type */}
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="space-y-1">
+                          <Label className="text-primary font-medium text-xs">Perspective</Label>
+                          <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+                            {selectedPlan?.perspective || "Ad-Hoc Assessment"}
+                          </div>
+                        </div>
+                        <div className="space-y-1">
+                          <Label className="text-primary font-medium text-xs">Assessment Type</Label>
+                          <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
+                            {selectedPlan?.type || "Org-Risk"}
+                          </div>
+                        </div>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+
+                  {/* Assessments Section */}
+                  <Collapsible open={assessmentsOpen} onOpenChange={setAssessmentsOpen}>
+                    <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
+                      {assessmentsOpen ? (
+                        <ChevronDown className="w-4 h-4 text-primary" />
+                      ) : (
+                        <ChevronRight className="w-4 h-4 text-primary" />
+                      )}
+                      Assessments
+                    </CollapsibleTrigger>
+                    <CollapsibleContent className="pt-3 space-y-2">
+                      <p className="text-[10px] text-muted-foreground">
+                        Specify the scope of one or more assessments. Choose from
+                        organizations, assessable items and risks that need to be assessed.
+                      </p>
+
+                      {/* Action Bar */}
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <Button
+                          size="sm"
+                          onClick={handleAddScope}
+                          className="gap-1 h-7 px-2 text-xs"
+                        >
+                          <Plus className="w-3 h-3" />
+                          ADD SCOPE
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={() => {
+                            const selected = scopes.filter((s) => s.organization);
+                            if (selected.length > 0) {
+                              handleDeleteScope(selected[0].id);
+                            }
+                          }}
+                        >
+                          <Trash2 className="w-3 h-3" />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-7 w-7 p-0"
+                          onClick={handleRefresh}
+                        >
+                          <RefreshCw className="w-3 h-3" />
+                        </Button>
+                        <div className="flex-1" />
                         <div className="relative">
                           <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
                           <Input
-                            placeholder="Search risks..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onFocus={() => setShowRiskList(true)}
-                            className="pl-7 h-8 text-sm"
+                            placeholder="Search scopes..."
+                            value={scopeSearch}
+                            onChange={(e) => setScopeSearch(e.target.value)}
+                            className="pl-7 h-7 w-40 text-xs"
                           />
                         </div>
-                        {showRiskList && (
-                          <div className="border rounded max-h-32 overflow-auto">
-                            {filteredLibraryRisks.slice(0, 10).map((risk) => (
-                              <div
-                                key={risk.id}
-                                className="flex items-center gap-2 px-2 py-1.5 hover:bg-muted/50 cursor-pointer border-b last:border-b-0"
-                                onClick={() => toggleLibraryRisk(risk.id)}
-                              >
-                                <Checkbox
-                                  checked={selectedLibraryRisks.includes(risk.id)}
-                                  onCheckedChange={() => toggleLibraryRisk(risk.id)}
-                                />
-                                <div className="flex-1">
-                                  <p className="text-xs font-medium">{risk.title}</p>
-                                  <p className="text-[10px] text-muted-foreground">
-                                    {risk.category}
-                                  </p>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        )}
+                        <Button variant="outline" size="sm" className="h-7 w-7 p-0">
+                          <Maximize2 className="w-3 h-3" />
+                        </Button>
                       </div>
 
-                      {/* Or Add New Risk */}
-                      <div className="space-y-1">
-                        <Label className="text-primary font-medium text-xs">
-                          Or Add New Risk Title
-                        </Label>
-                        <Input
-                          placeholder="Enter a new risk title..."
-                          value={newRiskTitle}
-                          onChange={(e) => setNewRiskTitle(e.target.value)}
-                          className="h-8 text-sm"
-                        />
-                      </div>
-                    </div>
-                  )}
-                </CollapsibleContent>
-              </Collapsible>
-
-              {/* Assessments Section */}
-              <Collapsible open={assessmentsOpen} onOpenChange={setAssessmentsOpen}>
-                <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
-                  {assessmentsOpen ? (
-                    <ChevronDown className="w-4 h-4 text-primary" />
-                  ) : (
-                    <ChevronRight className="w-4 h-4 text-primary" />
-                  )}
-                  Assessments
-                </CollapsibleTrigger>
-                <CollapsibleContent className="pt-3 space-y-2">
-                  <p className="text-[10px] text-muted-foreground">
-                    Specify the scope of one or more assessments. Choose from
-                    organizations, assessable items and risks that need to be assessed.
-                  </p>
-
-                  {/* Action Bar */}
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Button
-                      size="sm"
-                      onClick={handleAddScope}
-                      className="gap-1 h-7 px-2 text-xs"
-                    >
-                      <Plus className="w-3 h-3" />
-                      ADD SCOPE
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={() => {
-                        const selected = scopes.filter((s) => s.organization);
-                        if (selected.length > 0) {
-                          handleDeleteScope(selected[0].id);
-                        }
-                      }}
-                    >
-                      <Trash2 className="w-3 h-3" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={handleRefresh}
-                    >
-                      <RefreshCw className="w-3 h-3" />
-                    </Button>
-                    <div className="flex-1" />
-                    <div className="relative">
-                      <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
-                      <Input
-                        placeholder="Search scopes..."
-                        value={scopeSearch}
-                        onChange={(e) => setScopeSearch(e.target.value)}
-                        className="pl-7 h-7 w-40 text-xs"
-                      />
-                    </div>
-                    <Button variant="outline" size="sm" className="h-7 w-7 p-0">
-                      <Maximize2 className="w-3 h-3" />
-                    </Button>
-                  </div>
-
-                  {/* Scope Table */}
-                  <div className="border rounded overflow-hidden">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="bg-muted/40">
-                          <TableHead className="w-8 py-1.5">
-                            <Checkbox />
-                          </TableHead>
-                          <TableHead className="text-primary text-xs font-semibold py-1.5">
-                            Organization <span className="text-destructive">*</span>
-                          </TableHead>
-                          <TableHead className="text-primary text-xs font-semibold py-1.5">
-                            Risks
-                          </TableHead>
-                          <TableHead className="w-10 py-1.5"></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {scopes.length === 0 ? (
-                          <TableRow>
-                            <TableCell
-                              colSpan={4}
-                              className="text-center text-muted-foreground py-4 text-xs"
-                            >
-                              No scopes added. Click "ADD SCOPE" to begin.
-                            </TableCell>
-                          </TableRow>
-                        ) : (
-                          scopes.map((scope) => (
-                            <TableRow key={scope.id} className="hover:bg-muted/20">
-                              <TableCell className="py-1.5">
+                      {/* Scope Table */}
+                      <div className="border rounded overflow-hidden">
+                        <Table>
+                          <TableHeader>
+                            <TableRow className="bg-muted/40">
+                              <TableHead className="w-8 py-1.5">
                                 <Checkbox />
-                              </TableCell>
-                              <TableCell className="py-1.5">
-                                <Input
-                                  value={scope.organization}
-                                  onChange={(e) => {
-                                    setScopes(
-                                      scopes.map((s) =>
-                                        s.id === scope.id
-                                          ? { ...s, organization: e.target.value }
-                                          : s
-                                      )
-                                    );
-                                  }}
-                                  placeholder="Enter organization..."
-                                  className="h-7 text-xs"
-                                />
-                              </TableCell>
-                              <TableCell className="py-1.5">
-                                <Input
-                                  value={scope.risks || ""}
-                                  onChange={(e) => {
-                                    setScopes(
-                                      scopes.map((s) =>
-                                        s.id === scope.id
-                                          ? { ...s, risks: e.target.value }
-                                          : s
-                                      )
-                                    );
-                                  }}
-                                  placeholder="Enter risks..."
-                                  className="h-7 text-xs"
-                                />
-                              </TableCell>
-                              <TableCell className="py-1.5">
-                                <span className="text-xs text-muted-foreground">
-                                  {scope.risks}
-                                </span>
-                              </TableCell>
-                              <TableCell className="py-1.5">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="h-6 w-6 p-0"
-                                  onClick={() => handleDeleteScope(scope.id)}
-                                >
-                                  <X className="w-3 h-3" />
-                                </Button>
-                              </TableCell>
+                              </TableHead>
+                              <TableHead className="text-xs py-1.5 font-semibold">
+                                Organization
+                              </TableHead>
+                              <TableHead className="text-xs py-1.5 font-semibold">
+                                Risks
+                              </TableHead>
+                              <TableHead className="w-8 py-1.5"></TableHead>
                             </TableRow>
-                          ))
-                        )}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </CollapsibleContent>
-              </Collapsible>
+                          </TableHeader>
+                          <TableBody>
+                            {filteredScopes.length === 0 ? (
+                              <TableRow>
+                                <TableCell
+                                  colSpan={4}
+                                  className="text-center text-xs text-muted-foreground py-4"
+                                >
+                                  No scopes defined. Click "ADD SCOPE" to add one.
+                                </TableCell>
+                              </TableRow>
+                            ) : (
+                              filteredScopes.map((scope) => (
+                                <TableRow key={scope.id}>
+                                  <TableCell className="py-1.5">
+                                    <Checkbox checked={!!scope.organization} />
+                                  </TableCell>
+                                  <TableCell className="text-xs py-1.5">
+                                    {scope.organization || "-"}
+                                  </TableCell>
+                                  <TableCell className="text-xs py-1.5">
+                                    {scope.risks || "-"}
+                                  </TableCell>
+                                  <TableCell className="py-1.5">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
+                                      onClick={() => handleDeleteScope(scope.id)}
+                                    >
+                                      <X className="w-3 h-3" />
+                                    </Button>
+                                  </TableCell>
+                                </TableRow>
+                              ))
+                            )}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </CollapsibleContent>
+                  </Collapsible>
+                </>
+              )}
             </div>
           </ScrollArea>
         </DialogContent>
