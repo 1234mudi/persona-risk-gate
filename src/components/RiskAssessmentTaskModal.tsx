@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -153,6 +153,17 @@ export function RiskAssessmentTaskModal({
   const [scopeData, setScopeData] = useState<OrganizationRiskScope[]>([]);
   const [expandedOrgs, setExpandedOrgs] = useState<string[]>([]);
   const [assessmentScopeOpen, setAssessmentScopeOpen] = useState(true);
+
+  // Reset all state when modal opens to ensure fresh form
+  useEffect(() => {
+    if (open) {
+      setInheritScope(false);
+      setSelectedPlanId("");
+      setScopeData([]);
+      setExpandedOrgs([]);
+      setAssessmentScopeOpen(true);
+    }
+  }, [open]);
 
   const selectedPlan = useMemo(
     () => mockPlans.find((p) => p.id === selectedPlanId),
