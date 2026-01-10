@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import {
   Select,
   SelectContent,
@@ -149,7 +150,7 @@ export function RiskAssessmentTaskModal({
   onSubmit,
 }: RiskAssessmentTaskModalProps) {
   const [selectedPlanId, setSelectedPlanId] = useState("");
-  const [inheritScope, setInheritScope] = useState(false);
+  const [selectionMode, setSelectionMode] = useState<"none" | "inherit" | "manual">("none");
   const [scopeData, setScopeData] = useState<OrganizationRiskScope[]>([]);
   const [expandedOrgs, setExpandedOrgs] = useState<string[]>([]);
   const [assessmentScopeOpen, setAssessmentScopeOpen] = useState(true);
@@ -157,7 +158,7 @@ export function RiskAssessmentTaskModal({
   // Reset all state when modal opens to ensure fresh form
   useEffect(() => {
     if (open) {
-      setInheritScope(false);
+      setSelectionMode("none");
       setSelectedPlanId("");
       setScopeData([]);
       setExpandedOrgs([]);
@@ -175,8 +176,17 @@ export function RiskAssessmentTaskModal({
     return scopeData.some((org) => org.risks.some((r) => r.selected));
   }, [scopeData]);
 
-  // Can proceed only if checkbox checked, plan selected, and at least one risk selected
-  const canProceed = inheritScope && selectedPlanId && hasSelectedRisks;
+  // Can proceed based on selection mode
+  const canProceed = useMemo(() => {
+    if (selectionMode === "inherit") {
+      return selectedPlanId && hasSelectedRisks;
+    }
+    if (selectionMode === "manual") {
+      // For manual mode - placeholder for future implementation
+      return false;
+    }
+    return false;
+  }, [selectionMode, selectedPlanId, hasSelectedRisks]);
 
   const handlePlanChange = (planId: string) => {
     setSelectedPlanId(planId);
@@ -192,10 +202,10 @@ export function RiskAssessmentTaskModal({
     setExpandedOrgs(scopeCopy.map((org) => org.id));
   };
 
-  const handleInheritScopeChange = (checked: boolean) => {
-    setInheritScope(checked);
-    if (!checked) {
-      // Reset plan and scope when unchecked
+  const handleSelectionModeChange = (mode: "inherit" | "manual") => {
+    setSelectionMode(mode);
+    if (mode !== "inherit") {
+      // Reset plan and scope when switching away from inherit
       setSelectedPlanId("");
       setScopeData([]);
       setExpandedOrgs([]);
@@ -208,7 +218,7 @@ export function RiskAssessmentTaskModal({
     const taskData: RiskAssessmentTaskData = {
       planId: selectedPlan.id,
       planTitle: selectedPlan.title,
-      inheritScope,
+      inheritScope: selectionMode === "inherit",
       scopeData: scopeData.filter((org) => org.risks.some((r) => r.selected)),
     };
 
@@ -308,33 +318,47 @@ export function RiskAssessmentTaskModal({
 
         <div className="flex-1 min-h-0 overflow-y-auto p-3">
           <div className="space-y-3">
-            {/* Inherit Assessment Scope - Primary Control (Always visible) */}
-            <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
-              <Checkbox
-                id="inheritScope"
-                checked={inheritScope}
-                onCheckedChange={(checked) =>
-                  handleInheritScopeChange(checked === true)
-                }
-                className="mt-0.5"
-              />
-              <div className="space-y-0.5">
-                <Label
-                  htmlFor="inheritScope"
-                  className="text-primary font-medium text-xs cursor-pointer"
-                >
-                  Inherit Existing Assessment Scope via Plan
-                </Label>
-                <p className="text-[10px] text-muted-foreground">
-                  {inheritScope
-                    ? "Select a plan to inherit its scope for assessment."
-                    : "A risk has to be selected to begin the assessment process."}
-                </p>
+            {/* Selection Mode - Radio buttons */}
+            <RadioGroup 
+              value={selectionMode} 
+              onValueChange={(value) => handleSelectionModeChange(value as "inherit" | "manual")}
+              className="space-y-3"
+            >
+              {/* Option 1: Inherit Existing Assessment Scope via Plan */}
+              <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
+                <RadioGroupItem value="inherit" id="inherit" className="mt-0.5" />
+                <div className="space-y-0.5">
+                  <Label
+                    htmlFor="inherit"
+                    className="text-primary font-medium text-xs cursor-pointer"
+                  >
+                    Inherit Existing Assessment Scope via Plan
+                  </Label>
+                  <p className="text-[10px] text-muted-foreground">
+                    Select a plan to inherit its scope for assessment.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            {/* Show Risk Assessment Plan dropdown when checkbox is checked */}
-            {inheritScope && (
+              {/* Option 2: Select a Risk to begin Assessment */}
+              <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
+                <RadioGroupItem value="manual" id="manual" className="mt-0.5" />
+                <div className="space-y-0.5">
+                  <Label
+                    htmlFor="manual"
+                    className="text-primary font-medium text-xs cursor-pointer"
+                  >
+                    Select a Risk to begin Assessment
+                  </Label>
+                  <p className="text-[10px] text-muted-foreground">
+                    Manually select a specific risk to assess.
+                  </p>
+                </div>
+              </div>
+            </RadioGroup>
+
+            {/* Show Risk Assessment Plan dropdown when inherit mode is selected */}
+            {selectionMode === "inherit" && (
               <div className="space-y-1 pl-3">
                 <Label className="text-primary font-medium text-xs">
                   Risk Assessment Plan <span className="text-destructive">*</span>
@@ -355,7 +379,7 @@ export function RiskAssessmentTaskModal({
             )}
 
             {/* Show Assessment Scope section when a plan is selected */}
-            {inheritScope && selectedPlanId && scopeData.length > 0 && (
+            {selectionMode === "inherit" && selectedPlanId && scopeData.length > 0 && (
               <Collapsible
                 open={assessmentScopeOpen}
                 onOpenChange={setAssessmentScopeOpen}
