@@ -29,28 +29,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
-import { Calendar } from "@/components/ui/calendar";
-import { format } from "date-fns";
-import {
   FileText,
-  HelpCircle,
   ChevronDown,
   ChevronRight,
-  Plus,
-  Trash2,
-  RefreshCw,
-  Search,
-  Maximize2,
   X,
-  Users,
-  Calendar as CalendarIcon,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { getInitialRiskDataCopy } from "@/data/initialRiskData";
 
 interface RiskAssessmentTaskModalProps {
   open: boolean;
@@ -61,609 +45,460 @@ interface RiskAssessmentTaskModalProps {
 interface RiskAssessmentTaskData {
   planId: string;
   planTitle: string;
-  perspective: string;
-  assessmentType: string;
   inheritScope: boolean;
-  selectedRisks: string[];
-  newRiskTitle?: string;
-  scopes: ScopeItem[];
+  scopeData: OrganizationRiskScope[];
 }
 
-interface ScopeItem {
+interface OrganizationRiskScope {
   id: string;
   organization: string;
-  assessableItems: string;
-  risks: string;
+  organizationId: string;
+  risks: {
+    id: string;
+    title: string;
+    selected: boolean;
+  }[];
 }
 
-interface ScopeFormData {
-  name: string;
-  organizations: string[];
-  risks: string[];
-  availableTo: string;
-  assessor: string;
-  approver: string;
-  dueDate: Date | undefined;
-}
-
+// Mock plans with their associated organization-risk scope data
 const mockPlans = [
   {
     id: "plan-1",
     title: "Assess all Employee Related Risk for Retail Banking",
-    perspective: "Enterprise Business Unit - Risk (Scoring Algorithm and Rating Method)",
-    type: "Org - Risk",
   },
   {
     id: "plan-2",
     title: "Quarterly Operational Risk Assessment",
-    perspective: "Corporate - Risk (Scoring Algorithm and Rating Method)",
-    type: "Org - Risk",
   },
   {
     id: "plan-3",
     title: "Annual Compliance Review",
-    perspective: "Regulatory - Compliance (Scoring Algorithm and Rating Method)",
-    type: "Compliance",
   },
 ];
+
+// Plan scope data - hierarchical organization-risk mappings
+const planScopeData: Record<string, OrganizationRiskScope[]> = {
+  "plan-1": [
+    {
+      id: "org-1",
+      organizationId: "org-1",
+      organization: "Retail Banking",
+      risks: [
+        { id: "R-001", title: "Operational Process Failure", selected: true },
+        { id: "R-002", title: "Cybersecurity Threat", selected: true },
+        { id: "R-003", title: "Credit Risk Exposure", selected: true },
+      ],
+    },
+    {
+      id: "org-2",
+      organizationId: "org-2",
+      organization: "Corporate Banking",
+      risks: [
+        { id: "R-004", title: "Market Risk", selected: true },
+        { id: "R-005", title: "Liquidity Risk", selected: true },
+      ],
+    },
+    {
+      id: "org-3",
+      organizationId: "org-3",
+      organization: "Investment Services",
+      risks: [
+        { id: "R-006", title: "Regulatory Compliance Risk", selected: true },
+        { id: "R-007", title: "Fraud Risk", selected: true },
+        { id: "R-008", title: "Third Party Risk", selected: true },
+      ],
+    },
+  ],
+  "plan-2": [
+    {
+      id: "org-4",
+      organizationId: "org-4",
+      organization: "Operations Division",
+      risks: [
+        { id: "R-009", title: "Business Continuity Risk", selected: true },
+        { id: "R-010", title: "Technology Failure Risk", selected: true },
+      ],
+    },
+    {
+      id: "org-5",
+      organizationId: "org-5",
+      organization: "Risk Management",
+      risks: [
+        { id: "R-011", title: "Model Risk", selected: true },
+        { id: "R-012", title: "Data Quality Risk", selected: true },
+      ],
+    },
+  ],
+  "plan-3": [
+    {
+      id: "org-6",
+      organizationId: "org-6",
+      organization: "Compliance Department",
+      risks: [
+        { id: "R-013", title: "AML Compliance Risk", selected: true },
+        { id: "R-014", title: "KYC Risk", selected: true },
+        { id: "R-015", title: "Sanctions Risk", selected: true },
+      ],
+    },
+  ],
+};
 
 export function RiskAssessmentTaskModal({
   open,
   onOpenChange,
   onSubmit,
 }: RiskAssessmentTaskModalProps) {
-  const [generalOpen, setGeneralOpen] = useState(true);
-  const [assessmentsOpen, setAssessmentsOpen] = useState(true);
   const [selectedPlanId, setSelectedPlanId] = useState("");
   const [inheritScope, setInheritScope] = useState(false);
-  const [showRiskList, setShowRiskList] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [scopeSearch, setScopeSearch] = useState("");
-  const [newRiskTitle, setNewRiskTitle] = useState("");
-  const [selectedLibraryRisks, setSelectedLibraryRisks] = useState<string[]>([]);
-  const [scopes, setScopes] = useState<ScopeItem[]>([
-    {
-      id: "scope-1",
-      organization: "Retail Banking",
-      assessableItems: "Employee Processes",
-      risks: "3 risks selected",
-    },
-  ]);
-
-  // Scope modal state
-  const [scopeModalOpen, setScopeModalOpen] = useState(false);
-  const [scopeFormData, setScopeFormData] = useState<ScopeFormData>({
-    name: "",
-    organizations: [],
-    risks: [],
-    availableTo: "assessor",
-    assessor: "",
-    approver: "",
-    dueDate: undefined,
-  });
-  const [selectedScopeOrgs, setSelectedScopeOrgs] = useState<string[]>([]);
-  const [selectedScopeRisks, setSelectedScopeRisks] = useState<string[]>([]);
+  const [scopeData, setScopeData] = useState<OrganizationRiskScope[]>([]);
+  const [expandedOrgs, setExpandedOrgs] = useState<string[]>([]);
+  const [assessmentScopeOpen, setAssessmentScopeOpen] = useState(true);
 
   const selectedPlan = useMemo(
     () => mockPlans.find((p) => p.id === selectedPlanId),
     [selectedPlanId]
   );
 
-  const libraryRisks = useMemo(() => {
-    const risks = getInitialRiskDataCopy();
-    return risks.map((r) => ({
-      id: r.id,
-      title: r.title,
-      category: r.category,
+  // Check if at least one risk is selected for validation
+  const hasSelectedRisks = useMemo(() => {
+    return scopeData.some((org) => org.risks.some((r) => r.selected));
+  }, [scopeData]);
+
+  // Can proceed only if checkbox checked, plan selected, and at least one risk selected
+  const canProceed = inheritScope && selectedPlanId && hasSelectedRisks;
+
+  const handlePlanChange = (planId: string) => {
+    setSelectedPlanId(planId);
+    // Load scope data from the selected plan
+    const planScope = planScopeData[planId] || [];
+    // Deep copy to allow modifications
+    const scopeCopy = planScope.map((org) => ({
+      ...org,
+      risks: org.risks.map((risk) => ({ ...risk })),
     }));
-  }, []);
+    setScopeData(scopeCopy);
+    // Expand all organizations by default
+    setExpandedOrgs(scopeCopy.map((org) => org.id));
+  };
 
-  const filteredLibraryRisks = useMemo(() => {
-    if (!searchQuery) return libraryRisks;
-    return libraryRisks.filter(
-      (r) =>
-        r.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.category.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  }, [libraryRisks, searchQuery]);
-
-  const filteredScopes = useMemo(() => {
-    if (!scopeSearch) return scopes;
-    return scopes.filter(
-      (s) =>
-        s.organization.toLowerCase().includes(scopeSearch.toLowerCase()) ||
-        s.risks.toLowerCase().includes(scopeSearch.toLowerCase())
-    );
-  }, [scopes, scopeSearch]);
+  const handleInheritScopeChange = (checked: boolean) => {
+    setInheritScope(checked);
+    if (!checked) {
+      // Reset plan and scope when unchecked
+      setSelectedPlanId("");
+      setScopeData([]);
+      setExpandedOrgs([]);
+    }
+  };
 
   const handleSubmit = () => {
-    if (!selectedPlan) return;
+    if (!selectedPlan || !canProceed) return;
 
     const taskData: RiskAssessmentTaskData = {
       planId: selectedPlan.id,
       planTitle: selectedPlan.title,
-      perspective: selectedPlan.perspective,
-      assessmentType: selectedPlan.type,
       inheritScope,
-      selectedRisks: inheritScope ? selectedLibraryRisks : selectedLibraryRisks,
-      newRiskTitle: !inheritScope ? newRiskTitle : undefined,
-      scopes,
+      scopeData: scopeData.filter((org) => org.risks.some((r) => r.selected)),
     };
 
     onSubmit?.(taskData);
   };
 
-  const handleAddScope = () => {
-    const newScope: ScopeItem = {
-      id: `scope-${Date.now()}`,
-      organization: "",
-      assessableItems: "",
-      risks: "0 risks selected",
-    };
-    setScopes([...scopes, newScope]);
-  };
-
-  const handleDeleteScope = (id: string) => {
-    setScopes(scopes.filter((s) => s.id !== id));
-  };
-
-  const handleRefresh = () => {
-    // Refresh logic
-  };
-
-  const toggleLibraryRisk = (riskId: string) => {
-    setSelectedLibraryRisks((prev) =>
-      prev.includes(riskId)
-        ? prev.filter((id) => id !== riskId)
-        : [...prev, riskId]
+  const toggleOrgExpanded = (orgId: string) => {
+    setExpandedOrgs((prev) =>
+      prev.includes(orgId)
+        ? prev.filter((id) => id !== orgId)
+        : [...prev, orgId]
     );
   };
 
-  const handleInheritScopeChange = (checked: boolean) => {
-    setInheritScope(checked);
-    if (checked && selectedPlanId) {
-      // Pre-populate scope form with plan data
-      setScopeFormData({
-        name: selectedPlan?.title || "",
-        organizations: ["org-1", "org-2"],
-        risks: ["risk-1", "risk-3"],
-        availableTo: "assessor",
-        assessor: "",
-        approver: "",
-        dueDate: undefined,
-      });
-      setSelectedScopeOrgs(["org-1", "org-2"]);
-      setSelectedScopeRisks(["risk-1", "risk-3"]);
-      setScopeModalOpen(true);
-    }
+  const handleRemoveOrg = (orgId: string) => {
+    setScopeData((prev) => prev.filter((org) => org.id !== orgId));
   };
 
-  const handleScopeAdd = () => {
-    setScopeModalOpen(false);
+  const handleToggleRisk = (orgId: string, riskId: string) => {
+    setScopeData((prev) =>
+      prev.map((org) => {
+        if (org.id === orgId) {
+          return {
+            ...org,
+            risks: org.risks.map((risk) =>
+              risk.id === riskId ? { ...risk, selected: !risk.selected } : risk
+            ),
+          };
+        }
+        return org;
+      })
+    );
+  };
+
+  const handleToggleOrg = (orgId: string, checked: boolean) => {
+    setScopeData((prev) =>
+      prev.map((org) => {
+        if (org.id === orgId) {
+          return {
+            ...org,
+            risks: org.risks.map((risk) => ({ ...risk, selected: checked })),
+          };
+        }
+        return org;
+      })
+    );
+  };
+
+  const getSelectedRiskCount = (org: OrganizationRiskScope) => {
+    return org.risks.filter((r) => r.selected).length;
+  };
+
+  const isOrgFullySelected = (org: OrganizationRiskScope) => {
+    return org.risks.every((r) => r.selected);
+  };
+
+  const isOrgPartiallySelected = (org: OrganizationRiskScope) => {
+    const selectedCount = getSelectedRiskCount(org);
+    return selectedCount > 0 && selectedCount < org.risks.length;
   };
 
   return (
-    <>
-      <Dialog open={open} onOpenChange={onOpenChange}>
-        <DialogContent
-          className="max-w-4xl p-0 gap-0 max-h-[90vh] flex flex-col"
-          hideCloseButton
-        >
-          {/* Header */}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        className="max-w-4xl p-0 gap-0 max-h-[90vh] flex flex-col"
+        hideCloseButton
+      >
+        {/* Header */}
         <div className="flex items-center justify-between px-3 py-1 border-b border-primary/30 bg-muted/30">
           <div className="flex items-center gap-2">
             <div className="w-5 h-5 rounded bg-primary/10 flex items-center justify-center">
               <FileText className="w-3 h-3 text-primary" />
             </div>
-            <h2 className="text-sm font-semibold text-foreground">Ad-Hoc Risk Assessment</h2>
-            </div>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => onOpenChange(false)}
-                className="h-6 px-2 text-[10px]"
-              >
-                CLOSE
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleSubmit}
-                disabled={!selectedPlanId}
-                className="h-6 px-2 text-[10px]"
-              >
-                PROCEED
-              </Button>
-            </div>
+            <h2 className="text-sm font-semibold text-foreground">
+              Ad-Hoc Risk Assessment
+            </h2>
           </div>
-
-          <ScrollArea className="flex-1 p-3">
-            <div className="space-y-3">
-              {/* Inherit Assessment Scope - Primary Control */}
-              <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
-                <Checkbox
-                  id="inheritScope"
-                  checked={inheritScope}
-                  onCheckedChange={(checked) =>
-                    handleInheritScopeChange(checked === true)
-                  }
-                  className="mt-0.5"
-                />
-                <div className="space-y-0.5">
-                  <Label
-                    htmlFor="inheritScope"
-                    className="text-primary font-medium text-xs cursor-pointer"
-                  >
-                    Inherit Existing Assessment Scope via Plan
-                  </Label>
-                  <p className="text-[10px] text-muted-foreground">
-                    {inheritScope
-                      ? "Risks to be assessed will be selected from an existing plan."
-                      : "A risk has to be selected to begin the assessment process."}
-                  </p>
-                </div>
-              </div>
-
-              {/* General Section - Only show Risk Assessment Plan when checkbox is checked */}
-              {inheritScope && (
-                <Collapsible open={generalOpen} onOpenChange={setGeneralOpen}>
-                  <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
-                    {generalOpen ? (
-                      <ChevronDown className="w-4 h-4 text-primary" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 text-primary" />
-                    )}
-                    General
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className="pt-3 pl-3 space-y-3">
-                    {/* Risk Assessment Plan */}
-                    <div className="space-y-1">
-                      <Label className="text-primary font-medium text-xs">
-                        Risk Assessment Plan <span className="text-destructive">*</span>
-                      </Label>
-                      <Select
-                        value={selectedPlanId}
-                        onValueChange={setSelectedPlanId}
-                      >
-                        <SelectTrigger className="h-8 text-xs">
-                          <SelectValue placeholder="Select a risk assessment plan" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {mockPlans.map((plan) => (
-                            <SelectItem key={plan.id} value={plan.id} className="text-xs">
-                              {plan.title}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CollapsibleContent>
-                </Collapsible>
-              )}
-
-              {/* Show Perspective, Assessment Type, and Assessments section when checkbox is NOT checked */}
-              {!inheritScope && (
-                <>
-                  {/* General Section with all fields */}
-                  <Collapsible open={generalOpen} onOpenChange={setGeneralOpen}>
-                    <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
-                      {generalOpen ? (
-                        <ChevronDown className="w-4 h-4 text-primary" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-primary" />
-                      )}
-                      General
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-3 pl-3 space-y-3">
-                      {/* Perspective & Assessment Type */}
-                      <div className="grid grid-cols-2 gap-3">
-                        <div className="space-y-1">
-                          <Label className="text-primary font-medium text-xs">Perspective</Label>
-                          <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                            {selectedPlan?.perspective || "Ad-Hoc Assessment"}
-                          </div>
-                        </div>
-                        <div className="space-y-1">
-                          <Label className="text-primary font-medium text-xs">Assessment Type</Label>
-                          <div className="p-2 bg-muted/50 rounded text-xs text-muted-foreground">
-                            {selectedPlan?.type || "Org-Risk"}
-                          </div>
-                        </div>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-
-                  {/* Assessments Section */}
-                  <Collapsible open={assessmentsOpen} onOpenChange={setAssessmentsOpen}>
-                    <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
-                      {assessmentsOpen ? (
-                        <ChevronDown className="w-4 h-4 text-primary" />
-                      ) : (
-                        <ChevronRight className="w-4 h-4 text-primary" />
-                      )}
-                      Assessments
-                    </CollapsibleTrigger>
-                    <CollapsibleContent className="pt-3 space-y-2">
-                      <p className="text-[10px] text-muted-foreground">
-                        Specify the scope of one or more assessments. Choose from
-                        organizations, assessable items and risks that need to be assessed.
-                      </p>
-
-                      {/* Action Bar */}
-                      <div className="flex items-center gap-2 flex-wrap">
-                        <Button
-                          size="sm"
-                          onClick={handleAddScope}
-                          className="gap-1 h-7 px-2 text-xs"
-                        >
-                          <Plus className="w-3 h-3" />
-                          ADD SCOPE
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 w-7 p-0"
-                          onClick={() => {
-                            const selected = scopes.filter((s) => s.organization);
-                            if (selected.length > 0) {
-                              handleDeleteScope(selected[0].id);
-                            }
-                          }}
-                        >
-                          <Trash2 className="w-3 h-3" />
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="h-7 w-7 p-0"
-                          onClick={handleRefresh}
-                        >
-                          <RefreshCw className="w-3 h-3" />
-                        </Button>
-                        <div className="flex-1" />
-                        <div className="relative">
-                          <Search className="absolute left-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground" />
-                          <Input
-                            placeholder="Search scopes..."
-                            value={scopeSearch}
-                            onChange={(e) => setScopeSearch(e.target.value)}
-                            className="pl-7 h-7 w-40 text-xs"
-                          />
-                        </div>
-                        <Button variant="outline" size="sm" className="h-7 w-7 p-0">
-                          <Maximize2 className="w-3 h-3" />
-                        </Button>
-                      </div>
-
-                      {/* Scope Table */}
-                      <div className="border rounded overflow-hidden">
-                        <Table>
-                          <TableHeader>
-                            <TableRow className="bg-muted/40">
-                              <TableHead className="w-8 py-1.5">
-                                <Checkbox />
-                              </TableHead>
-                              <TableHead className="text-xs py-1.5 font-semibold">
-                                Organization
-                              </TableHead>
-                              <TableHead className="text-xs py-1.5 font-semibold">
-                                Risks
-                              </TableHead>
-                              <TableHead className="w-8 py-1.5"></TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {filteredScopes.length === 0 ? (
-                              <TableRow>
-                                <TableCell
-                                  colSpan={4}
-                                  className="text-center text-xs text-muted-foreground py-4"
-                                >
-                                  No scopes defined. Click "ADD SCOPE" to add one.
-                                </TableCell>
-                              </TableRow>
-                            ) : (
-                              filteredScopes.map((scope) => (
-                                <TableRow key={scope.id}>
-                                  <TableCell className="py-1.5">
-                                    <Checkbox checked={!!scope.organization} />
-                                  </TableCell>
-                                  <TableCell className="text-xs py-1.5">
-                                    {scope.organization || "-"}
-                                  </TableCell>
-                                  <TableCell className="text-xs py-1.5">
-                                    {scope.risks || "-"}
-                                  </TableCell>
-                                  <TableCell className="py-1.5">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="h-6 w-6 p-0 text-destructive hover:text-destructive"
-                                      onClick={() => handleDeleteScope(scope.id)}
-                                    >
-                                      <X className="w-3 h-3" />
-                                    </Button>
-                                  </TableCell>
-                                </TableRow>
-                              ))
-                            )}
-                          </TableBody>
-                        </Table>
-                      </div>
-                    </CollapsibleContent>
-                  </Collapsible>
-                </>
-              )}
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-
-      {/* Scope Selection Modal */}
-      <Dialog open={scopeModalOpen} onOpenChange={setScopeModalOpen}>
-        <DialogContent className="max-w-md p-0 gap-0" hideCloseButton>
-          {/* Header */}
-          <div className="flex items-center justify-between px-3 py-2 border-b border-primary/30 bg-muted/30">
-            <h3 className="text-sm font-semibold text-foreground">Scope</h3>
-            <div className="flex items-center gap-2">
-              <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                <Maximize2 className="w-3 h-3" />
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setScopeModalOpen(false)}
-                className="h-6 px-2 text-xs"
-              >
-                CANCEL
-              </Button>
-              <Button
-                size="sm"
-                onClick={handleScopeAdd}
-                className="h-6 px-2 text-xs"
-              >
-                ADD
-              </Button>
-            </div>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => onOpenChange(false)}
+              className="h-6 px-2 text-[10px]"
+            >
+              CLOSE
+            </Button>
+            <Button
+              size="sm"
+              onClick={handleSubmit}
+              disabled={!canProceed}
+              className="h-6 px-2 text-[10px]"
+            >
+              PROCEED
+            </Button>
           </div>
+        </div>
 
-          <ScrollArea className="max-h-[70vh]">
-            <div className="p-3 space-y-3">
-              {/* Name */}
-              <div className="space-y-1">
-                <Label className="text-primary font-medium text-xs">
-                  Name <span className="text-destructive">*</span>
-                </Label>
-                <Input
-                  value={scopeFormData.name}
-                  onChange={(e) =>
-                    setScopeFormData({ ...scopeFormData, name: e.target.value })
-                  }
-                  className="h-8 text-sm"
-                />
-              </div>
-
-              {/* Organizations */}
-              <div className="border rounded p-2 flex items-center justify-between cursor-pointer hover:bg-muted/30 transition-colors">
-                <div className="flex items-center gap-2">
-                  <span className="text-primary text-xs font-medium">
-                    Organizations <span className="text-destructive">*</span>
-                  </span>
-                  {selectedScopeOrgs.length > 0 && (
-                    <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                      {selectedScopeOrgs.length} selected
-                    </span>
-                  )}
-                </div>
-                <Plus className="w-3 h-3 text-muted-foreground" />
-              </div>
-
-              {/* Risks */}
-              <div className="border rounded p-2 flex items-center justify-between cursor-pointer hover:bg-muted/30 transition-colors">
-                <div className="flex items-center gap-2">
-                  <span className="text-primary text-xs font-medium">
-                    Risks <span className="text-destructive">*</span>
-                  </span>
-                  {selectedScopeRisks.length > 0 && (
-                    <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded">
-                      {selectedScopeRisks.length} selected
-                    </span>
-                  )}
-                </div>
-                <Plus className="w-3 h-3 text-muted-foreground" />
-              </div>
-
-              {/* Assessors Section */}
-              <div className="pt-1">
-                <div className="border-l-[3px] border-primary pl-2 py-0.5 bg-muted/40 rounded-r-sm">
-                  <h4 className="font-semibold text-xs text-foreground">Assessors</h4>
-                </div>
-              </div>
-
-              {/* Available To */}
-              <div className="space-y-1">
-                <Label className="text-primary font-medium text-xs">
-                  Available To <span className="text-destructive">*</span>
-                </Label>
-                <Select
-                  value={scopeFormData.availableTo}
-                  onValueChange={(value) =>
-                    setScopeFormData({ ...scopeFormData, availableTo: value })
-                  }
+        <ScrollArea className="flex-1 p-3">
+          <div className="space-y-3">
+            {/* Inherit Assessment Scope - Primary Control (Always visible) */}
+            <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
+              <Checkbox
+                id="inheritScope"
+                checked={inheritScope}
+                onCheckedChange={(checked) =>
+                  handleInheritScopeChange(checked === true)
+                }
+                className="mt-0.5"
+              />
+              <div className="space-y-0.5">
+                <Label
+                  htmlFor="inheritScope"
+                  className="text-primary font-medium text-xs cursor-pointer"
                 >
-                  <SelectTrigger className="h-8 text-sm">
-                    <SelectValue placeholder="Select role" />
+                  Inherit Existing Assessment Scope via Plan
+                </Label>
+                <p className="text-[10px] text-muted-foreground">
+                  {inheritScope
+                    ? "Select a plan to inherit its scope for assessment."
+                    : "A risk has to be selected to begin the assessment process."}
+                </p>
+              </div>
+            </div>
+
+            {/* Show Risk Assessment Plan dropdown when checkbox is checked */}
+            {inheritScope && (
+              <div className="space-y-1 pl-3">
+                <Label className="text-primary font-medium text-xs">
+                  Risk Assessment Plan <span className="text-destructive">*</span>
+                </Label>
+                <Select value={selectedPlanId} onValueChange={handlePlanChange}>
+                  <SelectTrigger className="h-8 text-xs">
+                    <SelectValue placeholder="Select a risk assessment plan" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="assessor">Assessor</SelectItem>
-                    <SelectItem value="reviewer">Reviewer</SelectItem>
-                    <SelectItem value="approver">Approver</SelectItem>
+                    {mockPlans.map((plan) => (
+                      <SelectItem key={plan.id} value={plan.id} className="text-xs">
+                        {plan.title}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
+            )}
 
-              {/* Assessor */}
-              <div className="border rounded p-2 flex items-center gap-2 cursor-pointer hover:bg-muted/30 transition-colors">
-                <Users className="w-3 h-3 text-muted-foreground" />
-                <span className="text-primary text-xs font-medium flex-1">
-                  Assessor <span className="text-destructive">*</span>
-                </span>
-                <Plus className="w-3 h-3 text-muted-foreground" />
-              </div>
+            {/* Show Assessment Scope section when a plan is selected */}
+            {inheritScope && selectedPlanId && scopeData.length > 0 && (
+              <Collapsible
+                open={assessmentScopeOpen}
+                onOpenChange={setAssessmentScopeOpen}
+              >
+                <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
+                  {assessmentScopeOpen ? (
+                    <ChevronDown className="w-4 h-4 text-primary" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-primary" />
+                  )}
+                  Assessment Scope
+                </CollapsibleTrigger>
+                <CollapsibleContent className="pt-3 space-y-2">
+                  <p className="text-[10px] text-muted-foreground">
+                    The following organizations and risks are scoped for
+                    assessment based on the selected plan. You can edit the
+                    scope by selecting/deselecting risks or removing
+                    organizations.
+                  </p>
 
-              {/* Approver */}
-              <div className="border rounded p-2 flex items-center gap-2 cursor-pointer hover:bg-muted/30 transition-colors">
-                <Users className="w-3 h-3 text-muted-foreground" />
-                <span className="text-primary text-xs font-medium flex-1">
-                  Approver
-                </span>
-                <Plus className="w-3 h-3 text-muted-foreground" />
-              </div>
+                  {/* Hierarchical Scope Table */}
+                  <div className="border rounded overflow-hidden">
+                    <Table>
+                      <TableHeader>
+                        <TableRow className="bg-muted/40">
+                          <TableHead className="w-8 py-1.5"></TableHead>
+                          <TableHead className="w-8 py-1.5"></TableHead>
+                          <TableHead className="text-xs py-1.5 font-semibold">
+                            Organization / Risk
+                          </TableHead>
+                          <TableHead className="text-xs py-1.5 font-semibold text-right">
+                            Selected
+                          </TableHead>
+                          <TableHead className="w-8 py-1.5"></TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {scopeData.map((org) => (
+                          <React.Fragment key={org.id}>
+                            {/* Organization Row */}
+                            <TableRow className="bg-muted/20 hover:bg-muted/30">
+                              <TableCell className="py-1.5 w-8">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-5 w-5 p-0"
+                                  onClick={() => toggleOrgExpanded(org.id)}
+                                >
+                                  {expandedOrgs.includes(org.id) ? (
+                                    <ChevronDown className="w-3 h-3 text-primary" />
+                                  ) : (
+                                    <ChevronRight className="w-3 h-3 text-primary" />
+                                  )}
+                                </Button>
+                              </TableCell>
+                              <TableCell className="py-1.5 w-8">
+                                <Checkbox
+                                  checked={isOrgFullySelected(org)}
+                                  className={cn(
+                                    isOrgPartiallySelected(org) &&
+                                      "data-[state=unchecked]:bg-primary/30"
+                                  )}
+                                  onCheckedChange={(checked) =>
+                                    handleToggleOrg(org.id, checked === true)
+                                  }
+                                />
+                              </TableCell>
+                              <TableCell className="text-xs py-1.5 font-medium">
+                                {org.organization}
+                              </TableCell>
+                              <TableCell className="text-xs py-1.5 text-right text-muted-foreground">
+                                {getSelectedRiskCount(org)} of {org.risks.length}{" "}
+                                risks
+                              </TableCell>
+                              <TableCell className="py-1.5 w-8">
+                                <Button
+                                  variant="ghost"
+                                  size="sm"
+                                  className="h-5 w-5 p-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                                  onClick={() => handleRemoveOrg(org.id)}
+                                >
+                                  <X className="w-3 h-3" />
+                                </Button>
+                              </TableCell>
+                            </TableRow>
+                            {/* Risk Rows (nested under organization) */}
+                            {expandedOrgs.includes(org.id) &&
+                              org.risks.map((risk) => (
+                                <TableRow
+                                  key={risk.id}
+                                  className="hover:bg-muted/10"
+                                >
+                                  <TableCell className="py-1 w-8"></TableCell>
+                                  <TableCell className="py-1 w-8 pl-4">
+                                    <Checkbox
+                                      checked={risk.selected}
+                                      onCheckedChange={() =>
+                                        handleToggleRisk(org.id, risk.id)
+                                      }
+                                    />
+                                  </TableCell>
+                                  <TableCell
+                                    colSpan={2}
+                                    className="text-xs py-1 pl-6 text-muted-foreground"
+                                  >
+                                    <span className="text-muted-foreground/60 mr-1">
+                                      └
+                                    </span>
+                                    {risk.title}
+                                  </TableCell>
+                                  <TableCell className="py-1 w-8"></TableCell>
+                                </TableRow>
+                              ))}
+                          </React.Fragment>
+                        ))}
+                        {scopeData.length === 0 && (
+                          <TableRow>
+                            <TableCell
+                              colSpan={5}
+                              className="text-center text-xs text-muted-foreground py-4"
+                            >
+                              No scope data available for this plan.
+                            </TableCell>
+                          </TableRow>
+                        )}
+                      </TableBody>
+                    </Table>
+                  </div>
 
-              {/* Due Date Section */}
-              <div className="pt-1">
-                <div className="border-l-[3px] border-primary pl-2 py-0.5 bg-muted/40 rounded-r-sm">
-                  <h4 className="font-semibold text-xs text-foreground">Due Date</h4>
-                </div>
-              </div>
-
-              {/* Due Date */}
-              <div className="space-y-1">
-                <Label className="text-primary font-medium text-xs">
-                  Due Date <span className="text-destructive">*</span>
-                </Label>
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <Button
-                      variant="outline"
-                      className={cn(
-                        "w-full h-8 justify-start text-left font-normal text-sm",
-                        !scopeFormData.dueDate && "text-muted-foreground"
-                      )}
-                    >
-                      <CalendarIcon className="mr-2 h-3 w-3" />
-                      {scopeFormData.dueDate
-                        ? format(scopeFormData.dueDate, "PPP")
-                        : "Pick a date"}
-                    </Button>
-                  </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0" align="start">
-                    <Calendar
-                      mode="single"
-                      selected={scopeFormData.dueDate}
-                      onSelect={(date) =>
-                        setScopeFormData({ ...scopeFormData, dueDate: date })
-                      }
-                      initialFocus
-                      className="p-3 pointer-events-auto"
-                    />
-                  </PopoverContent>
-                </Popover>
-              </div>
-            </div>
-          </ScrollArea>
-        </DialogContent>
-      </Dialog>
-    </>
+                  {/* Summary */}
+                  {scopeData.length > 0 && (
+                    <div className="text-[10px] text-muted-foreground bg-muted/30 p-2 rounded">
+                      <strong>Summary:</strong> {scopeData.length} organization
+                      {scopeData.length !== 1 ? "s" : ""},{" "}
+                      {scopeData.reduce(
+                        (acc, org) => acc + getSelectedRiskCount(org),
+                        0
+                      )}{" "}
+                      risk
+                      {scopeData.reduce(
+                        (acc, org) => acc + getSelectedRiskCount(org),
+                        0
+                      ) !== 1
+                        ? "s"
+                        : ""}{" "}
+                      selected for assessment
+                    </div>
+                  )}
+                </CollapsibleContent>
+              </Collapsible>
+            )}
+          </div>
+        </ScrollArea>
+      </DialogContent>
+    </Dialog>
   );
 }
