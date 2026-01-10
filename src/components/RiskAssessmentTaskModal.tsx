@@ -304,10 +304,47 @@ export function RiskAssessmentTaskModal({
                 </div>
               </div>
 
-              {/* Only show remaining sections when inheritScope is true */}
+              {/* General Section - Only show Risk Assessment Plan when checkbox is checked */}
               {inheritScope && (
+                <Collapsible open={generalOpen} onOpenChange={setGeneralOpen}>
+                  <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
+                    {generalOpen ? (
+                      <ChevronDown className="w-4 h-4 text-primary" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 text-primary" />
+                    )}
+                    General
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="pt-3 pl-3 space-y-3">
+                    {/* Risk Assessment Plan */}
+                    <div className="space-y-1">
+                      <Label className="text-primary font-medium text-xs">
+                        Risk Assessment Plan <span className="text-destructive">*</span>
+                      </Label>
+                      <Select
+                        value={selectedPlanId}
+                        onValueChange={setSelectedPlanId}
+                      >
+                        <SelectTrigger className="h-8 text-xs">
+                          <SelectValue placeholder="Select a risk assessment plan" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {mockPlans.map((plan) => (
+                            <SelectItem key={plan.id} value={plan.id} className="text-xs">
+                              {plan.title}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
+              )}
+
+              {/* Show Perspective, Assessment Type, and Assessments section when checkbox is NOT checked */}
+              {!inheritScope && (
                 <>
-                  {/* General Section */}
+                  {/* General Section with all fields */}
                   <Collapsible open={generalOpen} onOpenChange={setGeneralOpen}>
                     <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
                       {generalOpen ? (
@@ -318,28 +355,6 @@ export function RiskAssessmentTaskModal({
                       General
                     </CollapsibleTrigger>
                     <CollapsibleContent className="pt-3 pl-3 space-y-3">
-                      {/* Risk Assessment Plan */}
-                      <div className="space-y-1">
-                        <Label className="text-primary font-medium text-xs">
-                          Risk Assessment Plan <span className="text-destructive">*</span>
-                        </Label>
-                        <Select
-                          value={selectedPlanId}
-                          onValueChange={setSelectedPlanId}
-                        >
-                          <SelectTrigger className="h-8 text-xs">
-                            <SelectValue placeholder="Select a risk assessment plan" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {mockPlans.map((plan) => (
-                              <SelectItem key={plan.id} value={plan.id} className="text-xs">
-                                {plan.title}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-
                       {/* Perspective & Assessment Type */}
                       <div className="grid grid-cols-2 gap-3">
                         <div className="space-y-1">
