@@ -298,8 +298,8 @@ export function RiskAssessmentTaskModal({
                   </Label>
                   <p className="text-[10px] text-muted-foreground">
                     {inheritScope
-                      ? "The scope defined across an existing plan can be selected."
-                      : "Manually select a risk to begin assessment."}
+                      ? "Risks to be assessed will be selected from an existing plan."
+                      : "A risk has to be selected to begin the assessment process."}
                   </p>
                 </div>
               </div>
