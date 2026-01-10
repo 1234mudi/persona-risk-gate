@@ -273,7 +273,7 @@ export function RiskAssessmentTaskModal({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className="max-w-4xl p-0 gap-0 max-h-[90vh] flex flex-col overflow-hidden"
+        className="max-w-4xl p-0 gap-0 max-h-[85vh] flex flex-col overflow-hidden"
         hideCloseButton
       >
         {/* Header */}
@@ -306,7 +306,7 @@ export function RiskAssessmentTaskModal({
           </div>
         </div>
 
-        <ScrollArea className="flex-1 min-h-0 p-3">
+        <div className="flex-1 min-h-0 overflow-y-auto p-3">
           <div className="space-y-3">
             {/* Inherit Assessment Scope - Primary Control (Always visible) */}
             <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
@@ -508,7 +508,7 @@ export function RiskAssessmentTaskModal({
               </Collapsible>
             )}
           </div>
-        </ScrollArea>
+        </div>
       </DialogContent>
     </Dialog>
   );
