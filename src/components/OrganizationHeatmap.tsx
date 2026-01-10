@@ -174,16 +174,26 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
     return "text-green-600 dark:text-green-400";
   };
 
-  // Get trend indicator component
+  // Get trend indicator component with squiggly line SVG
   const getTrendIndicator = (trend: number) => {
     if (trend === 0) return null;
     if (trend > 0) {
       return (
-        <TrendingUp className="w-2 h-2 text-red-500 ml-0.5 inline-block" />
+        <span className="inline-flex items-center text-red-500 ml-0.5">
+          <svg className="w-2.5 h-2.5" viewBox="0 0 12 12">
+            <path d="M1 9 Q3 5 6 7 Q9 9 11 3" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round"/>
+            <path d="M9 3 L11 3 L11 5" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+        </span>
       );
     }
     return (
-      <TrendingDown className="w-2 h-2 text-green-500 ml-0.5 inline-block" />
+      <span className="inline-flex items-center text-green-500 ml-0.5">
+        <svg className="w-2.5 h-2.5" viewBox="0 0 12 12">
+          <path d="M1 3 Q3 7 6 5 Q9 3 11 9" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round"/>
+          <path d="M9 9 L11 9 L11 7" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </span>
     );
   };
 
@@ -376,11 +386,17 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
           {/* Trend legend */}
           <div className="border-l border-border/50 pl-3 ml-1 flex items-center gap-2">
             <div className="flex items-center gap-0.5">
-              <TrendingUp className="w-2.5 h-2.5 text-red-500" />
+              <svg className="w-2.5 h-2.5 text-red-500" viewBox="0 0 12 12">
+                <path d="M1 9 Q3 5 6 7 Q9 9 11 3" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M9 3 L11 3 L11 5" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
               <span className="text-[8px] text-muted-foreground">Increased</span>
             </div>
             <div className="flex items-center gap-0.5">
-              <TrendingDown className="w-2.5 h-2.5 text-green-500" />
+              <svg className="w-2.5 h-2.5 text-green-500" viewBox="0 0 12 12">
+                <path d="M1 3 Q3 7 6 5 Q9 3 11 9" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round"/>
+                <path d="M9 9 L11 9 L11 7" stroke="currentColor" fill="none" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
               <span className="text-[8px] text-muted-foreground">Decreased</span>
             </div>
           </div>
