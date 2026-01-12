@@ -101,6 +101,7 @@ import { Separator } from "@/components/ui/separator";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { toast } from "sonner";
 import { AIFieldIndicator } from "@/components/AIFieldIndicator";
+import { AIFieldSuggestion } from "@/components/AIFieldSuggestion";
 import { AddControlModal } from "@/components/AddControlModal";
 import { cn } from "@/lib/utils";
 import { initialRiskData, SharedRiskData } from "@/data/initialRiskData";
@@ -1144,8 +1145,117 @@ const RiskAssessmentForm = () => {
       toast.success("AI suggestions applied successfully!");
     }, 2000);
   };
+
+  // Individual AI suggestion handlers for each field
+  const suggestInherentRating = async (factorId: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Simulate AI-generated rating (1-5)
+        const aiRating = Math.floor(Math.random() * 3) + 2; // 2-4 range for more realistic suggestions
+        setInherentFactors(prev => prev.map(f => 
+          f.id === factorId ? { ...f, rating: aiRating } : f
+        ));
+        setAiFilledFields(prev => new Set(prev).add(`inherent-${factorId}-rating`));
+        setEditedFields(prev => {
+          const updated = new Set(prev);
+          updated.delete(`inherent-${factorId}-rating`);
+          return updated;
+        });
+        toast.success("AI suggestion applied");
+        resolve();
+      }, 600);
+    });
+  };
+
+  const suggestInherentComment = async (factorId: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const factor = inherentFactors.find(f => f.id === factorId);
+        const commentSuggestions: Record<string, string> = {
+          "Impact": "Based on analysis of historical data and current market conditions, the impact is assessed as significant due to potential financial and regulatory consequences.",
+          "Likelihood": "Current control environment and external factors suggest a moderate probability of occurrence within the assessment period."
+        };
+        const aiComment = commentSuggestions[factor?.name || ''] || `Analysis indicates ${factor?.name || 'this factor'} warrants attention based on risk profile.`;
+        setInherentFactors(prev => prev.map(f => 
+          f.id === factorId ? { ...f, comments: aiComment } : f
+        ));
+        setAiFilledFields(prev => new Set(prev).add(`inherent-${factorId}-comments`));
+        setEditedFields(prev => {
+          const updated = new Set(prev);
+          updated.delete(`inherent-${factorId}-comments`);
+          return updated;
+        });
+        toast.success("AI suggestion applied");
+        resolve();
+      }, 800);
+    });
+  };
+
+  const suggestControlRating = async (controlId: string, ratingType: 'designRating' | 'operatingRating' | 'testingRating'): Promise<void> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const aiRating = Math.floor(Math.random() * 3) + 2; // 2-4 range
+        setControls(prev => prev.map(c => 
+          c.id === controlId ? { ...c, [ratingType]: aiRating } : c
+        ));
+        const fieldKey = `control-${controlId}-${ratingType === 'designRating' ? 'design' : ratingType === 'operatingRating' ? 'operating' : 'testing'}`;
+        setAiFilledFields(prev => new Set(prev).add(fieldKey));
+        setEditedFields(prev => {
+          const updated = new Set(prev);
+          updated.delete(fieldKey);
+          return updated;
+        });
+        toast.success("AI suggestion applied");
+        resolve();
+      }, 600);
+    });
+  };
+
+  const suggestResidualRating = async (factorId: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        // Residual rating should generally be lower than inherent due to controls
+        const aiRating = Math.floor(Math.random() * 2) + 1; // 1-2 range for residual
+        setResidualFactors(prev => prev.map(f => 
+          f.id === factorId ? { ...f, rating: aiRating } : f
+        ));
+        setAiFilledFields(prev => new Set(prev).add(`residual-${factorId}-rating`));
+        setEditedFields(prev => {
+          const updated = new Set(prev);
+          updated.delete(`residual-${factorId}-rating`);
+          return updated;
+        });
+        toast.success("AI suggestion applied");
+        resolve();
+      }, 600);
+    });
+  };
+
+  const suggestResidualComment = async (factorId: string): Promise<void> => {
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        const factor = residualFactors.find(f => f.id === factorId);
+        const commentSuggestions: Record<string, string> = {
+          "Impact": "After applying existing controls, residual impact has been significantly reduced. Remaining exposure is within acceptable tolerance levels.",
+          "Likelihood": "Control effectiveness has materially reduced the likelihood of occurrence. Ongoing monitoring recommended."
+        };
+        const aiComment = commentSuggestions[factor?.name || ''] || `Post-control assessment of ${factor?.name || 'this factor'} indicates reduced risk exposure.`;
+        setResidualFactors(prev => prev.map(f => 
+          f.id === factorId ? { ...f, comments: aiComment } : f
+        ));
+        setAiFilledFields(prev => new Set(prev).add(`residual-${factorId}-comments`));
+        setEditedFields(prev => {
+          const updated = new Set(prev);
+          updated.delete(`residual-${factorId}-comments`);
+          return updated;
+        });
+        toast.success("AI suggestion applied");
+        resolve();
+      }, 800);
+    });
+  };
   
-  // Helper to mark a field as manually edited and persist to localStorage
+
   const markFieldAsEdited = (fieldKey: string) => {
     if (aiFilledFields.has(fieldKey)) {
       setEditedFields(prev => new Set(prev).add(fieldKey));
@@ -2646,10 +2756,6 @@ const RiskAssessmentForm = () => {
                     <p className="text-[11px] text-muted-foreground">Calculated based on weighted impact factors</p>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-1.5 h-7 text-xs px-2.5" onClick={handleAiAutofill} disabled={isAiLoading}>
-                      <Sparkles className="w-3 h-3" />
-                      {isAiLoading ? "Analyzing..." : "AI Autofill All"}
-                    </Button>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -2756,30 +2862,35 @@ const RiskAssessmentForm = () => {
                                   fieldKey={`inherent-${factor.id}-rating`}
                                   originalValue={getOriginalValue('inherent', factor.id, 'rating')}
                                 >
-                                  <AIFieldIndicator 
-                                    isAIFilled={isFieldAIFilled(`inherent-${factor.id}-rating`)} 
-                                    isEdited={isFieldEdited(`inherent-${factor.id}-rating`)}
+                                  <AIFieldSuggestion
+                                    onSuggest={() => suggestInherentRating(factor.id)}
+                                    fieldType="rating"
                                   >
-                                    <Select 
-                                      value={factor.rating.toString()} 
-                                      onValueChange={(v) => {
-                                        markFieldAsEdited(`inherent-${factor.id}-rating`);
-                                        updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v), 'inherent');
-                                      }}
+                                    <AIFieldIndicator 
+                                      isAIFilled={isFieldAIFilled(`inherent-${factor.id}-rating`)} 
+                                      isEdited={isFieldEdited(`inherent-${factor.id}-rating`)}
                                     >
-                                      <SelectTrigger className="w-full bg-background h-6 text-xs">
-                                        <SelectValue />
-                                      </SelectTrigger>
-                                      <SelectContent className="bg-background border shadow-lg z-50">
-                                        <SelectItem value="0">Not Applicable (N/A)</SelectItem>
-                                        <SelectItem value="1">Very Low (1)</SelectItem>
-                                        <SelectItem value="2">Low (2)</SelectItem>
-                                        <SelectItem value="3">Medium (3)</SelectItem>
-                                        <SelectItem value="4">High (4)</SelectItem>
-                                        <SelectItem value="5">Very High (5)</SelectItem>
-                                      </SelectContent>
-                                    </Select>
-                                  </AIFieldIndicator>
+                                      <Select 
+                                        value={factor.rating.toString()} 
+                                        onValueChange={(v) => {
+                                          markFieldAsEdited(`inherent-${factor.id}-rating`);
+                                          updateFactorRating(inherentFactors, setInherentFactors, factor.id, parseInt(v), 'inherent');
+                                        }}
+                                      >
+                                        <SelectTrigger className="w-full bg-background h-6 text-xs">
+                                          <SelectValue />
+                                        </SelectTrigger>
+                                        <SelectContent className="bg-background border shadow-lg z-50">
+                                          <SelectItem value="0">Not Applicable (N/A)</SelectItem>
+                                          <SelectItem value="1">Very Low (1)</SelectItem>
+                                          <SelectItem value="2">Low (2)</SelectItem>
+                                          <SelectItem value="3">Medium (3)</SelectItem>
+                                          <SelectItem value="4">High (4)</SelectItem>
+                                          <SelectItem value="5">Very High (5)</SelectItem>
+                                        </SelectContent>
+                                      </Select>
+                                    </AIFieldIndicator>
+                                  </AIFieldSuggestion>
                                 </UpdateVersionIndicator>
                               </CellCommentPopover>
                             </CollaborativeCell>
@@ -2791,19 +2902,24 @@ const RiskAssessmentForm = () => {
                                   fieldKey={`inherent-${factor.id}-comments`}
                                   originalValue={getOriginalValue('inherent', factor.id, 'comments')}
                                 >
-                                  <AIFieldIndicator
-                                    isAIFilled={isFieldAIFilled(`inherent-${factor.id}-comments`)} 
-                                    isEdited={isFieldEdited(`inherent-${factor.id}-comments`)}
+                                  <AIFieldSuggestion
+                                    onSuggest={() => suggestInherentComment(factor.id)}
+                                    fieldType="comment"
                                   >
-                                    <Textarea 
-                                      value={factor.comments}
-                                      onChange={(e) => {
-                                        markFieldAsEdited(`inherent-${factor.id}-comments`);
-                                        updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value, 'inherent');
-                                      }}
-                                      className="min-h-[22px] h-[22px] resize-none text-xs py-0.5"
-                                    />
-                                  </AIFieldIndicator>
+                                    <AIFieldIndicator
+                                      isAIFilled={isFieldAIFilled(`inherent-${factor.id}-comments`)} 
+                                      isEdited={isFieldEdited(`inherent-${factor.id}-comments`)}
+                                    >
+                                      <Textarea 
+                                        value={factor.comments}
+                                        onChange={(e) => {
+                                          markFieldAsEdited(`inherent-${factor.id}-comments`);
+                                          updateFactorComment(inherentFactors, setInherentFactors, factor.id, e.target.value, 'inherent');
+                                        }}
+                                        className="min-h-[22px] h-[22px] resize-none text-xs py-0.5"
+                                      />
+                                    </AIFieldIndicator>
+                                  </AIFieldSuggestion>
                                 </UpdateVersionIndicator>
                               </CellCommentPopover>
                             </CollaborativeCell>
@@ -2876,9 +2992,6 @@ const RiskAssessmentForm = () => {
                         </div>
                       </PopoverContent>
                     </Popover>
-                    <Button className="bg-gradient-to-r from-purple-500 to-blue-500 text-white gap-1.5 h-7 text-xs px-2.5" onClick={handleAiAutofill} disabled={isAiLoading}>
-                      <Sparkles className="w-3 h-3" />{isAiLoading ? "Analyzing..." : "AI Autofill All"}
-                    </Button>
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -3034,30 +3147,36 @@ const RiskAssessmentForm = () => {
                                       fieldKey={`control-${control.id}-design`}
                                       originalValue={getOriginalValue('control', control.id, 'designRating')}
                                     >
-                                      <AIFieldIndicator 
-                                        isAIFilled={isFieldAIFilled(`control-${control.id}-design`)} 
-                                        isEdited={isFieldEdited(`control-${control.id}-design`)}
+                                      <AIFieldSuggestion
+                                        onSuggest={() => suggestControlRating(control.id, 'designRating')}
+                                        fieldType="design"
+                                        disabled={control.isNotApplicable}
                                       >
-                                        <Select 
-                                          value={control.designRating.toString()} 
-                                          onValueChange={(v) => {
-                                            markFieldAsEdited(`control-${control.id}-design`);
-                                            updateControlRating(control.id, 'designRating', parseInt(v));
-                                          }}
-                                          disabled={control.isNotApplicable}
+                                        <AIFieldIndicator 
+                                          isAIFilled={isFieldAIFilled(`control-${control.id}-design`)} 
+                                          isEdited={isFieldEdited(`control-${control.id}-design`)}
                                         >
-                                          <SelectTrigger className="w-full bg-background h-6 text-xs">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent className="bg-background border shadow-lg z-50">
-                                            <SelectItem value="1">Ineffective (1)</SelectItem>
-                                            <SelectItem value="2">Partially Effective (2)</SelectItem>
-                                            <SelectItem value="3">Moderately Effective (3)</SelectItem>
-                                            <SelectItem value="4">Effective (4)</SelectItem>
-                                            <SelectItem value="5">Highly Effective (5)</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </AIFieldIndicator>
+                                          <Select 
+                                            value={control.designRating.toString()} 
+                                            onValueChange={(v) => {
+                                              markFieldAsEdited(`control-${control.id}-design`);
+                                              updateControlRating(control.id, 'designRating', parseInt(v));
+                                            }}
+                                            disabled={control.isNotApplicable}
+                                          >
+                                            <SelectTrigger className="w-full bg-background h-6 text-xs">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-background border shadow-lg z-50">
+                                              <SelectItem value="1">Ineffective (1)</SelectItem>
+                                              <SelectItem value="2">Partially Effective (2)</SelectItem>
+                                              <SelectItem value="3">Moderately Effective (3)</SelectItem>
+                                              <SelectItem value="4">Effective (4)</SelectItem>
+                                              <SelectItem value="5">Highly Effective (5)</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </AIFieldIndicator>
+                                      </AIFieldSuggestion>
                                     </UpdateVersionIndicator>
                                   </CellCommentPopover>
                                 </CollaborativeCell>
@@ -3070,30 +3189,36 @@ const RiskAssessmentForm = () => {
                                       fieldKey={`control-${control.id}-operating`}
                                       originalValue={getOriginalValue('control', control.id, 'operatingRating')}
                                     >
-                                      <AIFieldIndicator 
-                                        isAIFilled={isFieldAIFilled(`control-${control.id}-operating`)} 
-                                        isEdited={isFieldEdited(`control-${control.id}-operating`)}
+                                      <AIFieldSuggestion
+                                        onSuggest={() => suggestControlRating(control.id, 'operatingRating')}
+                                        fieldType="operating"
+                                        disabled={control.isNotApplicable}
                                       >
-                                        <Select 
-                                          value={control.operatingRating.toString()} 
-                                          onValueChange={(v) => {
-                                            markFieldAsEdited(`control-${control.id}-operating`);
-                                            updateControlRating(control.id, 'operatingRating', parseInt(v));
-                                          }}
-                                          disabled={control.isNotApplicable}
+                                        <AIFieldIndicator 
+                                          isAIFilled={isFieldAIFilled(`control-${control.id}-operating`)} 
+                                          isEdited={isFieldEdited(`control-${control.id}-operating`)}
                                         >
-                                          <SelectTrigger className="w-full bg-background h-6 text-xs">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent className="bg-background border shadow-lg z-50">
-                                            <SelectItem value="1">Ineffective (1)</SelectItem>
-                                            <SelectItem value="2">Partially Effective (2)</SelectItem>
-                                            <SelectItem value="3">Moderately Effective (3)</SelectItem>
-                                            <SelectItem value="4">Effective (4)</SelectItem>
-                                            <SelectItem value="5">Highly Effective (5)</SelectItem>
-                                          </SelectContent>
-                                        </Select>
-                                      </AIFieldIndicator>
+                                          <Select 
+                                            value={control.operatingRating.toString()} 
+                                            onValueChange={(v) => {
+                                              markFieldAsEdited(`control-${control.id}-operating`);
+                                              updateControlRating(control.id, 'operatingRating', parseInt(v));
+                                            }}
+                                            disabled={control.isNotApplicable}
+                                          >
+                                            <SelectTrigger className="w-full bg-background h-6 text-xs">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-background border shadow-lg z-50">
+                                              <SelectItem value="1">Ineffective (1)</SelectItem>
+                                              <SelectItem value="2">Partially Effective (2)</SelectItem>
+                                              <SelectItem value="3">Moderately Effective (3)</SelectItem>
+                                              <SelectItem value="4">Effective (4)</SelectItem>
+                                              <SelectItem value="5">Highly Effective (5)</SelectItem>
+                                            </SelectContent>
+                                          </Select>
+                                        </AIFieldIndicator>
+                                      </AIFieldSuggestion>
                                     </UpdateVersionIndicator>
                                   </CellCommentPopover>
                                 </CollaborativeCell>
@@ -3106,26 +3231,32 @@ const RiskAssessmentForm = () => {
                                       fieldKey={`control-${control.id}-testing`}
                                       originalValue={getOriginalValue('control', control.id, 'testingRating')}
                                     >
-                                      <AIFieldIndicator 
-                                        isAIFilled={isFieldAIFilled(`control-${control.id}-testing`)} 
-                                        isEdited={isFieldEdited(`control-${control.id}-testing`)}
+                                      <AIFieldSuggestion
+                                        onSuggest={() => suggestControlRating(control.id, 'testingRating')}
+                                        fieldType="testing"
+                                        disabled={control.isNotApplicable}
                                       >
-                                        <Select 
-                                          value={control.testingRating.toString()} 
-                                          onValueChange={(v) => {
-                                            markFieldAsEdited(`control-${control.id}-testing`);
-                                            updateControlRating(control.id, 'testingRating', parseInt(v));
-                                          }}
-                                          disabled={control.isNotApplicable}
+                                        <AIFieldIndicator 
+                                          isAIFilled={isFieldAIFilled(`control-${control.id}-testing`)} 
+                                          isEdited={isFieldEdited(`control-${control.id}-testing`)}
                                         >
-                                          <SelectTrigger className="w-full bg-background h-6 text-xs">
-                                            <SelectValue />
-                                          </SelectTrigger>
-                                          <SelectContent className="bg-background border shadow-lg z-50">
-                                            {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
-                                          </SelectContent>
-                                        </Select>
-                                      </AIFieldIndicator>
+                                          <Select 
+                                            value={control.testingRating.toString()} 
+                                            onValueChange={(v) => {
+                                              markFieldAsEdited(`control-${control.id}-testing`);
+                                              updateControlRating(control.id, 'testingRating', parseInt(v));
+                                            }}
+                                            disabled={control.isNotApplicable}
+                                          >
+                                            <SelectTrigger className="w-full bg-background h-6 text-xs">
+                                              <SelectValue />
+                                            </SelectTrigger>
+                                            <SelectContent className="bg-background border shadow-lg z-50">
+                                              {[1,2,3,4,5].map(n => <SelectItem key={n} value={n.toString()}>{n}</SelectItem>)}
+                                            </SelectContent>
+                                          </Select>
+                                        </AIFieldIndicator>
+                                      </AIFieldSuggestion>
                                     </UpdateVersionIndicator>
                                   </CellCommentPopover>
                                 </CollaborativeCell>
@@ -3416,30 +3547,35 @@ const RiskAssessmentForm = () => {
                                 fieldKey={`residual-${factor.id}-rating`}
                                 originalValue={getOriginalValue('residual', factor.id, 'rating')}
                               >
-                                <AIFieldIndicator 
-                                  isAIFilled={isFieldAIFilled(`residual-${factor.id}-rating`)} 
-                                  isEdited={isFieldEdited(`residual-${factor.id}-rating`)}
+                                <AIFieldSuggestion
+                                  onSuggest={() => suggestResidualRating(factor.id)}
+                                  fieldType="rating"
                                 >
-                                  <Select 
-                                    value={factor.rating.toString()} 
-                                    onValueChange={(v) => {
-                                      markFieldAsEdited(`residual-${factor.id}-rating`);
-                                      updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v), 'residual');
-                                    }}
+                                  <AIFieldIndicator 
+                                    isAIFilled={isFieldAIFilled(`residual-${factor.id}-rating`)} 
+                                    isEdited={isFieldEdited(`residual-${factor.id}-rating`)}
                                   >
-                                    <SelectTrigger className="w-full bg-background h-6 text-xs">
-                                      <SelectValue />
-                                    </SelectTrigger>
-                                    <SelectContent className="bg-background border shadow-lg z-50">
-                                      <SelectItem value="0">Not Applicable (N/A)</SelectItem>
-                                      <SelectItem value="1">Very Low (1)</SelectItem>
-                                      <SelectItem value="2">Low (2)</SelectItem>
-                                      <SelectItem value="3">Medium (3)</SelectItem>
-                                      <SelectItem value="4">High (4)</SelectItem>
-                                      <SelectItem value="5">Very High (5)</SelectItem>
-                                    </SelectContent>
-                                  </Select>
-                                </AIFieldIndicator>
+                                    <Select 
+                                      value={factor.rating.toString()} 
+                                      onValueChange={(v) => {
+                                        markFieldAsEdited(`residual-${factor.id}-rating`);
+                                        updateFactorRating(residualFactors, setResidualFactors, factor.id, parseInt(v), 'residual');
+                                      }}
+                                    >
+                                      <SelectTrigger className="w-full bg-background h-6 text-xs">
+                                        <SelectValue />
+                                      </SelectTrigger>
+                                      <SelectContent className="bg-background border shadow-lg z-50">
+                                        <SelectItem value="0">Not Applicable (N/A)</SelectItem>
+                                        <SelectItem value="1">Very Low (1)</SelectItem>
+                                        <SelectItem value="2">Low (2)</SelectItem>
+                                        <SelectItem value="3">Medium (3)</SelectItem>
+                                        <SelectItem value="4">High (4)</SelectItem>
+                                        <SelectItem value="5">Very High (5)</SelectItem>
+                                      </SelectContent>
+                                    </Select>
+                                  </AIFieldIndicator>
+                                </AIFieldSuggestion>
                               </UpdateVersionIndicator>
                             </CellCommentPopover>
                           </td>
@@ -3449,19 +3585,24 @@ const RiskAssessmentForm = () => {
                                 fieldKey={`residual-${factor.id}-comments`}
                                 originalValue={getOriginalValue('residual', factor.id, 'comments')}
                               >
-                                <AIFieldIndicator 
-                                  isAIFilled={isFieldAIFilled(`residual-${factor.id}-comments`)} 
-                                  isEdited={isFieldEdited(`residual-${factor.id}-comments`)}
+                                <AIFieldSuggestion
+                                  onSuggest={() => suggestResidualComment(factor.id)}
+                                  fieldType="comment"
                                 >
-                                  <Textarea 
-                                    value={factor.comments}
-                                    onChange={(e) => {
-                                      markFieldAsEdited(`residual-${factor.id}-comments`);
-                                      updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value, 'residual');
-                                    }}
-                                    className="min-h-[22px] h-[22px] resize-none text-xs py-0.5"
-                                  />
-                                </AIFieldIndicator>
+                                  <AIFieldIndicator 
+                                    isAIFilled={isFieldAIFilled(`residual-${factor.id}-comments`)} 
+                                    isEdited={isFieldEdited(`residual-${factor.id}-comments`)}
+                                  >
+                                    <Textarea 
+                                      value={factor.comments}
+                                      onChange={(e) => {
+                                        markFieldAsEdited(`residual-${factor.id}-comments`);
+                                        updateFactorComment(residualFactors, setResidualFactors, factor.id, e.target.value, 'residual');
+                                      }}
+                                      className="min-h-[22px] h-[22px] resize-none text-xs py-0.5"
+                                    />
+                                  </AIFieldIndicator>
+                                </AIFieldSuggestion>
                               </UpdateVersionIndicator>
                             </CellCommentPopover>
                           </td>
