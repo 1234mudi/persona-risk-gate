@@ -2364,7 +2364,7 @@ const Dashboard1stLine = () => {
 
         {/* N/A Justifications Expanded Panel */}
         {isNaJustificationsExpanded && (
-          <Card ref={naJustificationsRef} className="border border-border/50 shadow-md bg-card scroll-mt-24">
+          <Card ref={naJustificationsRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
             <CardContent className="p-4">
               {/* Header with title, badges, close button */}
               <div className="flex items-center justify-between mb-4">
@@ -2378,7 +2378,7 @@ const Dashboard1stLine = () => {
                   <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                     <Ban className="w-4 h-4 text-primary" />
                   </div>
-                  <span className="font-semibold text-lg">N/A Controls Justifications</span>
+                  <span className="font-semibold text-lg text-foreground">N/A Controls Justifications</span>
                   <Badge variant="outline" className="text-xs">5 controls</Badge>
                   <Badge className="bg-red-500 text-white text-xs">2 pending</Badge>
                 </div>
@@ -2391,7 +2391,7 @@ const Dashboard1stLine = () => {
               </div>
 
               {/* Info Banner */}
-              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mb-4 flex items-center gap-2">
+              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-none p-3 mb-4 flex items-center gap-2">
                 <Ban className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
                 <span className="text-sm text-purple-700 dark:text-purple-300">
                   Controls marked as Not Applicable require documented justifications. Draft justifications and submit for Risk Owner approval.
@@ -2416,23 +2416,23 @@ const Dashboard1stLine = () => {
                       checked={showApprovedNa}
                       onCheckedChange={(checked) => setShowApprovedNa(checked as boolean)}
                     />
-                    <Label htmlFor="showApproved" className="text-sm cursor-pointer">Show approved</Label>
+                    <Label htmlFor="showApproved" className="text-sm cursor-pointer text-foreground">Show approved</Label>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex items-center gap-1.5 text-foreground">
                     <span className="w-2 h-2 rounded-full bg-red-500" />
                     2 Pending
                   </span>
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex items-center gap-1.5 text-foreground">
                     <span className="w-2 h-2 rounded-full bg-orange-500" />
                     1 Drafted
                   </span>
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex items-center gap-1.5 text-foreground">
                     <span className="w-2 h-2 rounded-full bg-purple-500" />
                     1 Awaiting
                   </span>
-                  <span className="flex items-center gap-1.5">
+                  <span className="flex items-center gap-1.5 text-foreground">
                     <span className="w-2 h-2 rounded-full bg-green-500" />
                     1 Approved
                   </span>
@@ -2475,7 +2475,7 @@ const Dashboard1stLine = () => {
                       <TableCell className="font-mono text-sm text-primary">{control.id}</TableCell>
                       <TableCell>
                         <div>
-                          <span className="font-medium text-sm">{control.name}</span>
+                          <span className="font-medium text-sm text-foreground">{control.name}</span>
                           {control.description && (
                             <p className="text-xs text-muted-foreground mt-0.5">{control.description}</p>
                           )}
@@ -2518,7 +2518,7 @@ const Dashboard1stLine = () => {
                             <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
                               <User className="w-3 h-3 text-primary" />
                             </div>
-                            <span className="text-sm">{control.draftedBy}</span>
+                            <span className="text-sm text-foreground">{control.draftedBy}</span>
                           </div>
                         ) : (
                           <span className="text-muted-foreground">—</span>
