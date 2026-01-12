@@ -1535,9 +1535,9 @@ const Dashboard1stLine = () => {
           const criticalHighTotal = inherentRiskCounts.critical + inherentRiskCounts.high;
 
           return (
-            <div className="space-y-3 mb-4">
-              {/* Top section: 2-column grid for equal width cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
+              {/* Left Column - 50% */}
+              <div className="flex flex-col gap-3">
                 {/* Assessment Status Card */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-2.5">
@@ -1693,98 +1693,6 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
-                {/* Inherent Risk Ratings Card - Column 3, Row 1 */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-2.5">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <AlertTriangle className="w-3 h-3 text-[#00897B]" />
-                        </div>
-                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                          INHERENT RISK RATINGS
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
-                      </span>
-                    </div>
-                    
-                    <div className="flex items-center gap-4">
-                      <div className="mb-1">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
-                        <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
-                      </div>
-                      
-                      {/* Donut chart + Legend - Inline */}
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="relative w-16 h-16 flex-shrink-0">
-                          {(() => {
-                            const circumference = 2 * Math.PI * 14;
-                            const total = inherentRiskCounts.total || 1;
-                            const criticalPct = inherentRiskCounts.critical / total;
-                            const highPct = inherentRiskCounts.high / total;
-                            const mediumPct = inherentRiskCounts.medium / total;
-                            const criticalAngle = criticalPct * 360;
-                            const highAngle = highPct * 360;
-                            
-                            return (
-                              <svg viewBox="0 0 36 36" className="w-16 h-16">
-                                <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#EF4444" strokeWidth="3"
-                                  strokeDasharray={`${criticalPct * circumference} ${circumference}`}
-                                  transform="rotate(-90 18 18)"
-                                />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#F97316" strokeWidth="3"
-                                  strokeDasharray={`${highPct * circumference} ${circumference}`}
-                                  transform={`rotate(${criticalAngle - 90} 18 18)`}
-                                />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#F1BA50" strokeWidth="3"
-                                  strokeDasharray={`${mediumPct * circumference} ${circumference}`}
-                                  transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
-                                />
-                              </svg>
-                            );
-                          })()}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-lg font-bold text-success">{criticalHighTotal}</span>
-                          </div>
-                        </div>
-                        
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-destructive" />
-                            <span className="text-[10px] text-destructive">Critical</span>
-                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.critical}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-orange-500" />
-                            <span className="text-[10px] text-orange-500">High</span>
-                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.high}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-[#F1BA50]" />
-                            <span className="text-[10px] text-[#F1BA50]">Medium</span>
-                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.medium}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
-                      <p className="text-[9px] text-muted-foreground">
-                        Review Critical and High ratings for control adequacy.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
                 {/* N/A Justifications Card - Pipeline Flow Design */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-2.5">
@@ -1808,7 +1716,6 @@ const Dashboard1stLine = () => {
                       <span className="text-sm text-muted-foreground ml-1">Pending</span>
                     </div>
                     
-                    {/* Pipeline-style status boxes */}
                     {/* Pipeline-style status boxes */}
                     <div className="flex items-center justify-center mb-3">
                       {/* PENDING box */}
@@ -1858,111 +1765,7 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
-                {/* Control Effectiveness Card - Column 3, Row 2 */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-2.5">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <FileCheck className="w-3 h-3 text-[#00897B]" />
-                        </div>
-                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                          CONTROL EFFECTIVENESS
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">{effectiveControls} effective</span>
-                    </div>
-                    
-                    <div className="mb-1">
-                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
-                      <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
-                    </div>
-                    
-                    {/* Speedometer gauge with needle */}
-                    <div className="flex flex-col items-center mb-2">
-                      <div className="relative w-28 h-14">
-                        <svg viewBox="0 0 100 55" className="w-28 h-14">
-                          <defs>
-                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                              <stop offset="0%" stopColor="hsl(143 57% 43%)" />
-                              <stop offset="100%" stopColor="hsl(143 57% 55%)" />
-                            </linearGradient>
-                          </defs>
-                          <path 
-                            d="M 10 50 A 40 40 0 0 1 90 50" 
-                            fill="none" 
-                            stroke="hsl(143 30% 85%)" 
-                            strokeWidth="6"
-                            strokeLinecap="round"
-                          />
-                          <path 
-                            d="M 10 50 A 40 40 0 0 1 90 50" 
-                            fill="none" 
-                            stroke="url(#gaugeGradient)" 
-                            strokeWidth="6"
-                            strokeLinecap="round"
-                            strokeDasharray={`${(effectivenessPercent / 100) * 126} 126`}
-                          />
-                          <line 
-                            x1="50" y1="50" 
-                            x2={50 + 30 * Math.cos(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
-                            y2={50 - 30 * Math.sin(Math.PI - (effectivenessPercent / 100) * Math.PI)}
-                            stroke="hsl(143 57% 43%)" 
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                          />
-                          <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
-                        </svg>
-                        <span className="absolute left-0 bottom-0 text-[8px] text-muted-foreground">0%</span>
-                        <span className="absolute right-0 bottom-0 text-[8px] text-muted-foreground">100%</span>
-                      </div>
-                      <div className="text-center">
-                        <span className="text-xl font-bold text-success">{effectivenessPercent}%</span>
-                        <span className="text-[9px] text-muted-foreground block">Effective</span>
-                      </div>
-                    </div>
-
-                    {/* Horizontal Stacked Bar Chart */}
-                    <div className="w-full h-2 flex rounded-sm overflow-hidden mb-1">
-                      <div 
-                        className="bg-green-500 h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-yellow-500 h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-red-500 h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
-                      />
-                    </div>
-
-                    {/* Legend */}
-                    <div className="flex flex-wrap gap-x-3 text-[8px] text-muted-foreground justify-center">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
-                      </span>
-                    </div>
-                    
-                    <div className="border-t border-border mt-2 pt-1.5">
-                      <p className="text-[9px] text-muted-foreground">
-                        Aggregate control effectiveness across all risks.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-
-              {/* Bottom section: 2-column grid (left 50% | right 50%) */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
-                {/* Left 50% - Split into 2 sub-columns: (Loss+Drift) | AI Root Cause */}
+                {/* Bottom row: Loss+Drift | AI Root Cause */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
                   {/* Sub-column 1: Loss Events + Drift Alerts stacked */}
                   <div className="flex flex-col gap-3">
@@ -2157,10 +1960,206 @@ const Dashboard1stLine = () => {
                     </CardContent>
                   </Card>
                 </div>
+              </div>
 
-                {/* Column 3: Remediation Tasks - Full Height */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-full flex flex-col">
-                  <CardContent className="p-2.5 flex-1 flex flex-col">
+              {/* Right Column - 50% with equal height cards */}
+              <div className="flex flex-col gap-3">
+                {/* Inherent Risk Ratings Card */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
+                  <CardContent className="p-2.5 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <AlertTriangle className="w-3 h-3 text-[#00897B]" />
+                        </div>
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          INHERENT RISK RATINGS
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-4 flex-1">
+                      <div className="mb-1">
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
+                      </div>
+                      
+                      {/* Donut chart + Legend - Inline */}
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          {(() => {
+                            const circumference = 2 * Math.PI * 14;
+                            const total = inherentRiskCounts.total || 1;
+                            const criticalPct = inherentRiskCounts.critical / total;
+                            const highPct = inherentRiskCounts.high / total;
+                            const mediumPct = inherentRiskCounts.medium / total;
+                            const criticalAngle = criticalPct * 360;
+                            const highAngle = highPct * 360;
+                            
+                            return (
+                              <svg viewBox="0 0 36 36" className="w-16 h-16">
+                                <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="#EF4444" strokeWidth="3"
+                                  strokeDasharray={`${criticalPct * circumference} ${circumference}`}
+                                  transform="rotate(-90 18 18)"
+                                />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="#F97316" strokeWidth="3"
+                                  strokeDasharray={`${highPct * circumference} ${circumference}`}
+                                  transform={`rotate(${criticalAngle - 90} 18 18)`}
+                                />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="#F1BA50" strokeWidth="3"
+                                  strokeDasharray={`${mediumPct * circumference} ${circumference}`}
+                                  transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
+                                />
+                              </svg>
+                            );
+                          })()}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-lg font-bold text-success">{criticalHighTotal}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-destructive" />
+                            <span className="text-[10px] text-destructive">Critical</span>
+                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.critical}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-orange-500" />
+                            <span className="text-[10px] text-orange-500">High</span>
+                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.high}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#F1BA50]" />
+                            <span className="text-[10px] text-[#F1BA50]">Medium</span>
+                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.medium}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-auto">
+                      <p className="text-[9px] text-muted-foreground">
+                        Review Critical and High ratings for control adequacy.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Control Effectiveness Card */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
+                  <CardContent className="p-2.5 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <FileCheck className="w-3 h-3 text-[#00897B]" />
+                        </div>
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          CONTROL EFFECTIVENESS
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{effectiveControls} effective</span>
+                    </div>
+                    
+                    <div className="mb-1">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
+                    </div>
+                    
+                    {/* Speedometer gauge with needle */}
+                    <div className="flex flex-col items-center mb-2 flex-1 justify-center">
+                      <div className="relative w-28 h-14">
+                        <svg viewBox="0 0 100 55" className="w-28 h-14">
+                          <defs>
+                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stopColor="hsl(143 57% 43%)" />
+                              <stop offset="100%" stopColor="hsl(143 57% 55%)" />
+                            </linearGradient>
+                          </defs>
+                          <path 
+                            d="M 10 50 A 40 40 0 0 1 90 50" 
+                            fill="none" 
+                            stroke="hsl(143 30% 85%)" 
+                            strokeWidth="6"
+                            strokeLinecap="round"
+                          />
+                          <path 
+                            d="M 10 50 A 40 40 0 0 1 90 50" 
+                            fill="none" 
+                            stroke="url(#gaugeGradient)" 
+                            strokeWidth="6"
+                            strokeLinecap="round"
+                            strokeDasharray={`${(effectivenessPercent / 100) * 126} 126`}
+                          />
+                          <line 
+                            x1="50" y1="50" 
+                            x2={50 + 30 * Math.cos(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
+                            y2={50 - 30 * Math.sin(Math.PI - (effectivenessPercent / 100) * Math.PI)}
+                            stroke="hsl(143 57% 43%)" 
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
+                        </svg>
+                        <span className="absolute left-0 bottom-0 text-[8px] text-muted-foreground">0%</span>
+                        <span className="absolute right-0 bottom-0 text-[8px] text-muted-foreground">100%</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="text-xl font-bold text-success">{effectivenessPercent}%</span>
+                        <span className="text-[9px] text-muted-foreground block">Effective</span>
+                      </div>
+                    </div>
+
+                    {/* Horizontal Stacked Bar Chart */}
+                    <div className="w-full h-2 flex rounded-sm overflow-hidden mb-1">
+                      <div 
+                        className="bg-green-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
+                      />
+                      <div 
+                        className="bg-yellow-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
+                      />
+                      <div 
+                        className="bg-red-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
+                      />
+                    </div>
+
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-x-3 text-[8px] text-muted-foreground justify-center">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
+                      </span>
+                    </div>
+                    
+                    <div className="border-t border-border mt-auto pt-1.5">
+                      <p className="text-[9px] text-muted-foreground">
+                        Aggregate control effectiveness across all risks.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Remediation Tasks Card */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
+                  <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -2182,30 +2181,32 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Horizontal stacked bar */}
-                    <div className="flex h-7 overflow-hidden mb-1">
-                      <div 
-                        className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
-                        style={{width: `${(remediationTasksCounts.open / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                      >
-                        {remediationTasksCounts.open}
-                      </div>
-                      <div 
-                        className="bg-orange-500 flex items-center justify-center text-white text-sm font-bold"
-                        style={{width: `${(remediationTasksCounts.inProgress / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                      >
-                        {remediationTasksCounts.inProgress}
-                      </div>
-                      <div 
-                        className="bg-blue-500 flex items-center justify-center text-white text-sm font-bold"
-                        style={{width: `${(remediationTasksCounts.validation / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                      >
-                        {remediationTasksCounts.validation}
-                      </div>
-                      <div 
-                        className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
-                        style={{width: `${(remediationTasksCounts.closed / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                      >
-                        {remediationTasksCounts.closed}
+                    <div className="flex h-7 overflow-hidden mb-1 flex-1 items-center">
+                      <div className="flex h-7 overflow-hidden w-full">
+                        <div 
+                          className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
+                          style={{width: `${(remediationTasksCounts.open / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                        >
+                          {remediationTasksCounts.open}
+                        </div>
+                        <div 
+                          className="bg-orange-500 flex items-center justify-center text-white text-sm font-bold"
+                          style={{width: `${(remediationTasksCounts.inProgress / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                        >
+                          {remediationTasksCounts.inProgress}
+                        </div>
+                        <div 
+                          className="bg-blue-500 flex items-center justify-center text-white text-sm font-bold"
+                          style={{width: `${(remediationTasksCounts.validation / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                        >
+                          {remediationTasksCounts.validation}
+                        </div>
+                        <div 
+                          className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
+                          style={{width: `${(remediationTasksCounts.closed / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                        >
+                          {remediationTasksCounts.closed}
+                        </div>
                       </div>
                     </div>
                     
