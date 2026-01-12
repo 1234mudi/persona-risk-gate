@@ -483,9 +483,14 @@ const RiskAssessmentForm = () => {
     return (
       <HoverCard openDelay={200} closeDelay={100}>
         <HoverCardTrigger asChild>
-          <button className={`flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400 hover:underline transition-all ${hasData ? 'animate-pulse hover:animate-none' : ''}`}>
+          <button className={`flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-md border transition-all ${
+            hasData 
+              ? 'bg-blue-50 dark:bg-blue-950/50 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 animate-glow-blue hover:animate-none hover:bg-blue-100 dark:hover:bg-blue-900/50 hover:scale-105 shadow-sm' 
+              : 'text-blue-600 dark:text-blue-400 border-transparent'
+          }`}>
             <History className="w-3.5 h-3.5" />
             <span>Previous Assessments ({historyData.length})</span>
+            {hasData && <ChevronRight className="w-3 h-3 animate-bounce-x" />}
           </button>
         </HoverCardTrigger>
         <HoverCardContent side="bottom" align="start" className="w-80 max-h-[50vh] overflow-y-auto p-3">

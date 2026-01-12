@@ -10,6 +10,7 @@ interface RiskTraversalNavProps {
   onPrevious: () => void;
   isReviewMode?: boolean;
   reviewProgress?: { current: number; total: number } | null;
+  displaySequence?: number; // Report-based sequence number
 }
 
 export const RiskTraversalNav = ({
@@ -21,6 +22,7 @@ export const RiskTraversalNav = ({
   onPrevious,
   isReviewMode = false,
   reviewProgress,
+  displaySequence,
 }: RiskTraversalNavProps) => {
   if (totalCount <= 1) return null;
 
@@ -44,8 +46,8 @@ export const RiskTraversalNav = ({
           {reviewProgress.current} of {reviewProgress.total}
         </span>
       ) : (
-        <span className="text-xs text-muted-foreground px-1">
-          {currentIndex + 1} / {totalCount}
+        <span className="text-xs text-muted-foreground bg-muted rounded px-2 py-0.5">
+          {displaySequence ?? (currentIndex + 1)} / {totalCount}
         </span>
       )}
 
