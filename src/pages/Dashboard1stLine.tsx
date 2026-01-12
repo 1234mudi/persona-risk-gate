@@ -1541,7 +1541,7 @@ const Dashboard1stLine = () => {
                 {/* Assessment Status Card */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
                           <CalendarCheck className="w-4 h-4 text-[#00897B]" />
@@ -1563,10 +1563,10 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Summary row */}
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex items-center justify-between mb-2">
                       <div>
-                        <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">{requiresAction}</span>
-                        <span className="text-base text-muted-foreground ml-2">Requiring Action</span>
+                        <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{requiresAction}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Requiring Action</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <TrendingDown className="w-3 h-3 text-destructive" />
