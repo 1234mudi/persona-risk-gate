@@ -1596,7 +1596,7 @@ const Dashboard1stLine = () => {
                       <div className="flex-1 space-y-1.5">
                         <div>
                           <span className="text-[9px] text-muted-foreground uppercase tracking-wide">DEADLINE STATUS</span>
-                          <div className="flex h-2 rounded overflow-hidden mt-0.5">
+                          <div className="flex h-2 overflow-hidden mt-0.5">
                             {assessmentStatusCounts.overdue > 0 && (
                               <div className="bg-destructive" style={{width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} />
                             )}
@@ -1610,7 +1610,7 @@ const Dashboard1stLine = () => {
                         </div>
                         <div>
                           <span className="text-[9px] text-muted-foreground uppercase tracking-wide">WORKFLOW PROGRESS</span>
-                          <div className="flex h-2 rounded overflow-hidden mt-0.5">
+                          <div className="flex h-2 overflow-hidden mt-0.5">
                             {assessmentStatusCounts.completed > 0 && (
                               <div className="bg-success" style={{width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} />
                             )}
@@ -1702,7 +1702,7 @@ const Dashboard1stLine = () => {
                     {/* Pipeline-style status boxes */}
                     <div className="flex items-center justify-center gap-0 mb-3">
                       {/* PENDING box */}
-                      <div className="bg-red-500 text-white rounded-l-lg px-3 py-2 text-center min-w-[60px]">
+                      <div className="bg-red-500 text-white px-3 py-2 text-center min-w-[60px]">
                         <div className="text-lg font-bold">{naJustificationsCounts.pending}</div>
                         <div className="text-[8px] uppercase font-medium">PENDING</div>
                       </div>
@@ -1729,7 +1729,7 @@ const Dashboard1stLine = () => {
                         <ChevronRight className="w-4 h-4" />
                       </div>
                       {/* APPROVED box */}
-                      <div className="bg-green-600 text-white rounded-r-lg px-3 py-2 text-center min-w-[60px]">
+                      <div className="bg-green-600 text-white px-3 py-2 text-center min-w-[60px]">
                         <div className="text-lg font-bold">{naJustificationsCounts.approved}</div>
                         <div className="text-[8px] uppercase font-medium">APPROVED</div>
                       </div>
@@ -1764,7 +1764,7 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Segmented bar with numbers inside */}
-                      <div className="flex h-7 rounded-lg overflow-hidden mb-2">
+                      <div className="flex h-7 overflow-hidden mb-2">
                         {lossEventsCounts.pendingTriage > 0 && (
                           <div 
                             className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
@@ -1794,13 +1794,13 @@ const Dashboard1stLine = () => {
                       {/* Simple legend */}
                       <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-red-500" /> Pending
+                          <span className="w-2 h-2 bg-red-500" /> Pending
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-yellow-400" /> In Triage
+                          <span className="w-2 h-2 bg-yellow-400" /> In Triage
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
+                          <span className="w-2 h-2 bg-green-500" /> Closed
                         </span>
                       </div>
                     </CardContent>
@@ -1838,19 +1838,19 @@ const Dashboard1stLine = () => {
                       {/* Full-width solid colored boxes */}
                       <div className="space-y-1.5">
                         {/* ROOT CAUSE */}
-                        <div className="bg-red-500 text-white rounded px-2 py-1.5 flex items-center gap-1.5">
+                        <div className="bg-red-500 text-white px-2 py-1.5 flex items-center gap-1.5">
                           <AlertCircle className="w-3 h-3" />
                           <span className="text-[9px] font-semibold">ROOT CAUSE</span>
                         </div>
                         
                         {/* CONTRIBUTING FACTORS */}
-                        <div className="bg-yellow-400 text-white rounded px-2 py-1.5 flex items-center gap-1.5">
+                        <div className="bg-yellow-400 text-white px-2 py-1.5 flex items-center gap-1.5">
                           <AlertTriangle className="w-3 h-3" />
                           <span className="text-[9px] font-semibold">3 CONTRIBUTING FACTORS</span>
                         </div>
                         
                         {/* FAILED CONTROLS */}
-                        <div className="bg-orange-500 text-white rounded px-2 py-1.5 flex items-center gap-1.5">
+                        <div className="bg-orange-500 text-white px-2 py-1.5 flex items-center gap-1.5">
                           <XCircle className="w-3 h-3" />
                           <span className="text-[9px] font-semibold">2 FAILED CONTROLS</span>
                         </div>
@@ -1881,15 +1881,15 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Segmented bar */}
-                    <div className="flex h-2.5 rounded overflow-hidden mb-1">
+                    <div className="flex h-2.5 overflow-hidden mb-1">
                       <div className="bg-destructive" style={{width: `${(driftAlertsCounts.critical / 3) * 100}%`}} />
                       <div className="bg-warning" style={{width: `${(driftAlertsCounts.high / 3) * 100}%`}} />
                       <div className="bg-[#F1BA50]" style={{width: `${(driftAlertsCounts.medium / 3) * 100}%`}} />
                     </div>
                     <div className="flex gap-3 text-[9px] text-muted-foreground">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-warning"></span> High: {driftAlertsCounts.high}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-warning"></span> High: {driftAlertsCounts.high}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
                     </div>
                   </CardContent>
                 </Card>
@@ -1951,15 +1951,15 @@ const Dashboard1stLine = () => {
                       
                       <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-destructive" />
+                          <div className="w-3 h-3 bg-destructive" />
                           <span className="text-xs text-foreground">Critical: {inherentRiskCounts.critical}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-orange-500" />
+                          <div className="w-3 h-3 bg-orange-500" />
                           <span className="text-xs text-foreground">High: {inherentRiskCounts.high}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 rounded-full bg-[#F1BA50]" />
+                          <div className="w-3 h-3 bg-[#F1BA50]" />
                           <span className="text-xs text-foreground">Medium: {inherentRiskCounts.medium}</span>
                         </div>
                       </div>
@@ -2040,10 +2040,10 @@ const Dashboard1stLine = () => {
 
                     {/* Legend with N/A */}
                     <div className="flex flex-wrap gap-x-3 text-[9px] text-muted-foreground justify-center">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500" /> Effective: {effectiveControls}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-gray-400" /> N/A: 0</span>
                     </div>
                     
                     <p className="text-[9px] text-muted-foreground mt-2">
@@ -2080,29 +2080,29 @@ const Dashboard1stLine = () => {
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">Open</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-red-500 rounded" style={{width: '100%'}} />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-red-500" style={{width: '100%'}} />
                         </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.open}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">In Progress</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-orange-500 rounded" style={{width: '80%'}} />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-orange-500" style={{width: '80%'}} />
                         </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.inProgress}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">Validation</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-blue-500 rounded" style={{width: '70%'}} />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-blue-500" style={{width: '70%'}} />
                         </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.validation}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">Closed</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-gray-400 rounded" style={{width: '10%'}} />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-gray-400" style={{width: '10%'}} />
                         </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.closed}</span>
                       </div>
