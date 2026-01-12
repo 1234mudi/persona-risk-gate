@@ -1535,11 +1535,10 @@ const Dashboard1stLine = () => {
           const criticalHighTotal = inherentRiskCounts.critical + inherentRiskCounts.high;
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
-              {/* Left Column */}
-              <div className="space-y-2 flex flex-col">
-                {/* Assessment Status Card */}
-                <Card className="flex-1 border border-[#00897B] shadow-sm bg-card rounded-none">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3 mb-4">
+              {/* Row 1: Assessment Status (spans cols 1-2) + Inherent Risk (col 3) */}
+              {/* Assessment Status Card - spans 2 columns */}
+              <Card className="lg:col-span-2 border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-2.5">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -1693,8 +1692,101 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
+                {/* Inherent Risk Ratings Card - Column 3, Row 1 */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <AlertTriangle className="w-3 h-3 text-[#00897B]" />
+                        </div>
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          INHERENT RISK RATINGS
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
+                      </span>
+                    </div>
+                    
+                    <div className="flex items-center gap-4">
+                      <div className="mb-1">
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
+                      </div>
+                      
+                      {/* Donut chart + Legend - Inline */}
+                      <div className="flex items-center gap-3 flex-1">
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          {(() => {
+                            const circumference = 2 * Math.PI * 14;
+                            const total = inherentRiskCounts.total || 1;
+                            const criticalPct = inherentRiskCounts.critical / total;
+                            const highPct = inherentRiskCounts.high / total;
+                            const mediumPct = inherentRiskCounts.medium / total;
+                            const criticalAngle = criticalPct * 360;
+                            const highAngle = highPct * 360;
+                            
+                            return (
+                              <svg viewBox="0 0 36 36" className="w-16 h-16">
+                                <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="#EF4444" strokeWidth="3"
+                                  strokeDasharray={`${criticalPct * circumference} ${circumference}`}
+                                  transform="rotate(-90 18 18)"
+                                />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="#F97316" strokeWidth="3"
+                                  strokeDasharray={`${highPct * circumference} ${circumference}`}
+                                  transform={`rotate(${criticalAngle - 90} 18 18)`}
+                                />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="#F1BA50" strokeWidth="3"
+                                  strokeDasharray={`${mediumPct * circumference} ${circumference}`}
+                                  transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
+                                />
+                              </svg>
+                            );
+                          })()}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-lg font-bold text-success">{criticalHighTotal}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-destructive" />
+                            <span className="text-[10px] text-destructive">Critical</span>
+                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.critical}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-orange-500" />
+                            <span className="text-[10px] text-orange-500">High</span>
+                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.high}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-[#F1BA50]" />
+                            <span className="text-[10px] text-[#F1BA50]">Medium</span>
+                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.medium}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+                      <p className="text-[9px] text-muted-foreground">
+                        Review Critical and High ratings for control adequacy.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Row 2: N/A Justifications (spans cols 1-2) + Control Effectiveness (col 3) */}
                 {/* N/A Justifications Card - Pipeline Flow Design */}
-                <Card className="flex-1 border border-[#00897B] shadow-sm bg-card rounded-none">
+                <Card className="lg:col-span-2 border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-2.5">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -1766,473 +1858,375 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
-                {/* 3-Column Grid: Loss Events+Drift | AI Root Cause | Control+Remediation */}
-                <div className="grid grid-cols-3 gap-3">
-                  {/* Column 1: Loss Events + Drift Alerts stacked */}
-                  <div className="flex flex-col gap-3">
-                    {/* Loss Events Card - Compact */}
-                    <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                      <CardContent className="p-2.5">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                              <Info className="w-3 h-3 text-[#00897B]" />
-                            </div>
-                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                              LOSS EVENTS
-                            </span>
-                          </div>
-                          <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                            EXPAND
-                            <ChevronDown className="w-4 h-4" />
-                          </button>
+                {/* Control Effectiveness Card - Column 3, Row 2 */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <FileCheck className="w-3 h-3 text-[#00897B]" />
                         </div>
-                        
-                        <div className="mb-1">
-                          <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsCounts.pendingTriage}</span>
-                          <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
-                        </div>
-                        
-                        {/* Segmented bar with numbers inside */}
-                        <div className="flex h-7 overflow-hidden mb-1">
-                          {lossEventsCounts.pendingTriage > 0 && (
-                            <div 
-                              className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
-                              style={{width: `${(lossEventsCounts.pendingTriage / 4) * 100}%`}}
-                            >
-                              {lossEventsCounts.pendingTriage}
-                            </div>
-                          )}
-                          {lossEventsCounts.inTriage > 0 && (
-                            <div 
-                              className="bg-yellow-400 flex items-center justify-center text-white text-sm font-bold"
-                              style={{width: `${(lossEventsCounts.inTriage / 4) * 100}%`}}
-                            >
-                              {lossEventsCounts.inTriage}
-                            </div>
-                          )}
-                          {lossEventsCounts.closed > 0 && (
-                            <div 
-                              className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
-                              style={{width: `${(lossEventsCounts.closed / 4) * 100}%`}}
-                            >
-                              {lossEventsCounts.closed}
-                            </div>
-                          )}
-                        </div>
-                        
-                        {/* Simple legend */}
-                        <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-red-500" /> Pending
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-yellow-400" /> In Triage
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
-                          </span>
-                        </div>
-                        
-                        <div className="border-t border-border mt-2 pt-1.5">
-                          <p className="text-[9px] text-muted-foreground">
-                            Monitor loss events requiring triage and analysis.
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          CONTROL EFFECTIVENESS
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{effectiveControls} effective</span>
+                    </div>
+                    
+                    <div className="mb-1">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
+                    </div>
+                    
+                    {/* Speedometer gauge with needle */}
+                    <div className="flex flex-col items-center mb-2">
+                      <div className="relative w-28 h-14">
+                        <svg viewBox="0 0 100 55" className="w-28 h-14">
+                          <defs>
+                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stopColor="hsl(143 57% 43%)" />
+                              <stop offset="100%" stopColor="hsl(143 57% 55%)" />
+                            </linearGradient>
+                          </defs>
+                          <path 
+                            d="M 10 50 A 40 40 0 0 1 90 50" 
+                            fill="none" 
+                            stroke="hsl(143 30% 85%)" 
+                            strokeWidth="6"
+                            strokeLinecap="round"
+                          />
+                          <path 
+                            d="M 10 50 A 40 40 0 0 1 90 50" 
+                            fill="none" 
+                            stroke="url(#gaugeGradient)" 
+                            strokeWidth="6"
+                            strokeLinecap="round"
+                            strokeDasharray={`${(effectivenessPercent / 100) * 126} 126`}
+                          />
+                          <line 
+                            x1="50" y1="50" 
+                            x2={50 + 30 * Math.cos(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
+                            y2={50 - 30 * Math.sin(Math.PI - (effectivenessPercent / 100) * Math.PI)}
+                            stroke="hsl(143 57% 43%)" 
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
+                        </svg>
+                        <span className="absolute left-0 bottom-0 text-[8px] text-muted-foreground">0%</span>
+                        <span className="absolute right-0 bottom-0 text-[8px] text-muted-foreground">100%</span>
+                      </div>
+                      <div className="text-center">
+                        <span className="text-xl font-bold text-success">{effectivenessPercent}%</span>
+                        <span className="text-[9px] text-muted-foreground block">Effective</span>
+                      </div>
+                    </div>
 
-                    {/* Drift Alerts Card */}
-                    <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                      <CardContent className="p-2.5">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                              <Activity className="w-3 h-3 text-[#00897B]" />
-                            </div>
-                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                              DRIFT ALERTS
-                            </span>
-                          </div>
-                          <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                            EXPAND
-                            <ChevronDown className="w-4 h-4" />
-                          </button>
-                        </div>
-                        
-                        <div className="mb-1">
-                          <span className="text-xl font-bold text-[#10052F] dark:text-white">{driftAlertsCounts.critical + driftAlertsCounts.high + driftAlertsCounts.medium}</span>
-                          <span className="text-sm text-muted-foreground ml-1">Active Alerts</span>
-                        </div>
-                        
-                        {/* Segmented bar */}
-                        <div className="flex h-2.5 overflow-hidden mb-1">
-                          <div className="bg-destructive" style={{width: `${(driftAlertsCounts.critical / 3) * 100}%`}} />
-                          <div className="bg-warning" style={{width: `${(driftAlertsCounts.high / 3) * 100}%`}} />
-                          <div className="bg-[#F1BA50]" style={{width: `${(driftAlertsCounts.medium / 3) * 100}%`}} />
-                        </div>
-                        <div className="flex gap-3 text-[9px] text-muted-foreground">
-                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
-                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning"></span> High: {driftAlertsCounts.high}</span>
-                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
-                        </div>
-                        
-                        <div className="border-t border-border mt-2 pt-1.5">
-                          <p className="text-[9px] text-muted-foreground">
-                            Address rating variances flagged by AI analysis.
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                    {/* Horizontal Stacked Bar Chart */}
+                    <div className="w-full h-2 flex rounded-sm overflow-hidden mb-1">
+                      <div 
+                        className="bg-green-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
+                      />
+                      <div 
+                        className="bg-yellow-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
+                      />
+                      <div 
+                        className="bg-red-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
+                      />
+                    </div>
 
-                  {/* Column 2: AI Root Cause - Full Height */}
-                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-full flex flex-col">
-                    <CardContent className="p-2.5 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between mb-1.5">
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-x-3 text-[8px] text-muted-foreground justify-center">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
+                      </span>
+                    </div>
+                    
+                    <div className="border-t border-border mt-2 pt-1.5">
+                      <p className="text-[9px] text-muted-foreground">
+                        Aggregate control effectiveness across all risks.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Row 3: Loss Events + Drift (col 1) | AI Root Cause (col 2) | Remediation (col 3) */}
+                {/* Column 1: Loss Events + Drift Alerts stacked */}
+                <div className="flex flex-col gap-3">
+                  {/* Loss Events Card - Compact */}
+                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
+                    <CardContent className="p-2.5">
+                      <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <Sparkles className="w-3 h-3 text-[#00897B]" />
+                            <Info className="w-3 h-3 text-[#00897B]" />
                           </div>
                           <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                            AI ROOT CAUSE
+                            LOSS EVENTS
                           </span>
                         </div>
-                        <button className="flex items-center gap-1 text-xs text-primary cursor-not-allowed font-medium">
-                          <Sparkles className="w-3 h-3" />
+                        <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
                           EXPAND
+                          <ChevronDown className="w-4 h-4" />
                         </button>
                       </div>
                       
-                      {/* Timeline layout - grows to fill space */}
-                      <div className="relative pl-4 space-y-3 mt-3 flex-1">
-                        {/* Vertical connector line */}
-                        <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-700" />
-                        
-                        {/* ROOT CAUSE */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center z-10">
-                            <AlertCircle className="w-2.5 h-2.5 text-red-500" />
-                          </div>
-                          <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded px-2 py-1.5">
-                            <span className="text-[9px] font-semibold text-red-700 dark:text-red-400">ROOT CAUSE</span>
-                            <p className="text-[8px] text-red-600 dark:text-red-400/80 mt-0.5 line-clamp-2">
-                              Inadequate system access controls allowed unauthorized transactions...
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* CONTRIBUTING FACTORS */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center z-10">
-                            <Target className="w-2.5 h-2.5 text-yellow-600" />
-                          </div>
-                          <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded px-2 py-1.5">
-                            <span className="text-[9px] font-semibold text-yellow-700 dark:text-yellow-400">3 CONTRIBUTING FACTORS</span>
-                          </div>
-                        </div>
-                        
-                        {/* FAILED CONTROLS */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center z-10">
-                            <XCircle className="w-2.5 h-2.5 text-orange-500" />
-                          </div>
-                          <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded px-2 py-1.5">
-                            <span className="text-[9px] font-semibold text-orange-700 dark:text-orange-400">2 FAILED CONTROLS</span>
-                          </div>
-                        </div>
-                        
-                        {/* ACTIONS */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center z-10">
-                            <Lightbulb className="w-2.5 h-2.5 text-green-500" />
-                          </div>
-                          <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded px-2 py-1.5">
-                            <span className="text-[9px] font-semibold text-green-700 dark:text-green-400">2 ACTIONS</span>
-                          </div>
-                        </div>
+                      <div className="mb-1">
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsCounts.pendingTriage}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
                       </div>
                       
-                      <div className="border-t border-border mt-3 pt-2">
+                      {/* Segmented bar with numbers inside */}
+                      <div className="flex h-7 overflow-hidden mb-1">
+                        {lossEventsCounts.pendingTriage > 0 && (
+                          <div 
+                            className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
+                            style={{width: `${(lossEventsCounts.pendingTriage / 4) * 100}%`}}
+                          >
+                            {lossEventsCounts.pendingTriage}
+                          </div>
+                        )}
+                        {lossEventsCounts.inTriage > 0 && (
+                          <div 
+                            className="bg-yellow-400 flex items-center justify-center text-white text-sm font-bold"
+                            style={{width: `${(lossEventsCounts.inTriage / 4) * 100}%`}}
+                          >
+                            {lossEventsCounts.inTriage}
+                          </div>
+                        )}
+                        {lossEventsCounts.closed > 0 && (
+                          <div 
+                            className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
+                            style={{width: `${(lossEventsCounts.closed / 4) * 100}%`}}
+                          >
+                            {lossEventsCounts.closed}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Simple legend */}
+                      <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-red-500" /> Pending
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-yellow-400" /> In Triage
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
+                        </span>
+                      </div>
+                      
+                      <div className="border-t border-border mt-2 pt-1.5">
                         <p className="text-[9px] text-muted-foreground">
-                          AI-analyzed causal chains for <span className="underline cursor-pointer">loss events</span>.
+                          Monitor loss events requiring triage and analysis.
                         </p>
                       </div>
                     </CardContent>
                   </Card>
 
-                  {/* Column 3: Control Effectiveness + Remediation Tasks stacked */}
-                  <div className="flex flex-col gap-3">
-                    {/* Control Effectiveness Card */}
-                    <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                      <CardContent className="p-2.5">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                              <FileCheck className="w-3 h-3 text-[#00897B]" />
-                            </div>
-                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                              CONTROL EFFECTIVENESS
-                            </span>
+                  {/* Drift Alerts Card */}
+                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
+                    <CardContent className="p-2.5">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <Activity className="w-3 h-3 text-[#00897B]" />
                           </div>
-                          <span className="text-xs text-muted-foreground">{effectiveControls} effective</span>
-                        </div>
-                        
-                        <div className="mb-1">
-                          <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
-                          <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
-                        </div>
-                        
-                        {/* Speedometer gauge with needle */}
-                        <div className="flex flex-col items-center mb-2">
-                          <div className="relative w-28 h-14">
-                            <svg viewBox="0 0 100 55" className="w-28 h-14">
-                              <defs>
-                                <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                                  <stop offset="0%" stopColor="hsl(143 57% 43%)" />
-                                  <stop offset="100%" stopColor="hsl(143 57% 55%)" />
-                                </linearGradient>
-                              </defs>
-                              <path 
-                                d="M 10 50 A 40 40 0 0 1 90 50" 
-                                fill="none" 
-                                stroke="hsl(143 30% 85%)" 
-                                strokeWidth="6"
-                                strokeLinecap="round"
-                              />
-                              <path 
-                                d="M 10 50 A 40 40 0 0 1 90 50" 
-                                fill="none" 
-                                stroke="url(#gaugeGradient)" 
-                                strokeWidth="6"
-                                strokeLinecap="round"
-                                strokeDasharray={`${(effectivenessPercent / 100) * 126} 126`}
-                              />
-                              <line 
-                                x1="50" y1="50" 
-                                x2={50 + 30 * Math.cos(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
-                                y2={50 - 30 * Math.sin(Math.PI - (effectivenessPercent / 100) * Math.PI)}
-                                stroke="hsl(143 57% 43%)" 
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                              />
-                              <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
-                            </svg>
-                            <span className="absolute left-0 bottom-0 text-[8px] text-muted-foreground">0%</span>
-                            <span className="absolute right-0 bottom-0 text-[8px] text-muted-foreground">100%</span>
-                          </div>
-                          <div className="text-center">
-                            <span className="text-xl font-bold text-success">{effectivenessPercent}%</span>
-                            <span className="text-[9px] text-muted-foreground block">Effective</span>
-                          </div>
-                        </div>
-
-                        {/* Horizontal Stacked Bar Chart */}
-                        <div className="w-full h-2 flex rounded-sm overflow-hidden mb-1">
-                          <div 
-                            className="bg-green-500 h-full" 
-                            style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
-                          />
-                          <div 
-                            className="bg-yellow-500 h-full" 
-                            style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
-                          />
-                          <div 
-                            className="bg-red-500 h-full" 
-                            style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
-                          />
-                        </div>
-
-                        {/* Legend */}
-                        <div className="flex flex-wrap gap-x-3 text-[8px] text-muted-foreground justify-center">
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                            DRIFT ALERTS
                           </span>
                         </div>
-                        
-                        <div className="border-t border-border mt-2 pt-1.5">
-                          <p className="text-[9px] text-muted-foreground">
-                            Aggregate control effectiveness across all risks.
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-
-                    {/* Remediation Tasks Card - Flex to fill remaining space */}
-                    <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1 flex flex-col">
-                      <CardContent className="p-2.5 flex-1 flex flex-col">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                              <CheckSquare className="w-3 h-3 text-[#00897B]" />
-                            </div>
-                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                              REMEDIATION TASKS
-                            </span>
-                          </div>
-                          <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                            EXPAND
-                            <ChevronDown className="w-4 h-4" />
-                          </button>
-                        </div>
-                        
-                        <div className="mb-1">
-                          <span className="text-xl font-bold text-[#10052F] dark:text-white">{remediationTasksCounts.open}</span>
-                          <span className="text-sm text-muted-foreground ml-1">Open Tasks</span>
-                        </div>
-                        
-                        {/* Horizontal stacked bar */}
-                        <div className="flex h-7 overflow-hidden mb-1">
-                          <div 
-                            className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
-                            style={{width: `${(remediationTasksCounts.open / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                          >
-                            {remediationTasksCounts.open}
-                          </div>
-                          <div 
-                            className="bg-orange-500 flex items-center justify-center text-white text-sm font-bold"
-                            style={{width: `${(remediationTasksCounts.inProgress / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                          >
-                            {remediationTasksCounts.inProgress}
-                          </div>
-                          <div 
-                            className="bg-blue-500 flex items-center justify-center text-white text-sm font-bold"
-                            style={{width: `${(remediationTasksCounts.validation / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                          >
-                            {remediationTasksCounts.validation}
-                          </div>
-                          <div 
-                            className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
-                            style={{width: `${(remediationTasksCounts.closed / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                          >
-                            {remediationTasksCounts.closed}
-                          </div>
-                        </div>
-                        
-                        {/* Legend */}
-                        <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-red-500" /> Open
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-orange-500" /> In Progress
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-blue-500" /> Validation
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
-                          </span>
-                        </div>
-                        
-                        <div className="border-t border-border mt-auto pt-1.5">
-                          <p className="text-[9px] text-muted-foreground">
-                            Track remediation progress across all risks.
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                        <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                          EXPAND
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                      </div>
+                      
+                      <div className="mb-1">
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{driftAlertsCounts.critical + driftAlertsCounts.high + driftAlertsCounts.medium}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Active Alerts</span>
+                      </div>
+                      
+                      {/* Segmented bar */}
+                      <div className="flex h-2.5 overflow-hidden mb-1">
+                        <div className="bg-destructive" style={{width: `${(driftAlertsCounts.critical / 3) * 100}%`}} />
+                        <div className="bg-warning" style={{width: `${(driftAlertsCounts.high / 3) * 100}%`}} />
+                        <div className="bg-[#F1BA50]" style={{width: `${(driftAlertsCounts.medium / 3) * 100}%`}} />
+                      </div>
+                      <div className="flex gap-3 text-[9px] text-muted-foreground">
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning"></span> High: {driftAlertsCounts.high}</span>
+                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
+                      </div>
+                      
+                      <div className="border-t border-border mt-2 pt-1.5">
+                        <p className="text-[9px] text-muted-foreground">
+                          Address rating variances flagged by AI analysis.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
 
-                {/* Inherent Risk Ratings Card - Now separate after the 3-column grid */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-2.5">
+                {/* Column 2: AI Root Cause - Full Height */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-full flex flex-col">
+                  <CardContent className="p-2.5 flex-1 flex flex-col">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <AlertTriangle className="w-3 h-3 text-[#00897B]" />
+                          <Sparkles className="w-3 h-3 text-[#00897B]" />
                         </div>
                         <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                          INHERENT RISK RATINGS
+                          AI ROOT CAUSE
                         </span>
                       </div>
-                      <span className="text-xs text-muted-foreground">
-                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
-                      </span>
+                      <button className="flex items-center gap-1 text-xs text-primary cursor-not-allowed font-medium">
+                        <Sparkles className="w-3 h-3" />
+                        EXPAND
+                      </button>
                     </div>
                     
-                    <div className="flex items-center gap-6">
-                      <div className="mb-1">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
-                        <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
+                    {/* Timeline layout - grows to fill space */}
+                    <div className="relative pl-4 space-y-3 mt-3 flex-1">
+                      {/* Vertical connector line */}
+                      <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-700" />
+                      
+                      {/* ROOT CAUSE */}
+                      <div className="relative flex items-start gap-2">
+                        <div className="absolute -left-4 w-4 h-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center z-10">
+                          <AlertCircle className="w-2.5 h-2.5 text-red-500" />
+                        </div>
+                        <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded px-2 py-1.5">
+                          <span className="text-[9px] font-semibold text-red-700 dark:text-red-400">ROOT CAUSE</span>
+                          <p className="text-[8px] text-red-600 dark:text-red-400/80 mt-0.5 line-clamp-2">
+                            Inadequate system access controls allowed unauthorized transactions...
+                          </p>
+                        </div>
                       </div>
                       
-                      {/* Donut chart + Legend - Inline */}
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="relative w-20 h-20 flex-shrink-0">
-                          {(() => {
-                            const circumference = 2 * Math.PI * 14;
-                            const total = inherentRiskCounts.total || 1;
-                            const criticalPct = inherentRiskCounts.critical / total;
-                            const highPct = inherentRiskCounts.high / total;
-                            const mediumPct = inherentRiskCounts.medium / total;
-                            const criticalAngle = criticalPct * 360;
-                            const highAngle = highPct * 360;
-                            
-                            return (
-                              <svg viewBox="0 0 36 36" className="w-20 h-20">
-                                <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#EF4444" strokeWidth="3"
-                                  strokeDasharray={`${criticalPct * circumference} ${circumference}`}
-                                  transform="rotate(-90 18 18)"
-                                />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#F97316" strokeWidth="3"
-                                  strokeDasharray={`${highPct * circumference} ${circumference}`}
-                                  transform={`rotate(${criticalAngle - 90} 18 18)`}
-                                />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#F1BA50" strokeWidth="3"
-                                  strokeDasharray={`${mediumPct * circumference} ${circumference}`}
-                                  transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
-                                />
-                              </svg>
-                            );
-                          })()}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-lg font-bold text-success">{criticalHighTotal}</span>
-                          </div>
+                      {/* CONTRIBUTING FACTORS */}
+                      <div className="relative flex items-start gap-2">
+                        <div className="absolute -left-4 w-4 h-4 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center z-10">
+                          <Target className="w-2.5 h-2.5 text-yellow-600" />
                         </div>
-                        
-                        <div className="flex gap-4">
-                          <div className="flex items-center gap-2">
-                            <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
-                            <span className="text-xs text-destructive">Critical</span>
-                            <span className="text-xs text-gray-500">{inherentRiskCounts.critical}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                            <span className="text-xs text-orange-500">High</span>
-                            <span className="text-xs text-gray-500">{inherentRiskCounts.high}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-2.5 h-2.5 rounded-full bg-[#F1BA50]" />
-                            <span className="text-xs text-[#F1BA50]">Medium</span>
-                            <span className="text-xs text-gray-500">{inherentRiskCounts.medium}</span>
-                          </div>
+                        <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded px-2 py-1.5">
+                          <span className="text-[9px] font-semibold text-yellow-700 dark:text-yellow-400">3 CONTRIBUTING FACTORS</span>
+                        </div>
+                      </div>
+                      
+                      {/* FAILED CONTROLS */}
+                      <div className="relative flex items-start gap-2">
+                        <div className="absolute -left-4 w-4 h-4 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center z-10">
+                          <XCircle className="w-2.5 h-2.5 text-orange-500" />
+                        </div>
+                        <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded px-2 py-1.5">
+                          <span className="text-[9px] font-semibold text-orange-700 dark:text-orange-400">2 FAILED CONTROLS</span>
+                        </div>
+                      </div>
+                      
+                      {/* ACTIONS */}
+                      <div className="relative flex items-start gap-2">
+                        <div className="absolute -left-4 w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center z-10">
+                          <Lightbulb className="w-2.5 h-2.5 text-green-500" />
+                        </div>
+                        <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded px-2 py-1.5">
+                          <span className="text-[9px] font-semibold text-green-700 dark:text-green-400">2 ACTIONS</span>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
+                    <div className="border-t border-border mt-3 pt-2">
                       <p className="text-[9px] text-muted-foreground">
-                        Review Critical and High ratings for control adequacy.
+                        AI-analyzed causal chains for <span className="underline cursor-pointer">loss events</span>.
                       </p>
                     </div>
                   </CardContent>
                 </Card>
-              </div>
+
+                {/* Column 3: Remediation Tasks - Full Height */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-full flex flex-col">
+                  <CardContent className="p-2.5 flex-1 flex flex-col">
+                    <div className="flex items-center justify-between mb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <CheckSquare className="w-3 h-3 text-[#00897B]" />
+                        </div>
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          REMEDIATION TASKS
+                        </span>
+                      </div>
+                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        EXPAND
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="mb-1">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{remediationTasksCounts.open}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Open Tasks</span>
+                    </div>
+                    
+                    {/* Horizontal stacked bar */}
+                    <div className="flex h-7 overflow-hidden mb-1">
+                      <div 
+                        className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.open / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.open}
+                      </div>
+                      <div 
+                        className="bg-orange-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.inProgress / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.inProgress}
+                      </div>
+                      <div 
+                        className="bg-blue-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.validation / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.validation}
+                      </div>
+                      <div 
+                        className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.closed / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.closed}
+                      </div>
+                    </div>
+                    
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-red-500" /> Open
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-orange-500" /> In Progress
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-blue-500" /> Validation
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
+                      </span>
+                    </div>
+                    
+                    <div className="border-t border-border mt-auto pt-1.5">
+                      <p className="text-[9px] text-muted-foreground">
+                        Track remediation progress across all risks.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
             </div>
           );
         })()}
