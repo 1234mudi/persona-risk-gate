@@ -149,12 +149,22 @@ export default {
           "0%, 100%": { transform: "scale(1)" },
           "50%": { transform: "scale(1.05)" },
         },
+        "bounce-x": {
+          "0%, 100%": { transform: "translateX(0)" },
+          "50%": { transform: "translateX(3px)" },
+        },
+        "glow-blue": {
+          "0%, 100%": { boxShadow: "0 0 4px 1px hsl(217, 91%, 60%, 0.4)" },
+          "50%": { boxShadow: "0 0 10px 4px hsl(217, 91%, 60%, 0.6)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
         "tab-flash": "tab-flash 0.6s ease-out",
         "tab-pulse": "tab-pulse 0.3s ease-in-out 2",
+        "bounce-x": "bounce-x 1s ease-in-out infinite",
+        "glow-blue": "glow-blue 2s ease-in-out infinite",
       },
     },
   },

@@ -54,13 +54,15 @@ export const PreviousAssessmentFloater = ({
     <Collapsible open={isExpanded} onOpenChange={onToggle}>
       <CollapsibleTrigger asChild>
         <button 
-          className={`flex items-center gap-1 text-[8px] text-blue-600 dark:text-blue-400 hover:underline transition-all ${
-            hasPreviousAssessments ? 'animate-pulse hover:animate-none' : ''
+          className={`flex items-center gap-1 text-[8px] font-medium px-1.5 py-0.5 rounded border transition-all ${
+            hasPreviousAssessments 
+              ? 'bg-blue-50 dark:bg-blue-950/50 border-blue-300 dark:border-blue-700 text-blue-700 dark:text-blue-300 animate-glow-blue hover:animate-none hover:scale-105 shadow-sm' 
+              : 'text-blue-600 dark:text-blue-400 border-transparent'
           }`}
         >
           <History className="w-2.5 h-2.5" />
           <span>Previous ({historicalAssessments.length})</span>
-          {isExpanded ? <ChevronDown className="w-2 h-2" /> : <ChevronRight className="w-2 h-2" />}
+          {isExpanded ? <ChevronDown className="w-2 h-2" /> : <ChevronRight className="w-2 h-2 animate-bounce-x" />}
         </button>
       </CollapsibleTrigger>
       <CollapsibleContent className="animate-accordion-down">
