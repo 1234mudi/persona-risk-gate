@@ -1681,9 +1681,11 @@ const Dashboard1stLine = () => {
                           N/A JUSTIFICATIONS
                         </span>
                       </div>
-                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                        <span className="uppercase font-medium">Expand</span>
-                        <ChevronDown className="w-4 h-4" />
+                      <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
+                        CLICK TO EXPAND
+                        <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                          <ChevronDown className="w-3 h-3" />
+                        </div>
                       </button>
                     </div>
                     
@@ -1757,9 +1759,11 @@ const Dashboard1stLine = () => {
                               LOSS EVENTS
                             </span>
                           </div>
-                          <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                          <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
                             CLICK TO EXPAND
-                            <ChevronDown className="w-4 h-4" />
+                            <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                              <ChevronDown className="w-3 h-3" />
+                            </div>
                           </button>
                         </div>
                         
@@ -1839,9 +1843,11 @@ const Dashboard1stLine = () => {
                               DRIFT ALERTS
                             </span>
                           </div>
-                          <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                          <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
                             CLICK TO EXPAND
-                            <ChevronDown className="w-4 h-4" />
+                            <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                              <ChevronDown className="w-3 h-3" />
+                            </div>
                           </button>
                         </div>
                         
@@ -1915,10 +1921,11 @@ const Dashboard1stLine = () => {
                             AI ROOT CAUSE
                           </span>
                         </div>
-                        <button className="flex items-center gap-1 text-xs text-primary cursor-not-allowed font-medium">
-                          <Sparkles className="w-3 h-3" />
-                          EXPAND
-                          <ChevronDown className="w-4 h-4" />
+                        <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
+                          CLICK TO EXPAND
+                          <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                            <ChevronDown className="w-3 h-3" />
+                          </div>
                         </button>
                       </div>
                       
@@ -2208,9 +2215,11 @@ const Dashboard1stLine = () => {
                           REMEDIATION TASKS
                         </span>
                       </div>
-                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                      <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
                         CLICK TO EXPAND
-                        <ChevronDown className="w-4 h-4" />
+                        <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                          <ChevronDown className="w-3 h-3" />
+                        </div>
                       </button>
                     </div>
                     
