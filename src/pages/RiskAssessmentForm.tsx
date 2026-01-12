@@ -984,7 +984,31 @@ const RiskAssessmentForm = () => {
     return initialRiskData.filter(risk => risk.businessUnit === currentOrganization);
   }, []);
   
-  // Calculate aggregated scores for the organization dynamically
+  // Get current risk's live scores from form state for dynamic updates
+  const currentRiskInherentScore = useMemo(() => {
+    const totalWeight = inherentFactors.reduce((sum, f) => sum + f.weightage, 0);
+    const weightedSum = inherentFactors.reduce((sum, f) => sum + (f.rating * f.weightage), 0);
+    return totalWeight > 0 ? weightedSum / totalWeight : 0;
+  }, [inherentFactors]);
+
+  const currentRiskControlScore = useMemo(() => {
+    const applicableControls = controls.filter(c => !c.isNotApplicable);
+    if (applicableControls.length === 0) return 0;
+    const total = applicableControls.reduce((sum, c) => {
+      const designScore = c.designRating || 0;
+      const operatingScore = c.operatingRating || 0;
+      return sum + (designScore + operatingScore) / 2;
+    }, 0);
+    return total / applicableControls.length;
+  }, [controls]);
+
+  const currentRiskResidualScore = useMemo(() => {
+    const totalWeight = residualFactors.reduce((sum, f) => sum + f.weightage, 0);
+    const weightedSum = residualFactors.reduce((sum, f) => sum + (f.rating * f.weightage), 0);
+    return totalWeight > 0 ? weightedSum / totalWeight : 0;
+  }, [residualFactors]);
+
+  // Calculate aggregated scores for the organization dynamically (including live form values)
   const orgAggregates = useMemo(() => {
     const totalRisks = orgRisks.length;
     if (totalRisks === 0) return { 
@@ -997,42 +1021,70 @@ const RiskAssessmentForm = () => {
       outsideAppetite: 0
     };
     
-    // Average Inherent Risk Score
-    const avgInherent = orgRisks.reduce((sum, r) => sum + (r.inherentRisk.score || 0), 0) / totalRisks;
+    // Calculate sums with live values for current risk
+    let inherentSum = 0;
+    let residualSum = 0;
+    let effectiveCount = 0;
+    let partialCount = 0;
+    let highCount = 0;
+    let mediumCount = 0;
+    let lowCount = 0;
+    let withinAppetiteCount = 0;
     
-    // Average Residual Risk Score  
-    const avgResidual = orgRisks.reduce((sum, r) => sum + (r.residualRisk.score || 0), 0) / totalRisks;
+    orgRisks.forEach(risk => {
+      const isCurrentRisk = risk.id === riskId || risk.title === riskName;
+      
+      if (isCurrentRisk) {
+        // Use live form values for current risk
+        inherentSum += currentRiskInherentScore;
+        residualSum += currentRiskResidualScore;
+        
+        // Control effectiveness from live score
+        if (currentRiskControlScore >= 4) effectiveCount++;
+        else if (currentRiskControlScore >= 2.5) partialCount++;
+        
+        // Risk level based on live residual score
+        if (currentRiskResidualScore >= 9) highCount++;
+        else if (currentRiskResidualScore >= 5) mediumCount++;
+        else lowCount++;
+        
+        // Appetite based on live residual
+        if (currentRiskResidualScore <= 6) withinAppetiteCount++;
+      } else {
+        // Use static data for other risks
+        inherentSum += risk.inherentRisk.score || 0;
+        residualSum += risk.residualRisk.score || 0;
+        
+        if (risk.controlEffectiveness.label.includes("Effective") && 
+            !risk.controlEffectiveness.label.includes("Partially")) {
+          effectiveCount++;
+        } else if (risk.controlEffectiveness.label.includes("Partially")) {
+          partialCount++;
+        }
+        
+        if (risk.residualRisk.level === 'High') highCount++;
+        else if (risk.residualRisk.level === 'Medium') mediumCount++;
+        else lowCount++;
+        
+        if ((risk.residualRisk.score || 0) <= 6) withinAppetiteCount++;
+      }
+    });
     
-    // Control Effectiveness - aggregate based on control labels
-    const effectiveCount = orgRisks.filter(r => 
-      r.controlEffectiveness.label.includes("Effective") && 
-      !r.controlEffectiveness.label.includes("Partially")
-    ).length;
-    const partialCount = orgRisks.filter(r => r.controlEffectiveness.label.includes("Partially")).length;
+    const avgInherent = inherentSum / totalRisks;
+    const avgResidual = residualSum / totalRisks;
     const avgControlEffectiveness = effectiveCount / totalRisks >= 0.5 ? "Effective" : 
                                     partialCount / totalRisks >= 0.3 ? "Partially Effective" : "Ineffective";
-    
-    // Risk Distribution by Level (based on residual)
-    const risksByLevel = {
-      high: orgRisks.filter(r => r.residualRisk.level === 'High').length,
-      medium: orgRisks.filter(r => r.residualRisk.level === 'Medium').length,
-      low: orgRisks.filter(r => r.residualRisk.level === 'Low').length,
-    };
-    
-    // Appetite Status (risks with residual score <= 6 are within appetite)
-    const withinAppetite = orgRisks.filter(r => (r.residualRisk.score || 0) <= 6).length;
-    const outsideAppetite = totalRisks - withinAppetite;
     
     return { 
       totalRisks, 
       avgInherent: avgInherent.toFixed(1), 
       avgResidual: avgResidual.toFixed(1), 
       avgControlEffectiveness,
-      risksByLevel,
-      withinAppetite,
-      outsideAppetite
+      risksByLevel: { high: highCount, medium: mediumCount, low: lowCount },
+      withinAppetite: withinAppetiteCount,
+      outsideAppetite: totalRisks - withinAppetiteCount
     };
-  }, [orgRisks]);
+  }, [orgRisks, riskId, riskName, currentRiskInherentScore, currentRiskResidualScore, currentRiskControlScore]);
 
   // Helper to get level label and color for a score
   const getScoreLevelLabel = (score: number) => {
@@ -2320,16 +2372,28 @@ const RiskAssessmentForm = () => {
                       </div>
                     </div>
                     
-                    {/* Right side - Org Risk Summary Trigger */}
+                    {/* Right side - Org Risk Summary Trigger with Average Badges */}
                     <CollapsibleTrigger asChild>
                       <Button 
                         variant="ghost" 
                         size="sm"
-                        className="h-5 px-1.5 text-[9px] gap-1 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                        className="h-6 px-1.5 text-[9px] gap-1 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
                       >
                         <BarChart3 className="w-3 h-3" />
                         <span className="hidden sm:inline">Org Summary</span>
                         <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400">{orgAggregates.totalRisks}</Badge>
+                        <Badge className="bg-amber-500 text-[7px] px-1 py-0 h-4 text-white">
+                          Avg Inh: {orgAggregates.avgInherent}
+                        </Badge>
+                        <Badge className="bg-emerald-500 text-[7px] px-1 py-0 h-4 text-white">
+                          Avg Res: {orgAggregates.avgResidual}
+                        </Badge>
+                        <Badge className={`text-[7px] px-1 py-0 h-4 text-white ${
+                          orgAggregates.avgControlEffectiveness === "Effective" ? "bg-emerald-500" : 
+                          orgAggregates.avgControlEffectiveness === "Partially Effective" ? "bg-amber-500" : "bg-red-500"
+                        }`}>
+                          {orgAggregates.avgControlEffectiveness === "Partially Effective" ? "Part. Eff" : orgAggregates.avgControlEffectiveness}
+                        </Badge>
                         {orgScoresPanelExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                       </Button>
                     </CollapsibleTrigger>
@@ -2369,11 +2433,21 @@ const RiskAssessmentForm = () => {
                             </thead>
                             <tbody>
                               {orgRisks.map((risk, idx) => {
-                                const isWithinAppetite = (risk.residualRisk.score || 0) <= 6;
-                                const inherentInfo = getScoreLevelLabel(risk.inherentRisk.score || 0);
-                                const residualInfo = getScoreLevelLabel(risk.residualRisk.score || 0);
-                                const controlInfo = getControlEffBadge(risk.controlEffectiveness.label);
                                 const isCurrentRisk = risk.id === riskId || risk.title === riskName;
+                                
+                                // Use live form values for current risk, static for others
+                                const displayInherent = isCurrentRisk ? currentRiskInherentScore : (risk.inherentRisk.score || 0);
+                                const displayResidual = isCurrentRisk ? currentRiskResidualScore : (risk.residualRisk.score || 0);
+                                const displayControlEff = isCurrentRisk 
+                                  ? (currentRiskControlScore >= 4 ? "Eff" : currentRiskControlScore >= 2.5 ? "Part" : "Ineff")
+                                  : getControlEffBadge(risk.controlEffectiveness.label).text;
+                                const displayControlColor = isCurrentRisk
+                                  ? (currentRiskControlScore >= 4 ? "bg-emerald-500" : currentRiskControlScore >= 2.5 ? "bg-amber-500" : "bg-red-500")
+                                  : getControlEffBadge(risk.controlEffectiveness.label).color;
+                                
+                                const isWithinAppetite = displayResidual <= 6;
+                                const inherentInfo = getScoreLevelLabel(displayInherent);
+                                const residualInfo = getScoreLevelLabel(displayResidual);
                                 
                                 return (
                                   <tr 
@@ -2391,17 +2465,17 @@ const RiskAssessmentForm = () => {
                                     </td>
                                     <td className="text-center py-1">
                                       <Badge className={`${inherentInfo.color} text-[7px] px-1.5 py-0 text-white`}>
-                                        {risk.inherentRisk.score || 0}
+                                        {displayInherent.toFixed(1)}
                                       </Badge>
                                     </td>
                                     <td className="text-center py-1">
                                       <Badge className={`${residualInfo.color} text-[7px] px-1.5 py-0 text-white`}>
-                                        {risk.residualRisk.score || 0}
+                                        {displayResidual.toFixed(1)}
                                       </Badge>
                                     </td>
                                     <td className="text-center py-1">
-                                      <Badge className={`${controlInfo.color} text-[7px] px-1.5 py-0 text-white`}>
-                                        {controlInfo.text}
+                                      <Badge className={`${displayControlColor} text-[7px] px-1.5 py-0 text-white`}>
+                                        {displayControlEff}
                                       </Badge>
                                     </td>
                                     <td className="text-center py-1">
