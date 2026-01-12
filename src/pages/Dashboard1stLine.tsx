@@ -1937,14 +1937,14 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     <div className="mb-2">
-                      <span className="text-2xl font-bold text-foreground">{criticalHighTotal}</span>
+                      <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{criticalHighTotal}</span>
                       <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
                     </div>
                     
-                    {/* Donut chart + Legend - Larger size */}
-                    <div className="flex items-center gap-4">
-                      <div className="relative w-24 h-24 flex-shrink-0">
-                        <svg viewBox="0 0 36 36" className="w-24 h-24">
+                    {/* Donut chart + Legend - Centered larger donut */}
+                    <div className="flex items-center justify-center gap-6">
+                      <div className="relative w-28 h-28 flex-shrink-0">
+                        <svg viewBox="0 0 36 36" className="w-28 h-28">
                           {/* Critical slice */}
                           <circle 
                             cx="18" cy="18" r="10" fill="none" 
@@ -1968,30 +1968,35 @@ const Dashboard1stLine = () => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-xl font-bold text-orange-500">{criticalHighTotal}</span>
+                          <span className="text-xl font-bold text-gray-900 dark:text-gray-100">{criticalHighTotal}</span>
                           <span className="text-[8px] text-muted-foreground uppercase">CRIT+HIGH</span>
                         </div>
                       </div>
                       
                       <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-destructive" />
-                          <span className="text-xs text-foreground">Critical: {inherentRiskCounts.critical}</span>
+                          <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
+                          <span className="text-xs text-destructive">Critical</span>
+                          <span className="text-xs text-gray-500">{inherentRiskCounts.critical}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-orange-500" />
-                          <span className="text-xs text-foreground">High: {inherentRiskCounts.high}</span>
+                          <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                          <span className="text-xs text-orange-500">High</span>
+                          <span className="text-xs text-gray-500">{inherentRiskCounts.high}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-3 h-3 bg-[#F1BA50]" />
-                          <span className="text-xs text-foreground">Medium: {inherentRiskCounts.medium}</span>
+                          <div className="w-2.5 h-2.5 rounded-full bg-[#F1BA50]" />
+                          <span className="text-xs text-[#F1BA50]">Medium</span>
+                          <span className="text-xs text-gray-500">{inherentRiskCounts.medium}</span>
                         </div>
                       </div>
                     </div>
                     
-                    <p className="text-[9px] text-muted-foreground mt-2">
-                      Review Critical and High ratings for control adequacy.
-                    </p>
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-3">
+                      <p className="text-[9px] text-muted-foreground">
+                        Review Critical and High ratings for control adequacy.
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
 
