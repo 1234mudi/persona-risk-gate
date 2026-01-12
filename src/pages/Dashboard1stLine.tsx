@@ -1539,12 +1539,12 @@ const Dashboard1stLine = () => {
               {/* Left Column */}
               <div className="space-y-3">
                 {/* Assessment Status Card */}
-                <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-card rounded-none">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded bg-[#00897B] flex items-center justify-center">
-                          <CalendarCheck className="w-3.5 h-3.5 text-white" />
+                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                          <CalendarCheck className="w-4 h-4 text-[#00897B]" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                           ASSESSMENT STATUS
