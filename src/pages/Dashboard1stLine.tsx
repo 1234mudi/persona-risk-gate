@@ -1541,7 +1541,7 @@ const Dashboard1stLine = () => {
                 {/* Assessment Status Card */}
                 <Card className="border border-border shadow-sm bg-card">
                   <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
                         <CalendarCheck className="w-4 h-4 text-muted-foreground" />
                         <span className="text-xs font-bold uppercase tracking-wide text-foreground">
@@ -1553,16 +1553,17 @@ const Dashboard1stLine = () => {
                         className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
                       >
                         CLICK TO EXPAND
+                        <Check className="w-4 h-4" />
                         <ChevronDown className={cn("w-4 h-4 transition-transform", 
                           expandedCard === 'assessment' && "rotate-180")} />
                       </button>
                     </div>
                     
                     {/* Summary row */}
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-3">
                       <div>
-                        <span className="text-2xl font-bold text-foreground">{requiresAction}</span>
-                        <span className="text-sm text-muted-foreground ml-1">Requiring Action</span>
+                        <span className="text-3xl font-bold text-foreground">{requiresAction}</span>
+                        <span className="text-base text-muted-foreground ml-2">Requiring Action</span>
                       </div>
                       <div className="flex items-center gap-1">
                         <TrendingDown className="w-3 h-3 text-destructive" />
@@ -1575,15 +1576,14 @@ const Dashboard1stLine = () => {
                       {/* Donut chart */}
                       <div className="relative w-16 h-16 flex-shrink-0">
                         <svg viewBox="0 0 36 36" className="w-16 h-16">
-                          {/* Background circle */}
-                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(var(--muted))" strokeWidth="3" />
-                          {/* Progress circle */}
+                          {/* Background circle - RED for incomplete */}
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(0 84% 60%)" strokeWidth="3" />
+                          {/* Progress circle - GREEN for complete */}
                           <circle 
                             cx="18" cy="18" r="15.9" fill="none" 
                             stroke="hsl(143 57% 43%)" strokeWidth="3"
                             strokeDasharray={`${completionPercent} ${100 - completionPercent}`}
                             strokeDashoffset="25"
-                            strokeLinecap="round"
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -1593,9 +1593,9 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Progress bars */}
-                      <div className="flex-1 space-y-1.5">
+                      <div className="flex-1 space-y-2">
                         <div>
-                          <span className="text-[9px] text-muted-foreground uppercase tracking-wide">DEADLINE STATUS</span>
+                          <span className="text-[10px] text-green-600 uppercase tracking-wide font-medium">DEADLINE STATUS</span>
                           <div className="flex h-2 overflow-hidden mt-0.5">
                             {assessmentStatusCounts.overdue > 0 && (
                               <div className="bg-destructive" style={{width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} />
@@ -1609,7 +1609,7 @@ const Dashboard1stLine = () => {
                           </div>
                         </div>
                         <div>
-                          <span className="text-[9px] text-muted-foreground uppercase tracking-wide">WORKFLOW PROGRESS</span>
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">WORKFLOW PROGRESS</span>
                           <div className="flex h-2 overflow-hidden mt-0.5">
                             {assessmentStatusCounts.completed > 0 && (
                               <div className="bg-success" style={{width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} />
@@ -1625,10 +1625,19 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-x-2 gap-y-0 text-[8px] text-muted-foreground">
-                          <span>{assessmentStatusCounts.completed} Done</span>
-                          <span>{assessmentStatusCounts.overdue} Overdue</span>
-                          <span>{assessmentStatusCounts.inProgress} In Progress</span>
+                        <div className="flex flex-wrap gap-x-3 gap-y-0 text-[9px] text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 bg-green-500" />
+                            {assessmentStatusCounts.completed} Done
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 bg-red-500" />
+                            {assessmentStatusCounts.overdue} Overdue
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 bg-yellow-500" />
+                            {assessmentStatusCounts.inProgress} In Progress
+                          </span>
                         </div>
                       </div>
                     </div>
