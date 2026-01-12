@@ -1912,9 +1912,71 @@ const RiskAssessmentForm = () => {
     toast.success("Assessment submitted for review");
   };
 
+  // Generate contextual comment based on factor and rating
+  const generateRatingComment = (factorName: string, rating: number, factorType: 'inherent' | 'residual'): string => {
+    if (factorType === 'inherent') {
+      if (factorName === 'Impact') {
+        const comments: Record<number, string> = {
+          0: 'Impact assessment not applicable for this risk.',
+          1: 'Very low impact expected; minimal effect on operations or financials.',
+          2: 'Low impact anticipated; minor operational disruptions possible.',
+          3: 'Moderate impact expected; noticeable effect on operations and resources.',
+          4: 'High impact expected due to significant financial penalties and regulatory scrutiny.',
+          5: 'Critical impact anticipated; severe operational, financial, and reputational consequences.',
+        };
+        return comments[rating] || '';
+      }
+      if (factorName === 'Likelihood') {
+        const comments: Record<number, string> = {
+          0: 'Likelihood assessment not applicable for this risk.',
+          1: 'Rare occurrence expected; highly unlikely based on historical data.',
+          2: 'Unlikely to occur; minimal evidence of triggering conditions.',
+          3: 'Moderate likelihood based on current control gaps and industry trends.',
+          4: 'Likely to occur; frequent triggering conditions observed.',
+          5: 'Almost certain to occur; imminent risk indicators present.',
+        };
+        return comments[rating] || '';
+      }
+    }
+    
+    if (factorType === 'residual') {
+      if (factorName === 'Impact') {
+        const comments: Record<number, string> = {
+          0: 'Residual impact assessment not applicable.',
+          1: 'Minimal residual impact after controls; negligible effect expected.',
+          2: 'Low residual impact; existing controls substantially reduce potential consequences.',
+          3: 'Moderate residual impact remains despite control measures.',
+          4: 'Significant residual impact persists; additional mitigation needed.',
+          5: 'Critical residual impact; controls insufficient to address risk magnitude.',
+        };
+        return comments[rating] || '';
+      }
+      if (factorName === 'Likelihood') {
+        const comments: Record<number, string> = {
+          0: 'Residual likelihood assessment not applicable.',
+          1: 'Very low residual likelihood; controls effectively reduce occurrence probability.',
+          2: 'Low residual likelihood; minor probability remains after controls.',
+          3: 'Moderate residual likelihood; control effectiveness partially reduces probability.',
+          4: 'High residual likelihood; controls do not adequately address occurrence probability.',
+          5: 'Very high residual likelihood; near-certain occurrence despite controls.',
+        };
+        return comments[rating] || '';
+      }
+    }
+    
+    return '';
+  };
+
   const updateFactorRating = (factors: Factor[], setFactors: React.Dispatch<React.SetStateAction<Factor[]>>, id: string, rating: number, factorType: 'inherent' | 'residual') => {
-    setFactors(factors.map(f => f.id === id ? { ...f, rating } : f));
+    setFactors(factors.map(f => {
+      if (f.id === id) {
+        const newComment = generateRatingComment(f.name, rating, factorType);
+        return { ...f, rating, comments: newComment };
+      }
+      return f;
+    }));
     markFieldAsUpdatedVersion(`${factorType}-${id}-rating`);
+    markFieldAsUpdatedVersion(`${factorType}-${id}-comments`);
   };
 
   const updateFactorComment = (factors: Factor[], setFactors: React.Dispatch<React.SetStateAction<Factor[]>>, id: string, comments: string, factorType: 'inherent' | 'residual') => {
@@ -2941,7 +3003,10 @@ const RiskAssessmentForm = () => {
                   <div>
                     <h2 className="text-sm font-semibold">Control Effectiveness Assessment</h2>
                     <p className="text-[11px] text-muted-foreground">Evaluate design, operating effectiveness, and testing results</p>
-                </div>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      To mark a control as N/A: Click the icon in the 'N/A' column, check the 'Mark as Not Applicable' box, and provide a justification.
+                    </p>
+                  </div>
 
                 {/* Previous Assessments Floater */}
                 <div className="relative mb-2">
