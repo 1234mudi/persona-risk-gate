@@ -2087,13 +2087,6 @@ const Dashboard1stLine = () => {
                             strokeLinecap="round"
                           />
                           
-                          {/* Needle tip dot */}
-                          <circle 
-                            cx={50 + 30 * Math.cos(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
-                            cy={50 - 30 * Math.sin(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
-                            r="3" 
-                            fill="hsl(143 57% 43%)" 
-                          />
                           
                           {/* Center dot */}
                           <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
@@ -2147,9 +2140,11 @@ const Dashboard1stLine = () => {
                       </span>
                     </div>
                     
-                    <p className="text-[9px] text-muted-foreground mt-2">
-                      Aggregate control effectiveness across all risks.
-                    </p>
+                    <div className="border-t border-border mt-3 pt-2">
+                      <p className="text-[9px] text-muted-foreground">
+                        Aggregate control effectiveness across all risks.
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
 
