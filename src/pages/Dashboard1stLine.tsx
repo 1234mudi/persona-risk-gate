@@ -1770,13 +1770,13 @@ const Dashboard1stLine = () => {
                 <div className="grid grid-cols-2 gap-3">
                   {/* Loss Events Card */}
                   <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                    <CardContent className="p-3">
-                      <div className="flex items-center justify-between mb-2">
+                    <CardContent className="p-2.5">
+                      <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                            <Info className="w-4 h-4 text-[#00897B]" />
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <Info className="w-3 h-3 text-[#00897B]" />
                           </div>
-                          <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                             LOSS EVENTS
                           </span>
                         </div>
@@ -1785,8 +1785,8 @@ const Dashboard1stLine = () => {
                         </button>
                       </div>
                       
-                      <div className="mb-2">
-                        <span className="text-2xl font-bold text-foreground">{lossEventsCounts.pendingTriage}</span>
+                      <div className="mb-1">
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsCounts.pendingTriage}</span>
                         <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
                       </div>
                       
@@ -1835,13 +1835,13 @@ const Dashboard1stLine = () => {
 
                   {/* AI Root Cause Card */}
                   <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                    <CardContent className="p-3">
-                      <div className="flex items-center justify-between mb-2">
+                    <CardContent className="p-2.5">
+                      <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                            <Sparkles className="w-4 h-4 text-[#00897B]" />
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <Sparkles className="w-3 h-3 text-[#00897B]" />
                           </div>
-                          <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                             AI ROOT CAUSE
                           </span>
                         </div>
@@ -1850,8 +1850,8 @@ const Dashboard1stLine = () => {
                         </button>
                       </div>
                       
-                      <div className="mb-2">
-                        <span className="text-2xl font-bold text-foreground">3</span>
+                      <div className="mb-1">
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">3</span>
                         <span className="text-sm text-muted-foreground ml-1">Mapped Events</span>
                       </div>
                       
@@ -1890,13 +1890,13 @@ const Dashboard1stLine = () => {
 
                 {/* Drift Alerts Card */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                          <Activity className="w-4 h-4 text-[#00897B]" />
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <Activity className="w-3 h-3 text-[#00897B]" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                           DRIFT ALERTS
                         </span>
                       </div>
@@ -1906,8 +1906,8 @@ const Dashboard1stLine = () => {
                       </button>
                     </div>
                     
-                    <div className="mb-2">
-                      <span className="text-2xl font-bold text-foreground">{driftAlertsCounts.critical + driftAlertsCounts.high + driftAlertsCounts.medium}</span>
+                    <div className="mb-1">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{driftAlertsCounts.critical + driftAlertsCounts.high + driftAlertsCounts.medium}</span>
                       <span className="text-sm text-muted-foreground ml-1">Active Alerts</span>
                     </div>
                     
@@ -1930,13 +1930,13 @@ const Dashboard1stLine = () => {
               <div className="space-y-3">
                 {/* Inherent Risk Ratings Card - Larger Donut */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                          <AlertTriangle className="w-4 h-4 text-[#00897B]" />
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <AlertTriangle className="w-3 h-3 text-[#00897B]" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                           INHERENT RISK RATINGS
                         </span>
                       </div>
@@ -1945,8 +1945,8 @@ const Dashboard1stLine = () => {
                       </span>
                     </div>
                     
-                    <div className="mb-2">
-                      <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{criticalHighTotal}</span>
+                    <div className="mb-1">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
                       <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
                     </div>
                     
@@ -2028,21 +2028,21 @@ const Dashboard1stLine = () => {
 
                 {/* Control Effectiveness Card - Speedometer Gauge */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                          <FileCheck className="w-4 h-4 text-[#00897B]" />
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <FileCheck className="w-3 h-3 text-[#00897B]" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                           CONTROL EFFECTIVENESS
                         </span>
                       </div>
                       <span className="text-xs text-muted-foreground">{effectiveControls} effective</span>
                     </div>
                     
-                    <div className="mb-2">
-                      <span className="text-2xl font-bold text-foreground">{needsAttention}</span>
+                    <div className="mb-1">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
                       <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
                     </div>
                     
