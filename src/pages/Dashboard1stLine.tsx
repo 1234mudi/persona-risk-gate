@@ -98,6 +98,7 @@ const Dashboard1stLine = () => {
   const [riskOverviewModalOpen, setRiskOverviewModalOpen] = useState(false);
   const [selectedMetric, setSelectedMetric] = useState<MetricData | null>(null);
   const [metricDetailsOpen, setMetricDetailsOpen] = useState(false);
+  const [showRiskTable, setShowRiskTable] = useState(false);
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
     title: string;
@@ -1510,6 +1511,20 @@ const Dashboard1stLine = () => {
           // Expanded card state
           const [expandedCard, setExpandedCard] = React.useState<string | null>(null);
           const toggleCardExpand = (cardId: string) => {
+            if (cardId === 'assessment') {
+              const newShowState = !showRiskTable;
+              setShowRiskTable(newShowState);
+              
+              // Auto-scroll to table when showing
+              if (newShowState) {
+                setTimeout(() => {
+                  reportSectionRef.current?.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                  });
+                }, 100);
+              }
+            }
             setExpandedCard(prev => prev === cardId ? null : cardId);
           };
 
@@ -1651,45 +1666,6 @@ const Dashboard1stLine = () => {
                       </p>
                     </div>
                     
-                    {/* Expandable dropdown - shows risk table */}
-                    {expandedCard === 'assessment' && (
-                      <div className="mt-3 border-t pt-3 max-h-[400px] overflow-y-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="text-xs py-2">Risk ID</TableHead>
-                              <TableHead className="text-xs py-2">Title</TableHead>
-                              <TableHead className="text-xs py-2">Status</TableHead>
-                              <TableHead className="text-xs py-2">Due Date</TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {visibleRisks.slice(0, 10).map((risk, idx) => (
-                              <TableRow key={idx} className="hover:bg-muted/50">
-                                <TableCell className="text-xs py-2 font-mono">{risk.id}</TableCell>
-                                <TableCell className="text-xs py-2">
-                                  <button 
-                                    onClick={() => handleRiskNameClick(risk)}
-                                    className="text-left hover:text-primary transition-colors hover:underline text-blue-600 dark:text-blue-400"
-                                  >
-                                    {risk.title}
-                                  </button>
-                                </TableCell>
-                                <TableCell className="py-2">
-                                  <Badge className={`${getStatusColor(risk.status)} text-[10px] px-2 py-0.5`}>{risk.status}</Badge>
-                                </TableCell>
-                                <TableCell className="text-xs py-2">{format(parseISO(risk.dueDate), 'MMM dd, yyyy')}</TableCell>
-                              </TableRow>
-                            ))}
-                          </TableBody>
-                        </Table>
-                        {visibleRisks.length > 10 && (
-                          <p className="text-xs text-muted-foreground text-center mt-2">
-                            Showing 10 of {visibleRisks.length} risks
-                          </p>
-                        )}
-                      </div>
-                    )}
                   </CardContent>
                 </Card>
 
@@ -2330,6 +2306,7 @@ const Dashboard1stLine = () => {
         })()}
 
         {/* Active Risk Profile Section */}
+        {showRiskTable && (
         <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none">
           {/* Title Bar with Tabs */}
           <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
@@ -3161,6 +3138,7 @@ const Dashboard1stLine = () => {
             </div>
           </CardContent>
         </Card>
+        )}
       </main>
 
       {/* Modals */}
