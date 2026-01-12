@@ -1694,12 +1694,14 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* N/A Justifications Card - Pipeline Flow Design */}
-                <Card className="border border-border shadow-sm bg-card">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Ban className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                          <Ban className="w-4 h-4 text-[#00897B]" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                           N/A JUSTIFICATIONS
                         </span>
                       </div>
@@ -1758,12 +1760,14 @@ const Dashboard1stLine = () => {
                 {/* Loss Events + AI Root Cause - Side by Side */}
                 <div className="grid grid-cols-2 gap-3">
                   {/* Loss Events Card */}
-                  <Card className="border border-border shadow-sm bg-card">
+                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Info className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                            <Info className="w-4 h-4 text-[#00897B]" />
+                          </div>
+                          <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                             LOSS EVENTS
                           </span>
                         </div>
@@ -1821,12 +1825,14 @@ const Dashboard1stLine = () => {
                   </Card>
 
                   {/* AI Root Cause Card */}
-                  <Card className="border border-border shadow-sm bg-card">
+                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <Sparkles className="w-4 h-4 text-[#6A75D8]" />
-                          <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                            <Sparkles className="w-4 h-4 text-[#00897B]" />
+                          </div>
+                          <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                             AI ROOT CAUSE
                           </span>
                         </div>
@@ -1874,12 +1880,14 @@ const Dashboard1stLine = () => {
                 </div>
 
                 {/* Drift Alerts Card */}
-                <Card className="border border-border shadow-sm bg-card">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <Activity className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                          <Activity className="w-4 h-4 text-[#00897B]" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                           DRIFT ALERTS
                         </span>
                       </div>
@@ -1912,12 +1920,14 @@ const Dashboard1stLine = () => {
               {/* Right Column */}
               <div className="space-y-3">
                 {/* Inherent Risk Ratings Card - Larger Donut */}
-                <Card className="border border-border shadow-sm bg-card">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                          <AlertTriangle className="w-4 h-4 text-[#00897B]" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                           INHERENT RISK RATINGS
                         </span>
                       </div>
@@ -1986,12 +1996,14 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Control Effectiveness Card - Speedometer Gauge */}
-                <Card className="border border-border shadow-sm bg-card">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <FileCheck className="w-4 h-4 text-green-600" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-green-600">
+                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                          <FileCheck className="w-4 h-4 text-[#00897B]" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                           CONTROL EFFECTIVENESS
                         </span>
                       </div>
@@ -2067,12 +2079,14 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card - Proportional Bars with Track */}
-                <Card className="border border-border shadow-sm bg-card">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <CheckSquare className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
+                          <CheckSquare className="w-4 h-4 text-[#00897B]" />
+                        </div>
+                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                           REMEDIATION TASKS
                         </span>
                       </div>
