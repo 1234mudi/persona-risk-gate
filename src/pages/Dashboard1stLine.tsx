@@ -1599,7 +1599,7 @@ const Dashboard1stLine = () => {
                           {/* Progress circle - RED for complete portion */}
                           <circle 
                             cx="18" cy="18" r="15.9" fill="none" 
-                            stroke="#EF4444" strokeWidth="3"
+                            stroke="hsl(var(--destructive))" strokeWidth="3"
                             strokeDasharray={`${completionPercent} ${100 - completionPercent}`}
                             strokeDashoffset="25"
                           />
@@ -1645,15 +1645,15 @@ const Dashboard1stLine = () => {
                         </div>
                         <div className="flex flex-wrap gap-x-3 gap-y-0 text-[9px] text-muted-foreground">
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-green-500" />
+                            <span className="w-2 h-2 rounded-full bg-success" />
                             {assessmentStatusCounts.completed} Done
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-red-500" />
+                            <span className="w-2 h-2 rounded-full bg-destructive" />
                             {assessmentStatusCounts.overdue} Overdue
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                            <span className="w-2 h-2 rounded-full bg-warning" />
                             {assessmentStatusCounts.inProgress} In Progress
                           </span>
                         </div>
@@ -1779,7 +1779,7 @@ const Dashboard1stLine = () => {
                               <>
                                 {lossEventsCounts.pendingTriage > 0 && (
                                   <div 
-                                    className="bg-red-500 flex items-center justify-center text-white text-lg font-bold rounded-l-lg"
+                                    className="bg-destructive flex items-center justify-center text-white text-lg font-bold rounded-l-lg"
                                     style={{width: `${pendingPct}%`, minWidth: '40px'}}
                                   >
                                     {lossEventsCounts.pendingTriage}
@@ -1787,7 +1787,7 @@ const Dashboard1stLine = () => {
                                 )}
                                 {lossEventsCounts.inTriage > 0 && (
                                   <div 
-                                    className="bg-yellow-400 flex items-center justify-center text-white text-lg font-bold"
+                                    className="bg-warning flex items-center justify-center text-white text-lg font-bold"
                                     style={{width: `${triagePct}%`, minWidth: '40px'}}
                                   >
                                     {lossEventsCounts.inTriage}
@@ -1795,7 +1795,7 @@ const Dashboard1stLine = () => {
                                 )}
                                 {lossEventsCounts.closed > 0 && (
                                   <div 
-                                    className="bg-green-500 flex items-center justify-center text-white text-lg font-bold rounded-r-lg"
+                                    className="bg-success flex items-center justify-center text-white text-lg font-bold rounded-r-lg"
                                     style={{width: `${closedPct}%`, minWidth: '40px'}}
                                   >
                                     {lossEventsCounts.closed}
@@ -1809,13 +1809,13 @@ const Dashboard1stLine = () => {
                         {/* Simple legend */}
                         <div className="flex flex-wrap gap-3 text-[9px] text-muted-foreground">
                           <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Pending
+                            <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> Pending
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-yellow-400" /> In Triage
+                            <span className="w-2.5 h-2.5 rounded-full bg-warning" /> In Triage
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Closed
+                            <span className="w-2.5 h-2.5 rounded-full bg-success" /> Closed
                           </span>
                         </div>
                         
@@ -1861,7 +1861,7 @@ const Dashboard1stLine = () => {
                               <>
                                 {driftAlertsCounts.critical > 0 && (
                                   <div 
-                                    className="bg-red-500 flex items-center justify-center text-white text-lg font-bold rounded-l-lg"
+                                    className="bg-destructive flex items-center justify-center text-white text-lg font-bold rounded-l-lg"
                                     style={{width: `${criticalPct}%`, minWidth: '40px'}}
                                   >
                                     {driftAlertsCounts.critical}
@@ -1869,7 +1869,7 @@ const Dashboard1stLine = () => {
                                 )}
                                 {driftAlertsCounts.high > 0 && (
                                   <div 
-                                    className="bg-yellow-500 flex items-center justify-center text-white text-lg font-bold"
+                                    className="bg-warning flex items-center justify-center text-white text-lg font-bold"
                                     style={{width: `${highPct}%`, minWidth: '40px'}}
                                   >
                                     {driftAlertsCounts.high}
@@ -1877,7 +1877,7 @@ const Dashboard1stLine = () => {
                                 )}
                                 {driftAlertsCounts.medium > 0 && (
                                   <div 
-                                    className="bg-[#9ACD32] flex items-center justify-center text-white text-lg font-bold rounded-r-lg"
+                                    className="bg-accent flex items-center justify-center text-white text-lg font-bold rounded-r-lg"
                                     style={{width: `${mediumPct}%`, minWidth: '40px'}}
                                   >
                                     {driftAlertsCounts.medium}
@@ -1889,9 +1889,9 @@ const Dashboard1stLine = () => {
                         </div>
                         
                         <div className="flex gap-4 text-[9px] text-muted-foreground">
-                          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-red-500"></span> Critical: {driftAlertsCounts.critical}</span>
-                          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-yellow-500"></span> High: {driftAlertsCounts.high}</span>
-                          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-[#9ACD32]"></span> Medium: {driftAlertsCounts.medium}</span>
+                          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
+                          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-warning"></span> High: {driftAlertsCounts.high}</span>
+                          <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded-full bg-accent"></span> Medium: {driftAlertsCounts.medium}</span>
                         </div>
                         
                         <div className="border-t border-border mt-2 pt-1.5">
@@ -2035,19 +2035,19 @@ const Dashboard1stLine = () => {
                               <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                               <circle 
                                 cx="18" cy="18" r="14" fill="none" 
-                                stroke="#EF4444" strokeWidth="3"
+                                stroke="hsl(var(--destructive))" strokeWidth="3"
                                 strokeDasharray={`${criticalPct * circumference} ${circumference}`}
                                 transform="rotate(-90 18 18)"
                               />
                               <circle 
                                 cx="18" cy="18" r="14" fill="none" 
-                                stroke="#F97316" strokeWidth="3"
+                                stroke="hsl(var(--warning))" strokeWidth="3"
                                 strokeDasharray={`${highPct * circumference} ${circumference}`}
                                 transform={`rotate(${criticalAngle - 90} 18 18)`}
                               />
                               <circle 
                                 cx="18" cy="18" r="14" fill="none" 
-                                stroke="#F1BA50" strokeWidth="3"
+                                stroke="hsl(var(--accent))" strokeWidth="3"
                                 strokeDasharray={`${mediumPct * circumference} ${circumference}`}
                                 transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
                               />
@@ -2067,13 +2067,13 @@ const Dashboard1stLine = () => {
                           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
-                          <span className="text-xs text-orange-500">High</span>
+                          <div className="w-2.5 h-2.5 rounded-full bg-warning" />
+                          <span className="text-xs text-warning">High</span>
                           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-[#F1BA50]" />
-                          <span className="text-xs text-[#F1BA50]">Medium</span>
+                          <div className="w-2.5 h-2.5 rounded-full bg-accent" />
+                          <span className="text-xs text-accent">Medium</span>
                           <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
                         </div>
                       </div>
@@ -2155,15 +2155,15 @@ const Dashboard1stLine = () => {
                     {/* Horizontal Stacked Bar Chart - taller */}
                     <div className="w-full h-3.5 flex rounded-md overflow-hidden mb-3 mt-2">
                       <div 
-                        className="bg-green-500 h-full" 
+                        className="bg-success h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
                       />
                       <div 
-                        className="bg-yellow-500 h-full" 
+                        className="bg-warning h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
                       />
                       <div 
-                        className="bg-red-500 h-full" 
+                        className="bg-destructive h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
                       />
                       <div 
@@ -2175,13 +2175,13 @@ const Dashboard1stLine = () => {
                     {/* Legend - spread across full width with N/A */}
                     <div className="flex justify-between text-[9px] text-muted-foreground mb-3">
                       <span className="flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Effective: {effectiveControls}
+                        <span className="w-2.5 h-2.5 rounded-full bg-success" /> Effective: {effectiveControls}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
+                        <span className="w-2.5 h-2.5 rounded-full bg-warning" /> Partial: {controlEvidenceCounts.partiallyEffective}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
+                        <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> Ineffective: {controlEvidenceCounts.ineffective}
                       </span>
                       <span className="flex items-center gap-1">
                         <span className="w-2.5 h-2.5 rounded-full bg-gray-400" /> N/A: 0
