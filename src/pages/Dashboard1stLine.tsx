@@ -1590,7 +1590,7 @@ const Dashboard1stLine = () => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-base font-bold text-destructive">{completionPercent}%</span>
+                          <span className="text-base font-bold text-success">{completionPercent}%</span>
                           <span className="text-[7px] text-muted-foreground uppercase">Complete</span>
                         </div>
                       </div>
