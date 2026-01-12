@@ -109,6 +109,12 @@ const Dashboard1stLine = () => {
   const [showResolvedAlerts, setShowResolvedAlerts] = useState(false);
   const driftAlertsRef = useRef<HTMLDivElement>(null);
   
+  // Remediation Tasks expanded state
+  const [isRemediationExpanded, setIsRemediationExpanded] = useState(false);
+  const [remediationSearchQuery, setRemediationSearchQuery] = useState("");
+  const [showCompletedTasks, setShowCompletedTasks] = useState(false);
+  const remediationRef = useRef<HTMLDivElement>(null);
+  
   // Historical assessments modal state
   const [historicalModalOpen, setHistoricalModalOpen] = useState(false);
   const [selectedRiskForHistory, setSelectedRiskForHistory] = useState<RiskData | null>(null);
@@ -2284,10 +2290,20 @@ const Dashboard1stLine = () => {
                           REMEDIATION TASKS
                         </span>
                       </div>
-                      <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
+                      <button 
+                        onClick={() => {
+                          setIsRemediationExpanded(!isRemediationExpanded);
+                          if (!isRemediationExpanded) {
+                            setTimeout(() => {
+                              remediationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                          }
+                        }}
+                        className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
+                      >
                         CLICK TO EXPAND
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                          <ChevronDown className="w-3 h-3" />
+                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isRemediationExpanded && "rotate-180")} />
                         </div>
                       </button>
                     </div>
@@ -2964,6 +2980,215 @@ const Dashboard1stLine = () => {
                             <RefreshCw className="w-3 h-3 mr-1" />
                             Resolve
                           </Button>
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                            <Eye className="w-4 h-4 text-muted-foreground" />
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Remediation Tasks Expanded Panel */}
+        {isRemediationExpanded && (
+          <Card ref={remediationRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
+            <CardContent className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setIsRemediationExpanded(false)}
+                    className="p-1 hover:bg-muted rounded"
+                  >
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <CheckSquare className="w-4 h-4 text-primary" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">My Remediation Tasks</h3>
+                  <Badge variant="outline" className="text-xs">3 active</Badge>
+                  <Badge className="text-xs bg-destructive text-white">4 overdue</Badge>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setIsRemediationExpanded(false)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Filter Row */}
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search tasks..."
+                    value={remediationSearchQuery}
+                    onChange={(e) => setRemediationSearchQuery(e.target.value)}
+                    className="pl-9 h-9 text-sm"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="showCompleted" 
+                      checked={showCompletedTasks}
+                      onCheckedChange={(checked) => setShowCompletedTasks(!!checked)}
+                    />
+                    <Label htmlFor="showCompleted" className="text-xs text-foreground cursor-pointer">
+                      Show completed
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Remediation Tasks Table */}
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Task ID</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Description</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Priority</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Due Date</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Status</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Linked Control</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    { 
+                      id: "RT-001", 
+                      description: "Implement dual-authorization for high-value transactions",
+                      risk: "Cybersecurity Threat",
+                      priority: "Critical",
+                      dueDate: "Jan 14, 2025",
+                      isOverdue: true,
+                      status: "Open",
+                      linkedControl: "Access Management"
+                    },
+                    { 
+                      id: "RT-002", 
+                      description: "Update vendor risk assessment documentation",
+                      risk: "Third-Party Vendor Risk",
+                      priority: "High",
+                      dueDate: "Jan 19, 2025",
+                      isOverdue: true,
+                      status: "In Progress",
+                      linkedControl: "Vendor Due Diligence"
+                    },
+                    { 
+                      id: "RT-003", 
+                      description: "Deploy automated transaction monitoring alerts",
+                      risk: "Operational Process Failure",
+                      priority: "High",
+                      dueDate: "Jan 09, 2025",
+                      isOverdue: true,
+                      status: "Open",
+                      linkedControl: "Transaction Monitoring"
+                    },
+                    { 
+                      id: "RT-004", 
+                      description: "Complete quarterly access review",
+                      risk: "Cybersecurity Threat",
+                      priority: "Medium",
+                      dueDate: "Jan 31, 2025",
+                      isOverdue: true,
+                      status: "Pending Validation",
+                      linkedControl: "Access Review"
+                    }
+                  ]
+                    .filter(task => {
+                      if (!remediationSearchQuery.trim()) return true;
+                      const query = remediationSearchQuery.toLowerCase();
+                      return task.id.toLowerCase().includes(query) || 
+                             task.description.toLowerCase().includes(query) ||
+                             task.linkedControl.toLowerCase().includes(query);
+                    })
+                    .map((task) => (
+                    <TableRow key={task.id} className="hover:bg-muted/50">
+                      <TableCell className="text-xs font-medium text-primary py-2 px-3">
+                        {task.id}
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div>
+                          <p className="text-xs font-medium text-success">{task.description}</p>
+                          <p className="text-[10px] text-muted-foreground">Risk: {task.risk}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-[10px] font-medium bg-transparent",
+                            task.priority === "Critical" && "border-red-500 text-red-600",
+                            task.priority === "High" && "border-amber-500 text-amber-600",
+                            task.priority === "Medium" && "border-yellow-500 text-yellow-600"
+                          )}
+                        >
+                          {task.priority}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-foreground">{task.dueDate}</span>
+                          {task.isOverdue && (
+                            <Badge className="text-[10px] bg-red-500 text-white">
+                              Overdue
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-[10px] font-medium flex items-center gap-1 w-fit",
+                            task.status === "Open" && "border-red-200 bg-white dark:bg-transparent text-red-600",
+                            task.status === "In Progress" && "border-blue-200 bg-white dark:bg-transparent text-blue-600",
+                            task.status === "Pending Validation" && "border-green-200 bg-green-100 dark:bg-green-900/20 text-green-700"
+                          )}
+                        >
+                          {task.status === "Open" && <AlertTriangle className="w-3 h-3" />}
+                          {task.status === "In Progress" && <Clock className="w-3 h-3" />}
+                          {task.status === "Pending Validation" && <CheckCircle className="w-3 h-3" />}
+                          {task.status}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div className="flex items-center gap-1 text-xs text-foreground">
+                          <Link className="w-3 h-3 text-muted-foreground" />
+                          {task.linkedControl}
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div className="flex items-center justify-end gap-1">
+                          {task.status === "Open" && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="h-7 px-2 text-[10px] border-success text-success hover:bg-success/10"
+                              onClick={() => toast.success(`Starting task ${task.id}`)}
+                            >
+                              Start
+                            </Button>
+                          )}
+                          {task.status === "In Progress" && (
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              className="h-7 px-2 text-[10px] border-success text-success hover:bg-success/10"
+                              onClick={() => toast.success(`Submitting task ${task.id}`)}
+                            >
+                              Submit
+                            </Button>
+                          )}
                           <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
                             <Eye className="w-4 h-4 text-muted-foreground" />
                           </Button>
