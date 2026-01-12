@@ -3006,6 +3006,9 @@ const RiskAssessmentForm = () => {
                     <p className="text-[10px] text-muted-foreground mt-0.5">
                       To mark a control as N/A: Click the icon in the 'N/A' column, check the 'Mark as Not Applicable' box, and provide a justification.
                     </p>
+                    <p className="text-[10px] text-muted-foreground mt-0.5">
+                      Click the expander icon (▶) next to a control name to view additional details including control description and supporting evidences.
+                    </p>
                   </div>
 
                 {/* Previous Assessments Floater */}
@@ -3341,27 +3344,27 @@ const RiskAssessmentForm = () => {
                                 <td colSpan={9} className="p-0">
                                   <div className="p-4 border-l-4 border-blue-500 ml-4 mr-4 my-2 bg-background rounded-r-lg shadow-sm animate-fade-in">
                                     {/* Description */}
-                                    <div className="mb-4">
-                                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-1.5">Description</h4>
-                                      <p className="text-sm text-foreground leading-relaxed">{control.description}</p>
+                                    <div className="mb-3">
+                                      <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1">DESCRIPTION</h4>
+                                      <p className="text-xs text-foreground leading-relaxed">{control.description}</p>
                                     </div>
                                     
                                     {/* Supporting Evidences */}
                                     <div>
-                                      <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wide mb-2 flex items-center gap-1.5">
-                                        <Paperclip className="w-3.5 h-3.5" />
-                                        Supporting Evidences ({control.evidences.length})
+                                      <h4 className="text-[10px] font-semibold text-muted-foreground uppercase tracking-wide mb-1.5 flex items-center gap-1">
+                                        <Paperclip className="w-3 h-3" />
+                                        SUPPORTING EVIDENCES ({control.evidences.length})
                                       </h4>
                                       <div className="flex flex-wrap gap-2">
                                         {control.evidences.map((evidence, idx) => (
                                           <div 
                                             key={idx} 
-                                            className="flex items-center gap-2 px-3 py-2 bg-muted/50 rounded-lg border hover:border-blue-300 transition-colors cursor-pointer group"
+                                            className="flex items-center gap-2 px-2.5 py-1.5 bg-muted/50 rounded-lg border hover:border-blue-300 transition-colors cursor-pointer group"
                                           >
-                                            <FileText className="w-4 h-4 text-blue-500" />
+                                            <FileText className="w-3.5 h-3.5 text-blue-500" />
                                             <div className="flex flex-col">
-                                              <span className="text-sm font-medium group-hover:text-blue-600">{evidence.name}</span>
-                                              <span className="text-xs text-muted-foreground">{evidence.type} • {evidence.date}</span>
+                                              <span className="text-xs font-medium group-hover:text-blue-600">{evidence.name}</span>
+                                              <span className="text-[10px] text-muted-foreground">{evidence.type} • {evidence.date}</span>
                                             </div>
                                           </div>
                                         ))}
