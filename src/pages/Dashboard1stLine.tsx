@@ -2088,7 +2088,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Control Effectiveness Card */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-[280px]">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -2109,7 +2109,7 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Speedometer gauge with needle - larger and centered */}
-                    <div className="flex flex-col items-center flex-1 justify-center py-2">
+                    <div className="flex flex-col items-center justify-center py-1">
                       <div className="relative w-40 h-20">
                         <svg viewBox="0 0 100 55" className="w-40 h-20">
                           <defs>
@@ -2197,7 +2197,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-[230px]">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
