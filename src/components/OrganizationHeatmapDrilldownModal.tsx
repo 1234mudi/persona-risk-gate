@@ -24,7 +24,15 @@ import {
   User,
   Calendar,
   TrendingUp,
+  Download,
 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface RiskDataItem {
@@ -85,6 +93,50 @@ export const OrganizationHeatmapDrilldownModal: React.FC<OrganizationHeatmapDril
     return "text-green-600 dark:text-green-400";
   };
 
+  // Generate CSV content from risks
+  const generateCSV = () => {
+    const headers = ["Risk ID", "Risk Title", "Business Unit", "Category", "Owner", "Risk Level", "Residual Score", "Last Assessed"];
+    const rows = filteredRisks.map(risk => [
+      risk.id,
+      `"${risk.title.replace(/"/g, '""')}"`,
+      businessUnit,
+      risk.category || "",
+      risk.owner || "Unassigned",
+      riskLevel,
+      risk.residualRisk?.score?.toString() || "",
+      risk.lastAssessed || ""
+    ]);
+    
+    return [headers.join(","), ...rows.map(row => row.join(","))].join("\n");
+  };
+
+  // Export as CSV
+  const handleExportCSV = () => {
+    const csvContent = generateCSV();
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${businessUnit.replace(/\s+/g, "-")}-${riskLevel}-Risks-${new Date().toISOString().split("T")[0]}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Export Complete", { description: `Exported ${filteredRisks.length} risks to CSV` });
+  };
+
+  // Export as Excel (CSV that opens in Excel)
+  const handleExportExcel = () => {
+    const csvContent = generateCSV();
+    // Add BOM for Excel UTF-8 compatibility
+    const blob = new Blob(["\uFEFF" + csvContent], { type: "application/vnd.ms-excel;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `${businessUnit.replace(/\s+/g, "-")}-${riskLevel}-Risks-${new Date().toISOString().split("T")[0]}.xls`;
+    link.click();
+    URL.revokeObjectURL(url);
+    toast.success("Export Complete", { description: `Exported ${filteredRisks.length} risks to Excel` });
+  };
+
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl h-[80vh] p-0 gap-0 flex flex-col">
@@ -100,14 +152,32 @@ export const OrganizationHeatmapDrilldownModal: React.FC<OrganizationHeatmapDril
         </DialogHeader>
 
         <div className="flex-1 flex flex-col min-h-0 p-4 space-y-3 overflow-hidden">
-          {/* Summary */}
+          {/* Summary & Export */}
           <div className="flex items-center justify-between">
             <Badge variant="outline" className={cn("border", getRiskLevelColor(riskLevel))}>
               {risks.length} {riskLevel} residual risk{risks.length !== 1 ? "s" : ""} in {businessUnit}
             </Badge>
-            <span className="text-xs text-muted-foreground">
-              Showing {filteredRisks.length} of {risks.length} risks
-            </span>
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-muted-foreground">
+                Showing {filteredRisks.length} of {risks.length} risks
+              </span>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-7 gap-1.5" disabled={filteredRisks.length === 0}>
+                    <Download className="w-3.5 h-3.5" />
+                    Export
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={handleExportCSV}>
+                    Export as CSV
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleExportExcel}>
+                    Export as Excel
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
           </div>
 
           {/* Search */}
