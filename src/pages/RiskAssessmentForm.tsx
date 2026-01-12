@@ -103,6 +103,8 @@ import { toast } from "sonner";
 import { AIFieldIndicator } from "@/components/AIFieldIndicator";
 import { AddControlModal } from "@/components/AddControlModal";
 import { cn } from "@/lib/utils";
+import { initialRiskData, SharedRiskData } from "@/data/initialRiskData";
+import { useMemo } from "react";
 
 // Types
 interface Factor {
@@ -961,6 +963,78 @@ const RiskAssessmentForm = () => {
     if (score >= 3) return { label: "Medium", color: "bg-orange-500" };
     if (score >= 2) return { label: "Low", color: "bg-emerald-500" };
     return { label: "Very Low", color: "bg-blue-500" };
+  };
+
+  // ===== Org Risk Summary Calculations =====
+  const currentOrganization = "Retail Banking";
+  
+  // Get all risks belonging to the current organization
+  const orgRisks = useMemo(() => {
+    return initialRiskData.filter(risk => risk.businessUnit === currentOrganization);
+  }, []);
+  
+  // Calculate aggregated scores for the organization dynamically
+  const orgAggregates = useMemo(() => {
+    const totalRisks = orgRisks.length;
+    if (totalRisks === 0) return { 
+      totalRisks: 0, 
+      avgInherent: "0.0", 
+      avgResidual: "0.0", 
+      avgControlEffectiveness: "N/A",
+      risksByLevel: { high: 0, medium: 0, low: 0 },
+      withinAppetite: 0,
+      outsideAppetite: 0
+    };
+    
+    // Average Inherent Risk Score
+    const avgInherent = orgRisks.reduce((sum, r) => sum + (r.inherentRisk.score || 0), 0) / totalRisks;
+    
+    // Average Residual Risk Score  
+    const avgResidual = orgRisks.reduce((sum, r) => sum + (r.residualRisk.score || 0), 0) / totalRisks;
+    
+    // Control Effectiveness - aggregate based on control labels
+    const effectiveCount = orgRisks.filter(r => 
+      r.controlEffectiveness.label.includes("Effective") && 
+      !r.controlEffectiveness.label.includes("Partially")
+    ).length;
+    const partialCount = orgRisks.filter(r => r.controlEffectiveness.label.includes("Partially")).length;
+    const avgControlEffectiveness = effectiveCount / totalRisks >= 0.5 ? "Effective" : 
+                                    partialCount / totalRisks >= 0.3 ? "Partially Effective" : "Ineffective";
+    
+    // Risk Distribution by Level (based on residual)
+    const risksByLevel = {
+      high: orgRisks.filter(r => r.residualRisk.level === 'High').length,
+      medium: orgRisks.filter(r => r.residualRisk.level === 'Medium').length,
+      low: orgRisks.filter(r => r.residualRisk.level === 'Low').length,
+    };
+    
+    // Appetite Status (risks with residual score <= 6 are within appetite)
+    const withinAppetite = orgRisks.filter(r => (r.residualRisk.score || 0) <= 6).length;
+    const outsideAppetite = totalRisks - withinAppetite;
+    
+    return { 
+      totalRisks, 
+      avgInherent: avgInherent.toFixed(1), 
+      avgResidual: avgResidual.toFixed(1), 
+      avgControlEffectiveness,
+      risksByLevel,
+      withinAppetite,
+      outsideAppetite
+    };
+  }, [orgRisks]);
+
+  // Helper to get level label and color for a score
+  const getScoreLevelLabel = (score: number) => {
+    if (score >= 9) return { label: "High", color: "bg-red-500" };
+    if (score >= 5) return { label: "Med", color: "bg-amber-500" };
+    return { label: "Low", color: "bg-emerald-500" };
+  };
+
+  // Helper to get control effectiveness badge info
+  const getControlEffBadge = (label: string) => {
+    if (label.includes("Effective") && !label.includes("Partially")) return { text: "Eff", color: "bg-emerald-500" };
+    if (label.includes("Partially")) return { text: "Part", color: "bg-amber-500" };
+    return { text: "Ineff", color: "bg-red-500" };
   };
 
   const handleAiAutofill = async () => {
@@ -2244,7 +2318,7 @@ const RiskAssessmentForm = () => {
                       >
                         <BarChart3 className="w-3 h-3" />
                         <span className="hidden sm:inline">Org Summary</span>
-                        <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400">12</Badge>
+                        <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400">{orgAggregates.totalRisks}</Badge>
                         {orgScoresPanelExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
                       </Button>
                     </CollapsibleTrigger>
@@ -2254,59 +2328,124 @@ const RiskAssessmentForm = () => {
                   <CollapsibleContent className="animate-accordion-down">
                     <Card className="mt-1 p-2 border border-indigo-200 dark:border-indigo-800 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/20 dark:to-purple-950/20">
                       <div className="space-y-2">
-                        {/* Aggregated Scores Table */}
-                        <table className="w-full text-[10px]">
-                          <thead>
-                            <tr className="bg-muted/50">
-                              <th className="text-left py-0.5 px-1.5 font-medium">Metric</th>
-                              <th className="text-center py-0.5 px-1 font-medium">Avg</th>
-                              <th className="text-center py-0.5 px-1 font-medium">Level</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr className="border-b border-border/50">
-                              <td className="py-0.5 px-1.5">Inherent Risk</td>
-                              <td className="text-center font-bold">3.4</td>
-                              <td className="text-center">
-                                <Badge className="bg-amber-500 text-[8px] px-1.5 py-0">Medium</Badge>
-                              </td>
-                            </tr>
-                            <tr className="border-b border-border/50">
-                              <td className="py-0.5 px-1.5">Residual Risk</td>
-                              <td className="text-center font-bold">2.1</td>
-                              <td className="text-center">
-                                <Badge className="bg-emerald-500 text-[8px] px-1.5 py-0">Low</Badge>
-                              </td>
-                            </tr>
-                            <tr>
-                              <td className="py-0.5 px-1.5">Control Eff.</td>
-                              <td className="text-center font-bold" colSpan={2}>
-                                <Badge className="bg-amber-500 text-[8px] px-1.5">Partially Effective</Badge>
-                              </td>
-                            </tr>
-                          </tbody>
-                        </table>
+                        {/* Header with Org Name and Aggregate Summary */}
+                        <div className="flex items-center justify-between pb-1.5 border-b border-border">
+                          <div className="flex items-center gap-1.5">
+                            <Library className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+                            <span className="font-semibold text-xs text-indigo-800 dark:text-indigo-200">{currentOrganization}</span>
+                            <Badge variant="outline" className="text-[8px] px-1.5 border-indigo-300 text-indigo-600 dark:text-indigo-400">{orgAggregates.totalRisks} Risks</Badge>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Badge className="bg-amber-500 text-[8px] px-1.5 py-0 text-white">Avg Inh: {orgAggregates.avgInherent}</Badge>
+                            <Badge className="bg-emerald-500 text-[8px] px-1.5 py-0 text-white">Avg Res: {orgAggregates.avgResidual}</Badge>
+                            <Badge className={`text-[8px] px-1.5 py-0 text-white ${orgAggregates.avgControlEffectiveness === "Effective" ? "bg-emerald-500" : orgAggregates.avgControlEffectiveness === "Partially Effective" ? "bg-amber-500" : "bg-red-500"}`}>
+                              {orgAggregates.avgControlEffectiveness}
+                            </Badge>
+                          </div>
+                        </div>
                         
-                        {/* Risk Distribution & Appetite in single row */}
+                        {/* Individual Risks Table */}
+                        <ScrollArea className="h-[180px]">
+                          <table className="w-full text-[9px]">
+                            <thead className="sticky top-0 bg-muted/90 z-10">
+                              <tr>
+                                <th className="text-left py-1 px-1.5 font-medium">Risk Title</th>
+                                <th className="text-center py-1 px-1 font-medium w-14">Inherent</th>
+                                <th className="text-center py-1 px-1 font-medium w-14">Residual</th>
+                                <th className="text-center py-1 px-1 font-medium w-16">Control Eff.</th>
+                                <th className="text-center py-1 px-1 font-medium w-14">Appetite</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {orgRisks.map((risk, idx) => {
+                                const isWithinAppetite = (risk.residualRisk.score || 0) <= 6;
+                                const inherentInfo = getScoreLevelLabel(risk.inherentRisk.score || 0);
+                                const residualInfo = getScoreLevelLabel(risk.residualRisk.score || 0);
+                                const controlInfo = getControlEffBadge(risk.controlEffectiveness.label);
+                                const isCurrentRisk = risk.id === riskId || risk.title === riskName;
+                                
+                                return (
+                                  <tr 
+                                    key={risk.id} 
+                                    className={cn(
+                                      "border-b border-border/30 hover:bg-muted/50 transition-colors",
+                                      isCurrentRisk && "bg-indigo-100/70 dark:bg-indigo-900/40 ring-1 ring-indigo-400"
+                                    )}
+                                  >
+                                    <td className="py-1 px-1.5 max-w-[140px]" title={risk.title}>
+                                      <div className="flex items-center gap-1">
+                                        {isCurrentRisk && <div className="w-1.5 h-1.5 rounded-full bg-indigo-500 flex-shrink-0" />}
+                                        <span className="truncate">{risk.title.length > 28 ? risk.title.substring(0, 28) + '...' : risk.title}</span>
+                                      </div>
+                                    </td>
+                                    <td className="text-center py-1">
+                                      <Badge className={`${inherentInfo.color} text-[7px] px-1.5 py-0 text-white`}>
+                                        {risk.inherentRisk.score || 0}
+                                      </Badge>
+                                    </td>
+                                    <td className="text-center py-1">
+                                      <Badge className={`${residualInfo.color} text-[7px] px-1.5 py-0 text-white`}>
+                                        {risk.residualRisk.score || 0}
+                                      </Badge>
+                                    </td>
+                                    <td className="text-center py-1">
+                                      <Badge className={`${controlInfo.color} text-[7px] px-1.5 py-0 text-white`}>
+                                        {controlInfo.text}
+                                      </Badge>
+                                    </td>
+                                    <td className="text-center py-1">
+                                      <Badge className={`${isWithinAppetite ? 'bg-emerald-500' : 'bg-red-500'} text-[7px] px-1.5 py-0 text-white`}>
+                                        {isWithinAppetite ? 'Within' : 'Outside'}
+                                      </Badge>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </ScrollArea>
+                        
+                        {/* Footer - Risk Distribution Summary */}
                         <div className="flex items-center justify-between pt-1.5 border-t border-border">
                           <div className="flex items-center gap-2">
                             <span className="text-[9px] text-muted-foreground font-medium">Distribution:</span>
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-full bg-red-500" />
-                              <span className="text-[9px]">3</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-full bg-amber-500" />
-                              <span className="text-[9px]">6</span>
-                            </div>
-                            <div className="flex items-center gap-1">
-                              <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                              <span className="text-[9px]">3</span>
-                            </div>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1 cursor-help">
+                                    <div className="w-2 h-2 rounded-full bg-red-500" />
+                                    <span className="text-[9px]">{orgAggregates.risksByLevel.high}</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">High Risk</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1 cursor-help">
+                                    <div className="w-2 h-2 rounded-full bg-amber-500" />
+                                    <span className="text-[9px]">{orgAggregates.risksByLevel.medium}</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">Medium Risk</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1 cursor-help">
+                                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                                    <span className="text-[9px]">{orgAggregates.risksByLevel.low}</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent side="top" className="text-xs">Low Risk</TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <Badge className="bg-emerald-500 text-[8px] px-1.5 py-0">9 Within</Badge>
-                            <Badge className="bg-red-500 text-[8px] px-1.5 py-0">3 Outside</Badge>
+                            <Badge className="bg-emerald-500 text-[8px] px-1.5 py-0 text-white">{orgAggregates.withinAppetite} Within</Badge>
+                            <Badge className="bg-red-500 text-[8px] px-1.5 py-0 text-white">{orgAggregates.outsideAppetite} Outside</Badge>
                           </div>
                         </div>
                       </div>
