@@ -415,7 +415,7 @@ export const DocumentParserBulkAssessmentModal = ({
               value={value}
               onValueChange={(newValue) => updateFieldValue(risk.id, field.key, newValue)}
             >
-              <SelectTrigger className={`w-full bg-background ${
+              <SelectTrigger className={`w-full bg-background text-[hsl(210,17%,24%)] dark:text-slate-200 ${
                 status === 'missing' ? 'border-red-300 dark:border-red-800' :
                 status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
                 status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
@@ -453,7 +453,7 @@ export const DocumentParserBulkAssessmentModal = ({
               value={value}
               onValueChange={(newValue) => updateFieldValue(risk.id, field.key, newValue)}
             >
-              <SelectTrigger className={`w-full bg-background ${
+              <SelectTrigger className={`w-full bg-background text-[hsl(210,17%,24%)] dark:text-slate-200 ${
                 status === 'missing' ? 'border-red-300 dark:border-red-800' :
                 status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
                 status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
@@ -490,7 +490,7 @@ export const DocumentParserBulkAssessmentModal = ({
             value={value}
             onChange={(e) => updateFieldValue(risk.id, field.key, e.target.value)}
             placeholder={`Enter ${field.label.toLowerCase()}...`}
-            className={`min-h-[60px] resize-none bg-background ${
+            className={`min-h-[60px] resize-none bg-background text-[hsl(210,17%,24%)] dark:text-slate-200 ${
               status === 'missing' ? 'border-red-300 dark:border-red-800' :
               status === 'modified' ? 'border-amber-300 dark:border-amber-800' :
               status === 'new' ? 'border-emerald-300 dark:border-emerald-800' :
@@ -532,7 +532,7 @@ export const DocumentParserBulkAssessmentModal = ({
               <Button
                 onClick={handleApply}
                 disabled={checkedCount === 0}
-                className="bg-second-line hover:bg-second-line/90 text-white gap-2 rounded-none"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white gap-2 rounded-none"
               >
                 <Send className="w-4 h-4" />
                 Save Changes
@@ -691,7 +691,7 @@ export const DocumentParserBulkAssessmentModal = ({
                                       </Badge>
                                       {getRiskBadge()}
                                     </div>
-                                    <p className="text-sm font-medium text-foreground truncate">{risk.title}</p>
+                                    <p className="text-sm font-medium text-[hsl(210,17%,24%)] dark:text-slate-200 truncate">{risk.title}</p>
                                     <p className="text-xs text-muted-foreground">{risk.category || 'Uncategorized'}</p>
                                     {isChecked && (
                                       <div className="mt-2 flex items-center gap-2">
