@@ -1339,26 +1339,26 @@ const Dashboard1stLine = () => {
 
   const getStatusColor = (status: string) => {
     switch(status) {
-      case "Sent for Assessment": return "bg-[#0A8078] text-white";
-      case "In Progress": return "bg-[#CE7900] text-white";
-      case "Pending Approval": return "bg-[#A361CF] text-white";
-      case "Review/Challenge": return "bg-[#F1BA50] text-white";
-      case "Completed": return "bg-[#46AF6A] text-white";
-      case "Complete": return "bg-[#46AF6A] text-white";
-      case "Closed": return "bg-[#8B5993] text-white";
-      case "Overdue": return "bg-[#D21C1C] text-white";
-      case "Pending Review": return "bg-[#6A75D8] text-white";
-      default: return "bg-[#0A8078] text-white";
+      case "Sent for Assessment": return "bg-cyan-500 text-white";
+      case "In Progress": return "bg-amber-500 text-white";
+      case "Pending Approval": return "bg-purple-500 text-white";
+      case "Review/Challenge": return "bg-orange-500 text-white";
+      case "Completed": return "bg-green-500 text-white";
+      case "Complete": return "bg-green-500 text-white";
+      case "Closed": return "bg-slate-500 text-white";
+      case "Overdue": return "bg-red-500 text-white";
+      case "Pending Review": return "bg-blue-500 text-white";
+      default: return "bg-cyan-500 text-white";
     }
   };
 
   const getCategoryColor = (category: string) => {
     switch(category) {
-      case "Operational": return "bg-[#6A75D8]/10 dark:bg-[#6A75D8]/20";
-      case "Technology": return "bg-[#0A8078]/10 dark:bg-[#0A8078]/20";
-      case "Compliance": return "bg-[#A361CF]/10 dark:bg-[#A361CF]/20";
-      case "Financial": return "bg-[#46AF6A]/10 dark:bg-[#46AF6A]/20";
-      default: return "bg-muted/30";
+      case "Operational": return "bg-[#6A75D8]/10 dark:bg-[#6A75D8]/20 text-[#10052F] dark:text-white";
+      case "Technology": return "bg-[#0A8078]/10 dark:bg-[#0A8078]/20 text-[#10052F] dark:text-white";
+      case "Compliance": return "bg-[#A361CF]/10 dark:bg-[#A361CF]/20 text-[#10052F] dark:text-white";
+      case "Financial": return "bg-[#46AF6A]/10 dark:bg-[#46AF6A]/20 text-[#10052F] dark:text-white";
+      default: return "bg-muted/30 text-[#10052F] dark:text-white";
     }
   };
 
@@ -1660,7 +1660,7 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
                     
-                    <div className="border-t border-gray-200 dark:border-gray-700 mt-3 pt-2">
+                    <div className="border-t border-border pt-2 mt-3">
                       <p className="text-[9px] text-muted-foreground">
                         Track assessment deadlines and workflow progress.
                       </p>
@@ -1733,7 +1733,7 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
                     
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+                    <div className="border-t border-border pt-2">
                       <p className="text-[9px] text-muted-foreground">
                         Review and approve N/A control justifications.
                       </p>
@@ -2079,7 +2079,7 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
                     
-                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2 mt-auto">
+                    <div className="border-t border-border pt-2 mt-auto">
                       <p className="text-[9px] text-muted-foreground">
                         Review Critical and High ratings for control adequacy.
                       </p>
@@ -2358,10 +2358,10 @@ const Dashboard1stLine = () => {
           </div>
 
           {/* Info Banner */}
-          <div className="bg-emerald-50 dark:bg-emerald-900/10 border-b border-emerald-200 dark:border-emerald-800 px-4 py-2">
+          <div className="bg-indigo-50 dark:bg-indigo-900/10 border-b border-indigo-100 dark:border-indigo-800/50 px-4 py-2">
             <div className="flex items-start gap-2">
-              <AlertTriangle className="w-4 h-4 text-emerald-600 dark:text-emerald-500 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-emerald-800 dark:text-emerald-200">
+              <AlertTriangle className="w-4 h-4 text-indigo-600 dark:text-indigo-500 flex-shrink-0 mt-0.5" />
+              <p className="text-xs text-indigo-800 dark:text-indigo-200">
                 {activeTab === "own" && "These completed risk assessments can be edited. Click the edit icon to update any field values as needed."}
                 {activeTab === "assess" && "These risks require your assessment input. Complete inherent risk ratings, document control evidence, and identify any gaps or weaknesses."}
               </p>
@@ -2745,7 +2745,7 @@ const Dashboard1stLine = () => {
                           <TableCell className="py-2 border-r border-b border-border">
                             {risk.completionDate ? (
                               <div className="flex items-center gap-2">
-                                <CalendarCheck className="w-4 h-4 text-emerald-500" />
+                                <CalendarCheck className="w-4 h-4 text-green-500" />
                                 <span className="text-sm text-[#10052F] dark:text-white">{format(new Date(risk.completionDate), 'MMM dd, yyyy')}</span>
                               </div>
                             ) : (
@@ -2829,7 +2829,7 @@ const Dashboard1stLine = () => {
                                       <div className="flex items-center gap-2">
                                         <div className="relative">
                                           <div className={`w-6 h-6 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-medium text-white ${
-                                            idx === 0 ? 'bg-first-line' : 'bg-emerald-500'
+                                            idx === 0 ? 'bg-first-line' : 'bg-green-500'
                                           }`}>
                                             {initials}
                                           </div>
@@ -3285,7 +3285,7 @@ const Dashboard1stLine = () => {
                       <div className="flex items-center -space-x-2">
                         {risk.assessors.slice(0, 3).map((assessor, idx) => {
                           const initials = assessor.split(" ").map(n => n[0]).join("");
-                          const colors = ["bg-emerald-500", "bg-blue-500", "bg-purple-500", "bg-orange-500"];
+                          const colors = ["bg-green-500", "bg-blue-500", "bg-purple-500", "bg-orange-500"];
                           return (
                             <div
                               key={idx}
@@ -3376,7 +3376,7 @@ const Dashboard1stLine = () => {
                 <div className="text-right space-y-1">
                   <div className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium ${
                     selectedMetric.trendUp 
-                      ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-300' 
+                      ? 'bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-300' 
                       : 'bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-300'
                   }`}>
                     {selectedMetric.trendUp ? (
