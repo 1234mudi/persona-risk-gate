@@ -2170,59 +2170,95 @@ const Dashboard1stLine = () => {
                         </span>
                       </div>
                       <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                        EXPAND
+                        CLICK TO EXPAND
                         <ChevronDown className="w-4 h-4" />
                       </button>
                     </div>
                     
-                    <div className="mb-1">
-                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{remediationTasksCounts.open}</span>
-                      <span className="text-sm text-muted-foreground ml-1">Open Tasks</span>
-                    </div>
-                    
-                    {/* Horizontal stacked bar */}
-                    <div className="flex h-7 overflow-hidden mb-1 flex-1 items-center">
-                      <div className="flex h-7 overflow-hidden w-full">
-                        <div 
-                          className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
-                          style={{width: `${(remediationTasksCounts.open / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                        >
-                          {remediationTasksCounts.open}
-                        </div>
-                        <div 
-                          className="bg-orange-500 flex items-center justify-center text-white text-sm font-bold"
-                          style={{width: `${(remediationTasksCounts.inProgress / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                        >
-                          {remediationTasksCounts.inProgress}
-                        </div>
-                        <div 
-                          className="bg-blue-500 flex items-center justify-center text-white text-sm font-bold"
-                          style={{width: `${(remediationTasksCounts.validation / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                        >
-                          {remediationTasksCounts.validation}
-                        </div>
-                        <div 
-                          className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
-                          style={{width: `${(remediationTasksCounts.closed / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
-                        >
-                          {remediationTasksCounts.closed}
-                        </div>
+                    <div className="mb-2">
+                      <div className="flex items-baseline gap-1">
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">
+                          {remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation}
+                        </span>
+                        <span className="text-sm text-muted-foreground">Open Tasks</span>
                       </div>
+                      <span className="text-sm font-semibold text-red-500">1 critical</span>
                     </div>
                     
-                    {/* Legend */}
-                    <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-red-500" /> Open
+                    {/* Individual horizontal bars */}
+                    {(() => {
+                      const total = remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed;
+                      const maxVal = Math.max(remediationTasksCounts.open, remediationTasksCounts.inProgress, remediationTasksCounts.validation, remediationTasksCounts.closed, 1);
+                      return (
+                        <div className="flex flex-col gap-1.5 mb-2 flex-1">
+                          {/* Open Bar */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground w-16 text-right">Open</span>
+                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
+                              <div 
+                                className="h-full bg-red-500"
+                                style={{ width: `${(remediationTasksCounts.open / maxVal) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* In Progress Bar */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground w-16 text-right">In Progress</span>
+                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
+                              <div 
+                                className="h-full bg-amber-500"
+                                style={{ width: `${(remediationTasksCounts.inProgress / maxVal) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Validation Bar */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground w-16 text-right">Validation</span>
+                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
+                              <div 
+                                className="h-full bg-blue-500"
+                                style={{ width: `${(remediationTasksCounts.validation / maxVal) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                          
+                          {/* Closed Bar */}
+                          <div className="flex items-center gap-2">
+                            <span className="text-[10px] text-muted-foreground w-16 text-right">Closed</span>
+                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
+                              <div 
+                                className="h-full bg-green-500"
+                                style={{ width: `${(remediationTasksCounts.closed / maxVal) * 100}%` }}
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })()}
+                    
+                    {/* Legend - 2 column grid with counts */}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] mb-2">
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
+                        <span className="text-red-600 dark:text-red-400">Open</span>
+                        <span className="font-semibold text-red-600 dark:text-red-400">{remediationTasksCounts.open}</span>
                       </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-orange-500" /> In Progress
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
+                        <span className="text-amber-600 dark:text-amber-400">In Progress</span>
+                        <span className="font-semibold text-amber-600 dark:text-amber-400">{remediationTasksCounts.inProgress}</span>
                       </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-blue-500" /> Validation
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
+                        <span className="text-blue-600 dark:text-blue-400">Validation</span>
+                        <span className="font-semibold text-blue-600 dark:text-blue-400">{remediationTasksCounts.validation}</span>
                       </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
+                      <span className="flex items-center gap-1.5">
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
+                        <span className="text-green-600 dark:text-green-400">Closed</span>
+                        <span className="font-semibold text-green-600 dark:text-green-400">{remediationTasksCounts.closed}</span>
                       </span>
                     </div>
                     
