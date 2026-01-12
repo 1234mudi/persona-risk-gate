@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1539,7 +1539,7 @@ const Dashboard1stLine = () => {
               {/* Left Column */}
               <div className="space-y-3">
                 {/* Assessment Status Card */}
-                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
+                <Card className={`border-l-4 ${expandedCard === 'assessment' ? 'border-l-[#5D2E8C]' : 'border-l-blue-500'} border-2 border-border shadow-sm bg-card`}>
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1550,10 +1550,21 @@ const Dashboard1stLine = () => {
                       </div>
                       <button 
                         onClick={() => toggleCardExpand('assessment')}
-                        className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium"
+                        className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80"
                       >
-                        CLICK TO EXPAND
-                        <ChevronDown className={cn("w-4 h-4 transition-transform", expandedCard === 'assessment' && "rotate-180")} />
+                        {expandedCard === 'assessment' ? (
+                          <>
+                            CLICK TO COLLAPSE
+                            <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center ml-1">
+                              <ChevronUp className="w-3 h-3 text-white" />
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            CLICK TO EXPAND
+                            <ChevronDown className="w-4 h-4" />
+                          </>
+                        )}
                       </button>
                     </div>
                     
@@ -1563,7 +1574,10 @@ const Dashboard1stLine = () => {
                         <span className="text-2xl font-bold text-foreground">{requiresAction}</span>
                         <span className="text-sm text-muted-foreground ml-1">Requiring Action</span>
                       </div>
-                      <span className="text-xs text-destructive font-medium">{assessmentStatusCounts.overdue} overdue</span>
+                      <div className="flex items-center gap-1">
+                        <TrendingDown className="w-3 h-3 text-destructive" />
+                        <span className="text-xs text-destructive font-medium">{assessmentStatusCounts.overdue} overdue</span>
+                      </div>
                     </div>
                     
                     {/* Donut chart + Progress bars */}
@@ -1675,8 +1689,8 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
-                {/* N/A Justifications Card */}
-                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
+                {/* N/A Justifications Card - Pipeline Flow Design */}
+                <Card className="border-l-4 border-l-blue-500 border-2 border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1691,82 +1705,189 @@ const Dashboard1stLine = () => {
                       </button>
                     </div>
                     
-                    <div className="mb-2">
+                    <div className="mb-3">
                       <span className="text-2xl font-bold text-foreground">{naJustificationsCounts.pending + naJustificationsCounts.drafted}</span>
                       <span className="text-sm text-muted-foreground ml-1">Pending</span>
                     </div>
                     
-                    {/* Status boxes */}
-                    <div className="flex gap-2 mb-2">
-                      <div className="flex-1 bg-destructive/20 border border-destructive/30 rounded p-2 text-center">
-                        <div className="text-lg font-bold text-destructive">{naJustificationsCounts.pending}</div>
-                        <div className="text-[8px] text-destructive uppercase">Pending</div>
+                    {/* Pipeline-style status boxes */}
+                    <div className="flex items-center justify-center gap-0 mb-3">
+                      {/* PENDING box */}
+                      <div className="bg-red-500 text-white rounded-l-lg px-3 py-2 text-center min-w-[60px]">
+                        <div className="text-lg font-bold">{naJustificationsCounts.pending}</div>
+                        <div className="text-[8px] uppercase font-medium">PENDING</div>
                       </div>
-                      <div className="flex-1 bg-warning/20 border border-warning/30 rounded p-2 text-center">
-                        <div className="text-lg font-bold text-warning">{naJustificationsCounts.drafted}</div>
-                        <div className="text-[8px] text-warning uppercase">Drafted</div>
+                      {/* Chevron connector */}
+                      <div className="text-muted-foreground -mx-1 z-10">
+                        <ChevronRight className="w-4 h-4" />
                       </div>
-                      <div className="flex-1 bg-warning/20 border border-warning/30 rounded p-2 text-center">
-                        <div className="text-lg font-bold text-warning">{naJustificationsCounts.awaiting}</div>
-                        <div className="text-[8px] text-warning uppercase">Awaiting</div>
+                      {/* DRAFTED box */}
+                      <div className="bg-green-600 text-white px-3 py-2 text-center min-w-[60px]">
+                        <div className="text-lg font-bold">{naJustificationsCounts.drafted}</div>
+                        <div className="text-[8px] uppercase font-medium">DRAFTED</div>
                       </div>
-                      <div className="flex-1 bg-success/20 border border-success/30 rounded p-2 text-center">
-                        <div className="text-lg font-bold text-success">{naJustificationsCounts.approved}</div>
-                        <div className="text-[8px] text-success uppercase">Approved</div>
+                      {/* Chevron connector */}
+                      <div className="text-muted-foreground -mx-1 z-10">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                      {/* AWAITING box */}
+                      <div className="bg-yellow-500 text-white px-3 py-2 text-center min-w-[60px]">
+                        <div className="text-lg font-bold">{naJustificationsCounts.awaiting}</div>
+                        <div className="text-[8px] uppercase font-medium">AWAITING</div>
+                      </div>
+                      {/* Chevron connector */}
+                      <div className="text-muted-foreground -mx-1 z-10">
+                        <ChevronRight className="w-4 h-4" />
+                      </div>
+                      {/* APPROVED box */}
+                      <div className="bg-green-600 text-white rounded-r-lg px-3 py-2 text-center min-w-[60px]">
+                        <div className="text-lg font-bold">{naJustificationsCounts.approved}</div>
+                        <div className="text-[8px] uppercase font-medium">APPROVED</div>
                       </div>
                     </div>
                     
-                    {/* Progress bar */}
-                    <div className="flex h-2 rounded overflow-hidden mb-1">
-                      <div className="bg-destructive" style={{width: '40%'}} />
-                      <div className="bg-warning" style={{width: '20%'}} />
-                      <div className="bg-warning" style={{width: '20%'}} />
-                      <div className="bg-success" style={{width: '20%'}} />
-                    </div>
-                    <div className="flex justify-between text-[8px] text-muted-foreground">
-                      <span>Start</span>
-                      <span>Complete</span>
-                    </div>
+                    <p className="text-[9px] text-muted-foreground">
+                      Review and approve N/A control justifications.
+                    </p>
                   </CardContent>
                 </Card>
 
-                {/* Loss Events Card */}
-                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <AlertCircle className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
-                          LOSS EVENTS
+                {/* Loss Events + AI Root Cause - Side by Side */}
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Loss Events Card */}
+                  <Card className="border-l-4 border-l-blue-500 border-2 border-border shadow-sm bg-card">
+                    <CardContent className="p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-muted-foreground" />
+                          <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                            LOSS EVENTS
+                          </span>
+                        </div>
+                        <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      </div>
+                      
+                      <div className="mb-2">
+                        <span className="text-2xl font-bold text-foreground">{lossEventsCounts.pendingTriage}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
+                      </div>
+                      
+                      {/* Segmented bar with numbers inside */}
+                      <div className="flex h-7 rounded-lg overflow-hidden mb-2">
+                        {lossEventsCounts.pendingTriage > 0 && (
+                          <div 
+                            className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
+                            style={{width: `${(lossEventsCounts.pendingTriage / 4) * 100}%`}}
+                          >
+                            {lossEventsCounts.pendingTriage}
+                          </div>
+                        )}
+                        {lossEventsCounts.inTriage > 0 && (
+                          <div 
+                            className="bg-yellow-400 flex items-center justify-center text-white text-sm font-bold"
+                            style={{width: `${(lossEventsCounts.inTriage / 4) * 100}%`}}
+                          >
+                            {lossEventsCounts.inTriage}
+                          </div>
+                        )}
+                        {lossEventsCounts.closed > 0 && (
+                          <div 
+                            className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
+                            style={{width: `${(lossEventsCounts.closed / 4) * 100}%`}}
+                          >
+                            {lossEventsCounts.closed}
+                          </div>
+                        )}
+                      </div>
+                      
+                      {/* Simple legend */}
+                      <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-red-500" /> Pending
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-yellow-400" /> In Triage
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
                         </span>
                       </div>
-                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                        EXPAND
-                        <ChevronDown className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    <div className="mb-2">
-                      <span className="text-2xl font-bold text-foreground">{lossEventsCounts.pendingTriage}</span>
-                      <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
-                    </div>
-                    
-                    {/* Segmented bar */}
-                    <div className="flex h-2.5 rounded overflow-hidden mb-1">
-                      <div className="bg-destructive" style={{width: `${(lossEventsCounts.pendingTriage / 4) * 100}%`}} />
-                      <div className="bg-warning" style={{width: `${(lossEventsCounts.inTriage / 4) * 100}%`}} />
-                      <div className="bg-success" style={{width: `${(lossEventsCounts.closed / 4) * 100}%`}} />
-                    </div>
-                    <div className="flex gap-3 text-[9px] text-muted-foreground">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-destructive"></span> Pending: {lossEventsCounts.pendingTriage}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-warning"></span> In Triage: {lossEventsCounts.inTriage}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-success"></span> Closed: {lossEventsCounts.closed}</span>
-                    </div>
-                  </CardContent>
-                </Card>
+                    </CardContent>
+                  </Card>
+
+                  {/* AI Root Cause Card */}
+                  <Card className="border-l-4 border-l-[#6A75D8] border-2 border-border shadow-sm bg-card">
+                    <CardContent className="p-3">
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <Sparkles className="w-4 h-4 text-[#6A75D8]" />
+                          <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                            AI ROOT CAUSE
+                          </span>
+                        </div>
+                        <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                          <Sparkles className="w-3 h-3 text-[#6A75D8]" />
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      </div>
+                      
+                      <div className="mb-2">
+                        <span className="text-2xl font-bold text-foreground">3</span>
+                        <span className="text-sm text-muted-foreground ml-1">Mapped Events</span>
+                      </div>
+                      
+                      {/* Event header */}
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-blue-500" />
+                          <span className="text-xs font-medium text-foreground">LE-2025-001</span>
+                        </div>
+                        <span className="text-[9px] text-muted-foreground">Jan 8, 2025</span>
+                      </div>
+
+                      {/* Vertical timeline with colored boxes */}
+                      <div className="space-y-1.5 pl-3 border-l-2 border-blue-200 dark:border-blue-800">
+                        {/* ROOT CAUSE */}
+                        <div className="relative">
+                          <div className="absolute -left-[13px] w-2 h-2 rounded-full bg-red-500" />
+                          <div className="bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded px-2 py-1">
+                            <div className="flex items-center gap-1">
+                              <AlertCircle className="w-3 h-3 text-red-500" />
+                              <span className="text-[9px] font-semibold text-red-700 dark:text-red-400">ROOT CAUSE</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* CONTRIBUTING FACTORS */}
+                        <div className="relative">
+                          <div className="absolute -left-[13px] w-2 h-2 rounded-full bg-yellow-500" />
+                          <div className="bg-yellow-100 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded px-2 py-1">
+                            <div className="flex items-center gap-1">
+                              <AlertTriangle className="w-3 h-3 text-yellow-600" />
+                              <span className="text-[9px] font-semibold text-yellow-700 dark:text-yellow-400">3 CONTRIBUTING FACTORS</span>
+                            </div>
+                          </div>
+                        </div>
+                        
+                        {/* FAILED CONTROLS */}
+                        <div className="relative">
+                          <div className="absolute -left-[13px] w-2 h-2 rounded-full bg-orange-500" />
+                          <div className="bg-orange-100 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded px-2 py-1">
+                            <div className="flex items-center gap-1">
+                              <XCircle className="w-3 h-3 text-orange-500" />
+                              <span className="text-[9px] font-semibold text-orange-700 dark:text-orange-400">2 FAILED CONTROLS</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
                 {/* Drift Alerts Card */}
-                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
+                <Card className="border-l-4 border-l-blue-500 border-2 border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1803,8 +1924,8 @@ const Dashboard1stLine = () => {
 
               {/* Right Column */}
               <div className="space-y-3">
-                {/* Inherent Risk Ratings Card */}
-                <Card className="border-l-4 border-l-[#A361CF] border border-border shadow-sm bg-card">
+                {/* Inherent Risk Ratings Card - Larger Donut */}
+                <Card className="border-l-4 border-l-[#A361CF] border-2 border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1823,10 +1944,10 @@ const Dashboard1stLine = () => {
                       <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
                     </div>
                     
-                    {/* Donut chart + Legend */}
+                    {/* Donut chart + Legend - Larger size */}
                     <div className="flex items-center gap-4">
-                      <div className="relative w-16 h-16 flex-shrink-0">
-                        <svg viewBox="0 0 36 36" className="w-16 h-16">
+                      <div className="relative w-24 h-24 flex-shrink-0">
+                        <svg viewBox="0 0 36 36" className="w-24 h-24">
                           {/* Critical slice */}
                           <circle 
                             cx="18" cy="18" r="10" fill="none" 
@@ -1834,10 +1955,10 @@ const Dashboard1stLine = () => {
                             strokeDasharray={`${(inherentRiskCounts.critical / inherentRiskCounts.total) * 62.8} 62.8`}
                             strokeDashoffset="15.7"
                           />
-                          {/* High slice */}
+                          {/* High slice - Orange theme */}
                           <circle 
                             cx="18" cy="18" r="10" fill="none" 
-                            stroke="hsl(36 100% 40%)" strokeWidth="8"
+                            stroke="hsl(30 100% 50%)" strokeWidth="8"
                             strokeDasharray={`${(inherentRiskCounts.high / inherentRiskCounts.total) * 62.8} 62.8`}
                             strokeDashoffset={`${15.7 - (inherentRiskCounts.critical / inherentRiskCounts.total) * 62.8}`}
                           />
@@ -1850,31 +1971,35 @@ const Dashboard1stLine = () => {
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-sm font-bold text-foreground">{criticalHighTotal}</span>
-                          <span className="text-[6px] text-muted-foreground uppercase">CRIT+HIGH</span>
+                          <span className="text-xl font-bold text-orange-500">{criticalHighTotal}</span>
+                          <span className="text-[8px] text-muted-foreground uppercase">CRIT+HIGH</span>
                         </div>
                       </div>
                       
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-1.5">
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-destructive" />
+                          <div className="w-3 h-3 rounded-full bg-destructive" />
                           <span className="text-xs text-foreground">Critical: {inherentRiskCounts.critical}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-warning" />
+                          <div className="w-3 h-3 rounded-full bg-orange-500" />
                           <span className="text-xs text-foreground">High: {inherentRiskCounts.high}</span>
                         </div>
                         <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-[#F1BA50]" />
+                          <div className="w-3 h-3 rounded-full bg-[#F1BA50]" />
                           <span className="text-xs text-foreground">Medium: {inherentRiskCounts.medium}</span>
                         </div>
                       </div>
                     </div>
+                    
+                    <p className="text-[9px] text-muted-foreground mt-2">
+                      Review Critical and High ratings for control adequacy.
+                    </p>
                   </CardContent>
                 </Card>
 
-                {/* Control Effectiveness Card */}
-                <Card className="border-l-4 border-l-[#A361CF] border border-border shadow-sm bg-card">
+                {/* Control Effectiveness Card - Speedometer Gauge */}
+                <Card className="border-l-4 border-l-[#A361CF] border-2 border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1891,89 +2016,67 @@ const Dashboard1stLine = () => {
                       <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
                     </div>
                     
-                    {/* Gauge chart */}
-                    <div className="flex items-center gap-4">
-                      <div className="relative w-20 h-10 flex-shrink-0">
-                        <svg viewBox="0 0 100 50" className="w-20 h-10">
-                          {/* Background arc */}
+                    {/* Speedometer gauge with needle */}
+                    <div className="flex flex-col items-center mb-3">
+                      <div className="relative w-32 h-16">
+                        <svg viewBox="0 0 100 55" className="w-32 h-16">
+                          {/* Background arc (gray) */}
                           <path 
                             d="M 10 50 A 40 40 0 0 1 90 50" 
                             fill="none" 
                             stroke="hsl(var(--muted))" 
-                            strokeWidth="8"
+                            strokeWidth="6"
                             strokeLinecap="round"
                           />
-                          {/* Progress arc */}
+                          
+                          {/* Green progress arc */}
                           <path 
                             d="M 10 50 A 40 40 0 0 1 90 50" 
                             fill="none" 
                             stroke="hsl(143 57% 43%)" 
-                            strokeWidth="8"
+                            strokeWidth="6"
                             strokeLinecap="round"
                             strokeDasharray={`${(effectivenessPercent / 100) * 126} 126`}
                           />
+                          
+                          {/* Needle */}
+                          <line 
+                            x1="50" y1="50" 
+                            x2={50 + 30 * Math.cos(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
+                            y2={50 - 30 * Math.sin(Math.PI - (effectivenessPercent / 100) * Math.PI)}
+                            stroke="hsl(143 57% 43%)" 
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                          />
+                          
+                          {/* Center dot */}
+                          <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
                         </svg>
-                        <div className="absolute inset-x-0 bottom-0 text-center">
-                          <span className="text-lg font-bold text-success">{effectivenessPercent}%</span>
-                        </div>
+                        
+                        {/* 0% and 100% labels */}
+                        <span className="absolute left-0 bottom-0 text-[9px] text-muted-foreground">0%</span>
+                        <span className="absolute right-0 bottom-0 text-[9px] text-muted-foreground">100%</span>
                       </div>
                       
-                      <div className="flex-1">
-                        <div className="flex h-2 rounded overflow-hidden mb-1">
-                          <div className="bg-success" style={{width: `${(effectiveControls / totalControlRisks) * 100}%`}} />
-                          <div className="bg-warning" style={{width: `${(controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100}%`}} />
-                          <div className="bg-destructive" style={{width: `${(controlEvidenceCounts.ineffective / totalControlRisks) * 100}%`}} />
-                        </div>
-                        <div className="flex flex-wrap gap-x-2 text-[8px] text-muted-foreground">
-                          <span>Effective: {effectiveControls}</span>
-                          <span>Partial: {controlEvidenceCounts.partiallyEffective}</span>
-                          <span>Ineffective: {controlEvidenceCounts.ineffective}</span>
-                        </div>
+                      {/* Percentage display */}
+                      <div className="text-center mt-1">
+                        <span className="text-2xl font-bold text-success">{effectivenessPercent}%</span>
+                        <span className="text-xs text-muted-foreground block">Effective</span>
                       </div>
+                    </div>
+
+                    {/* Legend with N/A */}
+                    <div className="flex flex-wrap gap-x-3 text-[9px] text-muted-foreground justify-center">
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0</span>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* AI Root Cause Card */}
-                <Card className="border-l-4 border-l-[#6A75D8] border border-border shadow-sm bg-card">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-[#6A75D8]" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
-                          AI ROOT CAUSE
-                        </span>
-                      </div>
-                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                        <Sparkles className="w-3 h-3 text-[#6A75D8]" />
-                        EXPAND
-                        <ChevronDown className="w-4 h-4" />
-                      </button>
-                    </div>
-                    
-                    <div className="mb-2">
-                      <span className="text-2xl font-bold text-foreground">3</span>
-                      <span className="text-sm text-muted-foreground ml-1">Mapped Events</span>
-                    </div>
-                    
-                    {/* Timeline preview */}
-                    <div className="border-l-2 border-[#6A75D8]/50 pl-3 space-y-2">
-                      <div className="relative">
-                        <div className="absolute -left-[17px] w-2 h-2 rounded-full bg-[#6A75D8]" />
-                        <div className="text-xs font-medium text-foreground">LE-2025-001</div>
-                        <div className="text-[9px] text-muted-foreground">Jan 8, 2025</div>
-                        <div className="flex gap-1 mt-1 flex-wrap">
-                          <Badge className="text-[8px] px-1 py-0 bg-[#6A75D8]/20 text-[#6A75D8] border-0">ROOT CAUSE</Badge>
-                          <Badge className="text-[8px] px-1 py-0 bg-muted text-muted-foreground border-0">3 FACTORS</Badge>
-                          <Badge className="text-[8px] px-1 py-0 bg-destructive/20 text-destructive border-0">2 FAILED</Badge>
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Remediation Tasks Card */}
-                <Card className="border-l-4 border-l-[#6A75D8] border border-border shadow-sm bg-card">
+                {/* Remediation Tasks Card - Full Colored Bars */}
+                <Card className="border-l-4 border-l-[#6A75D8] border-2 border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1988,7 +2091,7 @@ const Dashboard1stLine = () => {
                       </button>
                     </div>
                     
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-3">
                       <div>
                         <span className="text-2xl font-bold text-foreground">{remediationTasksCounts.open}</span>
                         <span className="text-sm text-muted-foreground ml-1">Open Tasks</span>
@@ -1996,35 +2099,27 @@ const Dashboard1stLine = () => {
                       <span className="text-xs text-destructive">1 critical</span>
                     </div>
                     
-                    {/* Horizontal bar chart */}
-                    <div className="space-y-1.5">
+                    {/* Horizontal bar chart - full colored bars */}
+                    <div className="space-y-2">
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-muted-foreground w-16">Open</span>
-                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
-                          <div className="h-full bg-destructive" style={{width: '50%'}} />
-                        </div>
-                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.open}</span>
+                        <span className="text-[10px] text-muted-foreground w-20">Open</span>
+                        <div className="flex-1 h-4 bg-red-500 rounded" />
+                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.open}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-muted-foreground w-16">In Progress</span>
-                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
-                          <div className="h-full bg-warning" style={{width: '25%'}} />
-                        </div>
-                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.inProgress}</span>
+                        <span className="text-[10px] text-muted-foreground w-20">In Progress</span>
+                        <div className="h-4 bg-orange-500 rounded" style={{width: '70%'}} />
+                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.inProgress}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-muted-foreground w-16">Validation</span>
-                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
-                          <div className="h-full bg-[#6A75D8]" style={{width: '25%'}} />
-                        </div>
-                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.validation}</span>
+                        <span className="text-[10px] text-muted-foreground w-20">Validation</span>
+                        <div className="h-4 bg-blue-500 rounded" style={{width: '60%'}} />
+                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.validation}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-muted-foreground w-16">Closed</span>
-                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
-                          <div className="h-full bg-success" style={{width: '0%'}} />
-                        </div>
-                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.closed}</span>
+                        <span className="text-[10px] text-muted-foreground w-20">Closed</span>
+                        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded" style={{width: '10%'}} />
+                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.closed}</span>
                       </div>
                     </div>
                   </CardContent>
