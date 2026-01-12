@@ -1391,14 +1391,14 @@ const Dashboard1stLine = () => {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-emerald-50/30 to-slate-100 dark:from-background dark:via-background dark:to-background">
       {/* Header */}
       <header className="border-b border-border/50 bg-card/80 dark:bg-card/90 backdrop-blur-sm sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-1">
+        <div className="container mx-auto px-3 sm:px-6 py-1 sm:py-1.5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <div className="w-6 h-6 bg-first-line flex items-center justify-center">
+              <div className="w-6 h-6 sm:w-7 sm:h-7 bg-first-line flex items-center justify-center flex-shrink-0">
                 <ClipboardCheck className="w-3 h-3 text-white" />
               </div>
               <div>
-                <h1 className="text-sm font-semibold text-black dark:text-white">
+                <h1 className="text-sm sm:text-base font-semibold text-black dark:text-white truncate">
                   1st Line Risk Analyst Dashboard
                 </h1>
                 <p className="text-xs text-muted-foreground">
@@ -1434,9 +1434,9 @@ const Dashboard1stLine = () => {
       </header>
 
       {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
+      <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
       {/* Quick Links - Horizontal Strip */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-2 px-0">
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5 px-0">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-[#10052F] dark:text-white">
             <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
             Quick Links:
@@ -1535,11 +1535,11 @@ const Dashboard1stLine = () => {
           const criticalHighTotal = inherentRiskCounts.critical + inherentRiskCounts.high;
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
               {/* Left Column */}
-              <div className="space-y-3">
+              <div className="space-y-2 flex flex-col">
                 {/* Assessment Status Card */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
+                <Card className="flex-1 border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1694,7 +1694,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* N/A Justifications Card - Pipeline Flow Design */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
+                <Card className="flex-1 border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
