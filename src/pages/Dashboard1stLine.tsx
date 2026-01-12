@@ -1960,120 +1960,198 @@ const Dashboard1stLine = () => {
                 </Card>
               </div>
 
-              {/* Bottom section: 3-column grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3">
-                {/* Column 1: Loss Events + Drift Alerts stacked */}
-                <div className="flex flex-col gap-3">
-                  {/* Loss Events Card - Compact */}
-                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                    <CardContent className="p-2.5">
-                      <div className="flex items-center justify-between mb-1">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <Info className="w-3 h-3 text-[#00897B]" />
+              {/* Bottom section: 2-column grid (left 50% | right 50%) */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
+                {/* Left 50% - Split into 2 sub-columns: (Loss+Drift) | AI Root Cause */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
+                  {/* Sub-column 1: Loss Events + Drift Alerts stacked */}
+                  <div className="flex flex-col gap-3">
+                    {/* Loss Events Card - Compact */}
+                    <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
+                      <CardContent className="p-2.5">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                              <Info className="w-3 h-3 text-[#00897B]" />
+                            </div>
+                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                              LOSS EVENTS
+                            </span>
                           </div>
-                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                            LOSS EVENTS
+                          <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                            EXPAND
+                            <ChevronDown className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        <div className="mb-1">
+                          <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsCounts.pendingTriage}</span>
+                          <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
+                        </div>
+                        
+                        {/* Segmented bar with numbers inside */}
+                        <div className="flex h-7 overflow-hidden mb-1">
+                          {lossEventsCounts.pendingTriage > 0 && (
+                            <div 
+                              className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
+                              style={{width: `${(lossEventsCounts.pendingTriage / 4) * 100}%`}}
+                            >
+                              {lossEventsCounts.pendingTriage}
+                            </div>
+                          )}
+                          {lossEventsCounts.inTriage > 0 && (
+                            <div 
+                              className="bg-yellow-400 flex items-center justify-center text-white text-sm font-bold"
+                              style={{width: `${(lossEventsCounts.inTriage / 4) * 100}%`}}
+                            >
+                              {lossEventsCounts.inTriage}
+                            </div>
+                          )}
+                          {lossEventsCounts.closed > 0 && (
+                            <div 
+                              className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
+                              style={{width: `${(lossEventsCounts.closed / 4) * 100}%`}}
+                            >
+                              {lossEventsCounts.closed}
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Simple legend */}
+                        <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-red-500" /> Pending
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-yellow-400" /> In Triage
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
                           </span>
                         </div>
-                        <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                          EXPAND
-                          <ChevronDown className="w-4 h-4" />
-                        </button>
-                      </div>
-                      
-                      <div className="mb-1">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsCounts.pendingTriage}</span>
-                        <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
-                      </div>
-                      
-                      {/* Segmented bar with numbers inside */}
-                      <div className="flex h-7 overflow-hidden mb-1">
-                        {lossEventsCounts.pendingTriage > 0 && (
-                          <div 
-                            className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
-                            style={{width: `${(lossEventsCounts.pendingTriage / 4) * 100}%`}}
-                          >
-                            {lossEventsCounts.pendingTriage}
-                          </div>
-                        )}
-                        {lossEventsCounts.inTriage > 0 && (
-                          <div 
-                            className="bg-yellow-400 flex items-center justify-center text-white text-sm font-bold"
-                            style={{width: `${(lossEventsCounts.inTriage / 4) * 100}%`}}
-                          >
-                            {lossEventsCounts.inTriage}
-                          </div>
-                        )}
-                        {lossEventsCounts.closed > 0 && (
-                          <div 
-                            className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
-                            style={{width: `${(lossEventsCounts.closed / 4) * 100}%`}}
-                          >
-                            {lossEventsCounts.closed}
-                          </div>
-                        )}
-                      </div>
-                      
-                      {/* Simple legend */}
-                      <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-red-500" /> Pending
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-yellow-400" /> In Triage
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
-                        </span>
-                      </div>
-                      
-                      <div className="border-t border-border mt-2 pt-1.5">
-                        <p className="text-[9px] text-muted-foreground">
-                          Monitor loss events requiring triage and analysis.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
+                        
+                        <div className="border-t border-border mt-2 pt-1.5">
+                          <p className="text-[9px] text-muted-foreground">
+                            Monitor loss events requiring triage and analysis.
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
 
-                  {/* Drift Alerts Card */}
-                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
-                    <CardContent className="p-2.5">
-                      <div className="flex items-center justify-between mb-1">
+                    {/* Drift Alerts Card */}
+                    <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
+                      <CardContent className="p-2.5">
+                        <div className="flex items-center justify-between mb-1">
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                              <Activity className="w-3 h-3 text-[#00897B]" />
+                            </div>
+                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                              DRIFT ALERTS
+                            </span>
+                          </div>
+                          <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                            EXPAND
+                            <ChevronDown className="w-4 h-4" />
+                          </button>
+                        </div>
+                        
+                        <div className="mb-1">
+                          <span className="text-xl font-bold text-[#10052F] dark:text-white">{driftAlertsCounts.critical + driftAlertsCounts.high + driftAlertsCounts.medium}</span>
+                          <span className="text-sm text-muted-foreground ml-1">Active Alerts</span>
+                        </div>
+                        
+                        {/* Segmented bar */}
+                        <div className="flex h-2.5 overflow-hidden mb-1">
+                          <div className="bg-destructive" style={{width: `${(driftAlertsCounts.critical / 3) * 100}%`}} />
+                          <div className="bg-warning" style={{width: `${(driftAlertsCounts.high / 3) * 100}%`}} />
+                          <div className="bg-[#F1BA50]" style={{width: `${(driftAlertsCounts.medium / 3) * 100}%`}} />
+                        </div>
+                        <div className="flex gap-3 text-[9px] text-muted-foreground">
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning"></span> High: {driftAlertsCounts.high}</span>
+                          <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
+                        </div>
+                        
+                        <div className="border-t border-border mt-2 pt-1.5">
+                          <p className="text-[9px] text-muted-foreground">
+                            Address rating variances flagged by AI analysis.
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Sub-column 2: AI Root Cause - Full Height */}
+                  <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-full flex flex-col">
+                    <CardContent className="p-2.5 flex-1 flex flex-col">
+                      <div className="flex items-center justify-between mb-1.5">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <Activity className="w-3 h-3 text-[#00897B]" />
+                            <Sparkles className="w-3 h-3 text-[#00897B]" />
                           </div>
                           <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                            DRIFT ALERTS
+                            AI ROOT CAUSE
                           </span>
                         </div>
-                        <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        <button className="flex items-center gap-1 text-xs text-primary cursor-not-allowed font-medium">
+                          <Sparkles className="w-3 h-3" />
                           EXPAND
-                          <ChevronDown className="w-4 h-4" />
                         </button>
                       </div>
                       
-                      <div className="mb-1">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{driftAlertsCounts.critical + driftAlertsCounts.high + driftAlertsCounts.medium}</span>
-                        <span className="text-sm text-muted-foreground ml-1">Active Alerts</span>
+                      {/* Timeline layout - grows to fill space */}
+                      <div className="relative pl-4 space-y-3 mt-3 flex-1">
+                        {/* Vertical connector line */}
+                        <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-700" />
+                        
+                        {/* ROOT CAUSE */}
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center z-10">
+                            <AlertCircle className="w-2.5 h-2.5 text-red-500" />
+                          </div>
+                          <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-red-700 dark:text-red-400">ROOT CAUSE</span>
+                            <p className="text-[8px] text-red-600 dark:text-red-400/80 mt-0.5 line-clamp-2">
+                              Inadequate system access controls allowed unauthorized transactions...
+                            </p>
+                          </div>
+                        </div>
+                        
+                        {/* CONTRIBUTING FACTORS */}
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center z-10">
+                            <Target className="w-2.5 h-2.5 text-yellow-600" />
+                          </div>
+                          <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-yellow-700 dark:text-yellow-400">3 CONTRIBUTING FACTORS</span>
+                          </div>
+                        </div>
+                        
+                        {/* FAILED CONTROLS */}
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center z-10">
+                            <XCircle className="w-2.5 h-2.5 text-orange-500" />
+                          </div>
+                          <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-orange-700 dark:text-orange-400">2 FAILED CONTROLS</span>
+                          </div>
+                        </div>
+                        
+                        {/* ACTIONS */}
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center z-10">
+                            <Lightbulb className="w-2.5 h-2.5 text-green-500" />
+                          </div>
+                          <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-green-700 dark:text-green-400">2 ACTIONS</span>
+                          </div>
+                        </div>
                       </div>
                       
-                      {/* Segmented bar */}
-                      <div className="flex h-2.5 overflow-hidden mb-1">
-                        <div className="bg-destructive" style={{width: `${(driftAlertsCounts.critical / 3) * 100}%`}} />
-                        <div className="bg-warning" style={{width: `${(driftAlertsCounts.high / 3) * 100}%`}} />
-                        <div className="bg-[#F1BA50]" style={{width: `${(driftAlertsCounts.medium / 3) * 100}%`}} />
-                      </div>
-                      <div className="flex gap-3 text-[9px] text-muted-foreground">
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning"></span> High: {driftAlertsCounts.high}</span>
-                        <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
-                      </div>
-                      
-                      <div className="border-t border-border mt-2 pt-1.5">
+                      <div className="border-t border-border mt-3 pt-2">
                         <p className="text-[9px] text-muted-foreground">
-                          Address rating variances flagged by AI analysis.
+                          AI-analyzed causal chains for <span className="underline cursor-pointer">loss events</span>.
                         </p>
                       </div>
                     </CardContent>
