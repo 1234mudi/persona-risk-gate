@@ -2089,8 +2089,8 @@ const Dashboard1stLine = () => {
 
                 {/* Control Effectiveness Card */}
                 <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
-                  <CardContent className="p-3 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-2">
+                  <CardContent className="p-4 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                           <FileCheck className="w-3 h-3 text-primary" />
@@ -2103,15 +2103,15 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* "Needing Attention" on its own line */}
-                    <div className="mb-3">
+                    <div className="mb-2">
                       <span className="text-2xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
                       <span className="text-sm text-muted-foreground ml-2">Needing Attention</span>
                     </div>
                     
                     {/* Speedometer gauge with needle - larger and centered */}
-                    <div className="flex flex-col items-center justify-center py-1">
-                      <div className="relative w-40 h-20">
-                        <svg viewBox="0 0 100 55" className="w-40 h-20">
+                    <div className="flex flex-col items-center justify-center flex-1">
+                      <div className="relative w-44 h-22">
+                        <svg viewBox="0 0 100 55" className="w-44 h-22">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2143,17 +2143,17 @@ const Dashboard1stLine = () => {
                           />
                           <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
                         </svg>
-                        <span className="absolute left-2 bottom-0 text-[9px] text-muted-foreground">0%</span>
-                        <span className="absolute right-2 bottom-0 text-[9px] text-muted-foreground">100%</span>
+                        <span className="absolute left-1 bottom-0 text-[9px] text-muted-foreground">0%</span>
+                        <span className="absolute right-1 bottom-0 text-[9px] text-muted-foreground">100%</span>
                       </div>
-                      <div className="text-center mt-1">
+                      <div className="text-center mt-2">
                         <span className="text-2xl font-bold text-success">{effectivenessPercent}%</span>
                         <span className="text-xs text-muted-foreground block">Effective</span>
                       </div>
                     </div>
 
                     {/* Horizontal Stacked Bar Chart - taller */}
-                    <div className="w-full h-3 flex rounded-sm overflow-hidden mb-2">
+                    <div className="w-full h-3.5 flex rounded-md overflow-hidden mb-3 mt-2">
                       <div 
                         className="bg-green-500 h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
@@ -2173,7 +2173,7 @@ const Dashboard1stLine = () => {
                     </div>
 
                     {/* Legend - spread across full width with N/A */}
-                    <div className="flex justify-between text-[9px] text-muted-foreground px-1">
+                    <div className="flex justify-between text-[9px] text-muted-foreground mb-3">
                       <span className="flex items-center gap-1">
                         <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Effective: {effectiveControls}
                       </span>
@@ -2188,7 +2188,7 @@ const Dashboard1stLine = () => {
                       </span>
                     </div>
                     
-                    <div className="border-t border-border mt-auto pt-2">
+                    <div className="border-t border-border pt-2.5">
                       <p className="text-[9px] text-muted-foreground">
                         Aggregate control effectiveness across all risks.
                       </p>
