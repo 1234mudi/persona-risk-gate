@@ -91,6 +91,12 @@ const Dashboard1stLine = () => {
   const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
   const [deadlineFilter, setDeadlineFilter] = useState<string>("all");
   
+  // N/A Justifications expanded state
+  const [isNaJustificationsExpanded, setIsNaJustificationsExpanded] = useState(false);
+  const [naSearchQuery, setNaSearchQuery] = useState("");
+  const [showApprovedNa, setShowApprovedNa] = useState(false);
+  const naJustificationsRef = useRef<HTMLDivElement>(null);
+  
   // Historical assessments modal state
   const [historicalModalOpen, setHistoricalModalOpen] = useState(false);
   const [selectedRiskForHistory, setSelectedRiskForHistory] = useState<RiskData | null>(null);
@@ -1681,10 +1687,20 @@ const Dashboard1stLine = () => {
                           N/A JUSTIFICATIONS
                         </span>
                       </div>
-                      <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
+                      <button 
+                        onClick={() => {
+                          setIsNaJustificationsExpanded(!isNaJustificationsExpanded);
+                          if (!isNaJustificationsExpanded) {
+                            setTimeout(() => {
+                              naJustificationsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }, 100);
+                          }
+                        }}
+                        className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
+                      >
                         CLICK TO EXPAND
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                          <ChevronDown className="w-3 h-3" />
+                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isNaJustificationsExpanded && "rotate-180")} />
                         </div>
                       </button>
                     </div>
@@ -2321,6 +2337,205 @@ const Dashboard1stLine = () => {
             </div>
           );
         })()}
+
+        {/* N/A Justifications Expanded Panel */}
+        {isNaJustificationsExpanded && (
+          <Card ref={naJustificationsRef} className="border border-border/50 shadow-md bg-card scroll-mt-24">
+            <CardContent className="p-4">
+              {/* Header with title, badges, close button */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setIsNaJustificationsExpanded(false)}
+                    className="hover:bg-muted/50 rounded p-1"
+                  >
+                    <ChevronDown className="w-5 h-5 rotate-180" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Ban className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="font-semibold text-lg">N/A Controls Justifications</span>
+                  <Badge variant="outline" className="text-xs">5 controls</Badge>
+                  <Badge className="bg-red-500 text-white text-xs">2 pending</Badge>
+                </div>
+                <button 
+                  onClick={() => setIsNaJustificationsExpanded(false)}
+                  className="hover:bg-muted/50 rounded p-1"
+                >
+                  <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                </button>
+              </div>
+
+              {/* Info Banner */}
+              <div className="bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 rounded-lg p-3 mb-4 flex items-center gap-2">
+                <Ban className="w-4 h-4 text-purple-600 dark:text-purple-400 flex-shrink-0" />
+                <span className="text-sm text-purple-700 dark:text-purple-300">
+                  Controls marked as Not Applicable require documented justifications. Draft justifications and submit for Risk Owner approval.
+                </span>
+              </div>
+
+              {/* Filter Row */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      placeholder="Search controls..." 
+                      value={naSearchQuery}
+                      onChange={(e) => setNaSearchQuery(e.target.value)}
+                      className="pl-9 w-64 h-9"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="showApproved" 
+                      checked={showApprovedNa}
+                      onCheckedChange={(checked) => setShowApprovedNa(checked as boolean)}
+                    />
+                    <Label htmlFor="showApproved" className="text-sm cursor-pointer">Show approved</Label>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    2 Pending
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-orange-500" />
+                    1 Drafted
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-purple-500" />
+                    1 Awaiting
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                    1 Approved
+                  </span>
+                </div>
+              </div>
+
+              {/* Table */}
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30">
+                    <TableHead className="w-[120px] text-xs font-semibold uppercase">Control ID</TableHead>
+                    <TableHead className="w-[280px] text-xs font-semibold uppercase">Control Name</TableHead>
+                    <TableHead className="w-[100px] text-xs font-semibold uppercase">Risk</TableHead>
+                    <TableHead className="w-[140px] text-xs font-semibold uppercase">Status</TableHead>
+                    <TableHead className="w-[140px] text-xs font-semibold uppercase">Drafted By</TableHead>
+                    <TableHead className="w-[120px] text-xs font-semibold uppercase">Date</TableHead>
+                    <TableHead className="w-[120px] text-xs font-semibold uppercase text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    { id: "Control-NA-001", name: "Legacy System Check", description: null, riskId: "R-001", status: "Pending", draftedBy: null, date: null },
+                    { id: "Control-NA-002", name: "Physical Access Review", description: null, riskId: "R-003", status: "Pending", draftedBy: null, date: null },
+                    { id: "Control-NA-003", name: "Manual Reconciliation", description: "This control is not applicable as the process has been fully automated.", riskId: "R-004", status: "Drafted", draftedBy: "Sarah Johnson", date: "Jan 04, 2025" },
+                    { id: "Control-NA-004", name: "Paper Trail Audit", description: "N/A - All documentation is now fully digital.", riskId: "R-002", status: "Awaiting Approval", draftedBy: "John Smith", date: "Jan 02, 2025" },
+                    { id: "Control-NA-005", name: "Manual Backup Verification", description: "Automated cloud backups have replaced manual verification.", riskId: "R-005", status: "Approved", draftedBy: "Mike Davis", date: "Dec 28, 2024" },
+                  ]
+                    .filter(control => {
+                      if (!showApprovedNa && control.status === "Approved") return false;
+                      if (naSearchQuery) {
+                        const query = naSearchQuery.toLowerCase();
+                        return control.id.toLowerCase().includes(query) || 
+                               control.name.toLowerCase().includes(query) ||
+                               control.riskId.toLowerCase().includes(query);
+                      }
+                      return true;
+                    })
+                    .map((control) => (
+                    <TableRow key={control.id} className="hover:bg-muted/30">
+                      <TableCell className="font-mono text-sm text-primary">{control.id}</TableCell>
+                      <TableCell>
+                        <div>
+                          <span className="font-medium text-sm">{control.name}</span>
+                          {control.description && (
+                            <p className="text-xs text-muted-foreground mt-0.5">{control.description}</p>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant="outline" className="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-700 text-xs">
+                          {control.riskId}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        {control.status === "Pending" && (
+                          <Badge variant="outline" className="border-red-300 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 text-xs gap-1">
+                            <Clock className="w-3 h-3" />
+                            Pending
+                          </Badge>
+                        )}
+                        {control.status === "Drafted" && (
+                          <Badge variant="outline" className="border-orange-300 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 text-xs gap-1">
+                            <FileText className="w-3 h-3" />
+                            Drafted
+                          </Badge>
+                        )}
+                        {control.status === "Awaiting Approval" && (
+                          <Badge variant="outline" className="border-purple-300 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 text-xs gap-1">
+                            <Clock className="w-3 h-3" />
+                            Awaiting Approval
+                          </Badge>
+                        )}
+                        {control.status === "Approved" && (
+                          <Badge variant="outline" className="border-green-300 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 text-xs gap-1">
+                            <CheckCircle className="w-3 h-3" />
+                            Approved
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {control.draftedBy ? (
+                          <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center">
+                              <User className="w-3 h-3 text-primary" />
+                            </div>
+                            <span className="text-sm">{control.draftedBy}</span>
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {control.date || "—"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {control.status === "Pending" && (
+                            <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white gap-1">
+                              <Edit2 className="w-3 h-3" />
+                              Draft
+                            </Button>
+                          )}
+                          {control.status === "Drafted" && (
+                            <>
+                              <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white gap-1">
+                                <Send className="w-3 h-3" />
+                                Submit
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                                <Eye className="w-4 h-4 text-muted-foreground" />
+                              </Button>
+                            </>
+                          )}
+                          {(control.status === "Awaiting Approval" || control.status === "Approved") && (
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                              <Eye className="w-4 h-4 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Active Risk Profile Section */}
         {showRiskTable && (
