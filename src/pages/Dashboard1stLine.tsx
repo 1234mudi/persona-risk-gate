@@ -97,6 +97,12 @@ const Dashboard1stLine = () => {
   const [showApprovedNa, setShowApprovedNa] = useState(false);
   const naJustificationsRef = useRef<HTMLDivElement>(null);
   
+  // Loss Events expanded state
+  const [isLossEventsExpanded, setIsLossEventsExpanded] = useState(false);
+  const [lossEventSearchQuery, setLossEventSearchQuery] = useState("");
+  const [showClosedLossEvents, setShowClosedLossEvents] = useState(false);
+  const lossEventsRef = useRef<HTMLDivElement>(null);
+  
   // Historical assessments modal state
   const [historicalModalOpen, setHistoricalModalOpen] = useState(false);
   const [selectedRiskForHistory, setSelectedRiskForHistory] = useState<RiskData | null>(null);
@@ -1781,10 +1787,13 @@ const Dashboard1stLine = () => {
                               LOSS EVENTS
                             </span>
                           </div>
-                          <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
+                          <button 
+                            onClick={() => setIsLossEventsExpanded(!isLossEventsExpanded)}
+                            className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
+                          >
                             CLICK TO EXPAND
                             <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                              <ChevronDown className="w-3 h-3" />
+                              <ChevronDown className={`w-3 h-3 transition-transform ${isLossEventsExpanded ? 'rotate-180' : ''}`} />
                             </div>
                           </button>
                         </div>
@@ -2547,6 +2556,191 @@ const Dashboard1stLine = () => {
                             </>
                           )}
                           {(control.status === "Awaiting Approval" || control.status === "Approved") && (
+                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                              <Eye className="w-4 h-4 text-muted-foreground" />
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Loss Events Triage Expanded Panel */}
+        {isLossEventsExpanded && (
+          <Card ref={lossEventsRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
+            <CardContent className="p-4">
+              {/* Header with title, badges, close button */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setIsLossEventsExpanded(false)}
+                    className="hover:bg-muted/50 rounded p-1"
+                  >
+                    <ChevronDown className="w-5 h-5 rotate-180" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Info className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="font-semibold text-lg text-foreground">Loss Event Triage</span>
+                  <Badge variant="outline" className="text-xs">4 events</Badge>
+                  <Badge className="bg-red-500 text-white text-xs">1 pending</Badge>
+                </div>
+                <button 
+                  onClick={() => setIsLossEventsExpanded(false)}
+                  className="hover:bg-muted/50 rounded p-1"
+                >
+                  <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                </button>
+              </div>
+
+              {/* Info Banner */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-none p-3 mb-4 flex items-center gap-2">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <span className="text-sm text-blue-700 dark:text-blue-300">
+                  Loss events require triage to assess impact and link to relevant risks. Complete triage to close events.
+                </span>
+              </div>
+
+              {/* Filter Row */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-4">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                    <Input 
+                      placeholder="Search events..." 
+                      value={lossEventSearchQuery}
+                      onChange={(e) => setLossEventSearchQuery(e.target.value)}
+                      className="pl-9 w-64 h-9"
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="showClosed" 
+                      checked={showClosedLossEvents}
+                      onCheckedChange={(checked) => setShowClosedLossEvents(checked as boolean)}
+                    />
+                    <Label htmlFor="showClosed" className="text-sm cursor-pointer text-foreground">Show closed</Label>
+                  </div>
+                </div>
+                <div className="flex items-center gap-4 text-sm">
+                  <span className="flex items-center gap-1.5 text-foreground">
+                    <span className="w-2 h-2 rounded-full bg-red-500" />
+                    1 Pending
+                  </span>
+                  <span className="flex items-center gap-1.5 text-foreground">
+                    <span className="w-2 h-2 rounded-full bg-orange-500" />
+                    3 In Triage
+                  </span>
+                  <span className="flex items-center gap-1.5 text-foreground">
+                    <span className="w-2 h-2 rounded-full bg-green-500" />
+                    0 Closed
+                  </span>
+                </div>
+              </div>
+
+              {/* Table */}
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30">
+                    <TableHead className="w-[120px] text-xs font-semibold uppercase">Event ID</TableHead>
+                    <TableHead className="w-[280px] text-xs font-semibold uppercase">Description</TableHead>
+                    <TableHead className="w-[100px] text-xs font-semibold uppercase">Amount</TableHead>
+                    <TableHead className="w-[100px] text-xs font-semibold uppercase">Linked Risk</TableHead>
+                    <TableHead className="w-[140px] text-xs font-semibold uppercase">Status</TableHead>
+                    <TableHead className="w-[120px] text-xs font-semibold uppercase">Date</TableHead>
+                    <TableHead className="w-[180px] text-xs font-semibold uppercase text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    { id: "LE-2025-001", description: "Unauthorized transaction detected in payment processing", amount: "$12,500", linkedRisk: null, status: "Pending", date: "Jan 10, 2025" },
+                    { id: "LE-2025-002", description: "System outage causing delayed settlements", amount: "$8,200", linkedRisk: "R-003", status: "In Triage", date: "Jan 08, 2025" },
+                    { id: "LE-2025-003", description: "Data entry error in customer account", amount: "$3,100", linkedRisk: "R-001", status: "In Triage", date: "Jan 06, 2025" },
+                    { id: "LE-2025-004", description: "Vendor invoice processing discrepancy", amount: "$5,750", linkedRisk: null, status: "In Triage", date: "Jan 04, 2025" },
+                  ]
+                    .filter(event => {
+                      if (!showClosedLossEvents && event.status === "Closed") return false;
+                      if (lossEventSearchQuery) {
+                        const query = lossEventSearchQuery.toLowerCase();
+                        return event.id.toLowerCase().includes(query) || 
+                               event.description.toLowerCase().includes(query);
+                      }
+                      return true;
+                    })
+                    .map((event) => (
+                    <TableRow key={event.id} className="hover:bg-muted/30">
+                      <TableCell className="font-mono text-sm text-primary">{event.id}</TableCell>
+                      <TableCell>
+                        <span className="font-medium text-sm text-foreground">{event.description}</span>
+                      </TableCell>
+                      <TableCell className="font-semibold text-sm text-foreground">{event.amount}</TableCell>
+                      <TableCell>
+                        {event.linkedRisk ? (
+                          <Badge variant="outline" className="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-700 text-xs">
+                            {event.linkedRisk}
+                          </Badge>
+                        ) : (
+                          <span className="text-muted-foreground">—</span>
+                        )}
+                      </TableCell>
+                      <TableCell>
+                        {event.status === "Pending" && (
+                          <Badge variant="outline" className="border-red-300 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 text-xs gap-1">
+                            <Clock className="w-3 h-3" />
+                            Pending
+                          </Badge>
+                        )}
+                        {event.status === "In Triage" && (
+                          <Badge variant="outline" className="border-orange-300 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 text-xs gap-1">
+                            <Activity className="w-3 h-3" />
+                            In Triage
+                          </Badge>
+                        )}
+                        {event.status === "Closed" && (
+                          <Badge variant="outline" className="border-green-300 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 text-xs gap-1">
+                            <CheckCircle className="w-3 h-3" />
+                            Closed
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-sm text-muted-foreground">
+                        {event.date}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          {event.status === "Pending" && (
+                            <>
+                              <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white gap-1">
+                                <Activity className="w-3 h-3" />
+                                Start Triage
+                              </Button>
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                                <Eye className="w-4 h-4 text-muted-foreground" />
+                              </Button>
+                            </>
+                          )}
+                          {event.status === "In Triage" && (
+                            <>
+                              <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white gap-1">
+                                <CheckCircle className="w-3 h-3" />
+                                Complete
+                              </Button>
+                              {!event.linkedRisk && (
+                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" title="Link to Risk">
+                                  <Link className="w-4 h-4 text-muted-foreground" />
+                                </Button>
+                              )}
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                                <Eye className="w-4 h-4 text-muted-foreground" />
+                              </Button>
+                            </>
+                          )}
+                          {event.status === "Closed" && (
                             <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
                               <Eye className="w-4 h-4 text-muted-foreground" />
                             </Button>
