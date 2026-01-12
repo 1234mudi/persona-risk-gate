@@ -1706,54 +1706,69 @@ const Dashboard1stLine = () => {
                         </span>
                       </div>
                       <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        <span className="uppercase font-medium">Expand</span>
                         <ChevronDown className="w-4 h-4" />
                       </button>
                     </div>
                     
                     <div className="mb-3">
-                      <span className="text-2xl font-bold text-foreground">{naJustificationsCounts.pending + naJustificationsCounts.drafted}</span>
+                      <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{naJustificationsCounts.pending + naJustificationsCounts.drafted}</span>
                       <span className="text-sm text-muted-foreground ml-1">Pending</span>
                     </div>
                     
                     {/* Pipeline-style status boxes */}
-                    <div className="flex items-center justify-center gap-0 mb-3">
+                    <div className="flex items-center justify-center gap-1 mb-3">
                       {/* PENDING box */}
-                      <div className="bg-red-500 text-white px-3 py-2 text-center min-w-[60px]">
+                      <div className="bg-yellow-500 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
                         <div className="text-lg font-bold">{naJustificationsCounts.pending}</div>
                         <div className="text-[8px] uppercase font-medium">PENDING</div>
                       </div>
                       {/* Chevron connector */}
-                      <div className="text-muted-foreground -mx-1 z-10">
-                        <ChevronRight className="w-4 h-4" />
+                      <div className="text-gray-400">
+                        <ChevronRight className="w-3 h-3" />
                       </div>
                       {/* DRAFTED box */}
-                      <div className="bg-green-600 text-white px-3 py-2 text-center min-w-[60px]">
+                      <div className="bg-amber-600 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
                         <div className="text-lg font-bold">{naJustificationsCounts.drafted}</div>
                         <div className="text-[8px] uppercase font-medium">DRAFTED</div>
                       </div>
                       {/* Chevron connector */}
-                      <div className="text-muted-foreground -mx-1 z-10">
-                        <ChevronRight className="w-4 h-4" />
+                      <div className="text-gray-400">
+                        <ChevronRight className="w-3 h-3" />
                       </div>
                       {/* AWAITING box */}
-                      <div className="bg-yellow-500 text-white px-3 py-2 text-center min-w-[60px]">
+                      <div className="bg-purple-500 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
                         <div className="text-lg font-bold">{naJustificationsCounts.awaiting}</div>
                         <div className="text-[8px] uppercase font-medium">AWAITING</div>
                       </div>
                       {/* Chevron connector */}
-                      <div className="text-muted-foreground -mx-1 z-10">
-                        <ChevronRight className="w-4 h-4" />
+                      <div className="text-gray-400">
+                        <ChevronRight className="w-3 h-3" />
                       </div>
                       {/* APPROVED box */}
-                      <div className="bg-green-600 text-white px-3 py-2 text-center min-w-[60px]">
+                      <div className="bg-green-500 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
                         <div className="text-lg font-bold">{naJustificationsCounts.approved}</div>
                         <div className="text-[8px] uppercase font-medium">APPROVED</div>
                       </div>
                     </div>
                     
-                    <p className="text-[9px] text-muted-foreground">
-                      Review and approve N/A control justifications.
-                    </p>
+                    {/* Progress bar with Start/Complete labels */}
+                    <div className="mb-3">
+                      <div className="flex h-2 overflow-hidden rounded-full">
+                        <div className="bg-[#00897B] w-[60%]" />
+                        <div className="bg-green-500 w-[40%]" />
+                      </div>
+                      <div className="flex justify-between mt-1">
+                        <span className="text-[9px] text-muted-foreground">Start</span>
+                        <span className="text-[9px] text-muted-foreground">Complete</span>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-gray-200 dark:border-gray-700 pt-2">
+                      <p className="text-[9px] text-muted-foreground">
+                        Review and approve N/A control justifications.
+                      </p>
+                    </div>
                   </CardContent>
                 </Card>
 
