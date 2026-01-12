@@ -1569,7 +1569,7 @@ const Dashboard1stLine = () => {
                         onClick={() => toggleCardExpand('assessment')}
                         className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide"
                       >
-                        CLICK TO EXPAND
+                        {showRiskTable ? 'CLICK TO COLLAPSE' : 'CLICK TO EXPAND'}
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                           <ChevronDown className={cn("w-3 h-3 transition-transform", 
                             expandedCard === 'assessment' && "rotate-180")} />
