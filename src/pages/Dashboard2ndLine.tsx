@@ -2323,7 +2323,7 @@ const Dashboard2ndLine = () => {
                     <p>These risks are pending assessment by the users listed under 'Assessors/Collaborators'.</p>
                     <p>Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime.</p>
                     <p>Click on the Risk Title to begin your assessment and view any open challenge comments.</p>
-                    <p>Click on the icon to initiate updates to a completed assessment.</p>
+                    <p>Click on the 'Update Assessment' for Completed records to initiate updates to a completed assessment.</p>
                   </>
                 )}
                 {activeTab === "approve" && (
