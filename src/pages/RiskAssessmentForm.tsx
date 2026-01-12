@@ -1883,36 +1883,36 @@ const RiskAssessmentForm = () => {
         
         {/* Header */}
         <div className="sticky top-0 z-30 bg-background/95 backdrop-blur border-b border-border">
-          <div className="px-4 py-2">
+          <div className="px-3 py-1">
             <div className="flex items-center justify-between">
               {/* Left - Back & Collaboration */}
-              <div className="flex items-center gap-4">
-                <Button variant="ghost" size="sm" onClick={() => {
+              <div className="flex items-center gap-3">
+                <Button variant="ghost" size="sm" className="h-6 text-[11px] px-2" onClick={() => {
                   const dashboardPath = source === "2nd-line" ? "/dashboard/2nd-line-analyst" : "/dashboard/1st-line-analyst";
                   navigate(`${dashboardPath}?openOverview=true&riskId=${encodeURIComponent(riskId)}&riskName=${encodeURIComponent(riskName)}`);
                 }}>
-                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  <ArrowLeft className="w-3 h-3 mr-1" />
                   Back
                 </Button>
                 
                 {/* Collaborative Status Indicators */}
-                <div className="flex items-center gap-3 px-3 py-1.5 bg-primary/90 rounded-full">
+                <div className="flex items-center gap-2 px-2 py-0.5 bg-primary/90 rounded-full">
                   {/* User Avatars - Overlapping with Tooltips */}
-                  <div className="flex -space-x-2">
+                  <div className="flex -space-x-1.5">
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="w-7 h-7 rounded-full bg-emerald-500 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-30 cursor-pointer">
+                          <div className="w-5 h-5 rounded-full bg-emerald-500 border-[1.5px] border-primary flex items-center justify-center text-[8px] font-semibold text-white z-30 cursor-pointer">
                             SJ
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="bottom" className="p-3">
-                          <div className="space-y-1">
-                            <p className="font-semibold text-sm">Sarah Johnson</p>
-                            <p className="text-xs text-muted-foreground">Risk Analyst</p>
-                            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
-                              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                              <span className="text-xs">Editing: Inherent Rating</span>
+                        <TooltipContent side="bottom" className="p-2">
+                          <div className="space-y-0.5">
+                            <p className="font-semibold text-xs">Sarah Johnson</p>
+                            <p className="text-[10px] text-muted-foreground">Risk Analyst</p>
+                            <div className="flex items-center gap-1 mt-1 pt-1 border-t">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span className="text-[10px]">Editing: Inherent Rating</span>
                             </div>
                           </div>
                         </TooltipContent>
@@ -1921,17 +1921,17 @@ const RiskAssessmentForm = () => {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="w-7 h-7 rounded-full bg-blue-400 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-white z-20 cursor-pointer">
+                          <div className="w-5 h-5 rounded-full bg-blue-400 border-[1.5px] border-primary flex items-center justify-center text-[8px] font-semibold text-white z-20 cursor-pointer">
                             MC
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="bottom" className="p-3">
-                          <div className="space-y-1">
-                            <p className="font-semibold text-sm">Michael Chen</p>
-                            <p className="text-xs text-muted-foreground">Compliance Officer</p>
-                            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
-                              <Eye className="w-3 h-3 text-muted-foreground" />
-                              <span className="text-xs">Viewing: Control Effectiveness</span>
+                        <TooltipContent side="bottom" className="p-2">
+                          <div className="space-y-0.5">
+                            <p className="font-semibold text-xs">Michael Chen</p>
+                            <p className="text-[10px] text-muted-foreground">Compliance Officer</p>
+                            <div className="flex items-center gap-1 mt-1 pt-1 border-t">
+                              <Eye className="w-2.5 h-2.5 text-muted-foreground" />
+                              <span className="text-[10px]">Viewing: Control Effectiveness</span>
                             </div>
                           </div>
                         </TooltipContent>
@@ -1940,17 +1940,17 @@ const RiskAssessmentForm = () => {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger asChild>
-                          <div className="w-7 h-7 rounded-full bg-slate-300 border-2 border-primary flex items-center justify-center text-[10px] font-semibold text-slate-700 z-10 cursor-pointer">
+                          <div className="w-5 h-5 rounded-full bg-slate-300 border-[1.5px] border-primary flex items-center justify-center text-[8px] font-semibold text-slate-700 z-10 cursor-pointer">
                             ER
                           </div>
                         </TooltipTrigger>
-                        <TooltipContent side="bottom" className="p-3">
-                          <div className="space-y-1">
-                            <p className="font-semibold text-sm">Emily Roberts</p>
-                            <p className="text-xs text-muted-foreground">Senior Auditor</p>
-                            <div className="flex items-center gap-1.5 mt-2 pt-2 border-t">
-                              <Eye className="w-3 h-3 text-muted-foreground" />
-                              <span className="text-xs">Viewing: Residual Rating</span>
+                        <TooltipContent side="bottom" className="p-2">
+                          <div className="space-y-0.5">
+                            <p className="font-semibold text-xs">Emily Roberts</p>
+                            <p className="text-[10px] text-muted-foreground">Senior Auditor</p>
+                            <div className="flex items-center gap-1 mt-1 pt-1 border-t">
+                              <Eye className="w-2.5 h-2.5 text-muted-foreground" />
+                              <span className="text-[10px]">Viewing: Residual Rating</span>
                             </div>
                           </div>
                         </TooltipContent>
@@ -1959,36 +1959,37 @@ const RiskAssessmentForm = () => {
                   </div>
                   
                   {/* Editing Status */}
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-background/20 rounded-full border border-emerald-400/50">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="text-xs font-medium text-emerald-400">1 editing</span>
+                  <div className="flex items-center gap-1 px-2 py-0.5 bg-background/20 rounded-full border border-emerald-400/50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="text-[10px] font-medium text-emerald-400">1 editing</span>
                   </div>
                   
                   {/* Viewing Status */}
-                  <div className="flex items-center gap-1.5 px-3 py-1 bg-background/20 rounded-full border border-slate-400/50">
-                    <Eye className="w-3 h-3 text-slate-300" />
-                    <span className="text-xs font-medium text-slate-300">2 viewing</span>
+                  <div className="flex items-center gap-1 px-2 py-0.5 bg-background/20 rounded-full border border-slate-400/50">
+                    <Eye className="w-2.5 h-2.5 text-slate-300" />
+                    <span className="text-[10px] font-medium text-slate-300">2 viewing</span>
                   </div>
                 </div>
               </div>
               
               {/* Right - Actions */}
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <Button 
                   variant="outline" 
                   size="sm"
+                  className="h-6 text-[10px] px-2"
                   onClick={() => { setRightPanelOpen(true); setRightPanelTab('review'); }}
                 >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  Add Comments
+                  <MessageSquare className="w-3 h-3 mr-1" />
+                  Comments
                 </Button>
 
                 {/* Summarize & Export Dialog */}
                 <Dialog open={exportOpen} onOpenChange={setExportOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="sm">
-                      <FileText className="w-4 h-4 mr-2" />
-                      Summarize & Export
+                    <Button variant="outline" size="sm" className="h-6 text-[10px] px-2">
+                      <FileText className="w-3 h-3 mr-1" />
+                      Export
                     </Button>
                   </DialogTrigger>
                   <DialogContent className="max-w-2xl">
@@ -2039,8 +2040,8 @@ const RiskAssessmentForm = () => {
                 {/* Collaborate Dialog */}
                 <Dialog open={collaborateOpen} onOpenChange={setCollaborateOpen}>
                   <DialogTrigger asChild>
-                    <Button variant="outline" size="sm" className="bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 dark:bg-purple-950 dark:text-purple-300">
-                      <Users className="w-4 h-4 mr-2" />
+                    <Button variant="outline" size="sm" className="h-6 text-[10px] px-2 bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100 dark:bg-purple-950 dark:text-purple-300">
+                      <Users className="w-3 h-3 mr-1" />
                       Collaborate
                     </Button>
                   </DialogTrigger>
@@ -2171,16 +2172,16 @@ const RiskAssessmentForm = () => {
                   </DialogContent>
                 </Dialog>
 
-                <Button variant="outline" size="sm" onClick={handleSave}>
-                  <Save className="w-4 h-4 mr-2" />
+                <Button variant="outline" size="sm" className="h-6 text-[10px] px-2" onClick={handleSave}>
+                  <Save className="w-3 h-3 mr-1" />
                   Save
                 </Button>
-                <Button size="sm" className="bg-blue-600 hover:bg-blue-700" onClick={handleSubmit}>
-                  <Send className="w-4 h-4 mr-2" />
+                <Button size="sm" className="h-6 text-[10px] px-2 bg-blue-600 hover:bg-blue-700" onClick={handleSubmit}>
+                  <Send className="w-3 h-3 mr-1" />
                   Submit
                 </Button>
-                <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-                  <X className="w-4 h-4" />
+                <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => navigate(-1)}>
+                  <X className="w-3 h-3" />
                 </Button>
               </div>
             </div>
@@ -2208,68 +2209,68 @@ const RiskAssessmentForm = () => {
               </div>
               
               {/* Right side - Score Cards (compact) */}
-              <div className="flex items-center gap-2 flex-wrap">
-                <Card className={`px-2.5 py-1 border-l-4 min-w-fit ${getRatingLabel(inherentScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(inherentScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(inherentScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
-                  <div className="text-[9px] text-muted-foreground">Inherent Risk</div>
-                  <div className="text-sm font-bold">{inherentScore}</div>
-                  <div className="text-[9px] text-muted-foreground">{getRatingLabel(inherentScore).label}</div>
+              <div className="flex items-center gap-1.5 flex-wrap">
+                <Card className={`px-1.5 py-0.5 border-l-2 min-w-fit ${getRatingLabel(inherentScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(inherentScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(inherentScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
+                  <div className="text-[8px] text-muted-foreground leading-tight">Inherent</div>
+                  <div className="text-xs font-bold leading-tight">{inherentScore}</div>
+                  <div className="text-[8px] text-muted-foreground leading-tight">{getRatingLabel(inherentScore).label}</div>
                 </Card>
-                <Card className={`px-2.5 py-1 border-l-4 min-w-fit ${getRatingLabel(controlScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(controlScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(controlScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
-                  <div className="text-[9px] text-muted-foreground">Control Eff.</div>
-                  <div className="text-sm font-bold">{controlScore}</div>
-                  <div className="text-[9px] text-muted-foreground">{getRatingLabel(controlScore).label}</div>
+                <Card className={`px-1.5 py-0.5 border-l-2 min-w-fit ${getRatingLabel(controlScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(controlScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(controlScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
+                  <div className="text-[8px] text-muted-foreground leading-tight">Control</div>
+                  <div className="text-xs font-bold leading-tight">{controlScore}</div>
+                  <div className="text-[8px] text-muted-foreground leading-tight">{getRatingLabel(controlScore).label}</div>
                 </Card>
-                <Card className={`px-2.5 py-1 border-l-4 min-w-fit ${getRatingLabel(residualScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(residualScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(residualScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
-                  <div className="text-[9px] text-muted-foreground">Residual Risk</div>
-                  <div className="text-sm font-bold">{residualScore}</div>
-                  <div className="text-[9px] text-muted-foreground">{getRatingLabel(residualScore).label}</div>
+                <Card className={`px-1.5 py-0.5 border-l-2 min-w-fit ${getRatingLabel(residualScore).color === 'bg-red-500' ? 'border-l-red-500 bg-red-50 dark:bg-red-950/40' : getRatingLabel(residualScore).color === 'bg-amber-500' ? 'border-l-amber-500 bg-amber-50 dark:bg-amber-950/40' : getRatingLabel(residualScore).color === 'bg-slate-400' ? 'border-l-slate-400 bg-slate-50 dark:bg-slate-950/40' : 'border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40'} border border-border`}>
+                  <div className="text-[8px] text-muted-foreground leading-tight">Residual</div>
+                  <div className="text-xs font-bold leading-tight">{residualScore}</div>
+                  <div className="text-[8px] text-muted-foreground leading-tight">{getRatingLabel(residualScore).label}</div>
                 </Card>
-                <Card className="px-2.5 py-1 border-l-4 border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border border-border min-w-fit">
-                  <div className="text-[9px] text-muted-foreground">Risk Reduction</div>
-                  <div className="flex items-center gap-1">
-                    <TrendingUp className="w-3 h-3 text-emerald-500" />
-                    <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400">{riskReduction}</span>
+                <Card className="px-1.5 py-0.5 border-l-2 border-l-emerald-500 bg-emerald-50 dark:bg-emerald-950/40 border border-border min-w-fit">
+                  <div className="text-[8px] text-muted-foreground leading-tight">Reduction</div>
+                  <div className="flex items-center gap-0.5">
+                    <TrendingUp className="w-2.5 h-2.5 text-emerald-500" />
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 leading-tight">{riskReduction}</span>
                   </div>
-                  <div className="text-[9px] text-muted-foreground">points</div>
+                  <div className="text-[8px] text-muted-foreground leading-tight">pts</div>
                 </Card>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Card className="px-2.5 py-1 border-l-4 border-l-blue-500 bg-blue-50 dark:bg-blue-950/40 border border-border cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/60 transition-colors min-w-fit">
-                      <div className="text-[9px] text-muted-foreground">Risk Appetite</div>
-                      <div className="flex items-center gap-1">
-                        <Badge className={`text-[9px] px-1.5 py-0 ${residualScore <= 2 ? "bg-emerald-500 hover:bg-emerald-600" : "bg-red-500 hover:bg-red-600"}`}>
+                    <Card className="px-1.5 py-0.5 border-l-2 border-l-blue-500 bg-blue-50 dark:bg-blue-950/40 border border-border cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-950/60 transition-colors min-w-fit">
+                      <div className="text-[8px] text-muted-foreground leading-tight">Appetite</div>
+                      <div className="flex items-center">
+                        <Badge className={`text-[8px] px-1 py-0 ${residualScore <= 2 ? "bg-emerald-500 hover:bg-emerald-600" : "bg-red-500 hover:bg-red-600"}`}>
                           {residualScore <= 2 ? "Within" : "Outside"}
                         </Badge>
                       </div>
-                      <div className="text-[9px] text-muted-foreground">Threshold: 2.0</div>
+                      <div className="text-[8px] text-muted-foreground leading-tight">≤2.0</div>
                     </Card>
                   </PopoverTrigger>
-                  <PopoverContent className="w-72 z-[100]" align="end" sideOffset={5} collisionPadding={60}>
-                    <div className="space-y-2">
+                  <PopoverContent className="w-64 z-[100]" align="end" sideOffset={5} collisionPadding={60}>
+                    <div className="space-y-1.5">
                       <div className="flex items-center justify-between">
-                        <h4 className="font-semibold text-sm">Risk Appetite</h4>
-                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-xs">Low</Badge>
+                        <h4 className="font-semibold text-xs">Risk Appetite</h4>
+                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-[10px]">Low</Badge>
                       </div>
                       <Separator />
-                      <div className="space-y-1.5">
-                        <div className="flex justify-between text-xs">
+                      <div className="space-y-1">
+                        <div className="flex justify-between text-[10px]">
                           <span className="text-muted-foreground">Threshold</span>
                           <span className="font-medium">2.0</span>
                         </div>
-                        <div className="flex justify-between text-xs">
-                          <span className="text-muted-foreground">Current Score</span>
+                        <div className="flex justify-between text-[10px]">
+                          <span className="text-muted-foreground">Current</span>
                           <span className="font-medium">{residualScore}</span>
                         </div>
-                        <div className="flex justify-between text-xs">
+                        <div className="flex justify-between text-[10px]">
                           <span className="text-muted-foreground">Status</span>
-                          <Badge variant="outline" className={`text-[10px] ${residualScore <= 2 ? "border-emerald-500 text-emerald-600" : "border-red-500 text-red-600"}`}>
-                            {residualScore <= 2 ? "Within Appetite" : "Outside Appetite"}
+                          <Badge variant="outline" className={`text-[9px] ${residualScore <= 2 ? "border-emerald-500 text-emerald-600" : "border-red-500 text-red-600"}`}>
+                            {residualScore <= 2 ? "Within" : "Outside"}
                           </Badge>
                         </div>
                       </div>
                       <Separator />
-                      <p className="text-[10px] text-muted-foreground">
-                        The organization has a low appetite for compliance risks. Residual risk rating above 2.0 is considered outside appetite.
+                      <p className="text-[9px] text-muted-foreground">
+                        Low appetite for compliance risks. Residual rating above 2.0 is outside appetite.
                       </p>
                     </div>
                   </PopoverContent>
