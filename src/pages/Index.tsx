@@ -33,7 +33,7 @@ const Index = () => {
     {
       icon: ClipboardCheck,
       name: "1st Line Risk Analyst",
-      description: "Your daily dashboard for managing controls. See what needs attention, upload documents, and keep your department on track.",
+      description: "Your daily dashboard for managing risks. See what needs attention, upload documents, and keep your department on track.",
       line: "first" as const,
       route: "/dashboard/1st-line-analyst",
     },
