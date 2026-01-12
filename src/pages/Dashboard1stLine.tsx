@@ -1754,9 +1754,8 @@ const Dashboard1stLine = () => {
                     
                     {/* Progress bar with Start/Complete labels */}
                     <div className="mb-3">
-                      <div className="flex h-2 overflow-hidden rounded-full">
-                        <div className="bg-[#00897B] w-[60%]" />
-                        <div className="bg-green-500 w-[40%]" />
+                      <div className="flex h-2 overflow-hidden rounded-full bg-[#B2DFDB]">
+                        <div className="bg-[#00897B] w-[25%]" />
                       </div>
                       <div className="flex justify-between mt-1">
                         <span className="text-[9px] text-muted-foreground">Start</span>
