@@ -103,6 +103,12 @@ const Dashboard1stLine = () => {
   const [showClosedLossEvents, setShowClosedLossEvents] = useState(false);
   const lossEventsRef = useRef<HTMLDivElement>(null);
   
+  // Drift Alerts expanded state
+  const [isDriftAlertsExpanded, setIsDriftAlertsExpanded] = useState(false);
+  const [driftAlertSearchQuery, setDriftAlertSearchQuery] = useState("");
+  const [showResolvedAlerts, setShowResolvedAlerts] = useState(false);
+  const driftAlertsRef = useRef<HTMLDivElement>(null);
+  
   // Historical assessments modal state
   const [historicalModalOpen, setHistoricalModalOpen] = useState(false);
   const [selectedRiskForHistory, setSelectedRiskForHistory] = useState<RiskData | null>(null);
@@ -1884,10 +1890,20 @@ const Dashboard1stLine = () => {
                               DRIFT ALERTS
                             </span>
                           </div>
-                          <button className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-not-allowed">
+                          <button 
+                            onClick={() => {
+                              setIsDriftAlertsExpanded(!isDriftAlertsExpanded);
+                              if (!isDriftAlertsExpanded) {
+                                setTimeout(() => {
+                                  driftAlertsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }, 100);
+                              }
+                            }}
+                            className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
+                          >
                             CLICK TO EXPAND
                             <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                              <ChevronDown className="w-3 h-3" />
+                              <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isDriftAlertsExpanded && "rotate-180")} />
                             </div>
                           </button>
                         </div>
@@ -2752,6 +2768,205 @@ const Dashboard1stLine = () => {
                               <Eye className="w-4 h-4 text-muted-foreground" />
                             </Button>
                           )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Control Drift Alerts Expanded Panel */}
+        {isDriftAlertsExpanded && (
+          <Card ref={driftAlertsRef} className="border-[3px] border-border/50 dark:border-border shadow-md bg-card rounded-none scroll-mt-24">
+            {/* Header */}
+            <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setIsDriftAlertsExpanded(false)}
+                    className="p-1 hover:bg-muted rounded"
+                  >
+                    <ChevronUp className="w-5 h-5 text-foreground" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Activity className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="text-base font-semibold text-foreground">
+                    Control Drift Alerts
+                  </span>
+                  <Badge variant="outline" className="text-[10px] font-medium">
+                    3 alerts
+                  </Badge>
+                  <Badge className="text-[10px] font-medium bg-destructive/10 text-destructive border-destructive/20">
+                    1 critical
+                  </Badge>
+                </div>
+                <button 
+                  onClick={() => setIsDriftAlertsExpanded(false)}
+                  className="p-1 hover:bg-muted rounded"
+                >
+                  <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                </button>
+              </div>
+            </CardHeader>
+            
+            {/* Info Banner */}
+            <div className="bg-amber-50 dark:bg-amber-900/10 border-b border-amber-100 dark:border-amber-800/50 px-4 py-2 rounded-none">
+              <div className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600 dark:text-amber-500 flex-shrink-0 mt-0.5" />
+                <p className="text-xs text-amber-800 dark:text-amber-200">
+                  Drift alerts highlight discrepancies between automated control testing results and manual RCSA assessments. Review and resolve to maintain control integrity.
+                </p>
+              </div>
+            </div>
+            
+            {/* Filter Row */}
+            <div className="bg-muted/20 border-b border-border/50 px-4 py-2">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <Search className="w-4 h-4 text-muted-foreground" />
+                  <Input 
+                    placeholder="Search controls..." 
+                    className="border-0 bg-transparent h-8 py-0 text-xs w-48 focus-visible:ring-0 placeholder:text-muted-foreground" 
+                    value={driftAlertSearchQuery}
+                    onChange={(e) => setDriftAlertSearchQuery(e.target.value)}
+                  />
+                </div>
+                <div className="flex items-center gap-4 text-[10px] text-foreground">
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-destructive"></span>
+                    1 Critical
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-warning"></span>
+                    1 High
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <span className="w-2.5 h-2.5 rounded-full bg-accent"></span>
+                    1 Medium
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Table */}
+            <CardContent className="p-0">
+              <Table>
+                <TableHeader>
+                  <TableRow className="bg-muted/30 hover:bg-muted/30">
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3">Control ID</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3">Control Name</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3">RCSA Status</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3">Auto Test</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3">Variance</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3">Test Source</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3">Last Updated</TableHead>
+                    <TableHead className="text-[10px] font-semibold uppercase tracking-wide text-foreground py-2 px-3 text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {[
+                    { 
+                      id: "Control-015", 
+                      name: "Access Management", 
+                      risk: "Cybersecurity Threat",
+                      rcsaStatus: "Effective",
+                      autoTest: "Fail",
+                      variance: "Critical",
+                      testSource: "SOX Testing",
+                      lastUpdated: "Jan 07, 2025"
+                    },
+                    { 
+                      id: "Control-023", 
+                      name: "Transaction Monitoring", 
+                      risk: "Operational Process Failure",
+                      rcsaStatus: "Effective",
+                      autoTest: "Partial",
+                      variance: "High",
+                      testSource: "GRC Automation",
+                      lastUpdated: "Jan 05, 2025"
+                    },
+                    { 
+                      id: "Control-008", 
+                      name: "Change Management Review", 
+                      risk: "Regulatory Compliance",
+                      rcsaStatus: "Partial",
+                      autoTest: "Fail",
+                      variance: "Medium",
+                      testSource: "Continuous Monitoring",
+                      lastUpdated: "Jan 03, 2025"
+                    }
+                  ]
+                  .filter(alert => 
+                    !driftAlertSearchQuery.trim() || 
+                    alert.name.toLowerCase().includes(driftAlertSearchQuery.toLowerCase()) ||
+                    alert.id.toLowerCase().includes(driftAlertSearchQuery.toLowerCase())
+                  )
+                  .map((alert) => (
+                    <TableRow key={alert.id} className="hover:bg-muted/20">
+                      <TableCell className="text-xs font-medium text-foreground py-2 px-3">
+                        {alert.id}
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div>
+                          <div className="text-xs font-medium text-foreground">{alert.name}</div>
+                          <div className="text-[10px] text-muted-foreground">{alert.risk}</div>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <Badge className={cn(
+                          "text-[10px] font-medium",
+                          alert.rcsaStatus === "Effective" 
+                            ? "bg-success/10 text-success border-success/20"
+                            : "bg-warning/10 text-warning border-warning/20"
+                        )}>
+                          {alert.rcsaStatus}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <Badge className={cn(
+                          "text-[10px] font-medium",
+                          alert.autoTest === "Fail" 
+                            ? "bg-destructive/10 text-destructive border-destructive/20"
+                            : "bg-warning/10 text-warning border-warning/20"
+                        )}>
+                          {alert.autoTest}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <Badge className={cn(
+                          "text-[10px] font-medium",
+                          alert.variance === "Critical" && "bg-destructive/10 text-destructive border-destructive/20",
+                          alert.variance === "High" && "bg-warning/10 text-warning border-warning/20",
+                          alert.variance === "Medium" && "bg-accent/10 text-accent border-accent/20"
+                        )}>
+                          {alert.variance}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <Badge variant="outline" className="text-[10px] font-medium text-foreground">
+                          {alert.testSource}
+                        </Badge>
+                      </TableCell>
+                      <TableCell className="text-xs text-foreground py-2 px-3">
+                        {alert.lastUpdated}
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div className="flex items-center justify-end gap-1">
+                          <Button 
+                            size="sm" 
+                            className="h-7 px-2 text-[10px] bg-success hover:bg-success/90 text-white"
+                            onClick={() => toast.success(`Resolving drift for ${alert.name}`)}
+                          >
+                            <RefreshCw className="w-3 h-3 mr-1" />
+                            Resolve
+                          </Button>
+                          <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
+                            <Eye className="w-4 h-4 text-muted-foreground" />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
