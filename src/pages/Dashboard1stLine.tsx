@@ -2315,7 +2315,7 @@ const Dashboard1stLine = () => {
 
         {/* Active Risk Profile Section */}
         {showRiskTable && (
-        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none scroll-mt-4">
+        <Card ref={reportSectionRef} className="border-[3px] border-border/50 dark:border-border shadow-sm bg-white dark:bg-card rounded-none scroll-mt-24">
           {/* Title Bar with Tabs */}
           <CardHeader className="border-b border-border/50 space-y-0 py-0 px-0 bg-muted/30">
             <div className="flex items-center justify-between h-12">
