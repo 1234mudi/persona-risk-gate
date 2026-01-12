@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1539,7 +1539,7 @@ const Dashboard1stLine = () => {
               {/* Left Column */}
               <div className="space-y-3">
                 {/* Assessment Status Card */}
-                <Card className={`border-l-4 ${expandedCard === 'assessment' ? 'border-l-[#5D2E8C]' : 'border-l-blue-500'} border-2 border-border shadow-sm bg-card`}>
+                <Card className="border border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1550,21 +1550,11 @@ const Dashboard1stLine = () => {
                       </div>
                       <button 
                         onClick={() => toggleCardExpand('assessment')}
-                        className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80"
+                        className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
                       >
-                        {expandedCard === 'assessment' ? (
-                          <>
-                            CLICK TO COLLAPSE
-                            <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center ml-1">
-                              <ChevronUp className="w-3 h-3 text-white" />
-                            </div>
-                          </>
-                        ) : (
-                          <>
-                            CLICK TO EXPAND
-                            <ChevronDown className="w-4 h-4" />
-                          </>
-                        )}
+                        CLICK TO EXPAND
+                        <ChevronDown className={cn("w-4 h-4 transition-transform", 
+                          expandedCard === 'assessment' && "rotate-180")} />
                       </button>
                     </div>
                     
@@ -1690,17 +1680,16 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* N/A Justifications Card - Pipeline Flow Design */}
-                <Card className="border-l-4 border-l-blue-500 border-2 border-border shadow-sm bg-card">
+                <Card className="border border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <X className="w-4 h-4 text-muted-foreground" />
+                        <Ban className="w-4 h-4 text-muted-foreground" />
                         <span className="text-xs font-bold uppercase tracking-wide text-foreground">
                           N/A JUSTIFICATIONS
                         </span>
                       </div>
                       <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                        EXPAND
                         <ChevronDown className="w-4 h-4" />
                       </button>
                     </div>
@@ -1755,17 +1744,17 @@ const Dashboard1stLine = () => {
                 {/* Loss Events + AI Root Cause - Side by Side */}
                 <div className="grid grid-cols-2 gap-3">
                   {/* Loss Events Card */}
-                  <Card className="border-l-4 border-l-blue-500 border-2 border-border shadow-sm bg-card">
+                  <Card className="border border-border shadow-sm bg-card">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <AlertCircle className="w-4 h-4 text-muted-foreground" />
+                          <Info className="w-4 h-4 text-muted-foreground" />
                           <span className="text-xs font-bold uppercase tracking-wide text-foreground">
                             LOSS EVENTS
                           </span>
                         </div>
                         <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                          <ChevronDown className="w-3 h-3" />
+                          <ChevronDown className="w-4 h-4" />
                         </button>
                       </div>
                       
@@ -1818,7 +1807,7 @@ const Dashboard1stLine = () => {
                   </Card>
 
                   {/* AI Root Cause Card */}
-                  <Card className="border-l-4 border-l-[#6A75D8] border-2 border-border shadow-sm bg-card">
+                  <Card className="border border-border shadow-sm bg-card">
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -1828,8 +1817,7 @@ const Dashboard1stLine = () => {
                           </span>
                         </div>
                         <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                          <Sparkles className="w-3 h-3 text-[#6A75D8]" />
-                          <ChevronDown className="w-3 h-3" />
+                          <ChevronDown className="w-4 h-4" />
                         </button>
                       </div>
                       
@@ -1847,39 +1835,24 @@ const Dashboard1stLine = () => {
                         <span className="text-[9px] text-muted-foreground">Jan 8, 2025</span>
                       </div>
 
-                      {/* Vertical timeline with colored boxes */}
-                      <div className="space-y-1.5 pl-3 border-l-2 border-blue-200 dark:border-blue-800">
+                      {/* Full-width solid colored boxes */}
+                      <div className="space-y-1.5">
                         {/* ROOT CAUSE */}
-                        <div className="relative">
-                          <div className="absolute -left-[13px] w-2 h-2 rounded-full bg-red-500" />
-                          <div className="bg-red-100 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded px-2 py-1">
-                            <div className="flex items-center gap-1">
-                              <AlertCircle className="w-3 h-3 text-red-500" />
-                              <span className="text-[9px] font-semibold text-red-700 dark:text-red-400">ROOT CAUSE</span>
-                            </div>
-                          </div>
+                        <div className="bg-red-500 text-white rounded px-2 py-1.5 flex items-center gap-1.5">
+                          <AlertCircle className="w-3 h-3" />
+                          <span className="text-[9px] font-semibold">ROOT CAUSE</span>
                         </div>
                         
                         {/* CONTRIBUTING FACTORS */}
-                        <div className="relative">
-                          <div className="absolute -left-[13px] w-2 h-2 rounded-full bg-yellow-500" />
-                          <div className="bg-yellow-100 dark:bg-yellow-950/30 border border-yellow-200 dark:border-yellow-800 rounded px-2 py-1">
-                            <div className="flex items-center gap-1">
-                              <AlertTriangle className="w-3 h-3 text-yellow-600" />
-                              <span className="text-[9px] font-semibold text-yellow-700 dark:text-yellow-400">3 CONTRIBUTING FACTORS</span>
-                            </div>
-                          </div>
+                        <div className="bg-yellow-400 text-white rounded px-2 py-1.5 flex items-center gap-1.5">
+                          <AlertTriangle className="w-3 h-3" />
+                          <span className="text-[9px] font-semibold">3 CONTRIBUTING FACTORS</span>
                         </div>
                         
                         {/* FAILED CONTROLS */}
-                        <div className="relative">
-                          <div className="absolute -left-[13px] w-2 h-2 rounded-full bg-orange-500" />
-                          <div className="bg-orange-100 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded px-2 py-1">
-                            <div className="flex items-center gap-1">
-                              <XCircle className="w-3 h-3 text-orange-500" />
-                              <span className="text-[9px] font-semibold text-orange-700 dark:text-orange-400">2 FAILED CONTROLS</span>
-                            </div>
-                          </div>
+                        <div className="bg-orange-500 text-white rounded px-2 py-1.5 flex items-center gap-1.5">
+                          <XCircle className="w-3 h-3" />
+                          <span className="text-[9px] font-semibold">2 FAILED CONTROLS</span>
                         </div>
                       </div>
                     </CardContent>
@@ -1887,11 +1860,11 @@ const Dashboard1stLine = () => {
                 </div>
 
                 {/* Drift Alerts Card */}
-                <Card className="border-l-4 border-l-blue-500 border-2 border-border shadow-sm bg-card">
+                <Card className="border border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                        <Activity className="w-4 h-4 text-muted-foreground" />
                         <span className="text-xs font-bold uppercase tracking-wide text-foreground">
                           DRIFT ALERTS
                         </span>
@@ -1925,7 +1898,7 @@ const Dashboard1stLine = () => {
               {/* Right Column */}
               <div className="space-y-3">
                 {/* Inherent Risk Ratings Card - Larger Donut */}
-                <Card className="border-l-4 border-l-[#A361CF] border-2 border-border shadow-sm bg-card">
+                <Card className="border border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -1999,12 +1972,12 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Control Effectiveness Card - Speedometer Gauge */}
-                <Card className="border-l-4 border-l-[#A361CF] border-2 border-border shadow-sm bg-card">
+                <Card className="border border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <FileCheck className="w-4 h-4 text-muted-foreground" />
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                        <FileCheck className="w-4 h-4 text-green-600" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-green-600">
                           CONTROL EFFECTIVENESS
                         </span>
                       </div>
@@ -2072,11 +2045,15 @@ const Dashboard1stLine = () => {
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}</span>
                       <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0</span>
                     </div>
+                    
+                    <p className="text-[9px] text-muted-foreground mt-2">
+                      Aggregate control effectiveness across all risks.
+                    </p>
                   </CardContent>
                 </Card>
 
-                {/* Remediation Tasks Card - Full Colored Bars */}
-                <Card className="border-l-4 border-l-[#6A75D8] border-2 border-border shadow-sm bg-card">
+                {/* Remediation Tasks Card - Proportional Bars with Track */}
+                <Card className="border border-border shadow-sm bg-card">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -2099,26 +2076,34 @@ const Dashboard1stLine = () => {
                       <span className="text-xs text-destructive">1 critical</span>
                     </div>
                     
-                    {/* Horizontal bar chart - full colored bars */}
+                    {/* Horizontal bar chart - proportional bars with track */}
                     <div className="space-y-2">
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">Open</span>
-                        <div className="flex-1 h-4 bg-red-500 rounded" />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-red-500 rounded" style={{width: '100%'}} />
+                        </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.open}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">In Progress</span>
-                        <div className="h-4 bg-orange-500 rounded" style={{width: '70%'}} />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-orange-500 rounded" style={{width: '80%'}} />
+                        </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.inProgress}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">Validation</span>
-                        <div className="h-4 bg-blue-500 rounded" style={{width: '60%'}} />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-blue-500 rounded" style={{width: '70%'}} />
+                        </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.validation}</span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-[10px] text-muted-foreground w-20">Closed</span>
-                        <div className="h-4 bg-gray-300 dark:bg-gray-700 rounded" style={{width: '10%'}} />
+                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded relative">
+                          <div className="absolute inset-y-0 left-0 h-4 bg-gray-400 rounded" style={{width: '10%'}} />
+                        </div>
                         <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.closed}</span>
                       </div>
                     </div>
