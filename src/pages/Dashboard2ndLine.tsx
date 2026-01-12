@@ -1516,8 +1516,8 @@ const Dashboard2ndLine = () => {
               'sm:col-span-2', // metrics[1] - Risks Outside Appetite - spans 2 cols
               'sm:col-span-2', // metrics[2] - Ongoing Review & Challenge - spans 2 cols
               'sm:col-span-2', // metrics[3] - Operational Loss Events - spans 2 cols
-              'sm:col-span-2', // metrics[5] - Issue Aging by Source - spans 2 cols
-              'sm:col-span-2', // metrics[4] - Issues Velocity & Efficiency - spans 2 cols
+              'sm:col-span-1', // metrics[5] - Issue Aging by Source - side by side
+              'sm:col-span-1', // metrics[4] - Issues Velocity & Efficiency - side by side
             ];
             const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
             let total = 0;
