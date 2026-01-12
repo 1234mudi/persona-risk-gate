@@ -695,6 +695,12 @@ const Dashboard2ndLine = () => {
     const byBusinessUnit: Record<string, number> = {};
     const byCategory: Record<string, number> = { Operational: 0, Technology: 0, Compliance: 0, Financial: 0, Strategic: 0 };
     
+    const bySourceAndCriticality: Record<string, Record<string, number>> = {
+      'Risk Assessments': { critical: 0, high: 0, medium: 0, low: 0 },
+      'Loss Events': { critical: 0, high: 0, medium: 0, low: 0 },
+      'Control Testing': { critical: 0, high: 0, medium: 0, low: 0 },
+    };
+
     timeFilteredRiskData.forEach(risk => {
       const dueDate = new Date(risk.dueDate);
       const isCompleted = isRiskCompleted(risk);
@@ -710,14 +716,19 @@ const Dashboard2ndLine = () => {
         
         byCriticality[criticalityKey]++;
         
-        // Assign to source based on category
+        // Assign to source based on category and track criticality per source
+        let source: string;
         if (risk.category === 'Financial') {
+          source = 'Loss Events';
           bySource['Loss Events']++;
         } else if (risk.category === 'Technology') {
+          source = 'Control Testing';
           bySource['Control Testing']++;
         } else {
+          source = 'Risk Assessments';
           bySource['Risk Assessments']++;
         }
+        bySourceAndCriticality[source][criticalityKey]++;
         
         // Track 90+ day overdue risks
         if (daysOverdue > 90) {
@@ -754,7 +765,8 @@ const Dashboard2ndLine = () => {
       byBusinessUnit: sortedBusinessUnits,
       byCategory: sortedCategories,
       byCriticality,
-      bySource
+      bySource,
+      bySourceAndCriticality
     };
   }, [timeFilteredRiskData]);
 
@@ -813,16 +825,17 @@ const Dashboard2ndLine = () => {
     const businessUnits = [...new Set(timeFilteredRiskData.map(r => r.businessUnit))];
     const byOrgData = businessUnits.map(bu => {
       const buRisks = timeFilteredRiskData.filter(r => r.businessUnit === bu);
-      const outside = buRisks.filter(r => 
-        r.residualRisk.level === "Critical" || r.residualRisk.level === "High"
-      ).length;
+      const criticalCount = buRisks.filter(r => r.residualRisk.level === "Critical").length;
+      const highCount = buRisks.filter(r => r.residualRisk.level === "High").length;
       const within = buRisks.filter(r => 
         r.residualRisk.level === "Medium" || r.residualRisk.level === "Low"
       ).length;
       
       return {
         organization: bu,
-        outsideAppetite: outside,
+        critical: criticalCount,
+        high: highCount,
+        outsideAppetite: criticalCount + highCount,
         withinAppetite: within,
         total: buRisks.length
       };
@@ -1016,25 +1029,14 @@ const Dashboard2ndLine = () => {
       trendUp: false,
       icon: BarChart3,
       chartType: "issueAging" as const,
-      barData: [
-        { source: "Risk Assessments", count: agingMetrics.bySource['Risk Assessments'] },
-        { source: "Loss Events", count: agingMetrics.bySource['Loss Events'] },
-        { source: "Control Testing", count: agingMetrics.bySource['Control Testing'] },
+      combinedBarData: [
+        { source: "Risk Assessments", ...agingMetrics.bySourceAndCriticality['Risk Assessments'] },
+        { source: "Loss Events", ...agingMetrics.bySourceAndCriticality['Loss Events'] },
+        { source: "Control Testing", ...agingMetrics.bySourceAndCriticality['Control Testing'] },
       ],
-      segments: [
-        { label: "Risk Assessments", value: agingMetrics.bySource['Risk Assessments'], sublabel: `${agingMetrics.bySource['Risk Assessments']} Risk Assessments`, color: "bg-primary" },
-        { label: "Loss Events", value: agingMetrics.bySource['Loss Events'], sublabel: `${agingMetrics.bySource['Loss Events']} Loss Events`, color: "bg-warning" },
-        { label: "Control Testing", value: agingMetrics.bySource['Control Testing'], sublabel: `${agingMetrics.bySource['Control Testing']} Control Testing`, color: "bg-accent" },
-      ],
-      criticalitySegments: [
-        { label: "Critical", value: agingMetrics.byCriticality.critical, sublabel: `${agingMetrics.byCriticality.critical} Critical`, color: "bg-red-600" },
-        { label: "High", value: agingMetrics.byCriticality.high, sublabel: `${agingMetrics.byCriticality.high} High`, color: "bg-orange-500" },
-        { label: "Medium", value: agingMetrics.byCriticality.medium, sublabel: `${agingMetrics.byCriticality.medium} Medium`, color: "bg-yellow-500" },
-        { label: "Low", value: agingMetrics.byCriticality.low, sublabel: `${agingMetrics.byCriticality.low} Low`, color: "bg-green-500" },
-      ],
-      description: "Aged issues by originating source and criticality. Prioritize critical issues first.",
-      tooltip: "Shows the distribution of aged issues by their originating source and criticality level. Use this to identify which processes are generating the most backlog and prioritize by severity.",
-      interpretation: "By Source: Longer bars indicate more aged issues. By Criticality: Red/Orange require immediate attention. Target critical issues first, then high-volume sources.",
+      description: "Aged issues by source, color-coded by criticality. Focus on red segments first.",
+      tooltip: "Shows the distribution of aged issues by source (Risk Assessments, Loss Events, Control Testing) with criticality breakdown. Red = Critical, Orange = High.",
+      interpretation: "Each bar represents a source. Color segments show criticality. Target red/orange segments first as they represent critical and high priority issues.",
     },
   ];
 
@@ -1764,7 +1766,8 @@ const Dashboard2ndLine = () => {
                                         fontSize: '10px'
                                       }}
                                     />
-                                    <Bar dataKey="outsideAppetite" stackId="a" fill="hsl(var(--destructive))" name="Outside Appetite" radius={[0, 0, 0, 0]} maxBarSize={12} />
+                                    <Bar dataKey="critical" stackId="a" fill="hsl(var(--destructive))" name="Critical" radius={[0, 0, 0, 0]} maxBarSize={12} />
+                                    <Bar dataKey="high" stackId="a" fill="hsl(var(--warning))" name="High" maxBarSize={12} />
                                     <Bar dataKey="withinAppetite" stackId="a" fill="hsl(var(--success))" name="Within Appetite" radius={[0, 3, 3, 0]} maxBarSize={12} />
                                   </BarChart>
                                 </ResponsiveContainer>
@@ -1836,10 +1839,14 @@ const Dashboard2ndLine = () => {
                           
                           {/* Legend and Summary */}
                           <div className="flex items-center justify-between border-t border-border/30 pt-1">
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-3">
                               <div className="flex items-center gap-1">
                                 <div className="w-2 h-2 rounded-sm bg-destructive" />
-                                <span className="text-[8px] text-muted-foreground">Outside ({(metric as any).riskAppetiteData.outsideAppetite})</span>
+                                <span className="text-[8px] text-muted-foreground">Critical ({(metric as any).riskAppetiteData.breakdown.critical})</span>
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 rounded-sm bg-warning" />
+                                <span className="text-[8px] text-muted-foreground">High ({(metric as any).riskAppetiteData.breakdown.high})</span>
                               </div>
                               <div className="flex items-center gap-1">
                                 <div className="w-2 h-2 rounded-sm bg-success" />
@@ -2081,56 +2088,61 @@ const Dashboard2ndLine = () => {
                         <span className="text-lg text-muted-foreground ml-0.5">{metrics[5].valueSuffix}</span>
                       )}
                     </div>
-                    {/* Progress bar */}
-                    <div className="flex h-1.5 rounded overflow-hidden mb-1">
-                      {(metrics[5].segments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => {
-                        const total = (metrics[5].segments as Array<{ value: number }>).reduce((acc, s) => acc + s.value, 0);
-                        const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                        return (
-                          <div
-                            key={idx}
-                            className={segment.color}
-                            style={{ width: `${percentage}%` }}
+                    {/* Combined Horizontal Bar Chart: Source x Criticality */}
+                    <div className="h-24 mb-2">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart 
+                          data={(metrics[5] as any).combinedBarData}
+                          layout="vertical"
+                          margin={{ top: 4, right: 4, bottom: 4, left: 4 }}
+                        >
+                          <XAxis 
+                            type="number"
+                            tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
+                            axisLine={false}
+                            tickLine={false}
                           />
-                        );
-                      })}
-                    </div>
-                    {/* By Source Legend */}
-                    <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-2">
-                      {(metrics[5].segments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => (
-                        <div key={idx} className="flex items-center gap-0.5">
-                          <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
-                          <span className="text-[9px] font-medium text-muted-foreground">
-                            {segment.sublabel || segment.label}
-                          </span>
-                        </div>
-                      ))}
-                    </div>
-                    {/* By Criticality Section */}
-                    <p className="text-[8px] text-muted-foreground uppercase tracking-wide mb-0.5">By Criticality</p>
-                    <div className="flex h-1.5 rounded overflow-hidden mb-1">
-                      {((metrics[5] as any).criticalitySegments as Array<{ label: string; value: number; color: string }>).map((segment, idx) => {
-                        const total = ((metrics[5] as any).criticalitySegments as Array<{ value: number }>).reduce((acc, s) => acc + s.value, 0);
-                        const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                        return (
-                          <div
-                            key={idx}
-                            className={segment.color}
-                            style={{ width: `${percentage}%` }}
+                          <YAxis 
+                            type="category"
+                            dataKey="source" 
+                            tick={{ fontSize: 8, fill: 'hsl(var(--muted-foreground))' }}
+                            axisLine={false}
+                            tickLine={false}
+                            width={85}
                           />
-                        );
-                      })}
+                          <RechartsTooltip 
+                            contentStyle={{ 
+                              backgroundColor: 'hsl(var(--card))', 
+                              border: '1px solid hsl(var(--border))',
+                              borderRadius: '6px',
+                              fontSize: '10px'
+                            }}
+                          />
+                          <Bar dataKey="critical" stackId="a" fill="hsl(var(--destructive))" name="Critical" maxBarSize={12} />
+                          <Bar dataKey="high" stackId="a" fill="hsl(var(--warning))" name="High" maxBarSize={12} />
+                          <Bar dataKey="medium" stackId="a" fill="hsl(var(--accent))" name="Medium" maxBarSize={12} />
+                          <Bar dataKey="low" stackId="a" fill="hsl(var(--success))" name="Low" radius={[0, 3, 3, 0]} maxBarSize={12} />
+                        </BarChart>
+                      </ResponsiveContainer>
                     </div>
-                    {/* By Criticality Legend */}
-                    <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-1">
-                      {((metrics[5] as any).criticalitySegments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => (
-                        <div key={idx} className="flex items-center gap-0.5">
-                          <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
-                          <span className="text-[9px] font-medium text-muted-foreground">
-                            {segment.sublabel || segment.label}
-                          </span>
-                        </div>
-                      ))}
+                    {/* Single Criticality Legend */}
+                    <div className="flex flex-wrap gap-x-2 gap-y-0.5 mb-1">
+                      <div className="flex items-center gap-0.5">
+                        <div className="w-1.5 h-1.5 rounded-sm bg-destructive" />
+                        <span className="text-[9px] text-muted-foreground">Critical</span>
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        <div className="w-1.5 h-1.5 rounded-sm bg-warning" />
+                        <span className="text-[9px] text-muted-foreground">High</span>
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        <div className="w-1.5 h-1.5 rounded-sm bg-accent" />
+                        <span className="text-[9px] text-muted-foreground">Medium</span>
+                      </div>
+                      <div className="flex items-center gap-0.5">
+                        <div className="w-1.5 h-1.5 rounded-sm bg-success" />
+                        <span className="text-[9px] text-muted-foreground">Low</span>
+                      </div>
                     </div>
                     <p className="text-[10px] text-muted-foreground leading-tight">{metrics[5].description}</p>
                     {'interpretation' in metrics[5] && metrics[5].interpretation && (
