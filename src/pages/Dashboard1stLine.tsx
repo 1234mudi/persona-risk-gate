@@ -3,8 +3,10 @@ import { cn } from "@/lib/utils";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity, Lightbulb } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity, Lightbulb, Download, Presentation, Loader2 } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
+import { generateDashboardDocx, generateDashboardPptx, downloadBlob } from "@/lib/generateDashboardExport";
+import { supabase } from "@/integrations/supabase/client";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
 import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
@@ -114,6 +116,10 @@ const Dashboard1stLine = () => {
   const [remediationSearchQuery, setRemediationSearchQuery] = useState("");
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
   const remediationRef = useRef<HTMLDivElement>(null);
+  
+  // Export state
+  const [isExporting, setIsExporting] = useState(false);
+  const [exportModalOpen, setExportModalOpen] = useState(false);
   
   // Historical assessments modal state
   const [historicalModalOpen, setHistoricalModalOpen] = useState(false);
@@ -511,6 +517,83 @@ const Dashboard1stLine = () => {
       setReviewRiskIds([]);
     }
   }, []);
+
+  // Export handler function
+  const handleExport = async (exportFormat: 'docx' | 'pptx') => {
+    setIsExporting(true);
+    try {
+      // Prepare 1st Line dashboard data for AI narrative generation
+      const dashboardData = {
+        metrics: metrics.map(m => ({
+          title: m.title,
+          value: m.value,
+          trend: m.trend,
+          segments: m.segments,
+        })),
+        filters: {
+          businessUnit: businessUnitFilter === 'all' ? 'All Business Units' : businessUnitFilter,
+          timePeriod: 'Current Period',
+        },
+        // Include 1st line specific summary data
+        naJustificationsSummary: '2 pending approvals',
+        lossEventsSummary: '4 active events',
+        driftAlertsSummary: '3 active alerts',
+        remediationTasksSummary: '4 active tasks',
+      };
+
+      // Call edge function to generate AI narratives
+      const response = await supabase.functions.invoke('generate-dashboard-narrative', {
+        body: { dashboardData },
+      });
+
+      if (response.error) {
+        console.error('Edge function error:', response.error);
+        throw new Error(response.error.message || 'Failed to generate narratives');
+      }
+
+      if (!response.data?.success) {
+        throw new Error(response.data?.error || 'Failed to generate narratives');
+      }
+
+      // Prepare organization heatmap data for export
+      const orgHeatmapData = {
+        businessUnits: [
+          { name: "Retail Banking", critical: 2, high: 5, medium: 8, low: 3, total: 18, trends: { critical: 0, high: 1, medium: -2, low: 1 } },
+          { name: "Corporate Banking", critical: 1, high: 4, medium: 6, low: 4, total: 15, trends: { critical: 1, high: 0, medium: -1, low: 0 } },
+          { name: "Treasury", critical: 0, high: 3, medium: 5, low: 5, total: 13, trends: { critical: 0, high: -1, medium: 1, low: -1 } },
+          { name: "Operations", critical: 3, high: 6, medium: 7, low: 2, total: 18, trends: { critical: 1, high: 2, medium: 0, low: -1 } },
+          { name: "Risk Analytics", critical: 1, high: 2, medium: 4, low: 6, total: 13, trends: { critical: -1, high: 0, medium: -1, low: 2 } },
+        ],
+        totals: { critical: 7, high: 20, medium: 30, low: 20, total: 77 },
+      };
+
+      const exportData = {
+        narratives: response.data.narratives || [],
+        executiveSummary: response.data.executiveSummary || 'Dashboard summary not available.',
+        metrics: dashboardData.metrics,
+        organizationHeatmap: orgHeatmapData,
+        exportDate: format(new Date(), 'MMMM d, yyyy'),
+        filters: dashboardData.filters,
+      };
+
+      // Generate and download file
+      if (exportFormat === 'docx') {
+        const blob = await generateDashboardDocx(exportData);
+        downloadBlob(blob, `1st-Line-Risk-Dashboard-${format(new Date(), 'yyyy-MM-dd')}.docx`);
+      } else {
+        const blob = await generateDashboardPptx(exportData);
+        downloadBlob(blob, `1st-Line-Risk-Dashboard-${format(new Date(), 'yyyy-MM-dd')}.pptx`);
+      }
+
+      toast.success(`${exportFormat.toUpperCase()} report generated successfully!`);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to generate report');
+    } finally {
+      setIsExporting(false);
+      setExportModalOpen(false);
+    }
+  };
 
   const toggleRow = (riskId: string) => {
     setExpandedRows(prev => {
@@ -1461,44 +1544,60 @@ const Dashboard1stLine = () => {
       {/* Main Content */}
       <main className="container mx-auto px-2 sm:px-4 py-2 sm:py-4">
       {/* Quick Links - Horizontal Strip */}
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mb-1.5 px-0">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#10052F] dark:text-white">
-            <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
-            Quick Links:
+        <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1 mb-1.5 px-0">
+          {/* Quick Links - Left side */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#10052F] dark:text-white">
+              <Link className="w-3 h-3 text-[#10052F] dark:text-white" />
+              Quick Links:
+            </div>
+            <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
+              <ClipboardCheck className="w-3 h-3" />
+              <span>View My Pending Assessments</span>
+            </button>
+            <span className="text-gray-400 dark:text-gray-500">|</span>
+            <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
+              <CheckCircle className="w-3 h-3" />
+              <span>View Completed Assessments</span>
+            </button>
+            <span className="text-gray-400 dark:text-gray-500">|</span>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs italic">
+                  <FlaskConical className="w-3 h-3" />
+                  <span>Sample CSV for AI Assessment (Test Only)</span>
+                </a>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p>Download a sample CSV file to test the AI-powered risk assessment parser</p>
+              </TooltipContent>
+            </Tooltip>
           </div>
-          <button onClick={() => handleQuickLinkClick("assess")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
-            <ClipboardCheck className="w-3 h-3" />
-            <span>View My Pending Assessments</span>
-          </button>
-          <span className="text-gray-400 dark:text-gray-500">|</span>
-          <button onClick={() => handleQuickLinkClick("own")} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
-            <CheckCircle className="w-3 h-3" />
-            <span>View Completed Assessments</span>
-          </button>
-          <span className="text-gray-400 dark:text-gray-500">|</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <button onClick={() => setAiDocumentModalOpen(true)} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:underline text-xs">
-                <FileText className="w-3 h-3" />
-                <span>AI Document Parser</span>
-              </button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Upload and parse documents to extract risk assessments using AI</p>
-            </TooltipContent>
-          </Tooltip>
-          <span className="text-gray-400 dark:text-gray-500">|</span>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs italic">
-                <FlaskConical className="w-3 h-3" />
-                <span>Sample CSV for AI Assessment (Test Only)</span>
-              </a>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Download a sample CSV file to test the AI-powered risk assessment parser</p>
-            </TooltipContent>
-          </Tooltip>
+          
+          {/* Action Buttons - Right side */}
+          <div className="flex items-center gap-2">
+            {/* AI Document Parser Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setAiDocumentModalOpen(true)}
+              className="h-7 text-xs rounded-none border-primary text-primary hover:bg-primary/10 gap-1.5"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              AI Document Parser
+            </Button>
+            
+            {/* Summarize and Export Button */}
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setExportModalOpen(true)}
+              className="h-7 text-xs rounded-none border-primary text-primary hover:bg-primary/10 gap-1.5"
+            >
+              <Sparkles className="w-3.5 h-3.5" />
+              Summarize and Export
+            </Button>
+          </div>
         </div>
 
         {/* Scorecards - 3 columns */}
@@ -4525,6 +4624,57 @@ const Dashboard1stLine = () => {
               <RefreshCw className="w-4 h-4 mr-2" />
               Proceed
             </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      
+      {/* Export Modal */}
+      <Dialog open={exportModalOpen} onOpenChange={setExportModalOpen}>
+        <DialogContent className="max-w-md rounded-none">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-primary" />
+              Summarize and Export Dashboard
+            </DialogTitle>
+            <DialogDescription>
+              Generate an AI-powered executive summary with narratives for each chart. 
+              Choose your preferred format below.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4 py-4">
+            <Button
+              variant="outline"
+              className="h-24 flex-col gap-1.5 rounded-none bg-blue-50 hover:bg-blue-100 border-blue-200 dark:bg-blue-950/30 dark:hover:bg-blue-900/40 dark:border-blue-800"
+              onClick={() => handleExport('docx')}
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <Loader2 className="w-7 h-7 animate-spin" />
+              ) : (
+                <FileText className="w-7 h-7 text-blue-600 dark:text-blue-400" />
+              )}
+              <span className="text-sm font-medium text-blue-700 dark:text-blue-300">Word Document</span>
+              <span className="text-[10px] text-blue-500 dark:text-blue-400">.docx</span>
+            </Button>
+            <Button
+              variant="outline"
+              className="h-24 flex-col gap-1.5 rounded-none bg-orange-50 hover:bg-orange-100 border-orange-200 dark:bg-orange-950/30 dark:hover:bg-orange-900/40 dark:border-orange-800"
+              onClick={() => handleExport('pptx')}
+              disabled={isExporting}
+            >
+              {isExporting ? (
+                <Loader2 className="w-7 h-7 animate-spin" />
+              ) : (
+                <Presentation className="w-7 h-7 text-orange-600 dark:text-orange-400" />
+              )}
+              <span className="text-sm font-medium text-orange-700 dark:text-orange-300">PowerPoint</span>
+              <span className="text-[10px] text-orange-500 dark:text-orange-400">.pptx</span>
+            </Button>
+          </div>
+          <DialogFooter>
+            <p className="text-xs text-muted-foreground">
+              Reports include AI-generated narratives for all {metrics.length} dashboard components.
+            </p>
           </DialogFooter>
         </DialogContent>
       </Dialog>
