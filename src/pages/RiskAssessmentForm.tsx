@@ -1844,7 +1844,7 @@ const RiskAssessmentForm = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50/30 dark:from-slate-950 dark:to-blue-950/20">
       {/* Main Content Area */}
-      <div className={`${rightPanelOpen ? 'pr-[532px]' : 'pr-[52px]'} transition-all duration-300`}>
+      <div className={`${rightPanelOpen ? 'pr-[540px]' : 'pr-14'} transition-all duration-300`}>
         {/* Update Version Banner */}
         {isUpdateVersionMode && (
           <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800">
