@@ -1546,7 +1546,7 @@ const Dashboard1stLine = () => {
                         <div className="w-6 h-6 rounded bg-[#00897B] flex items-center justify-center">
                           <CalendarCheck className="w-3.5 h-3.5 text-white" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
                           ASSESSMENT STATUS
                         </span>
                       </div>
@@ -1565,7 +1565,7 @@ const Dashboard1stLine = () => {
                     {/* Summary row */}
                     <div className="flex items-center justify-between mb-3">
                       <div>
-                        <span className="text-3xl font-bold text-foreground">{requiresAction}</span>
+                        <span className="text-3xl font-bold text-gray-900 dark:text-gray-100">{requiresAction}</span>
                         <span className="text-base text-muted-foreground ml-2">Requiring Action</span>
                       </div>
                       <div className="flex items-center gap-1">
