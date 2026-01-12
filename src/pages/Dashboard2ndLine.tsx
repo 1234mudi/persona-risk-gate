@@ -2578,16 +2578,25 @@ const Dashboard2ndLine = () => {
                             </TableRow>
                             
                             {/* Individual Risk Rows - Always visible */}
-                            {group.risks.map((risk, index) => {
+                            {group.risks.flatMap((risk) => {
+                              // Only process Level 1 risks in main iteration
+                              if (risk.riskLevel !== "Level 1") return [];
+                              const level2Children = getLevel2Children(risk);
+                              // Return Level 1 followed by its Level 2 children
+                              return [risk, ...level2Children];
+                            }).map((risk, index) => {
                               const isLevel1 = risk.riskLevel === "Level 1";
                               const isLevel2 = risk.riskLevel === "Level 2";
                               const isLevel3 = risk.riskLevel === "Level 3";
                               const isExpanded = expandedRows.has(risk.id);
                               const canExpand = hasChildren(risk);
+                              // Find parent risk for Level 2 to show relationship
+                              const parentRisk = isLevel2 ? group.risks.find(r => r.id === risk.parentRisk) : null;
                               
                               return (
-                              <TableRow key={`${group.businessUnit}-${index}`} className={`hover:bg-muted/50 transition-colors ${
+                              <TableRow key={`${group.businessUnit}-${risk.id}-${index}`} className={`hover:bg-muted/50 transition-colors ${
                                 isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
+                                isLevel2 ? 'bg-blue-50/20 dark:bg-blue-950/5 border-l-4 border-l-blue-300 dark:border-l-blue-600' :
                                 'bg-orange-50/10 dark:bg-orange-950/10'
                               }`}>
                         <TableCell className="py-1 border-r border-b border-border align-top">
@@ -2623,7 +2632,7 @@ const Dashboard2ndLine = () => {
                         </TableCell>
                         {/* Risk ID / Title (combined) */}
                         <TableCell className="py-1 border-r border-b border-border align-top">
-                          <div className="flex items-start gap-1.5">
+                          <div className={`flex items-start gap-1.5 ${isLevel2 ? 'pl-4' : ''}`}>
                             {isLevel1 && canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
@@ -2640,48 +2649,30 @@ const Dashboard2ndLine = () => {
                             {isLevel3 && <div className="w-6 ml-4" />}
                             
                             <div className="flex flex-col gap-0.5">
-                              {/* Level 1 Title */}
-                              <div className="flex flex-col gap-0.5">
-                                <span className="text-[10px] font-medium text-primary">{risk.id}</span>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <button 
-                                      onClick={() => handleRiskNameClick(risk)}
-                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer text-[10px]"
-                                    >
-                                      {risk.title}
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Click to view risk assessment and open challenges/issues.</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                                <span className="text-[10px] text-muted-foreground">{risk.owner}</span>
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
-                                  {risk.category}
+                              {/* Show parent relationship for Level 2 */}
+                              {isLevel2 && parentRisk && (
+                                <span className="text-[9px] text-muted-foreground">
+                                  └ Child of: {parentRisk.title.substring(0, 30)}{parentRisk.title.length > 30 ? '...' : ''}
                                 </span>
-                              </div>
-                              
-                              {/* Level 2 Children (displayed within Level 1 row) */}
-                              {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                              <div key={l2Risk.id} className="flex flex-col gap-0.5 pl-3 border-l-2 border-blue-300 dark:border-blue-600 ml-1 mt-0.5">
-                                  <span className="text-[10px] font-medium text-blue-600 dark:text-blue-400">{l2Risk.id}</span>
-                                  <Tooltip>
-                                    <TooltipTrigger asChild>
-                                      <button 
-                                        onClick={() => handleRiskNameClick(l2Risk)}
-                                      className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer text-[10px]"
-                                    >
-                                      └ {l2Risk.title}
-                                    </button>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Click to view risk assessment and open challenges/issues.</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                                  <span className="text-[10px] text-muted-foreground">{l2Risk.owner}</span>
-                                </div>
-                              ))}
+                              )}
+                              <span className="text-[10px] font-medium text-primary">{risk.id}</span>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button 
+                                    onClick={() => handleRiskNameClick(risk)}
+                                    className="text-left hover:text-primary transition-colors font-medium text-blue-600 dark:text-blue-400 hover:underline cursor-pointer text-[10px]"
+                                  >
+                                    {risk.title}
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <p>Click to view risk assessment and open challenges/issues.</p>
+                                </TooltipContent>
+                              </Tooltip>
+                              <span className="text-[10px] text-muted-foreground">{risk.owner}</span>
+                              <span className={`text-[9px] px-1.5 py-0.5 rounded-md font-medium inline-block w-fit ${getCategoryColor(risk.category)}`}>
+                                {risk.category}
+                              </span>
                             </div>
                           </div>
                         </TableCell>
@@ -2691,11 +2682,6 @@ const Dashboard2ndLine = () => {
                             <Badge className={`${getRiskLevelColor(risk.riskLevel)} w-fit px-1.5 py-0 text-[8px] font-medium`}>
                               {risk.riskLevel}
                             </Badge>
-                            {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
-                              <Badge key={l2Risk.id} className={`${getRiskLevelColor(l2Risk.riskLevel)} w-fit px-1.5 py-0 text-[8px] font-medium`}>
-                                {l2Risk.riskLevel}
-                              </Badge>
-                            ))}
                           </div>
                         </TableCell>
                         {/* Due Date */}
