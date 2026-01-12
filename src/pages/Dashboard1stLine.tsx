@@ -1997,8 +1997,8 @@ const Dashboard1stLine = () => {
               <div className="flex flex-col gap-3">
                 {/* Inherent Risk Ratings Card */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
-                  <CardContent className="p-2.5 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-1.5">
+                  <CardContent className="p-3 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                           <AlertTriangle className="w-3 h-3 text-[#00897B]" />
@@ -2012,69 +2012,69 @@ const Dashboard1stLine = () => {
                       </span>
                     </div>
                     
-                    <div className="flex items-center gap-4 flex-1">
-                      <div className="mb-1">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
-                        <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
+                    {/* "Critical & High" on its own line */}
+                    <div className="mb-3">
+                      <span className="text-2xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                      <span className="text-sm text-muted-foreground ml-2">Critical & High</span>
+                    </div>
+                    
+                    {/* Donut chart centered with legend on right */}
+                    <div className="flex items-center justify-center gap-6 flex-1">
+                      <div className="relative w-24 h-24 flex-shrink-0">
+                        {(() => {
+                          const circumference = 2 * Math.PI * 14;
+                          const total = inherentRiskCounts.total || 1;
+                          const criticalPct = inherentRiskCounts.critical / total;
+                          const highPct = inherentRiskCounts.high / total;
+                          const mediumPct = inherentRiskCounts.medium / total;
+                          const criticalAngle = criticalPct * 360;
+                          const highAngle = highPct * 360;
+                          
+                          return (
+                            <svg viewBox="0 0 36 36" className="w-24 h-24">
+                              <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="#EF4444" strokeWidth="3"
+                                strokeDasharray={`${criticalPct * circumference} ${circumference}`}
+                                transform="rotate(-90 18 18)"
+                              />
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="#F97316" strokeWidth="3"
+                                strokeDasharray={`${highPct * circumference} ${circumference}`}
+                                transform={`rotate(${criticalAngle - 90} 18 18)`}
+                              />
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="#F1BA50" strokeWidth="3"
+                                strokeDasharray={`${mediumPct * circumference} ${circumference}`}
+                                transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
+                              />
+                            </svg>
+                          );
+                        })()}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-xl font-bold text-[#CE7900]">{criticalHighTotal}</span>
+                          <span className="text-[8px] text-muted-foreground">CRIT+HIGH</span>
+                        </div>
                       </div>
                       
-                      {/* Donut chart + Legend - Inline */}
-                      <div className="flex items-center gap-3 flex-1">
-                        <div className="relative w-16 h-16 flex-shrink-0">
-                          {(() => {
-                            const circumference = 2 * Math.PI * 14;
-                            const total = inherentRiskCounts.total || 1;
-                            const criticalPct = inherentRiskCounts.critical / total;
-                            const highPct = inherentRiskCounts.high / total;
-                            const mediumPct = inherentRiskCounts.medium / total;
-                            const criticalAngle = criticalPct * 360;
-                            const highAngle = highPct * 360;
-                            
-                            return (
-                              <svg viewBox="0 0 36 36" className="w-16 h-16">
-                                <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#EF4444" strokeWidth="3"
-                                  strokeDasharray={`${criticalPct * circumference} ${circumference}`}
-                                  transform="rotate(-90 18 18)"
-                                />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#F97316" strokeWidth="3"
-                                  strokeDasharray={`${highPct * circumference} ${circumference}`}
-                                  transform={`rotate(${criticalAngle - 90} 18 18)`}
-                                />
-                                <circle 
-                                  cx="18" cy="18" r="14" fill="none" 
-                                  stroke="#F1BA50" strokeWidth="3"
-                                  strokeDasharray={`${mediumPct * circumference} ${circumference}`}
-                                  transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
-                                />
-                              </svg>
-                            );
-                          })()}
-                          <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-lg font-bold text-success">{criticalHighTotal}</span>
-                          </div>
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
+                          <span className="text-xs text-destructive">Critical</span>
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
                         </div>
-                        
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-destructive" />
-                            <span className="text-[10px] text-destructive">Critical</span>
-                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.critical}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-orange-500" />
-                            <span className="text-[10px] text-orange-500">High</span>
-                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.high}</span>
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-[#F1BA50]" />
-                            <span className="text-[10px] text-[#F1BA50]">Medium</span>
-                            <span className="text-[10px] text-gray-500">{inherentRiskCounts.medium}</span>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-orange-500" />
+                          <span className="text-xs text-orange-500">High</span>
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-[#F1BA50]" />
+                          <span className="text-xs text-[#F1BA50]">Medium</span>
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
                         </div>
                       </div>
                     </div>
@@ -2089,8 +2089,8 @@ const Dashboard1stLine = () => {
 
                 {/* Control Effectiveness Card */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
-                  <CardContent className="p-2.5 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-1">
+                  <CardContent className="p-3 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                           <FileCheck className="w-3 h-3 text-[#00897B]" />
@@ -2102,15 +2102,16 @@ const Dashboard1stLine = () => {
                       <span className="text-xs text-muted-foreground">{effectiveControls} effective</span>
                     </div>
                     
-                    <div className="mb-1">
-                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
-                      <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
+                    {/* "Needing Attention" on its own line */}
+                    <div className="mb-3">
+                      <span className="text-2xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
+                      <span className="text-sm text-muted-foreground ml-2">Needing Attention</span>
                     </div>
                     
-                    {/* Speedometer gauge with needle */}
-                    <div className="flex flex-col items-center mb-2 flex-1 justify-center">
-                      <div className="relative w-28 h-14">
-                        <svg viewBox="0 0 100 55" className="w-28 h-14">
+                    {/* Speedometer gauge with needle - larger and centered */}
+                    <div className="flex flex-col items-center flex-1 justify-center py-2">
+                      <div className="relative w-40 h-20">
+                        <svg viewBox="0 0 100 55" className="w-40 h-20">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2142,17 +2143,17 @@ const Dashboard1stLine = () => {
                           />
                           <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
                         </svg>
-                        <span className="absolute left-0 bottom-0 text-[8px] text-muted-foreground">0%</span>
-                        <span className="absolute right-0 bottom-0 text-[8px] text-muted-foreground">100%</span>
+                        <span className="absolute left-2 bottom-0 text-[9px] text-muted-foreground">0%</span>
+                        <span className="absolute right-2 bottom-0 text-[9px] text-muted-foreground">100%</span>
                       </div>
-                      <div className="text-center">
-                        <span className="text-xl font-bold text-success">{effectivenessPercent}%</span>
-                        <span className="text-[9px] text-muted-foreground block">Effective</span>
+                      <div className="text-center mt-1">
+                        <span className="text-2xl font-bold text-success">{effectivenessPercent}%</span>
+                        <span className="text-xs text-muted-foreground block">Effective</span>
                       </div>
                     </div>
 
-                    {/* Horizontal Stacked Bar Chart */}
-                    <div className="w-full h-2 flex rounded-sm overflow-hidden mb-1">
+                    {/* Horizontal Stacked Bar Chart - taller */}
+                    <div className="w-full h-3 flex rounded-sm overflow-hidden mb-2">
                       <div 
                         className="bg-green-500 h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
@@ -2165,22 +2166,29 @@ const Dashboard1stLine = () => {
                         className="bg-red-500 h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
                       />
+                      <div 
+                        className="bg-gray-400 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? 0 : 0}%` }}
+                      />
                     </div>
 
-                    {/* Legend */}
-                    <div className="flex flex-wrap gap-x-3 text-[8px] text-muted-foreground justify-center">
+                    {/* Legend - spread across full width with N/A */}
+                    <div className="flex justify-between text-[9px] text-muted-foreground px-1">
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}
+                        <span className="w-2.5 h-2.5 rounded-full bg-green-500" /> Effective: {effectiveControls}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
+                        <span className="w-2.5 h-2.5 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
                       </span>
                       <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2.5 h-2.5 rounded-full bg-gray-400" /> N/A: 0
                       </span>
                     </div>
                     
-                    <div className="border-t border-border mt-auto pt-1.5">
+                    <div className="border-t border-border mt-auto pt-2">
                       <p className="text-[9px] text-muted-foreground">
                         Aggregate control effectiveness across all risks.
                       </p>
