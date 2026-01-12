@@ -1717,38 +1717,33 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Pipeline-style status boxes */}
-                    <div className="flex items-center justify-center gap-1 mb-3">
+                    {/* Pipeline-style status boxes */}
+                    <div className="flex items-center justify-center mb-3">
                       {/* PENDING box */}
-                      <div className="bg-yellow-500 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
-                        <div className="text-lg font-bold">{naJustificationsCounts.pending}</div>
-                        <div className="text-[8px] uppercase font-medium">PENDING</div>
+                      <div className="bg-[#FBC02D] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
+                        <div className="text-2xl font-bold">{naJustificationsCounts.pending}</div>
+                        <div className="text-[10px] uppercase font-semibold tracking-wide">PENDING</div>
                       </div>
                       {/* Chevron connector */}
-                      <div className="text-gray-400">
-                        <ChevronRight className="w-3 h-3" />
-                      </div>
+                      <span className="text-gray-300 text-lg mx-0.5">&gt;</span>
                       {/* DRAFTED box */}
-                      <div className="bg-amber-600 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
-                        <div className="text-lg font-bold">{naJustificationsCounts.drafted}</div>
-                        <div className="text-[8px] uppercase font-medium">DRAFTED</div>
+                      <div className="bg-[#E65100] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
+                        <div className="text-2xl font-bold">{naJustificationsCounts.drafted}</div>
+                        <div className="text-[10px] uppercase font-semibold tracking-wide">DRAFTED</div>
                       </div>
                       {/* Chevron connector */}
-                      <div className="text-gray-400">
-                        <ChevronRight className="w-3 h-3" />
-                      </div>
+                      <span className="text-gray-300 text-lg mx-0.5">&gt;</span>
                       {/* AWAITING box */}
-                      <div className="bg-purple-500 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
-                        <div className="text-lg font-bold">{naJustificationsCounts.awaiting}</div>
-                        <div className="text-[8px] uppercase font-medium">AWAITING</div>
+                      <div className="bg-[#7E57C2] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
+                        <div className="text-2xl font-bold">{naJustificationsCounts.awaiting}</div>
+                        <div className="text-[10px] uppercase font-semibold tracking-wide">AWAITING</div>
                       </div>
                       {/* Chevron connector */}
-                      <div className="text-gray-400">
-                        <ChevronRight className="w-3 h-3" />
-                      </div>
+                      <span className="text-gray-300 text-lg mx-0.5">&gt;</span>
                       {/* APPROVED box */}
-                      <div className="bg-green-500 text-white px-4 py-3 text-center min-w-[70px] rounded-lg">
-                        <div className="text-lg font-bold">{naJustificationsCounts.approved}</div>
-                        <div className="text-[8px] uppercase font-medium">APPROVED</div>
+                      <div className="bg-[#43A047] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
+                        <div className="text-2xl font-bold">{naJustificationsCounts.approved}</div>
+                        <div className="text-[10px] uppercase font-semibold tracking-wide">APPROVED</div>
                       </div>
                     </div>
                     
