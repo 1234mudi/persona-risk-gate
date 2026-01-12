@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from "react";
+import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import {
@@ -38,6 +38,12 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 interface RiskAssessmentTaskModalProps {
   open: boolean;
@@ -157,6 +163,7 @@ export function RiskAssessmentTaskModal({
   const [scopeData, setScopeData] = useState<OrganizationRiskScope[]>([]);
   const [expandedOrgs, setExpandedOrgs] = useState<string[]>([]);
   const [assessmentScopeOpen, setAssessmentScopeOpen] = useState(true);
+  const assessmentScopeRef = useRef<HTMLDivElement>(null);
 
   // Reset all state when modal opens to ensure fresh form
   useEffect(() => {
@@ -203,6 +210,14 @@ export function RiskAssessmentTaskModal({
     setScopeData(scopeCopy);
     // Expand all organizations by default
     setExpandedOrgs(scopeCopy.map((org) => org.id));
+    
+    // Auto-scroll to Assessment Scope section
+    setTimeout(() => {
+      assessmentScopeRef.current?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
+    }, 100);
   };
 
   const handleSelectionModeChange = (mode: "inherit" | "manual") => {
@@ -334,14 +349,23 @@ export function RiskAssessmentTaskModal({
             >
               CLOSE
             </Button>
-            <Button
-              size="sm"
-              onClick={handleSubmit}
-              disabled={!canProceed}
-              className="h-6 px-2 text-[10px]"
-            >
-              PROCEED
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    size="sm"
+                    onClick={handleSubmit}
+                    disabled={!canProceed}
+                    className="h-6 px-2 text-[10px]"
+                  >
+                    PROCEED
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent side="bottom">
+                  <p className="text-xs">Click to launch the risk assessment form</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
 
@@ -409,10 +433,11 @@ export function RiskAssessmentTaskModal({
 
             {/* Show Assessment Scope section when a plan is selected */}
             {selectionMode === "inherit" && selectedPlanId && scopeData.length > 0 && (
-              <Collapsible
-                open={assessmentScopeOpen}
-                onOpenChange={setAssessmentScopeOpen}
-              >
+              <div ref={assessmentScopeRef}>
+                <Collapsible
+                  open={assessmentScopeOpen}
+                  onOpenChange={setAssessmentScopeOpen}
+                >
                 <CollapsibleTrigger className="flex items-center gap-2 w-full text-left font-semibold text-sm text-foreground border-l-[3px] border-primary pl-2 py-1 bg-muted/40 rounded-r-sm hover:bg-muted/60 transition-colors">
                   {assessmentScopeOpen ? (
                     <ChevronDown className="w-4 h-4 text-primary" />
@@ -559,6 +584,7 @@ export function RiskAssessmentTaskModal({
                   )}
                 </CollapsibleContent>
               </Collapsible>
+              </div>
             )}
           </div>
         </div>
