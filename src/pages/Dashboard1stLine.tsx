@@ -1575,22 +1575,22 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Donut chart + Progress bars */}
-                    <div className="flex gap-4">
+                    <div className="flex gap-4 items-center">
                       {/* Donut chart */}
                       <div className="relative w-16 h-16 flex-shrink-0">
                         <svg viewBox="0 0 36 36" className="w-16 h-16">
                           {/* Background circle - Gray track for incomplete */}
                           <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                          {/* Progress circle - GREEN for complete */}
+                          {/* Progress circle - RED for complete portion */}
                           <circle 
                             cx="18" cy="18" r="15.9" fill="none" 
-                            stroke="hsl(143 57% 43%)" strokeWidth="3"
+                            stroke="#EF4444" strokeWidth="3"
                             strokeDasharray={`${completionPercent} ${100 - completionPercent}`}
                             strokeDashoffset="25"
                           />
                         </svg>
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-base font-bold text-success">{completionPercent}%</span>
+                          <span className="text-base font-bold text-destructive">{completionPercent}%</span>
                           <span className="text-[7px] text-muted-foreground uppercase">Complete</span>
                         </div>
                       </div>
@@ -1599,32 +1599,32 @@ const Dashboard1stLine = () => {
                       <div className="flex-1 space-y-2">
                         <div>
                           <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">DEADLINE STATUS</span>
-                          <div className="flex h-2 overflow-hidden mt-0.5">
+                          <div className="flex h-2 overflow-hidden mt-0.5 rounded-full shadow-sm">
                             {assessmentStatusCounts.overdue > 0 && (
-                              <div className="bg-destructive" style={{width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} />
+                              <div className="bg-destructive first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} />
                             )}
                             {assessmentStatusCounts.dueThisWeek > 0 && (
-                              <div className="bg-warning" style={{width: `${(assessmentStatusCounts.dueThisWeek / totalAssessments) * 100}%`}} />
+                              <div className="bg-warning first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.dueThisWeek / totalAssessments) * 100}%`}} />
                             )}
                             {assessmentStatusCounts.dueThisMonth > 0 && (
-                              <div className="bg-success" style={{width: `${(assessmentStatusCounts.dueThisMonth / totalAssessments) * 100}%`}} />
+                              <div className="bg-success first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.dueThisMonth / totalAssessments) * 100}%`}} />
                             )}
                           </div>
                         </div>
                         <div>
                           <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">WORKFLOW PROGRESS</span>
-                          <div className="flex h-2 overflow-hidden mt-0.5">
+                          <div className="flex h-2 overflow-hidden mt-0.5 rounded-full shadow-sm">
                             {assessmentStatusCounts.completed > 0 && (
-                              <div className="bg-success" style={{width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} />
+                              <div className="bg-success first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} />
                             )}
                             {assessmentStatusCounts.pendingApproval > 0 && (
-                              <div className="bg-[#A361CF]" style={{width: `${(assessmentStatusCounts.pendingApproval / totalAssessments) * 100}%`}} />
+                              <div className="bg-[#A361CF] first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.pendingApproval / totalAssessments) * 100}%`}} />
                             )}
                             {assessmentStatusCounts.inProgress > 0 && (
-                              <div className="bg-warning" style={{width: `${(assessmentStatusCounts.inProgress / totalAssessments) * 100}%`}} />
+                              <div className="bg-warning first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.inProgress / totalAssessments) * 100}%`}} />
                             )}
                             {assessmentStatusCounts.notStarted > 0 && (
-                              <div className="bg-destructive" style={{width: `${(assessmentStatusCounts.notStarted / totalAssessments) * 100}%`}} />
+                              <div className="bg-destructive first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.notStarted / totalAssessments) * 100}%`}} />
                             )}
                           </div>
                         </div>
