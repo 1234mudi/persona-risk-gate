@@ -1026,9 +1026,15 @@ const Dashboard2ndLine = () => {
         { label: "Loss Events", value: agingMetrics.bySource['Loss Events'], sublabel: `${agingMetrics.bySource['Loss Events']} Loss Events`, color: "bg-warning" },
         { label: "Control Testing", value: agingMetrics.bySource['Control Testing'], sublabel: `${agingMetrics.bySource['Control Testing']} Control Testing`, color: "bg-accent" },
       ],
-      description: "Aged issues by originating source. Prioritize high-volume sources.",
-      tooltip: "Shows the distribution of aged issues by their originating source. Use this to identify which processes are generating the most backlog.",
-      interpretation: "Longer bars indicate more aged issues from that source. Use this to prioritize remediation by targeting high-volume sources first.",
+      criticalitySegments: [
+        { label: "Critical", value: agingMetrics.byCriticality.critical, sublabel: `${agingMetrics.byCriticality.critical} Critical`, color: "bg-red-600" },
+        { label: "High", value: agingMetrics.byCriticality.high, sublabel: `${agingMetrics.byCriticality.high} High`, color: "bg-orange-500" },
+        { label: "Medium", value: agingMetrics.byCriticality.medium, sublabel: `${agingMetrics.byCriticality.medium} Medium`, color: "bg-yellow-500" },
+        { label: "Low", value: agingMetrics.byCriticality.low, sublabel: `${agingMetrics.byCriticality.low} Low`, color: "bg-green-500" },
+      ],
+      description: "Aged issues by originating source and criticality. Prioritize critical issues first.",
+      tooltip: "Shows the distribution of aged issues by their originating source and criticality level. Use this to identify which processes are generating the most backlog and prioritize by severity.",
+      interpretation: "By Source: Longer bars indicate more aged issues. By Criticality: Red/Orange require immediate attention. Target critical issues first, then high-volume sources.",
     },
   ];
 
@@ -2089,9 +2095,35 @@ const Dashboard2ndLine = () => {
                         );
                       })}
                     </div>
-                    {/* Legend */}
-                    <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-1">
+                    {/* By Source Legend */}
+                    <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-2">
                       {(metrics[5].segments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => (
+                        <div key={idx} className="flex items-center gap-0.5">
+                          <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
+                          <span className="text-[9px] font-medium text-muted-foreground">
+                            {segment.sublabel || segment.label}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                    {/* By Criticality Section */}
+                    <p className="text-[8px] text-muted-foreground uppercase tracking-wide mb-0.5">By Criticality</p>
+                    <div className="flex h-1.5 rounded overflow-hidden mb-1">
+                      {((metrics[5] as any).criticalitySegments as Array<{ label: string; value: number; color: string }>).map((segment, idx) => {
+                        const total = ((metrics[5] as any).criticalitySegments as Array<{ value: number }>).reduce((acc, s) => acc + s.value, 0);
+                        const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                        return (
+                          <div
+                            key={idx}
+                            className={segment.color}
+                            style={{ width: `${percentage}%` }}
+                          />
+                        );
+                      })}
+                    </div>
+                    {/* By Criticality Legend */}
+                    <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-1">
+                      {((metrics[5] as any).criticalitySegments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => (
                         <div key={idx} className="flex items-center gap-0.5">
                           <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
                           <span className="text-[9px] font-medium text-muted-foreground">
