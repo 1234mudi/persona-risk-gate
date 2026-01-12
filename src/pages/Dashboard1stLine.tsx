@@ -1576,8 +1576,8 @@ const Dashboard1stLine = () => {
                       {/* Donut chart */}
                       <div className="relative w-16 h-16 flex-shrink-0">
                         <svg viewBox="0 0 36 36" className="w-16 h-16">
-                          {/* Background circle - RED for incomplete */}
-                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(0 84% 60%)" strokeWidth="3" />
+                          {/* Background circle - Gray track for incomplete */}
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                           {/* Progress circle - GREEN for complete */}
                           <circle 
                             cx="18" cy="18" r="15.9" fill="none" 
