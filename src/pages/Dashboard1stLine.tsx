@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity, Lightbulb } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
@@ -1781,6 +1781,7 @@ const Dashboard1stLine = () => {
                           </span>
                         </div>
                         <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                          EXPAND
                           <ChevronDown className="w-4 h-4" />
                         </button>
                       </div>
@@ -1821,14 +1822,20 @@ const Dashboard1stLine = () => {
                       {/* Simple legend */}
                       <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
                         <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 bg-red-500" /> Pending
+                          <span className="w-2 h-2 rounded-full bg-red-500" /> Pending
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 bg-yellow-400" /> In Triage
+                          <span className="w-2 h-2 rounded-full bg-yellow-400" /> In Triage
                         </span>
                         <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 bg-green-500" /> Closed
+                          <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
                         </span>
+                      </div>
+                      
+                      <div className="border-t border-border mt-3 pt-2">
+                        <p className="text-[9px] text-muted-foreground">
+                          Monitor loss events requiring triage and analysis.
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -1845,44 +1852,65 @@ const Dashboard1stLine = () => {
                             AI ROOT CAUSE
                           </span>
                         </div>
-                        <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                          <ChevronDown className="w-4 h-4" />
+                        <button className="flex items-center gap-1 text-xs text-primary cursor-not-allowed font-medium">
+                          <Sparkles className="w-3 h-3" />
+                          EXPAND
                         </button>
                       </div>
                       
-                      <div className="mb-1">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">3</span>
-                        <span className="text-sm text-muted-foreground ml-1">Mapped Events</span>
-                      </div>
-                      
-                      {/* Event header */}
-                      <div className="flex items-center justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-blue-500" />
-                          <span className="text-xs font-medium text-foreground">LE-2025-001</span>
-                        </div>
-                        <span className="text-[9px] text-muted-foreground">Jan 8, 2025</span>
-                      </div>
-
-                      {/* Full-width solid colored boxes */}
-                      <div className="space-y-1.5">
+                      {/* Timeline layout */}
+                      <div className="relative pl-4 space-y-2 mt-3">
+                        {/* Vertical connector line */}
+                        <div className="absolute left-[7px] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-700" />
+                        
                         {/* ROOT CAUSE */}
-                        <div className="bg-red-500 text-white px-2 py-1.5 flex items-center gap-1.5">
-                          <AlertCircle className="w-3 h-3" />
-                          <span className="text-[9px] font-semibold">ROOT CAUSE</span>
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center z-10">
+                            <AlertCircle className="w-2.5 h-2.5 text-red-500" />
+                          </div>
+                          <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-red-700 dark:text-red-400">ROOT CAUSE</span>
+                            <p className="text-[8px] text-red-600 dark:text-red-400/80 mt-0.5 line-clamp-1">
+                              Inadequate system access controls allowed...
+                            </p>
+                          </div>
                         </div>
                         
                         {/* CONTRIBUTING FACTORS */}
-                        <div className="bg-yellow-400 text-white px-2 py-1.5 flex items-center gap-1.5">
-                          <AlertTriangle className="w-3 h-3" />
-                          <span className="text-[9px] font-semibold">3 CONTRIBUTING FACTORS</span>
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center z-10">
+                            <Target className="w-2.5 h-2.5 text-yellow-600" />
+                          </div>
+                          <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-yellow-700 dark:text-yellow-400">3 CONTRIBUTING FACTORS</span>
+                          </div>
                         </div>
                         
                         {/* FAILED CONTROLS */}
-                        <div className="bg-orange-500 text-white px-2 py-1.5 flex items-center gap-1.5">
-                          <XCircle className="w-3 h-3" />
-                          <span className="text-[9px] font-semibold">2 FAILED CONTROLS</span>
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center z-10">
+                            <XCircle className="w-2.5 h-2.5 text-orange-500" />
+                          </div>
+                          <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-orange-700 dark:text-orange-400">2 FAILED CONTROLS</span>
+                          </div>
                         </div>
+                        
+                        {/* ACTIONS */}
+                        <div className="relative flex items-start gap-2">
+                          <div className="absolute -left-4 w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center z-10">
+                            <Lightbulb className="w-2.5 h-2.5 text-green-500" />
+                          </div>
+                          <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded px-2 py-1.5">
+                            <span className="text-[9px] font-semibold text-green-700 dark:text-green-400">2 ACTIONS</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-border mt-3 pt-2">
+                        <p className="text-[9px] text-muted-foreground">
+                          AI-analyzed causal chains for <span className="underline cursor-pointer">loss events</span>.
+                        </p>
                       </div>
                     </CardContent>
                   </Card>
@@ -1918,9 +1946,15 @@ const Dashboard1stLine = () => {
                       <div className="bg-[#F1BA50]" style={{width: `${(driftAlertsCounts.medium / 3) * 100}%`}} />
                     </div>
                     <div className="flex gap-3 text-[9px] text-muted-foreground">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-warning"></span> High: {driftAlertsCounts.high}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-warning"></span> High: {driftAlertsCounts.high}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-full bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
+                    </div>
+                    
+                    <div className="border-t border-border mt-3 pt-2">
+                      <p className="text-[9px] text-muted-foreground">
+                        Address rating variances flagged by AI analysis.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
@@ -2150,60 +2184,75 @@ const Dashboard1stLine = () => {
 
                 {/* Remediation Tasks Card - Proportional Bars with Track */}
                 <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                          <CheckSquare className="w-4 h-4 text-[#00897B]" />
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <CheckSquare className="w-3 h-3 text-[#00897B]" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                           REMEDIATION TASKS
                         </span>
                       </div>
                       <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
-                        CLICK TO EXPAND
+                        EXPAND
                         <ChevronDown className="w-4 h-4" />
                       </button>
                     </div>
                     
-                    <div className="flex items-center justify-between mb-3">
-                      <div>
-                        <span className="text-2xl font-bold text-foreground">{remediationTasksCounts.open}</span>
-                        <span className="text-sm text-muted-foreground ml-1">Open Tasks</span>
-                      </div>
-                      <span className="text-xs text-destructive">1 critical</span>
+                    <div className="mb-1">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{remediationTasksCounts.open}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Open Tasks</span>
                     </div>
                     
-                    {/* Horizontal bar chart - proportional bars with track */}
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-muted-foreground w-20">Open</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-red-500" style={{width: '100%'}} />
-                        </div>
-                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.open}</span>
+                    {/* Horizontal stacked bar */}
+                    <div className="flex h-7 overflow-hidden mb-2">
+                      <div 
+                        className="bg-red-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.open / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.open}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-muted-foreground w-20">In Progress</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-orange-500" style={{width: '80%'}} />
-                        </div>
-                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.inProgress}</span>
+                      <div 
+                        className="bg-orange-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.inProgress / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.inProgress}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-muted-foreground w-20">Validation</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-blue-500" style={{width: '70%'}} />
-                        </div>
-                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.validation}</span>
+                      <div 
+                        className="bg-blue-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.validation / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.validation}
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-muted-foreground w-20">Closed</span>
-                        <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 relative">
-                          <div className="absolute inset-y-0 left-0 h-4 bg-gray-400" style={{width: '10%'}} />
-                        </div>
-                        <span className="text-[10px] text-foreground w-4 text-right">{remediationTasksCounts.closed}</span>
+                      <div 
+                        className="bg-green-500 flex items-center justify-center text-white text-sm font-bold"
+                        style={{width: `${(remediationTasksCounts.closed / (remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed)) * 100}%`}}
+                      >
+                        {remediationTasksCounts.closed}
                       </div>
+                    </div>
+                    
+                    {/* Legend */}
+                    <div className="flex flex-wrap gap-2 text-[8px] text-muted-foreground">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-red-500" /> Open
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-orange-500" /> In Progress
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-blue-500" /> Validation
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-500" /> Closed
+                      </span>
+                    </div>
+                    
+                    <div className="border-t border-border mt-3 pt-2">
+                      <p className="text-[9px] text-muted-foreground">
+                        Track remediation progress across all risks.
+                      </p>
                     </div>
                   </CardContent>
                 </Card>
