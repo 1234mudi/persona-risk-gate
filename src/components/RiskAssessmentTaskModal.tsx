@@ -393,21 +393,23 @@ export function RiskAssessmentTaskModal({
                 </div>
               </div>
 
-              {/* Option 2: Select a Risk to begin Assessment */}
-              <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
-                <RadioGroupItem value="manual" id="manual" className="mt-0.5" />
-                <div className="space-y-0.5">
-                  <Label
-                    htmlFor="manual"
-                    className="text-primary font-medium text-xs cursor-pointer"
-                  >
-                    Select a Risk to begin Assessment
-                  </Label>
-                  <p className="text-[10px] text-muted-foreground">
-                    Manually select a specific risk to assess.
-                  </p>
+              {/* Option 2: Select a Risk to begin Assessment - hidden when inherit is selected */}
+              {selectionMode !== "inherit" && (
+                <div className="flex items-start gap-2 p-3 border rounded bg-muted/20">
+                  <RadioGroupItem value="manual" id="manual" className="mt-0.5" />
+                  <div className="space-y-0.5">
+                    <Label
+                      htmlFor="manual"
+                      className="text-primary font-medium text-xs cursor-pointer"
+                    >
+                      Select a Risk to begin Assessment
+                    </Label>
+                    <p className="text-[10px] text-muted-foreground">
+                      Manually select a specific risk to assess.
+                    </p>
+                  </div>
                 </div>
-              </div>
+              )}
             </RadioGroup>
 
             {/* Show Risk Assessment Plan dropdown when inherit mode is selected */}
