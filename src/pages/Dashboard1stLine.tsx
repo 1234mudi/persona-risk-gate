@@ -1962,7 +1962,7 @@ const Dashboard1stLine = () => {
                   </Card>
 
                   {/* Column 3: Control Effectiveness + Remediation Tasks stacked */}
-                  <div className="flex flex-col gap-3">
+                  <div className="flex flex-col gap-3 h-full">
                     {/* Control Effectiveness Card */}
                     <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                       <CardContent className="p-2.5">
