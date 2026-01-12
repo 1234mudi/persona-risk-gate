@@ -2050,20 +2050,28 @@ const Dashboard1stLine = () => {
                     <div className="flex flex-col items-center mb-3">
                       <div className="relative w-32 h-16">
                         <svg viewBox="0 0 100 55" className="w-32 h-16">
-                          {/* Background arc (gray) */}
+                          {/* Gradient definition */}
+                          <defs>
+                            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                              <stop offset="0%" stopColor="hsl(143 57% 43%)" />
+                              <stop offset="100%" stopColor="hsl(143 57% 55%)" />
+                            </linearGradient>
+                          </defs>
+                          
+                          {/* Background arc (light teal) */}
                           <path 
                             d="M 10 50 A 40 40 0 0 1 90 50" 
                             fill="none" 
-                            stroke="hsl(var(--muted))" 
+                            stroke="hsl(143 30% 85%)" 
                             strokeWidth="6"
                             strokeLinecap="round"
                           />
                           
-                          {/* Green progress arc */}
+                          {/* Green progress arc with gradient */}
                           <path 
                             d="M 10 50 A 40 40 0 0 1 90 50" 
                             fill="none" 
-                            stroke="hsl(143 57% 43%)" 
+                            stroke="url(#gaugeGradient)" 
                             strokeWidth="6"
                             strokeLinecap="round"
                             strokeDasharray={`${(effectivenessPercent / 100) * 126} 126`}
@@ -2077,6 +2085,14 @@ const Dashboard1stLine = () => {
                             stroke="hsl(143 57% 43%)" 
                             strokeWidth="2"
                             strokeLinecap="round"
+                          />
+                          
+                          {/* Needle tip dot */}
+                          <circle 
+                            cx={50 + 30 * Math.cos(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
+                            cy={50 - 30 * Math.sin(Math.PI - (effectivenessPercent / 100) * Math.PI)} 
+                            r="3" 
+                            fill="hsl(143 57% 43%)" 
                           />
                           
                           {/* Center dot */}
@@ -2095,12 +2111,40 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
 
-                    {/* Legend with N/A */}
-                    <div className="flex flex-wrap gap-x-3 text-[9px] text-muted-foreground justify-center">
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-green-500" /> Effective: {effectiveControls}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}</span>
-                      <span className="flex items-center gap-1"><span className="w-2 h-2 bg-gray-400" /> N/A: 0</span>
+                    {/* Horizontal Stacked Bar Chart */}
+                    <div className="w-full h-2 flex rounded-sm overflow-hidden mb-2">
+                      <div 
+                        className="bg-green-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
+                      />
+                      <div 
+                        className="bg-yellow-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
+                      />
+                      <div 
+                        className="bg-red-500 h-full" 
+                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
+                      />
+                      <div 
+                        className="bg-gray-300 h-full" 
+                        style={{ width: '0%' }}
+                      />
+                    </div>
+
+                    {/* Legend below bar chart */}
+                    <div className="flex flex-wrap gap-x-4 text-[9px] text-muted-foreground justify-center">
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-green-500" /> Effective: {effectiveControls}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-yellow-500" /> Partial: {controlEvidenceCounts.partiallyEffective}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-red-500" /> Ineffective: {controlEvidenceCounts.ineffective}
+                      </span>
+                      <span className="flex items-center gap-1">
+                        <span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0
+                      </span>
                     </div>
                     
                     <p className="text-[9px] text-muted-foreground mt-2">
