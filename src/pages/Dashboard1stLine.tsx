@@ -2088,7 +2088,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Control Effectiveness Card */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-[260px]">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-[280px]">
                   <CardContent className="p-3 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -2197,7 +2197,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card */}
-                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none flex-1">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none h-[230px]">
                   <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
