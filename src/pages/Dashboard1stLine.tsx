@@ -2034,8 +2034,8 @@ const Dashboard1stLine = () => {
               {/* Right Column - 50% with equal height cards */}
               <div className="flex flex-col gap-3">
                 {/* Inherent Risk Ratings Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
-                  <CardContent className="p-3 h-full flex flex-col">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[280px]">
+                  <CardContent className="p-4 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
