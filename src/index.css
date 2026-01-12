@@ -14,8 +14,8 @@ All colors MUST be HSL.
     --background-secondary: 252 9% 91%; /* #E7E6EA - Background.Secondary */
     --background-tertiary: 0 0% 81%;   /* #CECECE - Background.Tertiary */
 
-    /* Foreground/Text Colors - from Color Guide */
-    --foreground: 141 78% 29%;         /* #10852F - Text.Primary */
+    /* Foreground/Text Colors - Dark/Black for readability */
+    --foreground: 210 17% 15%;         /* Dark gray/black for text */
 
     /* Card Colors */
     --card: 0 0% 100%;
