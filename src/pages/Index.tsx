@@ -33,14 +33,14 @@ const Index = () => {
     {
       icon: ClipboardCheck,
       name: "1st Line Risk Analyst",
-      description: "Your daily dashboard for managing risks. See what needs attention, upload documents, and keep your department on track.",
+      description: "Complete and track your risk assessments. Monitor deadlines, rate inherent and residual risks, and submit for 2nd Line review.",
       line: "first" as const,
       route: "/dashboard/1st-line-analyst",
     },
     {
       icon: BarChart3,
       name: "2nd Line Risk Analyst",
-      description: "See the big picture across all business units. Review submissions, spot gaps, and ensure consistent quality company-wide.",
+      description: "Oversee enterprise risk across all business units. Challenge assessments, monitor risk appetite, and approve submissions company-wide.",
       line: "second" as const,
       route: "/dashboard/2nd-line-analyst",
     },
