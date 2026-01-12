@@ -1539,22 +1539,23 @@ const Dashboard1stLine = () => {
               {/* Left Column */}
               <div className="space-y-3">
                 {/* Assessment Status Card */}
-                <Card className="border border-border shadow-sm bg-card">
+                <Card className="border border-border shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <CalendarCheck className="w-4 h-4 text-muted-foreground" />
+                        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
+                          <CalendarCheck className="w-3.5 h-3.5 text-green-600" />
+                        </div>
                         <span className="text-xs font-bold uppercase tracking-wide text-foreground">
                           ASSESSMENT STATUS
                         </span>
                       </div>
                       <button 
                         onClick={() => toggleCardExpand('assessment')}
-                        className="flex items-center gap-1 text-xs font-medium text-muted-foreground hover:text-foreground"
+                        className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide"
                       >
                         CLICK TO EXPAND
-                        <Check className="w-4 h-4" />
-                        <ChevronDown className={cn("w-4 h-4 transition-transform", 
+                        <ChevronDown className={cn("w-3 h-3 transition-transform", 
                           expandedCard === 'assessment' && "rotate-180")} />
                       </button>
                     </div>
@@ -1627,24 +1628,26 @@ const Dashboard1stLine = () => {
                         </div>
                         <div className="flex flex-wrap gap-x-3 gap-y-0 text-[9px] text-muted-foreground">
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 bg-green-500" />
+                            <span className="w-2 h-2 rounded-full bg-green-500" />
                             {assessmentStatusCounts.completed} Done
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 bg-red-500" />
+                            <span className="w-2 h-2 rounded-full bg-red-500" />
                             {assessmentStatusCounts.overdue} Overdue
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 bg-yellow-500" />
+                            <span className="w-2 h-2 rounded-full bg-yellow-500" />
                             {assessmentStatusCounts.inProgress} In Progress
                           </span>
                         </div>
                       </div>
                     </div>
                     
-                    <p className="text-[9px] text-muted-foreground mt-2">
-                      Track assessment deadlines and workflow progress.
-                    </p>
+                    <div className="border-t border-gray-200 dark:border-gray-700 mt-3 pt-2">
+                      <p className="text-[9px] text-muted-foreground">
+                        Track assessment deadlines and workflow progress.
+                      </p>
+                    </div>
                     
                     {/* Expandable dropdown - shows risk table */}
                     {expandedCard === 'assessment' && (
