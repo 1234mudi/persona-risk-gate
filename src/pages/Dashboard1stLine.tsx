@@ -1535,10 +1535,11 @@ const Dashboard1stLine = () => {
           const criticalHighTotal = inherentRiskCounts.critical + inherentRiskCounts.high;
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3 mb-4">
-              {/* Row 1: Assessment Status (spans cols 1-2) + Inherent Risk (col 3) */}
-              {/* Assessment Status Card - spans 2 columns */}
-              <Card className="lg:col-span-2 border border-[#00897B] shadow-sm bg-card rounded-none">
+            <div className="space-y-3 mb-4">
+              {/* Top section: 2-column grid for equal width cards */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
+                {/* Assessment Status Card */}
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-2.5">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -1784,9 +1785,8 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
-                {/* Row 2: N/A Justifications (spans cols 1-2) + Control Effectiveness (col 3) */}
                 {/* N/A Justifications Card - Pipeline Flow Design */}
-                <Card className="lg:col-span-2 border border-[#00897B] shadow-sm bg-card rounded-none">
+                <Card className="border border-[#00897B] shadow-sm bg-card rounded-none">
                   <CardContent className="p-2.5">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -1958,8 +1958,10 @@ const Dashboard1stLine = () => {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
 
-                {/* Row 3: Loss Events + Drift (col 1) | AI Root Cause (col 2) | Remediation (col 3) */}
+              {/* Bottom section: 3-column grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-3">
                 {/* Column 1: Loss Events + Drift Alerts stacked */}
                 <div className="flex flex-col gap-3">
                   {/* Loss Events Card - Compact */}
@@ -2227,6 +2229,7 @@ const Dashboard1stLine = () => {
                     </div>
                   </CardContent>
                 </Card>
+              </div>
             </div>
           );
         })()}
