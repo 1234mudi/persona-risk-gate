@@ -1508,7 +1508,7 @@ const Dashboard2ndLine = () => {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4">
           {/* Left Column - Metrics Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-          {[0, 1, 2, 3, 5].map((metricIndex, orderIndex) => {
+          {[0, 1, 2, 3, 4].map((metricIndex, orderIndex) => {
             const metric = metrics[metricIndex];
             // Grid positions for sm+ screens within nested grid
             const gridPositions = [
@@ -2044,7 +2044,7 @@ const Dashboard2ndLine = () => {
           
           {/* Right Column - Issues Velocity + Heatmaps stacked */}
           <div className="flex flex-col gap-2">
-            {/* Issues Velocity & Efficiency - moved from left column */}
+            {/* Issue Aging by Source - moved from left column */}
             <Tooltip>
               <TooltipTrigger asChild>
                 <Card className="border border-border/50 dark:border-border shadow-sm hover:shadow-md transition-all duration-200 bg-card dark:bg-card cursor-pointer rounded-none">
@@ -2053,32 +2053,32 @@ const Dashboard2ndLine = () => {
                     <div className="flex items-start justify-between mb-1.5">
                       <div className="flex items-center gap-1.5">
                         <div className="p-1 rounded bg-primary/10 dark:bg-primary/20">
-                          <Timer className="w-3.5 h-3.5 text-primary" />
+                          <Clock className="w-3.5 h-3.5 text-primary" />
                         </div>
                         <div>
                           <h3 className="text-[10px] font-bold uppercase tracking-wide text-[#10052F] dark:text-white leading-tight">
-                            {metrics[4].title}
+                            {metrics[5].title}
                           </h3>
-                          <span className="text-[8px] text-muted-foreground">{metrics[4].subLabel}</span>
+                          <span className="text-[8px] text-muted-foreground">{metrics[5].subLabel}</span>
                         </div>
                       </div>
-                      <Badge variant={metrics[4].trendUp ? "default" : "destructive"} className="text-[7px] px-1 py-0 h-3.5 rounded-none">
-                        {metrics[4].trend}
+                      <Badge variant={metrics[5].trendUp ? "default" : "destructive"} className="text-[7px] px-1 py-0 h-3.5 rounded-none">
+                        {metrics[5].trend}
                       </Badge>
                     </div>
                     {/* Big Number */}
                     <div className="mb-2">
                       <span className="text-2xl font-bold text-[#10052F] dark:text-white leading-none">
-                        {metrics[4].value}
+                        {metrics[5].value}
                       </span>
-                      {metrics[4].valueSuffix && (
-                        <span className="text-lg text-muted-foreground ml-0.5">{metrics[4].valueSuffix}</span>
+                      {metrics[5].valueSuffix && (
+                        <span className="text-lg text-muted-foreground ml-0.5">{metrics[5].valueSuffix}</span>
                       )}
                     </div>
                     {/* Progress bar */}
                     <div className="flex h-1.5 rounded overflow-hidden mb-1">
-                      {(metrics[4].segments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => {
-                        const total = (metrics[4].segments as Array<{ value: number }>).reduce((acc, s) => acc + s.value, 0);
+                      {(metrics[5].segments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => {
+                        const total = (metrics[5].segments as Array<{ value: number }>).reduce((acc, s) => acc + s.value, 0);
                         const percentage = total > 0 ? (segment.value / total) * 100 : 0;
                         return (
                           <div
@@ -2091,7 +2091,7 @@ const Dashboard2ndLine = () => {
                     </div>
                     {/* Legend */}
                     <div className="flex flex-wrap gap-x-1.5 gap-y-0.5 mb-1">
-                      {(metrics[4].segments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => (
+                      {(metrics[5].segments as Array<{ label: string; value: number; sublabel: string; color: string }>).map((segment, idx) => (
                         <div key={idx} className="flex items-center gap-0.5">
                           <div className={`w-1.5 h-1.5 rounded-sm ${segment.color}`} />
                           <span className="text-[9px] font-medium text-muted-foreground">
@@ -2100,17 +2100,17 @@ const Dashboard2ndLine = () => {
                         </div>
                       ))}
                     </div>
-                    <p className="text-[10px] text-muted-foreground leading-tight">{metrics[4].description}</p>
-                    {'interpretation' in metrics[4] && metrics[4].interpretation && (
+                    <p className="text-[10px] text-muted-foreground leading-tight">{metrics[5].description}</p>
+                    {'interpretation' in metrics[5] && metrics[5].interpretation && (
                       <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                        How to read: {(metrics[4] as { interpretation: string }).interpretation}
+                        How to read: {(metrics[5] as { interpretation: string }).interpretation}
                       </p>
                     )}
                   </CardContent>
                 </Card>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="max-w-xs">
-                <p className="text-sm">{metrics[4].tooltip}</p>
+                <p className="text-sm">{metrics[5].tooltip}</p>
               </TooltipContent>
             </Tooltip>
 
