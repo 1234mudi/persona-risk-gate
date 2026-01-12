@@ -1788,12 +1788,19 @@ const Dashboard1stLine = () => {
                             </span>
                           </div>
                           <button 
-                            onClick={() => setIsLossEventsExpanded(!isLossEventsExpanded)}
+                            onClick={() => {
+                              setIsLossEventsExpanded(!isLossEventsExpanded);
+                              if (!isLossEventsExpanded) {
+                                setTimeout(() => {
+                                  lossEventsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }, 100);
+                              }
+                            }}
                             className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                           >
                             CLICK TO EXPAND
                             <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                              <ChevronDown className={`w-3 h-3 transition-transform ${isLossEventsExpanded ? 'rotate-180' : ''}`} />
+                              <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isLossEventsExpanded && "rotate-180")} />
                             </div>
                           </button>
                         </div>
