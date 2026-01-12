@@ -1944,31 +1944,48 @@ const Dashboard1stLine = () => {
                     {/* Donut chart + Legend - Centered larger donut */}
                     <div className="flex items-center justify-center gap-6">
                       <div className="relative w-28 h-28 flex-shrink-0">
-                        <svg viewBox="0 0 36 36" className="w-28 h-28">
-                          {/* Critical slice */}
-                          <circle 
-                            cx="18" cy="18" r="10" fill="none" 
-                            stroke="hsl(2 88% 60%)" strokeWidth="8"
-                            strokeDasharray={`${(inherentRiskCounts.critical / inherentRiskCounts.total) * 62.8} 62.8`}
-                            strokeDashoffset="15.7"
-                          />
-                          {/* High slice - Orange theme */}
-                          <circle 
-                            cx="18" cy="18" r="10" fill="none" 
-                            stroke="hsl(30 100% 50%)" strokeWidth="8"
-                            strokeDasharray={`${(inherentRiskCounts.high / inherentRiskCounts.total) * 62.8} 62.8`}
-                            strokeDashoffset={`${15.7 - (inherentRiskCounts.critical / inherentRiskCounts.total) * 62.8}`}
-                          />
-                          {/* Medium slice */}
-                          <circle 
-                            cx="18" cy="18" r="10" fill="none" 
-                            stroke="hsl(42 100% 63%)" strokeWidth="8"
-                            strokeDasharray={`${(inherentRiskCounts.medium / inherentRiskCounts.total) * 62.8} 62.8`}
-                            strokeDashoffset={`${15.7 - ((inherentRiskCounts.critical + inherentRiskCounts.high) / inherentRiskCounts.total) * 62.8}`}
-                          />
-                        </svg>
+                        {(() => {
+                          const circumference = 2 * Math.PI * 14;
+                          const total = inherentRiskCounts.total || 1;
+                          const criticalPct = inherentRiskCounts.critical / total;
+                          const highPct = inherentRiskCounts.high / total;
+                          const mediumPct = inherentRiskCounts.medium / total;
+                          const criticalAngle = criticalPct * 360;
+                          const highAngle = highPct * 360;
+                          
+                          return (
+                            <svg viewBox="0 0 36 36" className="w-28 h-28">
+                              {/* Background circle */}
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="#E5E7EB" strokeWidth="3"
+                              />
+                              {/* Critical slice (red) */}
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="#EF4444" strokeWidth="3"
+                                strokeDasharray={`${criticalPct * circumference} ${circumference}`}
+                                transform="rotate(-90 18 18)"
+                              />
+                              {/* High slice (orange) */}
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="#F97316" strokeWidth="3"
+                                strokeDasharray={`${highPct * circumference} ${circumference}`}
+                                transform={`rotate(${criticalAngle - 90} 18 18)`}
+                              />
+                              {/* Medium slice (yellow) */}
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="#F1BA50" strokeWidth="3"
+                                strokeDasharray={`${mediumPct * circumference} ${circumference}`}
+                                transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
+                              />
+                            </svg>
+                          );
+                        })()}
                         <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-xl font-bold text-gray-900 dark:text-gray-100">{criticalHighTotal}</span>
+                          <span className="text-xl font-bold text-success">{criticalHighTotal}</span>
                           <span className="text-[8px] text-muted-foreground uppercase">CRIT+HIGH</span>
                         </div>
                       </div>
