@@ -1539,12 +1539,12 @@ const Dashboard1stLine = () => {
               {/* Left Column */}
               <div className="space-y-3">
                 {/* Assessment Status Card */}
-                <Card className="border border-border shadow-sm bg-card rounded-none">
+                <Card className="border border-gray-200 dark:border-gray-700 shadow-sm bg-card rounded-none">
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center">
-                          <CalendarCheck className="w-3.5 h-3.5 text-green-600" />
+                        <div className="w-6 h-6 rounded bg-[#00897B] flex items-center justify-center">
+                          <CalendarCheck className="w-3.5 h-3.5 text-white" />
                         </div>
                         <span className="text-xs font-bold uppercase tracking-wide text-foreground">
                           ASSESSMENT STATUS
@@ -1552,11 +1552,13 @@ const Dashboard1stLine = () => {
                       </div>
                       <button 
                         onClick={() => toggleCardExpand('assessment')}
-                        className="flex items-center gap-1 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide"
+                        className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide"
                       >
                         CLICK TO EXPAND
-                        <ChevronDown className={cn("w-3 h-3 transition-transform", 
-                          expandedCard === 'assessment' && "rotate-180")} />
+                        <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                          <ChevronDown className={cn("w-3 h-3 transition-transform", 
+                            expandedCard === 'assessment' && "rotate-180")} />
+                        </div>
                       </button>
                     </div>
                     
@@ -1596,7 +1598,7 @@ const Dashboard1stLine = () => {
                       {/* Progress bars */}
                       <div className="flex-1 space-y-2">
                         <div>
-                          <span className="text-[10px] text-green-600 uppercase tracking-wide font-medium">DEADLINE STATUS</span>
+                          <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">DEADLINE STATUS</span>
                           <div className="flex h-2 overflow-hidden mt-0.5">
                             {assessmentStatusCounts.overdue > 0 && (
                               <div className="bg-destructive" style={{width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} />
