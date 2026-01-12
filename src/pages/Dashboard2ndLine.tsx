@@ -2306,11 +2306,16 @@ const Dashboard2ndLine = () => {
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-indigo-600 dark:text-indigo-500 flex-shrink-0 mt-0.5" />
               <div className="text-xs text-indigo-800 dark:text-indigo-200 space-y-0.5">
-                {activeTab === "own" && (
+{activeTab === "own" && (
                   <>
                     <p>These assessments have been completed by the users listed under 'Assessors/Collaborators'.</p>
                     <p>Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime.</p>
                     <p>Click on the Risk Title to view details and any open challenge comments.</p>
+                    <p className="mt-1 px-2 py-0.5 bg-amber-100/50 dark:bg-amber-900/20 rounded border-l-2 border-amber-500">
+                      <span className="font-medium text-amber-700 dark:text-amber-400">
+                        💡 Tip: To update or adjust a completed assessment, click the ↻ icon in the 'Update Assessment' column to initiate a new assessment cycle.
+                      </span>
+                    </p>
                   </>
                 )}
                 {activeTab === "assess" && (
