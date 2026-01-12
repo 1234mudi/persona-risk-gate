@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { OrganizationHeatmapDrilldownModal } from "./OrganizationHeatmapDrilldownModal";
 
 export interface OrgHeatmapData {
   businessUnit: string;
@@ -19,8 +20,13 @@ export interface OrgHeatmapData {
 }
 
 interface RiskDataItem {
+  id: string;
+  title: string;
   businessUnit: string;
+  category?: string;
+  owner?: string;
   residualRisk?: { level: string; color?: string; score?: number };
+  lastAssessed?: string;
 }
 
 interface OrganizationHeatmapProps {
@@ -52,6 +58,17 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
   riskData 
 }) => {
   const [hoveredCell, setHoveredCell] = useState<string | null>(null);
+  const [drilldownModal, setDrilldownModal] = useState<{
+    isOpen: boolean;
+    businessUnit: string;
+    riskLevel: string;
+    risks: RiskDataItem[];
+  }>({
+    isOpen: false,
+    businessUnit: "",
+    riskLevel: "",
+    risks: [],
+  });
 
   // Calculate aggregated data from riskData if provided, otherwise use mock data
   const orgData = useMemo(() => {
@@ -209,10 +226,26 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
     return abbrevMap[bu] || bu;
   };
 
+  // Handle cell click for drilldown
+  const handleCellClick = (bu: string, level: string, count: number) => {
+    if (count === 0) return;
+    const filteredRisks = riskData?.filter(
+      (r) =>
+        r.businessUnit === bu &&
+        r.residualRisk?.level?.toLowerCase() === level.toLowerCase()
+    ) || [];
+    setDrilldownModal({
+      isOpen: true,
+      businessUnit: bu,
+      riskLevel: level,
+      risks: filteredRisks,
+    });
+  };
+
   return (
-    <div className={cn("flex flex-col h-full", className)}>
+    <div className={cn("flex flex-col", className)}>
       {/* Heatmap Grid */}
-      <div className="flex-1">
+      <div>
         <div>
           {/* Header Row */}
           <div className="grid gap-0.5 mb-0.5" style={{ gridTemplateColumns: "48px repeat(4, 1fr) 40px" }}>
@@ -278,6 +311,7 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
                         )}
                         onMouseEnter={() => setHoveredCell(cellKey)}
                         onMouseLeave={() => setHoveredCell(null)}
+                        onClick={() => handleCellClick(data.businessUnit, level, count)}
                       >
                         <span
                           className={cn(
@@ -401,11 +435,26 @@ export const OrganizationHeatmap: React.FC<OrganizationHeatmapProps> = ({
             </div>
           </div>
         </div>
-        {/* Interpretation help text */}
-        <p className="text-[8px] text-muted-foreground/70 italic mt-1.5 pt-1 border-t border-border/20 text-center">
-          How to read: Cell color intensity indicates risk concentration. Trend arrows show change vs previous period. ↑ Red = risk increased, ↓ Green = risk decreased.
-        </p>
+        {/* Reading Instructions */}
+        <div className="bg-muted/40 dark:bg-muted/20 p-2 rounded mt-1">
+          <p className="text-[9px] font-medium text-muted-foreground mb-1">How to read this heatmap:</p>
+          <ul className="text-[8px] text-muted-foreground/80 space-y-0.5 list-disc list-inside">
+            <li>Each row represents a Business Unit, each column a risk level</li>
+            <li>Cell color intensity shows concentration — darker = more risks</li>
+            <li>Trend arrows: Red squiggle ↗ = risk increased, Green squiggle ↘ = risk decreased</li>
+            <li><strong>Click any cell</strong> to view the individual risks</li>
+          </ul>
+        </div>
       </div>
+
+      {/* Drilldown Modal */}
+      <OrganizationHeatmapDrilldownModal
+        isOpen={drilldownModal.isOpen}
+        onClose={() => setDrilldownModal((prev) => ({ ...prev, isOpen: false }))}
+        businessUnit={drilldownModal.businessUnit}
+        riskLevel={drilldownModal.riskLevel}
+        risks={drilldownModal.risks}
+      />
     </div>
   );
 };

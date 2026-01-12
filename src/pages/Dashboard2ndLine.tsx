@@ -2046,7 +2046,7 @@ const Dashboard2ndLine = () => {
           {/* Right Column - Heatmaps stacked */}
           <div className="flex flex-col gap-2">
             {/* Organization Heat Map */}
-            <Card className="flex-1 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none overflow-hidden">
+            <Card className="border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none overflow-hidden">
               <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
                 <div className="flex items-center gap-1.5">
                   <Building2 className="w-3.5 h-3.5 text-primary" />
@@ -2064,7 +2064,7 @@ const Dashboard2ndLine = () => {
             </Card>
 
             {/* Control Scoping Variance Report */}
-            <Card className="flex-1 border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none overflow-hidden">
+            <Card className="border border-border/50 dark:border-border shadow-sm bg-card dark:bg-card rounded-none overflow-hidden">
               <CardHeader className="py-1.5 px-2.5 border-b border-border/50 bg-muted/30">
                 <div className="flex items-center gap-1.5">
                   <Grid3x3 className="w-3.5 h-3.5 text-primary" />

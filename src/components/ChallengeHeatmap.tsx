@@ -389,10 +389,16 @@ export const ChallengeHeatmap: React.FC<ChallengeHeatmapProps> = ({ className })
             <span className="text-muted-foreground">High</span>
           </div>
         </div>
-        {/* Interpretation help text */}
-        <p className="text-[8px] text-muted-foreground/70 italic mt-1 pt-1 border-t border-border/20 text-center">
-          How to read: Higher percentages indicate more controls marked N/A. Red cells exceed enterprise average significantly. Click any cell to see control details.
-        </p>
+        {/* Reading Instructions */}
+        <div className="bg-muted/40 dark:bg-muted/20 p-2 rounded mt-1">
+          <p className="text-[9px] font-medium text-muted-foreground mb-1">How to read this heatmap:</p>
+          <ul className="text-[8px] text-muted-foreground/80 space-y-0.5 list-disc list-inside">
+            <li>Each cell shows the % of controls marked N/A for that BU and category</li>
+            <li>Variance shows difference from enterprise average (bottom row)</li>
+            <li>Green = below avg (good), Yellow = near avg, Orange/Red = above avg (needs attention)</li>
+            <li><strong>Click any cell</strong> to view the N/A control details</li>
+          </ul>
+        </div>
       </div>
 
       {/* N/A Controls Drilldown Modal */}
