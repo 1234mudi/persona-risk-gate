@@ -1670,6 +1670,9 @@ const Dashboard1stLine = () => {
                       <p className="text-[9px] text-muted-foreground">
                         Track assessment deadlines and workflow progress.
                       </p>
+                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                        How to read: Donut shows completion %. Red bars indicate overdue items needing immediate attention. Green bars show completed work. Prioritize overdue items first.
+                      </p>
                     </div>
                     
                   </CardContent>
@@ -1754,6 +1757,9 @@ const Dashboard1stLine = () => {
                     <div className="border-t border-border pt-2">
                       <p className="text-[9px] text-muted-foreground">
                         Review and approve N/A control justifications.
+                      </p>
+                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                        How to read: Pipeline flows left-to-right. Pending items need justification drafts. Awaiting items require Risk Owner approval. Progress bar shows overall completion.
                       </p>
                     </div>
                   </CardContent>
@@ -1843,6 +1849,9 @@ const Dashboard1stLine = () => {
                           <p className="text-[9px] text-muted-foreground">
                             Monitor loss events requiring triage and analysis.
                           </p>
+                          <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                            How to read: Red (Pending) requires immediate triage. Orange (In Triage) is being analyzed. Green (Closed) is resolved. Larger red segment indicates backlog.
+                          </p>
                         </div>
                       </CardContent>
                     </Card>
@@ -1919,6 +1928,9 @@ const Dashboard1stLine = () => {
                         <div className="border-t border-border mt-2 pt-1.5">
                           <p className="text-[9px] text-muted-foreground">
                             Address rating variances flagged by AI analysis.
+                          </p>
+                          <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                            How to read: Critical (red) requires immediate investigation. High (orange) needs prompt review. Medium (teal) can be scheduled. Address red alerts first.
                           </p>
                         </div>
                       </CardContent>
@@ -2009,6 +2021,9 @@ const Dashboard1stLine = () => {
                       <div className="border-t border-border mt-3 pt-2">
                         <p className="text-[9px] text-muted-foreground">
                           AI-analyzed causal chains for <span className="underline cursor-pointer">loss events</span>.
+                        </p>
+                        <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                          How to read: Timeline shows AI-identified causal chain. Root cause leads to contributing factors, failed controls, and recommended actions. Click events for details.
                         </p>
                       </div>
                     </CardContent>
@@ -2105,6 +2120,9 @@ const Dashboard1stLine = () => {
                     <div className="border-t border-border pt-2 mt-auto">
                       <p className="text-[9px] text-muted-foreground">
                         Review Critical and High ratings for control adequacy.
+                      </p>
+                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                        How to read: Donut shows risk distribution. Critical+High total indicates exposure requiring strong controls. Larger red/orange segments signal elevated inherent risk.
                       </p>
                     </div>
                   </CardContent>
@@ -2214,6 +2232,9 @@ const Dashboard1stLine = () => {
                     <div className="border-t border-border pt-2.5">
                       <p className="text-[9px] text-muted-foreground">
                         Aggregate control effectiveness across all risks.
+                      </p>
+                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                        How to read: Gauge shows overall effectiveness %. Green bar is effective controls, orange is partial, red is ineffective. Focus on reducing red and orange segments.
                       </p>
                     </div>
                   </CardContent>
@@ -2329,6 +2350,9 @@ const Dashboard1stLine = () => {
                     <div className="border-t border-border mt-auto pt-1.5">
                       <p className="text-[9px] text-muted-foreground">
                         Track remediation progress across all risks.
+                      </p>
+                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                        How to read: Bar lengths show relative counts. Open (red) needs assignment. In Progress (orange) is being worked. Validation (blue) awaits sign-off. Target zero open items.
                       </p>
                     </div>
                   </CardContent>
