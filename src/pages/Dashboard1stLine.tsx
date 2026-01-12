@@ -1383,7 +1383,7 @@ const Dashboard1stLine = () => {
     } else if (label === "Ineffective") {
       colorClass = "bg-[#D21C1C] text-white";
     }
-    return <Badge className={`${colorClass} rounded-full`}>{label}</Badge>;
+    return <Badge className={`${colorClass} rounded-full text-[10px] px-2 py-0.5`}>{label}</Badge>;
   };
 
   return (
@@ -2504,7 +2504,7 @@ const Dashboard1stLine = () => {
                         {/* Test Results */}
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="space-y-1">
-                            <Badge className="bg-green-500 text-white text-xs">{risk.testResults.label}</Badge>
+                            <Badge className="bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full">{risk.testResults.label}</Badge>
                             {risk.testResults.sublabel && (
                               <div className="text-xs text-muted-foreground">{risk.testResults.sublabel}</div>
                             )}
@@ -2517,7 +2517,7 @@ const Dashboard1stLine = () => {
                               risk.id,
                               'status',
                               risk.status,
-                              <Badge className={getStatusColor(risk.status)}>{risk.status}</Badge>,
+                              <Badge className={`${getStatusColor(risk.status)} text-[10px] px-2 py-0.5`}>{risk.status}</Badge>,
                               'select',
                               ['Sent for Assessment', 'In Progress', 'Pending Approval', 'Completed', 'Closed']
                             )}

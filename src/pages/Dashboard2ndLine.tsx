@@ -1358,7 +1358,7 @@ const Dashboard2ndLine = () => {
     } else if (label === "Ineffective") {
       colorClass = "bg-[#D21C1C] text-white";
     }
-    return <Badge className={`${colorClass} rounded-full`}>{label}</Badge>;
+    return <Badge className={`${colorClass} rounded-full text-[10px] px-2 py-0.5`}>{label}</Badge>;
   };
 
   return (
@@ -2538,7 +2538,7 @@ const Dashboard2ndLine = () => {
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Inherent Rating</span>
                                           <div className="flex items-center gap-1">
                                             <span className="text-[10px] font-bold text-[#10052F] dark:text-white">{aggregation.avgInherentRisk.score.toFixed(1)}</span>
-                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border px-1 text-[9px]`}>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgInherentRisk.color)} border text-[10px] px-2 py-0.5 rounded-full`}>
                                               {aggregation.avgInherentRisk.level}
                                             </Badge>
                                           </div>
@@ -2551,7 +2551,7 @@ const Dashboard2ndLine = () => {
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Control Effectiveness</span>
                                           <div className="flex items-center gap-1">
                                             <span className="text-[10px] font-bold text-[#10052F] dark:text-white">{aggregation.avgControlEffectiveness.score.toFixed(1)}</span>
-                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border px-1 text-[9px]`}>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgControlEffectiveness.color)} border text-[10px] px-2 py-0.5 rounded-full`}>
                                               {aggregation.avgControlEffectiveness.level}
                                             </Badge>
                                           </div>
@@ -2564,7 +2564,7 @@ const Dashboard2ndLine = () => {
                                           <span className="text-[8px] text-muted-foreground uppercase font-medium tracking-wide">Residual Rating</span>
                                           <div className="flex items-center gap-1">
                                             <span className="text-[10px] font-bold text-[#10052F] dark:text-white">{aggregation.avgResidualRisk.score.toFixed(1)}</span>
-                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border px-1 text-[9px]`}>
+                                            <Badge className={`${getRiskBadgeColorBg(aggregation.avgResidualRisk.color)} border text-[10px] px-2 py-0.5 rounded-full`}>
                                               {aggregation.avgResidualRisk.level}
                                             </Badge>
                                           </div>
@@ -2915,11 +2915,11 @@ const Dashboard2ndLine = () => {
                         <TableCell className="py-[2px] border-r border-b border-border">
                           <div className="space-y-0.5">
                             <div className="flex flex-wrap gap-0.5">
-                              <Badge className="bg-green-500 text-white px-1.5 py-0 text-[8px]">
+                              <Badge className="bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full">
                                 {risk.testResults.label}
                               </Badge>
                               {risk.testResults.sublabel && (
-                                <Badge className="bg-blue-500 text-white px-1.5 py-0 text-[8px]">
+                                <Badge className="bg-blue-500 text-white text-[10px] px-2 py-0.5 rounded-full">
                                   {risk.testResults.sublabel}
                                 </Badge>
                               )}
@@ -2932,7 +2932,7 @@ const Dashboard2ndLine = () => {
                         <TableCell className="py-[2px] border-r border-b border-border">
                           <div className="space-y-0.5">
                             <div className="flex items-center gap-1">
-                              <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border px-1 text-[8px]`}>
+                              <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border text-[10px] px-2 py-0.5 rounded-full`}>
                                 {risk.residualRisk.level}
                               </Badge>
                               {risk.residualTrend.up ? (
@@ -2975,7 +2975,7 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         <TableCell className="py-[2px] border-b border-border">
-                          <Badge className={`${getStatusColor(risk.status)} shadow-sm text-[8px]`}>
+                          <Badge className={`${getStatusColor(risk.status)} shadow-sm text-[10px] px-2 py-0.5`}>
                             {risk.status}
                           </Badge>
                         </TableCell>
@@ -3097,7 +3097,7 @@ const Dashboard2ndLine = () => {
                             <span className="text-xs">{risk.lastAssessed}</span>
                           </TableCell>
                           <TableCell className="py-1 border-r border-b border-border">
-                            <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border px-1.5 text-[10px]`}>
+                            <Badge className={`${getRiskBadgeColor(risk.inherentRisk.color)} border text-[10px] px-2 py-0.5 rounded-full`}>
                               {risk.inherentRisk.level}
                             </Badge>
                           </TableCell>
@@ -3105,7 +3105,7 @@ const Dashboard2ndLine = () => {
                             <span className="text-xs">{risk.relatedControls[0]?.name || '-'}</span>
                           </TableCell>
                           <TableCell className="py-1 border-r border-b border-border">
-                            <Badge className={`${getRiskBadgeColor(risk.controlEffectiveness.color)} border px-1.5 text-[10px]`}>
+                            <Badge className={`${getRiskBadgeColor(risk.controlEffectiveness.color)} border text-[10px] px-2 py-0.5 rounded-full`}>
                               {risk.controlEffectiveness.label}
                             </Badge>
                           </TableCell>
@@ -3113,12 +3113,12 @@ const Dashboard2ndLine = () => {
                             <span className="text-xs">{risk.testResults.label}</span>
                           </TableCell>
                           <TableCell className="py-1 border-r border-b border-border">
-                            <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border px-1.5 text-[10px]`}>
+                            <Badge className={`${getRiskBadgeColor(risk.residualRisk.color)} border text-[10px] px-2 py-0.5 rounded-full`}>
                               {risk.residualRisk.level}
                             </Badge>
                           </TableCell>
                           <TableCell className="py-1 border-b border-border">
-                            <Badge className={`${getStatusColor(risk.status)} shadow-sm text-[10px]`}>
+                            <Badge className={`${getStatusColor(risk.status)} shadow-sm text-[10px] px-2 py-0.5`}>
                               {risk.status}
                             </Badge>
                           </TableCell>
