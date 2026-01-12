@@ -2288,8 +2288,8 @@ const Dashboard1stLine = () => {
                     
                     {/* Speedometer gauge with needle - larger and centered */}
                     <div className="flex flex-col items-center justify-center flex-1">
-                      <div className="relative w-44 h-24">
-                        <svg viewBox="0 0 100 55" className="w-44 h-24">
+                      <div className="w-44">
+                        <svg viewBox="0 0 100 55" className="w-44 h-20">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2321,8 +2321,10 @@ const Dashboard1stLine = () => {
                           />
                           <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
                         </svg>
-                        <span className="absolute left-3 bottom-1 text-[9px] text-muted-foreground">0%</span>
-                        <span className="absolute right-3 bottom-1 text-[9px] text-muted-foreground">100%</span>
+                        <div className="flex justify-between px-3 mt-0.5">
+                          <span className="text-[9px] leading-none text-muted-foreground">0%</span>
+                          <span className="text-[9px] leading-none text-muted-foreground">100%</span>
+                        </div>
                       </div>
                       <div className="text-center mt-2">
                         <span className="text-2xl font-bold text-success">{effectivenessPercent}%</span>
