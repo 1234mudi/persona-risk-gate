@@ -2203,20 +2203,26 @@ const Dashboard2ndLine = () => {
             hideCloseButton={true}
           >
             {/* Header with Back Button */}
-            <div className="flex items-center gap-1.5 px-3 py-0.5 border-b border-border/20 bg-transparent shrink-0">
+            <div className="flex items-center gap-3 px-3 py-1.5 border-b border-border/30 bg-muted/30 shrink-0">
               <Button 
-                variant="ghost" 
+                variant="outline" 
                 size="sm"
                 onClick={() => setRiskCoverageModalOpen(false)}
-                className="gap-1 rounded-none h-6 px-1.5 text-xs"
+                className="gap-1.5 h-7 px-2.5 text-xs border-border"
               >
                 <ArrowLeft className="w-3 h-3" />
-                Back to Dashboard
+                Back
               </Button>
-              <div className="h-3 w-px bg-border/30" />
-              <span className="text-xs font-semibold text-foreground">
-                Risk Coverage by Business Unit ({filteredRiskData.length})
-              </span>
+              <div className="h-5 w-px bg-border" />
+              <div className="flex items-center gap-2">
+                <FileText className="w-4 h-4 text-primary" />
+                <span className="text-sm font-bold text-foreground tracking-tight">
+                  Risk Coverage by Business Unit
+                </span>
+                <Badge variant="secondary" className="text-xs">
+                  {filteredRiskData.length} risks
+                </Badge>
+              </div>
             </div>
 
             {/* Scrollable Content Area */}
@@ -2299,11 +2305,29 @@ const Dashboard2ndLine = () => {
           <div className="bg-indigo-50 dark:bg-indigo-900/10 border-b border-indigo-100 dark:border-indigo-800/50 px-3 py-1.5">
             <div className="flex items-start gap-2">
               <AlertTriangle className="w-4 h-4 text-indigo-600 dark:text-indigo-500 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-indigo-800 dark:text-indigo-200">
-                {activeTab === "own" && "These assessments have been completed by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to view details and any open challenge comments."}
-                {activeTab === "assess" && "These risks are pending assessment by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to begin your assessment and view any open challenge comments."}
-                {activeTab === "approve" && "These risk assessments require approval by the users listed under 'Assessors/Collaborators'. Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime. Click on the Risk Title to review and view any open challenge comments."}
-              </p>
+              <div className="text-xs text-indigo-800 dark:text-indigo-200 space-y-0.5">
+                {activeTab === "own" && (
+                  <>
+                    <p>These assessments have been completed by the users listed under 'Assessors/Collaborators'.</p>
+                    <p>Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime.</p>
+                    <p>Click on the Risk Title to view details and any open challenge comments.</p>
+                  </>
+                )}
+                {activeTab === "assess" && (
+                  <>
+                    <p>These risks are pending assessment by the users listed under 'Assessors/Collaborators'.</p>
+                    <p>Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime.</p>
+                    <p>Click on the Risk Title to begin your assessment and view any open challenge comments.</p>
+                  </>
+                )}
+                {activeTab === "approve" && (
+                  <>
+                    <p>These risk assessments require approval by the users listed under 'Assessors/Collaborators'.</p>
+                    <p>Report defaults to group view - grouped by 'Business Unit'. Click on the Business Unit column header to ungroup or re-group anytime.</p>
+                    <p>Click on the Risk Title to review and view any open challenge comments.</p>
+                  </>
+                )}
+              </div>
             </div>
           </div>
 
@@ -2560,8 +2584,8 @@ const Dashboard2ndLine = () => {
                                 isLevel1 ? 'bg-blue-50/30 dark:bg-blue-950/10' : 
                                 'bg-orange-50/10 dark:bg-orange-950/10'
                               }`}>
-                        <TableCell className="py-[2px] border-r border-b border-border">
-                          <div className="flex items-center justify-center">
+                        <TableCell className="py-1 border-r border-b border-border align-top">
+                          <div className="flex items-start justify-center pt-0.5">
                             <Checkbox 
                               checked={selectedRisks.has(risk.id)}
                               onCheckedChange={() => toggleRiskSelection(risk.id)}
@@ -2570,32 +2594,34 @@ const Dashboard2ndLine = () => {
                             />
                           </div>
                         </TableCell>
-                        <TableCell className="py-[2px] border-r border-b border-border">
-                          {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <button
-                                    className="p-0.5 rounded-md bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 transition-colors"
-                                    onClick={() => handleUpdateClosedAssessment(risk.id)}
-                                  >
-                                    <RefreshCw className="w-3 h-3 text-amber-600 dark:text-amber-400" />
-                                  </button>
-                                </TooltipTrigger>
-                                <TooltipContent>
-                                  <p>Update this closed assessment</p>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          )}
+                        <TableCell className="py-1 border-r border-b border-border align-top">
+                          <div className="pt-0.5">
+                            {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <button
+                                      className="p-0.5 rounded-md bg-amber-100 hover:bg-amber-200 dark:bg-amber-900/30 dark:hover:bg-amber-900/50 transition-colors"
+                                      onClick={() => handleUpdateClosedAssessment(risk.id)}
+                                    >
+                                      <RefreshCw className="w-3 h-3 text-amber-600 dark:text-amber-400" />
+                                    </button>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Update this closed assessment</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            )}
+                          </div>
                         </TableCell>
                         {/* Risk ID / Title (combined) */}
-                        <TableCell className="py-[2px] border-r border-b border-border">
+                        <TableCell className="py-1 border-r border-b border-border align-top">
                           <div className="flex items-start gap-1.5">
                             {isLevel1 && canExpand && (
                               <button
                                 onClick={() => toggleRow(risk.id)}
-                                className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
+                                className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0"
                               >
                                 {isExpanded ? (
                                   <ChevronDown className="w-3 h-3 text-muted-foreground" />
@@ -2607,9 +2633,9 @@ const Dashboard2ndLine = () => {
                             {isLevel1 && !canExpand && <div className="w-6" />}
                             {isLevel3 && <div className="w-6 ml-4" />}
                             
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-0.5">
                               {/* Level 1 Title */}
-                              <div className="flex flex-col gap-1">
+                              <div className="flex flex-col gap-0.5">
                                 <span className="text-[10px] font-medium text-primary">{risk.id}</span>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
@@ -2654,9 +2680,9 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         {/* Risk Hierarchy */}
-                        <TableCell className="py-[2px] border-r border-b border-border">
-                          <div className="flex flex-col items-center gap-0.5">
-                          <Badge className={`${getRiskLevelColor(risk.riskLevel)} w-fit px-1.5 py-0 text-[8px] font-medium`}>
+                        <TableCell className="py-1 border-r border-b border-border align-top">
+                          <div className="flex flex-wrap items-start gap-1">
+                            <Badge className={`${getRiskLevelColor(risk.riskLevel)} w-fit px-1.5 py-0 text-[8px] font-medium`}>
                               {risk.riskLevel}
                             </Badge>
                             {isLevel1 && getLevel2Children(risk).map((l2Risk) => (
@@ -2667,7 +2693,7 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         {/* Due Date */}
-                        <TableCell className="py-[2px] border-r border-b border-border">
+                        <TableCell className="py-1 border-r border-b border-border align-top">
                           <div className={`text-[9px] font-medium ${
                             new Date(risk.dueDate) < new Date() 
                               ? 'text-destructive' 
@@ -2680,13 +2706,13 @@ const Dashboard2ndLine = () => {
                           )}
                         </TableCell>
                         {/* Completion Date - Only show if status is complete */}
-                        <TableCell className="py-[2px] border-r border-b border-border">
+                        <TableCell className="py-1 border-r border-b border-border align-top">
                           <div className="text-[9px] font-medium text-foreground">
                             {risk.status.toLowerCase() === "complete" ? risk.lastAssessed : "-"}
                           </div>
                         </TableCell>
                         {/* Assessment Progress */}
-                        <TableCell className="py-[2px] border-r border-b border-border">
+                        <TableCell className="py-1 border-r border-b border-border align-top">
                           <div className="space-y-0.5">
                             <div className="flex gap-0.5">
                               <div className={`h-1 flex-1 rounded-sm ${
@@ -2713,12 +2739,12 @@ const Dashboard2ndLine = () => {
                           </div>
                         </TableCell>
                         {/* Business Unit */}
-                        <TableCell className="py-[2px] border-r border-b border-border">
+                        <TableCell className="py-1 border-r border-b border-border align-top">
                           <Badge variant="outline" className="text-[8px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700 text-[#10052F] dark:text-white">
                             {risk.businessUnit}
                           </Badge>
                         </TableCell>
-                        <TableCell className="py-[2px] border-r border-b border-border">
+                        <TableCell className="py-1 border-r border-b border-border align-top">
                           <div className="flex flex-wrap gap-0.5">
                             {risk.assessors.map((assessor, idx) => (
                               <Tooltip key={idx}>
