@@ -1540,13 +1540,13 @@ const Dashboard1stLine = () => {
               <div className="space-y-2 flex flex-col">
                 {/* Assessment Status Card */}
                 <Card className="flex-1 border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                          <CalendarCheck className="w-4 h-4 text-[#00897B]" />
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <CalendarCheck className="w-3 h-3 text-[#00897B]" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                           ASSESSMENT STATUS
                         </span>
                       </div>
@@ -1563,9 +1563,9 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Summary row */}
-                    <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center justify-between mb-1">
                       <div>
-                        <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{requiresAction}</span>
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{requiresAction}</span>
                         <span className="text-sm text-muted-foreground ml-1">Requiring Action</span>
                       </div>
                       <div className="flex items-center gap-1">
@@ -1695,13 +1695,13 @@ const Dashboard1stLine = () => {
 
                 {/* N/A Justifications Card - Pipeline Flow Design */}
                 <Card className="flex-1 border border-[#00897B] shadow-sm bg-card rounded-none">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between mb-2">
+                  <CardContent className="p-2.5">
+                    <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-[#E0F2F1] flex items-center justify-center">
-                          <Ban className="w-4 h-4 text-[#00897B]" />
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <Ban className="w-3 h-3 text-[#00897B]" />
                         </div>
-                        <span className="text-xs font-bold uppercase tracking-wide text-gray-900 dark:text-gray-100">
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                           N/A JUSTIFICATIONS
                         </span>
                       </div>
@@ -1711,8 +1711,8 @@ const Dashboard1stLine = () => {
                       </button>
                     </div>
                     
-                    <div className="mb-3">
-                      <span className="text-2xl font-bold text-gray-900 dark:text-gray-100">{naJustificationsCounts.pending + naJustificationsCounts.drafted}</span>
+                    <div className="mb-2">
+                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{naJustificationsCounts.pending + naJustificationsCounts.drafted}</span>
                       <span className="text-sm text-muted-foreground ml-1">Pending</span>
                     </div>
                     
