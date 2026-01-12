@@ -2221,16 +2221,98 @@ const RiskAssessmentForm = () => {
                   <span>•</span>
                   <span>Date: 2025-04-10</span>
                 </div>
-                {/* Organization Banner */}
-                <div className="flex items-center gap-2 mt-2 px-3 py-1.5 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40 rounded-md border border-indigo-200 dark:border-indigo-800">
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-                    <Library className="w-4 h-4 text-white" />
+                {/* Organization Banner with Embedded Org Risk Summary */}
+                <Collapsible open={orgScoresPanelExpanded} onOpenChange={setOrgScoresPanelExpanded}>
+                  <div className="flex items-center justify-between gap-1.5 mt-1.5 px-2 py-1 bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-950/40 dark:to-purple-950/40 rounded border border-indigo-200 dark:border-indigo-800">
+                    {/* Left side - Org Name */}
+                    <div className="flex items-center gap-1.5">
+                      <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center flex-shrink-0">
+                        <Library className="w-3 h-3 text-white" />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-[9px] text-indigo-500 dark:text-indigo-400 uppercase tracking-wide font-medium">Org:</span>
+                        <span className="text-xs font-semibold text-indigo-800 dark:text-indigo-200">Retail Banking - Consumer Services</span>
+                      </div>
+                    </div>
+                    
+                    {/* Right side - Org Risk Summary Trigger */}
+                    <CollapsibleTrigger asChild>
+                      <Button 
+                        variant="ghost" 
+                        size="sm"
+                        className="h-5 px-1.5 text-[9px] gap-1 text-indigo-700 dark:text-indigo-300 hover:bg-indigo-100 dark:hover:bg-indigo-900/50"
+                      >
+                        <BarChart3 className="w-3 h-3" />
+                        <span className="hidden sm:inline">Org Summary</span>
+                        <Badge variant="outline" className="text-[8px] px-1 py-0 h-4 border-indigo-300 dark:border-indigo-600 text-indigo-600 dark:text-indigo-400">12</Badge>
+                        {orgScoresPanelExpanded ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                      </Button>
+                    </CollapsibleTrigger>
                   </div>
-                  <div>
-                    <span className="text-[9px] text-indigo-500 dark:text-indigo-400 uppercase tracking-wide font-medium">Organization</span>
-                    <p className="text-sm font-semibold text-indigo-800 dark:text-indigo-200">Retail Banking - Consumer Services</p>
-                  </div>
-                </div>
+                  
+                  {/* Expanded Org Summary Panel */}
+                  <CollapsibleContent className="animate-accordion-down">
+                    <Card className="mt-1 p-2 border border-indigo-200 dark:border-indigo-800 bg-gradient-to-r from-indigo-50/50 to-purple-50/50 dark:from-indigo-950/20 dark:to-purple-950/20">
+                      <div className="space-y-2">
+                        {/* Aggregated Scores Table */}
+                        <table className="w-full text-[10px]">
+                          <thead>
+                            <tr className="bg-muted/50">
+                              <th className="text-left py-0.5 px-1.5 font-medium">Metric</th>
+                              <th className="text-center py-0.5 px-1 font-medium">Avg</th>
+                              <th className="text-center py-0.5 px-1 font-medium">Level</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr className="border-b border-border/50">
+                              <td className="py-0.5 px-1.5">Inherent Risk</td>
+                              <td className="text-center font-bold">3.4</td>
+                              <td className="text-center">
+                                <Badge className="bg-amber-500 text-[8px] px-1.5 py-0">Medium</Badge>
+                              </td>
+                            </tr>
+                            <tr className="border-b border-border/50">
+                              <td className="py-0.5 px-1.5">Residual Risk</td>
+                              <td className="text-center font-bold">2.1</td>
+                              <td className="text-center">
+                                <Badge className="bg-emerald-500 text-[8px] px-1.5 py-0">Low</Badge>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td className="py-0.5 px-1.5">Control Eff.</td>
+                              <td className="text-center font-bold" colSpan={2}>
+                                <Badge className="bg-amber-500 text-[8px] px-1.5">Partially Effective</Badge>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                        
+                        {/* Risk Distribution & Appetite in single row */}
+                        <div className="flex items-center justify-between pt-1.5 border-t border-border">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[9px] text-muted-foreground font-medium">Distribution:</span>
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-full bg-red-500" />
+                              <span className="text-[9px]">3</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-full bg-amber-500" />
+                              <span className="text-[9px]">6</span>
+                            </div>
+                            <div className="flex items-center gap-1">
+                              <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                              <span className="text-[9px]">3</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <Badge className="bg-emerald-500 text-[8px] px-1.5 py-0">9 Within</Badge>
+                            <Badge className="bg-red-500 text-[8px] px-1.5 py-0">3 Outside</Badge>
+                          </div>
+                        </div>
+                      </div>
+                    </Card>
+                  </CollapsibleContent>
+                </Collapsible>
               </div>
               
               {/* Right side - Score Cards (compact) */}
@@ -5168,142 +5250,7 @@ const RiskAssessmentForm = () => {
         </div>
       )}
       
-      {/* Floating Aggregated Organization Scores Panel */}
-      <OrgAggregatedScoresPanel 
-        organizationName="Retail Banking"
-        isExpanded={orgScoresPanelExpanded}
-        onToggle={() => setOrgScoresPanelExpanded(!orgScoresPanelExpanded)}
-      />
     </div>
-  );
-};
-
-// Floating Aggregated Organization Scores Panel Component
-const OrgAggregatedScoresPanel = ({ 
-  organizationName, 
-  isExpanded, 
-  onToggle 
-}: { 
-  organizationName: string; 
-  isExpanded: boolean; 
-  onToggle: () => void;
-}) => {
-  // Simulated aggregated data - in real implementation this would be calculated from initialRiskData
-  const aggregatedData = {
-    totalRisks: 12,
-    averageInherent: 3.4,
-    averageResidual: 2.1,
-    controlEffectiveness: "Partially Effective",
-    risksByLevel: { high: 3, medium: 6, low: 3 },
-    withinAppetite: 9,
-    outsideAppetite: 3
-  };
-
-  const getScoreLabel = (score: number) => {
-    if (score >= 4) return { label: "High", color: "bg-red-500" };
-    if (score >= 3) return { label: "Medium", color: "bg-amber-500" };
-    return { label: "Low", color: "bg-emerald-500" };
-  };
-
-  return (
-    <Collapsible open={isExpanded} onOpenChange={onToggle}>
-      <div className="fixed bottom-4 right-20 z-40">
-        <CollapsibleTrigger asChild>
-          <Button 
-            variant="outline" 
-            size="sm"
-            className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white border-0 shadow-lg hover:from-purple-600 hover:to-indigo-600 hover:text-white"
-          >
-            <BarChart3 className="w-4 h-4 mr-1.5" />
-            Org Risk Summary
-            {isExpanded ? <ChevronDown className="w-4 h-4 ml-1.5" /> : <ChevronUp className="w-4 h-4 ml-1.5" />}
-          </Button>
-        </CollapsibleTrigger>
-        <CollapsibleContent className="animate-accordion-down">
-          <Card className="mt-2 p-3 w-72 shadow-xl border-2 border-indigo-200 dark:border-indigo-800 bg-card">
-            <div className="space-y-2.5">
-              {/* Header */}
-              <div className="flex items-center justify-between border-b pb-2 border-border">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center">
-                    <Library className="w-3 h-3 text-white" />
-                  </div>
-                  <span className="font-semibold text-xs">{organizationName}</span>
-                </div>
-                <Badge variant="outline" className="text-[9px] border-indigo-300 text-indigo-600">
-                  {aggregatedData.totalRisks} Risks
-                </Badge>
-              </div>
-              
-              {/* Aggregated Scores Table */}
-              <table className="w-full text-[10px]">
-                <thead>
-                  <tr className="bg-muted/50">
-                    <th className="text-left py-1 px-1.5 font-medium">Metric</th>
-                    <th className="text-center py-1 px-1 font-medium">Avg</th>
-                    <th className="text-center py-1 px-1 font-medium">Level</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-border/50">
-                    <td className="py-1 px-1.5">Inherent Risk</td>
-                    <td className="text-center font-bold">{aggregatedData.averageInherent.toFixed(1)}</td>
-                    <td className="text-center">
-                      <Badge className={`${getScoreLabel(aggregatedData.averageInherent).color} text-[8px] px-1.5 py-0`}>
-                        {getScoreLabel(aggregatedData.averageInherent).label}
-                      </Badge>
-                    </td>
-                  </tr>
-                  <tr className="border-b border-border/50">
-                    <td className="py-1 px-1.5">Residual Risk</td>
-                    <td className="text-center font-bold">{aggregatedData.averageResidual.toFixed(1)}</td>
-                    <td className="text-center">
-                      <Badge className={`${getScoreLabel(aggregatedData.averageResidual).color} text-[8px] px-1.5 py-0`}>
-                        {getScoreLabel(aggregatedData.averageResidual).label}
-                      </Badge>
-                    </td>
-                  </tr>
-                  <tr>
-                    <td className="py-1 px-1.5">Control Eff.</td>
-                    <td className="text-center font-bold" colSpan={2}>
-                      <Badge className="bg-amber-500 text-[8px] px-1.5">{aggregatedData.controlEffectiveness}</Badge>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-              
-              {/* Risk Distribution */}
-              <div className="pt-2 border-t border-border">
-                <div className="text-[9px] text-muted-foreground mb-1.5 font-medium">Risk Distribution</div>
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-red-500" />
-                    <span className="text-[9px]">High: {aggregatedData.risksByLevel.high}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-amber-500" />
-                    <span className="text-[9px]">Med: {aggregatedData.risksByLevel.medium}</span>
-                  </div>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
-                    <span className="text-[9px]">Low: {aggregatedData.risksByLevel.low}</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Appetite Status */}
-              <div className="flex items-center justify-between pt-2 border-t border-border">
-                <span className="text-[9px] text-muted-foreground font-medium">Appetite Status</span>
-                <div className="flex items-center gap-1.5">
-                  <Badge className="bg-emerald-500 text-[8px] px-1.5">{aggregatedData.withinAppetite} Within</Badge>
-                  <Badge className="bg-red-500 text-[8px] px-1.5">{aggregatedData.outsideAppetite} Outside</Badge>
-                </div>
-              </div>
-            </div>
-          </Card>
-        </CollapsibleContent>
-      </div>
-    </Collapsible>
   );
 };
 
