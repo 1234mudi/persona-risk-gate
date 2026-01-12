@@ -973,9 +973,9 @@ export function AIDocumentAssessmentModal({
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Badge variant="secondary" className="gap-1 rounded-none">
-                  <Sparkles className="w-3 h-3 text-second-line" />
-                  <span className="text-second-line">AI-Powered</span>
+                <Badge className="gap-1 rounded-none bg-purple-100 text-purple-700 border border-purple-300 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-700">
+                  <Sparkles className="w-3 h-3" />
+                  <span>AI-Powered</span>
                 </Badge>
                 <Button
                   variant="outline"
@@ -1358,7 +1358,7 @@ export function AIDocumentAssessmentModal({
                             {/* Title and Owner */}
                             <TableCell className="py-1.5 px-2">
                               <div className="flex flex-col">
-                                <span className="text-xs font-medium text-foreground line-clamp-1">{risk.title}</span>
+                                <span className="text-xs font-medium text-[hsl(210,17%,24%)] dark:text-slate-200 line-clamp-1">{risk.title}</span>
                                 <span className="text-[10px] text-muted-foreground">{risk.owner || 'No owner'}</span>
                               </div>
                             </TableCell>
