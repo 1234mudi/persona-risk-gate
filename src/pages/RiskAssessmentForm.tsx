@@ -207,6 +207,17 @@ const RiskAssessmentForm = () => {
   const [newControlType, setNewControlType] = useState<"Preventive" | "Detective">("Preventive");
   const [addToLibrary, setAddToLibrary] = useState(false);
   const [orgScoresPanelExpanded, setOrgScoresPanelExpanded] = useState(false);
+  const [expandedRightPanelSections, setExpandedRightPanelSections] = useState<{
+    review: boolean;
+    treatment: boolean;
+    metrics: boolean;
+    details: boolean;
+  }>({
+    review: false,
+    treatment: false,
+    metrics: false,
+    details: false,
+  });
   
   // Review/Challenge panel state
   const [resolvingItemId, setResolvingItemId] = useState<string | null>(null);
@@ -2731,11 +2742,6 @@ const RiskAssessmentForm = () => {
                 </div>
               </Card>
 
-              <div className="flex items-center justify-end">
-                <Button className="gap-1 bg-blue-600 hover:bg-blue-700 h-7 text-xs px-2.5" onClick={() => setActiveTab("control-effectiveness")}>
-                  Continue to Control Effectiveness<ChevronRight className="w-3 h-3" />
-                </Button>
-              </div>
             </TabsContent>
 
             {/* Control Effectiveness Tab */}
@@ -3223,12 +3229,6 @@ const RiskAssessmentForm = () => {
                 </Dialog>
               </Card>
 
-              <div className="flex items-center justify-between">
-                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("inherent-rating")}><ChevronLeft className="w-4 h-4" />Back to Previous Section</Button>
-                <Button className="gap-2 bg-emerald-600 hover:bg-emerald-700" onClick={() => setActiveTab("residual-rating")}>
-                  Continue to Residual Rating<ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
             </TabsContent>
 
             {/* Residual Rating Tab */}
@@ -3741,14 +3741,6 @@ const RiskAssessmentForm = () => {
                 </div>
               </Card>
 
-              <div className="flex items-center justify-between">
-                <Button variant="outline" className="gap-2" onClick={() => setActiveTab("residual-rating")}>
-                  <ChevronLeft className="w-4 h-4" />Previous
-                </Button>
-                <Button className="gap-2 bg-slate-600 hover:bg-slate-700" onClick={() => setActiveTab("treatment")}>
-                  Continue<ChevronRight className="w-4 h-4" />
-                </Button>
-              </div>
             </TabsContent>
 
             {/* Issues Tab */}
@@ -3881,61 +3873,114 @@ const RiskAssessmentForm = () => {
         </div>
       </div>
 
-      {/* Right Vertical Tab Bar - Fixed on right edge */}
+      {/* Right Vertical Tab Bar - Fixed on right edge with Collapsible Sections */}
       <div className="fixed top-0 right-0 h-full w-auto bg-muted/30 border-l-2 border-l-primary/20 shadow-[-4px_0_12px_-2px_rgba(0,0,0,0.1)] z-[60] flex flex-col pt-14">
         {[
-          { id: 'review', label: 'Review/Challenge', icon: MessageSquare },
-          { id: 'treatment', label: 'Treatment', icon: Clipboard },
-          { id: 'metrics', label: 'Metrics & Losses', icon: BarChart3 },
-          { id: 'details', label: 'Additional Details', icon: FileText },
+          { id: 'review', label: 'Review/Challenge', icon: MessageSquare, number: 5 },
+          { id: 'treatment', label: 'Treatment', icon: Clipboard, number: 6 },
+          { id: 'metrics', label: 'Metrics & Losses', icon: BarChart3, number: 7 },
+          { id: 'details', label: 'Additional Details', icon: FileText, number: 8 },
         ].map((tab) => {
           const Icon = tab.icon;
-          const isActive = rightPanelOpen && rightPanelTab === tab.id;
+          const isExpanded = expandedRightPanelSections[tab.id as keyof typeof expandedRightPanelSections];
           const hasReviewNotifications = tab.id === 'review' && pendingReviewComments > 0;
           
           return (
-            <button
+            <Collapsible 
               key={tab.id}
-              onClick={() => {
-                if (rightPanelOpen && rightPanelTab === tab.id) {
-                  setRightPanelOpen(false);
-                } else {
-                  setRightPanelOpen(true);
-                  setRightPanelTab(tab.id as any);
-                  setSelectedHistoryDate(0);
-                }
-              }}
-              className={`relative flex items-center gap-0 py-4 px-3 border-b border-border transition-colors ${
-                isActive
-                  ? 'bg-muted/50 text-primary' 
-                  : hasReviewNotifications
-                    ? 'bg-blue-50 dark:bg-blue-950/30 border-l-2 border-l-blue-500 hover:bg-blue-100 dark:hover:bg-blue-950/50 text-blue-600'
-                    : 'hover:bg-muted/30 text-muted-foreground hover:text-foreground'
-              }`}
+              open={isExpanded}
+              onOpenChange={(open) => setExpandedRightPanelSections(prev => ({ ...prev, [tab.id]: open }))}
             >
-              {/* Notification Badge for Review/Challenge */}
-              {hasReviewNotifications && (
-                <span className="absolute -top-0.5 right-1 w-5 h-5 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse shadow-lg">
-                  {pendingReviewComments}
-                </span>
-              )}
+              <CollapsibleTrigger asChild>
+                <button
+                  className={`relative flex items-center gap-0 py-4 px-3 border-b border-border transition-colors w-full ${
+                    isExpanded
+                      ? 'bg-muted/50 text-primary' 
+                      : hasReviewNotifications
+                        ? 'bg-blue-50 dark:bg-blue-950/30 border-l-2 border-l-blue-500 hover:bg-blue-100 dark:hover:bg-blue-950/50 text-blue-600'
+                        : 'hover:bg-muted/30 text-muted-foreground hover:text-foreground'
+                  }`}
+                >
+                  {/* Section Number Badge */}
+                  <Badge variant="outline" className="absolute -top-1 -left-0.5 w-4 h-4 p-0 text-[8px] flex items-center justify-center bg-background">
+                    {tab.number}
+                  </Badge>
+                  
+                  {/* Notification Badge for Review/Challenge */}
+                  {hasReviewNotifications && (
+                    <span className="absolute -top-0.5 right-1 w-5 h-5 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse shadow-lg">
+                      {pendingReviewComments}
+                    </span>
+                  )}
+                  
+                  {/* Icon box */}
+                  <div className={`p-2.5 rounded-lg transition-colors ${
+                    isExpanded 
+                      ? 'bg-primary/10' 
+                      : hasReviewNotifications
+                        ? 'bg-blue-100 dark:bg-blue-900/50'
+                        : 'bg-muted/80'
+                  }`}>
+                    <Icon className={`w-5 h-5 ${hasReviewNotifications && !isExpanded ? 'text-blue-600' : ''}`} />
+                  </div>
+                  
+                  {/* Vertical text with chevron */}
+                  <span className={`text-xs font-medium [writing-mode:vertical-rl] rotate-180 ml-1 ${hasReviewNotifications && !isExpanded ? 'text-blue-600 font-semibold' : ''}`}>
+                    {tab.label}
+                  </span>
+                  
+                  {/* Expand/Collapse Chevron */}
+                  {isExpanded ? <ChevronUp className="w-3 h-3 ml-0.5" /> : <ChevronDown className="w-3 h-3 ml-0.5" />}
+                </button>
+              </CollapsibleTrigger>
               
-              {/* Icon box */}
-              <div className={`p-2.5 rounded-lg transition-colors ${
-                isActive 
-                  ? 'bg-primary/10' 
-                  : hasReviewNotifications
-                    ? 'bg-blue-100 dark:bg-blue-900/50'
-                    : 'bg-muted/80'
-              }`}>
-                <Icon className={`w-5 h-5 ${hasReviewNotifications && !isActive ? 'text-blue-600' : ''}`} />
-              </div>
-              
-              {/* Vertical text */}
-              <span className={`text-xs font-medium [writing-mode:vertical-rl] rotate-180 ml-1 ${hasReviewNotifications && !isActive ? 'text-blue-600 font-semibold' : ''}`}>
-                {tab.label}
-              </span>
-            </button>
+              <CollapsibleContent className="animate-accordion-down">
+                <div className="p-2 bg-background border-b border-border text-[10px] max-w-[180px]">
+                  {tab.id === 'review' && (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1">
+                        <Badge className="text-[8px] px-1 bg-blue-500">{pendingReviewComments} pending</Badge>
+                      </div>
+                      <p className="text-muted-foreground truncate text-[9px]">Michael Chen tagged you...</p>
+                    </div>
+                  )}
+                  {tab.id === 'treatment' && (
+                    <div className="space-y-1">
+                      <p className="font-medium text-[9px]">3 Action Items</p>
+                      <p className="text-muted-foreground truncate text-[9px]">TRT-001: 65% complete</p>
+                    </div>
+                  )}
+                  {tab.id === 'metrics' && (
+                    <div className="space-y-1">
+                      <p className="font-medium text-[9px]">4 KRIs</p>
+                      <p className="text-muted-foreground truncate text-[9px]">2 below threshold</p>
+                    </div>
+                  )}
+                  {tab.id === 'details' && (
+                    <div className="space-y-1">
+                      <p className="font-medium text-[9px]">Attachments</p>
+                      <p className="text-muted-foreground truncate text-[9px]">3 files attached</p>
+                    </div>
+                  )}
+                  
+                  {/* Button to open full panel */}
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="w-full mt-1.5 h-6 text-[9px] gap-1"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRightPanelOpen(true);
+                      setRightPanelTab(tab.id as any);
+                      setSelectedHistoryDate(0);
+                    }}
+                  >
+                    <Maximize2 className="w-2.5 h-2.5" />
+                    Expand Full View
+                  </Button>
+                </div>
+              </CollapsibleContent>
+            </Collapsible>
           );
         })}
       </div>
