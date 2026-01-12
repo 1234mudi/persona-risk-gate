@@ -1507,243 +1507,529 @@ const Dashboard1stLine = () => {
             }
           };
 
+          // Expanded card state
+          const [expandedCard, setExpandedCard] = React.useState<string | null>(null);
+          const toggleCardExpand = (cardId: string) => {
+            setExpandedCard(prev => prev === cardId ? null : cardId);
+          };
+
+          // Placeholder data for new cards
+          const naJustificationsCounts = { pending: 2, drafted: 1, awaiting: 1, approved: 1 };
+          const lossEventsCounts = { pendingTriage: 1, inTriage: 3, closed: 0 };
+          const driftAlertsCounts = { critical: 1, high: 1, medium: 1 };
+          const remediationTasksCounts = { open: 2, inProgress: 1, validation: 1, closed: 0 };
+
+          // Calculate assessment percentages
+          const totalAssessments = assessmentStatusCounts.total;
+          const completedAssessments = assessmentStatusCounts.completed;
+          const completionPercent = totalAssessments > 0 ? Math.round((completedAssessments / totalAssessments) * 100) : 0;
+          const requiresAction = totalAssessments - completedAssessments;
+
+          // Calculate control effectiveness percentage
+          const totalControlRisks = controlEvidenceCounts.total;
+          const effectiveControls = controlEvidenceCounts.effective;
+          const effectivenessPercent = totalControlRisks > 0 ? Math.round((effectiveControls / totalControlRisks) * 100) : 0;
+          const needsAttention = controlEvidenceCounts.partiallyEffective + controlEvidenceCounts.ineffective;
+
+          // Calculate inherent risk critical+high total
+          const criticalHighTotal = inherentRiskCounts.critical + inherentRiskCounts.high;
+
           return (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-              {metrics.map((metric, index) => {
-                const accentColors = getMetricAccentColor(metric.title);
-                return (
-                  <Card 
-                    key={index}
-                    className="border-2 border-border/50 dark:border-border shadow-sm hover:shadow-md transition-shadow bg-white dark:bg-card relative cursor-pointer rounded-none"
-                    onClick={() => {
-                      setSelectedMetric(metric);
-                      setMetricDetailsOpen(true);
-                    }}
-                  >
-                    <CardContent className="p-2 sm:p-2.5">
-                      <div className="flex items-start justify-between mb-0.5 sm:mb-1">
-                        <h3 className="text-xs sm:text-sm font-bold text-[#10052F] dark:text-white leading-tight">{metric.title}</h3>
-                        <div className={`w-5 h-5 sm:w-6 sm:h-6 rounded-full ${accentColors.bg} border ${accentColors.border} flex items-center justify-center flex-shrink-0`}>
-                          <metric.icon className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${accentColors.text}`} />
-                        </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-6">
+              {/* Left Column */}
+              <div className="space-y-3">
+                {/* Assessment Status Card */}
+                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <CalendarCheck className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          ASSESSMENT STATUS
+                        </span>
                       </div>
-                  
-                      <div className="space-y-0.5">
-                        <div className="flex items-baseline justify-between gap-2">
-                          <div className="flex items-baseline gap-1.5">
-                            {typeof metric.value === 'string' ? (
-                              <>
-                                <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
-                                  {metric.value.split(' ')[0]}
-                                </span>
-                                <span className="text-[10px] sm:text-xs text-muted-foreground font-normal">
-                                  {metric.value.split(' ').slice(1).join(' ')}
-                                </span>
-                              </>
-                            ) : (
-                              <span className="text-lg sm:text-xl font-bold text-[#10052F] dark:text-white">
-                                {metric.value}{'isPercentage' in metric && metric.isPercentage ? "%" : ""}
-                              </span>
-                            )}
-                          </div>
-                          <div className="flex items-center gap-1">
-                            {metric.trendUp ? (
-                              <TrendingUp className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-green-600" />
-                            ) : (
-                              <TrendingDown className="w-2 h-2 sm:w-2.5 sm:h-2.5 text-red-600" />
-                            )}
-                            <span className={`text-[9px] sm:text-[10px] font-medium ${metric.trendUp ? "text-green-600" : "text-red-600"}`}>
-                              {metric.trend}
-                            </span>
-                          </div>
+                      <button 
+                        onClick={() => toggleCardExpand('assessment')}
+                        className="flex items-center gap-1 text-xs text-primary hover:text-primary/80 font-medium"
+                      >
+                        CLICK TO EXPAND
+                        <ChevronDown className={cn("w-4 h-4 transition-transform", expandedCard === 'assessment' && "rotate-180")} />
+                      </button>
+                    </div>
+                    
+                    {/* Summary row */}
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <span className="text-2xl font-bold text-foreground">{requiresAction}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Requiring Action</span>
+                      </div>
+                      <span className="text-xs text-destructive font-medium">{assessmentStatusCounts.overdue} overdue</span>
+                    </div>
+                    
+                    {/* Donut chart + Progress bars */}
+                    <div className="flex gap-4">
+                      {/* Donut chart */}
+                      <div className="relative w-16 h-16 flex-shrink-0">
+                        <svg viewBox="0 0 36 36" className="w-16 h-16">
+                          {/* Background circle */}
+                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="hsl(var(--muted))" strokeWidth="3" />
+                          {/* Progress circle */}
+                          <circle 
+                            cx="18" cy="18" r="15.9" fill="none" 
+                            stroke="hsl(143 57% 43%)" strokeWidth="3"
+                            strokeDasharray={`${completionPercent} ${100 - completionPercent}`}
+                            strokeDashoffset="25"
+                            strokeLinecap="round"
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-base font-bold text-success">{completionPercent}%</span>
+                          <span className="text-[7px] text-muted-foreground uppercase">Complete</span>
                         </div>
-                        
-                        {/* Chart - Pie or Bar */}
-                        <div className="space-y-0.5">
-                          {'chartType' in metric && metric.chartType === 'pie' ? (
-                            // Filled Pie Chart
-                            (() => {
-                              const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string; chartColor?: string }>;
-                              let total = 0;
-                              for (const s of segments) total += s.value;
-                              
-                              // Calculate pie slices
-                              const slices: Array<{ path: string; color: string; percent: number }> = [];
-                              let currentAngle = 0;
-                              const cx = 18, cy = 18, r = 16;
-                              
-                              segments.forEach((segment) => {
-                                const percent = total > 0 ? (segment.value / total) * 100 : 0;
-                                const angle = (percent / 100) * 360;
-                                const startAngle = currentAngle;
-                                const endAngle = currentAngle + angle;
-                                
-                                // Convert angles to radians
-                                const startRad = (startAngle - 90) * (Math.PI / 180);
-                                const endRad = (endAngle - 90) * (Math.PI / 180);
-                                
-                                // Calculate arc points
-                                const x1 = cx + r * Math.cos(startRad);
-                                const y1 = cy + r * Math.sin(startRad);
-                                const x2 = cx + r * Math.cos(endRad);
-                                const y2 = cy + r * Math.sin(endRad);
-                                
-                                // Large arc flag
-                                const largeArc = angle > 180 ? 1 : 0;
-                                
-                                // Create path
-                                const path = `M ${cx} ${cy} L ${x1} ${y1} A ${r} ${r} 0 ${largeArc} 1 ${x2} ${y2} Z`;
-                                
-                                slices.push({ path, color: segment.chartColor || '#888', percent });
-                                currentAngle = endAngle;
-                              });
-                              
-                              return (
-                                <div className="flex items-center gap-2">
-                                  <div className="relative w-10 h-10 sm:w-12 sm:h-12">
-                                    <svg viewBox="0 0 36 36" className="w-10 h-10 sm:w-12 sm:h-12">
-                                      {slices.map((slice, idx) => (
-                                        <path
-                                          key={idx}
-                                          d={slice.path}
-                                          fill={slice.color}
-                                          className="transition-all duration-500"
-                                        />
-                                      ))}
-                                    </svg>
-                                  </div>
-                                  <div className="flex flex-col gap-0.5">
-                                    {segments.map((segment, idx) => {
-                                      const percent = total > 0 ? Math.round((segment.value / total) * 100) : 0;
-                                      return (
-                                        <div key={idx} className="flex items-center gap-1">
-                                          <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full ${segment.color}`} />
-                                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                            {segment.value} {segment.label} ({percent}%)
-                                          </span>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                </div>
-                              );
-                            })()
-                          ) : (
-                            // Bar Chart (default) - with clickable segments for Assessment Status
-                            (() => {
-                              const segments = metric.segments as Array<{ label: string; value: number; sublabel: string; color: string }>;
-                              const isAssessmentStatus = metric.title === "Assessment Status";
-                              const segmentRows = 'segmentRows' in metric ? (metric as any).segmentRows : null;
-                              let total = 0;
-                              for (const s of segments) total += s.value;
-                              
-                              // If this card has segmentRows (dual progress bars), render them
-                              if (segmentRows) {
-                                return (
-                                  <div className="space-y-1.5">
-                                    {segmentRows.map((row: { label: string; segments: Array<{ label: string; value: number; color: string }> }, rowIdx: number) => {
-                                      let rowTotal = 0;
-                                      for (const s of row.segments) rowTotal += s.value;
-                                      
-                                      return (
-                                        <div key={rowIdx} className="space-y-0.5">
-                                          <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground uppercase tracking-wide">{row.label}</span>
-                                          <div className="flex h-2 sm:h-2.5 rounded-md overflow-hidden">
-                                            {row.segments.map((segment, idx) => {
-                                              const percentage = rowTotal > 0 ? (segment.value / rowTotal) * 100 : 0;
-                                              if (percentage === 0) return null;
-                                              return (
-                                                <Tooltip key={idx}>
-                                                  <TooltipTrigger asChild>
-                                                    <div
-                                                      className={`${segment.color} cursor-pointer hover:opacity-80 transition-opacity flex items-center justify-center`}
-                                                      style={{ width: `${percentage}%` }}
-                                                      onClick={(e) => handleSegmentClick(segment.label, e)}
-                                                    >
-                                                      {percentage > 20 && (
-                                                        <span className="text-[7px] sm:text-[8px] font-medium text-white truncate px-0.5">
-                                                          {segment.value}
-                                                        </span>
-                                                      )}
-                                                    </div>
-                                                  </TooltipTrigger>
-                                                  <TooltipContent>
-                                                    <p>{segment.label}: {segment.value} ({Math.round(percentage)}%)</p>
-                                                    <p className="text-xs text-muted-foreground">Click to filter</p>
-                                                  </TooltipContent>
-                                                </Tooltip>
-                                              );
-                                            })}
-                                          </div>
-                                          {/* Row Legend */}
-                                          <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                                            {row.segments.map((segment, idx) => (
-                                              <button 
-                                                key={idx} 
-                                                className="flex items-center gap-0.5 hover:bg-muted/50 rounded px-0.5 py-0 transition-colors"
-                                                onClick={(e) => handleSegmentClick(segment.label, e)}
-                                              >
-                                                <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
-                                                <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                                  {segment.value} {segment.label}
-                                                </span>
-                                              </button>
-                                            ))}
-                                          </div>
-                                        </div>
-                                      );
-                                    })}
-                                  </div>
-                                );
-                              }
-                              
-                              return (
-                                <>
-                                  <div className="flex h-2 sm:h-2.5 rounded overflow-hidden">
-                                    {segments.map((segment, idx) => {
-                                      const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                                      return (
-                                        <div
-                                          key={idx}
-                                          className={segment.color}
-                                          style={{ width: `${percentage}%` }}
-                                        />
-                                      );
-                                    })}
-                                  </div>
-                                  
-                                  {/* Legend */}
-                                  <div className="flex flex-wrap gap-x-1.5 gap-y-0">
-                                    {segments.map((segment, idx) => (
-                                      <div key={idx} className="flex items-center gap-0.5">
-                                        <div className={`w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-sm ${segment.color}`} />
-                                        <span className="text-[8px] sm:text-[9px] font-medium text-muted-foreground">
-                                          {segment.sublabel || segment.label}
-                                        </span>
-                                      </div>
-                                    ))}
-                                  </div>
-                                </>
-                              );
-                            })()
-                          )}
-                        </div>
-                        
-                        <p className="text-[8px] sm:text-[9px] text-muted-foreground leading-snug hidden sm:block">
-                          {metric.description}
-                        </p>
                       </div>
                       
-                      {/* AI Generated Icon */}
-                      <div className="absolute bottom-1 right-1 sm:bottom-1.5 sm:right-1.5">
-                        <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full ${accentColors.bg} border ${accentColors.border} flex items-center justify-center`}>
-                          <Sparkles className={`w-2 h-2 sm:w-2.5 sm:h-2.5 ${accentColors.text}`} />
+                      {/* Progress bars */}
+                      <div className="flex-1 space-y-1.5">
+                        <div>
+                          <span className="text-[9px] text-muted-foreground uppercase tracking-wide">DEADLINE STATUS</span>
+                          <div className="flex h-2 rounded overflow-hidden mt-0.5">
+                            {assessmentStatusCounts.overdue > 0 && (
+                              <div className="bg-destructive" style={{width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} />
+                            )}
+                            {assessmentStatusCounts.dueThisWeek > 0 && (
+                              <div className="bg-warning" style={{width: `${(assessmentStatusCounts.dueThisWeek / totalAssessments) * 100}%`}} />
+                            )}
+                            {assessmentStatusCounts.dueThisMonth > 0 && (
+                              <div className="bg-success" style={{width: `${(assessmentStatusCounts.dueThisMonth / totalAssessments) * 100}%`}} />
+                            )}
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[9px] text-muted-foreground uppercase tracking-wide">WORKFLOW PROGRESS</span>
+                          <div className="flex h-2 rounded overflow-hidden mt-0.5">
+                            {assessmentStatusCounts.completed > 0 && (
+                              <div className="bg-success" style={{width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} />
+                            )}
+                            {assessmentStatusCounts.pendingApproval > 0 && (
+                              <div className="bg-[#A361CF]" style={{width: `${(assessmentStatusCounts.pendingApproval / totalAssessments) * 100}%`}} />
+                            )}
+                            {assessmentStatusCounts.inProgress > 0 && (
+                              <div className="bg-warning" style={{width: `${(assessmentStatusCounts.inProgress / totalAssessments) * 100}%`}} />
+                            )}
+                            {assessmentStatusCounts.notStarted > 0 && (
+                              <div className="bg-destructive" style={{width: `${(assessmentStatusCounts.notStarted / totalAssessments) * 100}%`}} />
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex flex-wrap gap-x-2 gap-y-0 text-[8px] text-muted-foreground">
+                          <span>{assessmentStatusCounts.completed} Done</span>
+                          <span>{assessmentStatusCounts.overdue} Overdue</span>
+                          <span>{assessmentStatusCounts.inProgress} In Progress</span>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                );
-              })}
+                    </div>
+                    
+                    <p className="text-[9px] text-muted-foreground mt-2">
+                      Track assessment deadlines and workflow progress.
+                    </p>
+                    
+                    {/* Expandable dropdown - shows risk table */}
+                    {expandedCard === 'assessment' && (
+                      <div className="mt-3 border-t pt-3 max-h-[400px] overflow-y-auto">
+                        <Table>
+                          <TableHeader>
+                            <TableRow>
+                              <TableHead className="text-xs py-2">Risk ID</TableHead>
+                              <TableHead className="text-xs py-2">Title</TableHead>
+                              <TableHead className="text-xs py-2">Status</TableHead>
+                              <TableHead className="text-xs py-2">Due Date</TableHead>
+                            </TableRow>
+                          </TableHeader>
+                          <TableBody>
+                            {visibleRisks.slice(0, 10).map((risk, idx) => (
+                              <TableRow key={idx} className="hover:bg-muted/50">
+                                <TableCell className="text-xs py-2 font-mono">{risk.id}</TableCell>
+                                <TableCell className="text-xs py-2">
+                                  <button 
+                                    onClick={() => handleRiskNameClick(risk)}
+                                    className="text-left hover:text-primary transition-colors hover:underline text-blue-600 dark:text-blue-400"
+                                  >
+                                    {risk.title}
+                                  </button>
+                                </TableCell>
+                                <TableCell className="py-2">
+                                  <Badge className={`${getStatusColor(risk.status)} text-[10px] px-2 py-0.5`}>{risk.status}</Badge>
+                                </TableCell>
+                                <TableCell className="text-xs py-2">{format(parseISO(risk.dueDate), 'MMM dd, yyyy')}</TableCell>
+                              </TableRow>
+                            ))}
+                          </TableBody>
+                        </Table>
+                        {visibleRisks.length > 10 && (
+                          <p className="text-xs text-muted-foreground text-center mt-2">
+                            Showing 10 of {visibleRisks.length} risks
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+
+                {/* N/A Justifications Card */}
+                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <X className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          N/A JUSTIFICATIONS
+                        </span>
+                      </div>
+                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        EXPAND
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="text-2xl font-bold text-foreground">{naJustificationsCounts.pending + naJustificationsCounts.drafted}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Pending</span>
+                    </div>
+                    
+                    {/* Status boxes */}
+                    <div className="flex gap-2 mb-2">
+                      <div className="flex-1 bg-destructive/20 border border-destructive/30 rounded p-2 text-center">
+                        <div className="text-lg font-bold text-destructive">{naJustificationsCounts.pending}</div>
+                        <div className="text-[8px] text-destructive uppercase">Pending</div>
+                      </div>
+                      <div className="flex-1 bg-warning/20 border border-warning/30 rounded p-2 text-center">
+                        <div className="text-lg font-bold text-warning">{naJustificationsCounts.drafted}</div>
+                        <div className="text-[8px] text-warning uppercase">Drafted</div>
+                      </div>
+                      <div className="flex-1 bg-warning/20 border border-warning/30 rounded p-2 text-center">
+                        <div className="text-lg font-bold text-warning">{naJustificationsCounts.awaiting}</div>
+                        <div className="text-[8px] text-warning uppercase">Awaiting</div>
+                      </div>
+                      <div className="flex-1 bg-success/20 border border-success/30 rounded p-2 text-center">
+                        <div className="text-lg font-bold text-success">{naJustificationsCounts.approved}</div>
+                        <div className="text-[8px] text-success uppercase">Approved</div>
+                      </div>
+                    </div>
+                    
+                    {/* Progress bar */}
+                    <div className="flex h-2 rounded overflow-hidden mb-1">
+                      <div className="bg-destructive" style={{width: '40%'}} />
+                      <div className="bg-warning" style={{width: '20%'}} />
+                      <div className="bg-warning" style={{width: '20%'}} />
+                      <div className="bg-success" style={{width: '20%'}} />
+                    </div>
+                    <div className="flex justify-between text-[8px] text-muted-foreground">
+                      <span>Start</span>
+                      <span>Complete</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Loss Events Card */}
+                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <AlertCircle className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          LOSS EVENTS
+                        </span>
+                      </div>
+                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        EXPAND
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="text-2xl font-bold text-foreground">{lossEventsCounts.pendingTriage}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
+                    </div>
+                    
+                    {/* Segmented bar */}
+                    <div className="flex h-2.5 rounded overflow-hidden mb-1">
+                      <div className="bg-destructive" style={{width: `${(lossEventsCounts.pendingTriage / 4) * 100}%`}} />
+                      <div className="bg-warning" style={{width: `${(lossEventsCounts.inTriage / 4) * 100}%`}} />
+                      <div className="bg-success" style={{width: `${(lossEventsCounts.closed / 4) * 100}%`}} />
+                    </div>
+                    <div className="flex gap-3 text-[9px] text-muted-foreground">
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-destructive"></span> Pending: {lossEventsCounts.pendingTriage}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-warning"></span> In Triage: {lossEventsCounts.inTriage}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-success"></span> Closed: {lossEventsCounts.closed}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Drift Alerts Card */}
+                <Card className="border-l-4 border-l-blue-500 border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          DRIFT ALERTS
+                        </span>
+                      </div>
+                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        EXPAND
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="text-2xl font-bold text-foreground">{driftAlertsCounts.critical + driftAlertsCounts.high + driftAlertsCounts.medium}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Active Alerts</span>
+                    </div>
+                    
+                    {/* Segmented bar */}
+                    <div className="flex h-2.5 rounded overflow-hidden mb-1">
+                      <div className="bg-destructive" style={{width: `${(driftAlertsCounts.critical / 3) * 100}%`}} />
+                      <div className="bg-warning" style={{width: `${(driftAlertsCounts.high / 3) * 100}%`}} />
+                      <div className="bg-[#F1BA50]" style={{width: `${(driftAlertsCounts.medium / 3) * 100}%`}} />
+                    </div>
+                    <div className="flex gap-3 text-[9px] text-muted-foreground">
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-destructive"></span> Critical: {driftAlertsCounts.critical}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-warning"></span> High: {driftAlertsCounts.high}</span>
+                      <span className="flex items-center gap-1"><span className="w-2 h-2 rounded-sm bg-[#F1BA50]"></span> Medium: {driftAlertsCounts.medium}</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Column */}
+              <div className="space-y-3">
+                {/* Inherent Risk Ratings Card */}
+                <Card className="border-l-4 border-l-[#A361CF] border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <AlertTriangle className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          INHERENT RISK RATINGS
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
+                      </span>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="text-2xl font-bold text-foreground">{criticalHighTotal}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Critical & High</span>
+                    </div>
+                    
+                    {/* Donut chart + Legend */}
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-16 h-16 flex-shrink-0">
+                        <svg viewBox="0 0 36 36" className="w-16 h-16">
+                          {/* Critical slice */}
+                          <circle 
+                            cx="18" cy="18" r="10" fill="none" 
+                            stroke="hsl(2 88% 60%)" strokeWidth="8"
+                            strokeDasharray={`${(inherentRiskCounts.critical / inherentRiskCounts.total) * 62.8} 62.8`}
+                            strokeDashoffset="15.7"
+                          />
+                          {/* High slice */}
+                          <circle 
+                            cx="18" cy="18" r="10" fill="none" 
+                            stroke="hsl(36 100% 40%)" strokeWidth="8"
+                            strokeDasharray={`${(inherentRiskCounts.high / inherentRiskCounts.total) * 62.8} 62.8`}
+                            strokeDashoffset={`${15.7 - (inherentRiskCounts.critical / inherentRiskCounts.total) * 62.8}`}
+                          />
+                          {/* Medium slice */}
+                          <circle 
+                            cx="18" cy="18" r="10" fill="none" 
+                            stroke="hsl(42 100% 63%)" strokeWidth="8"
+                            strokeDasharray={`${(inherentRiskCounts.medium / inherentRiskCounts.total) * 62.8} 62.8`}
+                            strokeDashoffset={`${15.7 - ((inherentRiskCounts.critical + inherentRiskCounts.high) / inherentRiskCounts.total) * 62.8}`}
+                          />
+                        </svg>
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-sm font-bold text-foreground">{criticalHighTotal}</span>
+                          <span className="text-[6px] text-muted-foreground uppercase">CRIT+HIGH</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-destructive" />
+                          <span className="text-xs text-foreground">Critical: {inherentRiskCounts.critical}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-warning" />
+                          <span className="text-xs text-foreground">High: {inherentRiskCounts.high}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-[#F1BA50]" />
+                          <span className="text-xs text-foreground">Medium: {inherentRiskCounts.medium}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Control Effectiveness Card */}
+                <Card className="border-l-4 border-l-[#A361CF] border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <FileCheck className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          CONTROL EFFECTIVENESS
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">{effectiveControls} effective</span>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="text-2xl font-bold text-foreground">{needsAttention}</span>
+                      <span className="text-sm text-muted-foreground ml-1">Needing Attention</span>
+                    </div>
+                    
+                    {/* Gauge chart */}
+                    <div className="flex items-center gap-4">
+                      <div className="relative w-20 h-10 flex-shrink-0">
+                        <svg viewBox="0 0 100 50" className="w-20 h-10">
+                          {/* Background arc */}
+                          <path 
+                            d="M 10 50 A 40 40 0 0 1 90 50" 
+                            fill="none" 
+                            stroke="hsl(var(--muted))" 
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                          />
+                          {/* Progress arc */}
+                          <path 
+                            d="M 10 50 A 40 40 0 0 1 90 50" 
+                            fill="none" 
+                            stroke="hsl(143 57% 43%)" 
+                            strokeWidth="8"
+                            strokeLinecap="round"
+                            strokeDasharray={`${(effectivenessPercent / 100) * 126} 126`}
+                          />
+                        </svg>
+                        <div className="absolute inset-x-0 bottom-0 text-center">
+                          <span className="text-lg font-bold text-success">{effectivenessPercent}%</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex-1">
+                        <div className="flex h-2 rounded overflow-hidden mb-1">
+                          <div className="bg-success" style={{width: `${(effectiveControls / totalControlRisks) * 100}%`}} />
+                          <div className="bg-warning" style={{width: `${(controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100}%`}} />
+                          <div className="bg-destructive" style={{width: `${(controlEvidenceCounts.ineffective / totalControlRisks) * 100}%`}} />
+                        </div>
+                        <div className="flex flex-wrap gap-x-2 text-[8px] text-muted-foreground">
+                          <span>Effective: {effectiveControls}</span>
+                          <span>Partial: {controlEvidenceCounts.partiallyEffective}</span>
+                          <span>Ineffective: {controlEvidenceCounts.ineffective}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* AI Root Cause Card */}
+                <Card className="border-l-4 border-l-[#6A75D8] border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <Sparkles className="w-4 h-4 text-[#6A75D8]" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          AI ROOT CAUSE
+                        </span>
+                      </div>
+                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        <Sparkles className="w-3 h-3 text-[#6A75D8]" />
+                        EXPAND
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="mb-2">
+                      <span className="text-2xl font-bold text-foreground">3</span>
+                      <span className="text-sm text-muted-foreground ml-1">Mapped Events</span>
+                    </div>
+                    
+                    {/* Timeline preview */}
+                    <div className="border-l-2 border-[#6A75D8]/50 pl-3 space-y-2">
+                      <div className="relative">
+                        <div className="absolute -left-[17px] w-2 h-2 rounded-full bg-[#6A75D8]" />
+                        <div className="text-xs font-medium text-foreground">LE-2025-001</div>
+                        <div className="text-[9px] text-muted-foreground">Jan 8, 2025</div>
+                        <div className="flex gap-1 mt-1 flex-wrap">
+                          <Badge className="text-[8px] px-1 py-0 bg-[#6A75D8]/20 text-[#6A75D8] border-0">ROOT CAUSE</Badge>
+                          <Badge className="text-[8px] px-1 py-0 bg-muted text-muted-foreground border-0">3 FACTORS</Badge>
+                          <Badge className="text-[8px] px-1 py-0 bg-destructive/20 text-destructive border-0">2 FAILED</Badge>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Remediation Tasks Card */}
+                <Card className="border-l-4 border-l-[#6A75D8] border border-border shadow-sm bg-card">
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <CheckSquare className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-xs font-bold uppercase tracking-wide text-foreground">
+                          REMEDIATION TASKS
+                        </span>
+                      </div>
+                      <button className="flex items-center gap-1 text-xs text-muted-foreground cursor-not-allowed">
+                        CLICK TO EXPAND
+                        <ChevronDown className="w-4 h-4" />
+                      </button>
+                    </div>
+                    
+                    <div className="flex items-center justify-between mb-2">
+                      <div>
+                        <span className="text-2xl font-bold text-foreground">{remediationTasksCounts.open}</span>
+                        <span className="text-sm text-muted-foreground ml-1">Open Tasks</span>
+                      </div>
+                      <span className="text-xs text-destructive">1 critical</span>
+                    </div>
+                    
+                    {/* Horizontal bar chart */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-muted-foreground w-16">Open</span>
+                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
+                          <div className="h-full bg-destructive" style={{width: '50%'}} />
+                        </div>
+                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.open}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-muted-foreground w-16">In Progress</span>
+                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
+                          <div className="h-full bg-warning" style={{width: '25%'}} />
+                        </div>
+                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.inProgress}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-muted-foreground w-16">Validation</span>
+                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
+                          <div className="h-full bg-[#6A75D8]" style={{width: '25%'}} />
+                        </div>
+                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.validation}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-muted-foreground w-16">Closed</span>
+                        <div className="flex-1 h-2 bg-muted rounded overflow-hidden">
+                          <div className="h-full bg-success" style={{width: '0%'}} />
+                        </div>
+                        <span className="text-[9px] text-foreground w-4">{remediationTasksCounts.closed}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           );
         })()}
