@@ -1723,7 +1723,7 @@ const Dashboard1stLine = () => {
                 </a>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Download sample risk assessment data to test the AI Document Parser feature</p>
+                <p>Download sample risk assessment data to test the Risk Assessment Upload feature</p>
               </TooltipContent>
             </Tooltip>
           </div>
@@ -1738,7 +1738,7 @@ const Dashboard1stLine = () => {
               className="h-7 text-xs rounded-none border-primary text-primary hover:bg-primary/10 gap-1.5"
             >
               <FileText className="w-3.5 h-3.5" />
-              AI Document Parser
+              Risk Assessment Upload
             </Button>
             
             {/* Summarize and Export Button */}
