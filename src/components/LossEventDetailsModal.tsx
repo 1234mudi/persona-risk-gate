@@ -4,10 +4,12 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogClose,
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { AlertTriangle, Shield, Lightbulb, XCircle, Calendar, Building2, Link, DollarSign } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { AlertTriangle, Shield, Lightbulb, XCircle, Calendar, Building2, Link, DollarSign, X } from "lucide-react";
 
 interface LossEvent {
   id: string;
@@ -55,25 +57,31 @@ export const LossEventDetailsModal: React.FC<LossEventDetailsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto" hideCloseButton>
         <DialogHeader className="pb-4 border-b border-border">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="w-10 h-10 rounded-full bg-destructive/10 border border-destructive/20 flex items-center justify-center flex-shrink-0">
                 <DollarSign className="w-5 h-5 text-destructive" />
               </div>
-              <div>
+              <div className="min-w-0">
                 <DialogTitle className="text-lg font-semibold">{event.id}</DialogTitle>
-                <p className="text-sm text-muted-foreground mt-0.5">{event.description}</p>
+                <p className="text-sm text-muted-foreground mt-0.5 truncate">{event.description}</p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-shrink-0">
               <Badge className={`${getStatusBadgeColor(event.status)} rounded-full`}>
                 {event.status}
               </Badge>
               <Badge className="rounded-full bg-destructive/10 text-destructive border-destructive/20 font-semibold">
                 {event.amount}
               </Badge>
+              <DialogClose asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                  <X className="h-4 w-4" />
+                  <span className="sr-only">Close</span>
+                </Button>
+              </DialogClose>
             </div>
           </div>
         </DialogHeader>
