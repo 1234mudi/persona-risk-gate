@@ -2280,82 +2280,47 @@ const Dashboard1stLine = () => {
                       <span className="text-sm font-semibold text-red-500">1 critical</span>
                     </div>
                     
-                    {/* Individual horizontal bars */}
+                    {/* Single segmented progress bar - matching "Ongoing Review & Challenge" style */}
                     {(() => {
                       const total = remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed;
-                      const maxVal = Math.max(remediationTasksCounts.open, remediationTasksCounts.inProgress, remediationTasksCounts.validation, remediationTasksCounts.closed, 1);
+                      if (total === 0) return null;
+                      
+                      const segments = [
+                        { label: "Open", value: remediationTasksCounts.open, color: "bg-red-500" },
+                        { label: "In Progress", value: remediationTasksCounts.inProgress, color: "bg-amber-500" },
+                        { label: "Validation", value: remediationTasksCounts.validation, color: "bg-blue-500" },
+                        { label: "Closed", value: remediationTasksCounts.closed, color: "bg-green-500" },
+                      ];
+                      
                       return (
-                        <div className="flex flex-col gap-1.5 mb-2 flex-1">
-                          {/* Open Bar */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-muted-foreground w-16 text-right">Open</span>
-                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
-                              <div 
-                                className="h-full bg-red-500"
-                                style={{ width: `${(remediationTasksCounts.open / maxVal) * 100}%` }}
-                              />
-                            </div>
+                        <>
+                          {/* Progress bar */}
+                          <div className="flex h-1.5 rounded overflow-hidden mb-2">
+                            {segments.map((segment, idx) => {
+                              const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                              return (
+                                <div
+                                  key={idx}
+                                  className={segment.color}
+                                  style={{ width: `${percentage}%` }}
+                                />
+                              );
+                            })}
                           </div>
-                          
-                          {/* In Progress Bar */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-muted-foreground w-16 text-right">In Progress</span>
-                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
-                              <div 
-                                className="h-full bg-amber-500"
-                                style={{ width: `${(remediationTasksCounts.inProgress / maxVal) * 100}%` }}
-                              />
-                            </div>
+                          {/* Legend */}
+                          <div className="flex flex-wrap gap-x-2 gap-y-0.5 mb-2">
+                            {segments.map((segment, idx) => (
+                              <div key={idx} className="flex items-center gap-1">
+                                <div className={`w-2 h-2 rounded-sm ${segment.color}`} />
+                                <span className="text-[9px] font-medium text-muted-foreground">
+                                  {segment.value} {segment.label}
+                                </span>
+                              </div>
+                            ))}
                           </div>
-                          
-                          {/* Validation Bar */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-muted-foreground w-16 text-right">Validation</span>
-                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
-                              <div 
-                                className="h-full bg-blue-500"
-                                style={{ width: `${(remediationTasksCounts.validation / maxVal) * 100}%` }}
-                              />
-                            </div>
-                          </div>
-                          
-                          {/* Closed Bar */}
-                          <div className="flex items-center gap-2">
-                            <span className="text-[10px] text-muted-foreground w-16 text-right">Closed</span>
-                            <div className="flex-1 h-4 bg-gray-100 dark:bg-gray-800 rounded-sm overflow-hidden">
-                              <div 
-                                className="h-full bg-green-500"
-                                style={{ width: `${(remediationTasksCounts.closed / maxVal) * 100}%` }}
-                              />
-                            </div>
-                          </div>
-                        </div>
+                        </>
                       );
                     })()}
-                    
-                    {/* Legend - 2 column grid with counts */}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[10px] mb-2">
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-red-500" />
-                        <span className="text-red-600 dark:text-red-400">Open</span>
-                        <span className="font-semibold text-red-600 dark:text-red-400">{remediationTasksCounts.open}</span>
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-amber-500" />
-                        <span className="text-amber-600 dark:text-amber-400">In Progress</span>
-                        <span className="font-semibold text-amber-600 dark:text-amber-400">{remediationTasksCounts.inProgress}</span>
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-blue-500" />
-                        <span className="text-blue-600 dark:text-blue-400">Validation</span>
-                        <span className="font-semibold text-blue-600 dark:text-blue-400">{remediationTasksCounts.validation}</span>
-                      </span>
-                      <span className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                        <span className="text-green-600 dark:text-green-400">Closed</span>
-                        <span className="font-semibold text-green-600 dark:text-green-400">{remediationTasksCounts.closed}</span>
-                      </span>
-                    </div>
                     
                     <div className="border-t border-border mt-auto pt-1.5">
                       <p className="text-[9px] text-muted-foreground">
