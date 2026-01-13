@@ -2134,7 +2134,7 @@ const Dashboard1stLine = () => {
               <div className="flex flex-col gap-3">
                 {/* Control Effectiveness Card */}
                 <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[320px] overflow-hidden">
-                  <CardContent className="p-2.5 h-full flex flex-col">
+                  <CardContent className="p-2.5 pb-3 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -2154,9 +2154,9 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Speedometer gauge - centered */}
-                    <div className="flex-1 flex flex-col items-center justify-center">
+                    <div className="flex-1 flex flex-col items-center justify-center min-h-0">
                       <div className="w-44">
-                        <svg viewBox="0 0 100 55" className="w-44 h-22">
+                        <svg viewBox="0 0 100 55" className="w-44 h-[88px]">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2199,49 +2199,52 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
                     
-                    {/* Horizontal Stacked Bar Chart */}
-                    <div className="w-full h-3.5 flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-4">
-                      <div 
-                        className="bg-success h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-warning h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-destructive h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-gray-400 h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? 0 : 0}%` }}
-                      />
-                    </div>
+                    {/* Bottom section - pinned */}
+                    <div className="mt-auto w-full flex-shrink-0">
+                      {/* Horizontal Stacked Bar Chart */}
+                      <div className="w-full h-[14px] flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-3">
+                        <div 
+                          className="bg-success h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
+                        />
+                        <div 
+                          className="bg-warning h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
+                        />
+                        <div 
+                          className="bg-destructive h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
+                        />
+                        <div 
+                          className="bg-gray-400 h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? 0 : 0}%` }}
+                        />
+                      </div>
 
-                    {/* Legend */}
-                    <div className="flex justify-between w-full text-[9px] text-muted-foreground mt-2 mb-3">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-success" /> Effective: {effectiveControls}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-warning" /> Partial: {controlEvidenceCounts.partiallyEffective}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-destructive" /> Ineffective: {controlEvidenceCounts.ineffective}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0
-                      </span>
-                    </div>
-                    
-                    <div className="border-t border-border pt-2.5">
-                      <p className="text-[9px] text-muted-foreground">
-                        Aggregate control effectiveness across all risks.
-                      </p>
-                      <p className="text-[8px] text-muted-foreground/70 italic mt-0.5">
-                        How to read: Gauge shows overall %. Green=effective, orange=partial, red=ineffective.
-                      </p>
+                      {/* Legend */}
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-1 w-full text-[9px] text-muted-foreground mt-2 mb-2">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-success" /> Effective: {effectiveControls}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-warning" /> Partial: {controlEvidenceCounts.partiallyEffective}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-destructive" /> Ineffective: {controlEvidenceCounts.ineffective}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0
+                        </span>
+                      </div>
+                      
+                      <div className="border-t border-border pt-2">
+                        <p className="text-[9px] text-muted-foreground">
+                          Aggregate control effectiveness across all risks.
+                        </p>
+                        <p className="text-[8px] text-muted-foreground/70 italic mt-0.5">
+                          How to read: Gauge shows overall %. Green=effective, orange=partial, red=ineffective.
+                        </p>
+                      </div>
                     </div>
                   </CardContent>
                 </Card>
