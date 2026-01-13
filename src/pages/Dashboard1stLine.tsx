@@ -243,6 +243,11 @@ const Dashboard1stLine = () => {
       setExpandedPanel(null);
     } else {
       setExpandedPanel(panel);
+      
+      // Close risk table when opening a panel
+      setShowRiskTable(false);
+      setExpandedCard(null);
+      
       setTimeout(() => {
         ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }, 100);
@@ -1790,6 +1795,11 @@ const Dashboard1stLine = () => {
               const newShowState = !showRiskTable;
               setShowRiskTable(newShowState);
               setExpandedCard(newShowState ? 'assessment' : null);
+              
+              // Close any expanded panel when opening risk table
+              if (newShowState) {
+                setExpandedPanel(null);
+              }
               
               // Auto-scroll to table when showing
               if (newShowState) {
