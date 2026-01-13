@@ -2201,7 +2201,7 @@ const Dashboard1stLine = () => {
                     </div>
 
                     {/* Horizontal Stacked Bar Chart - taller */}
-                    <div className="w-full h-3.5 flex rounded-md overflow-hidden mb-3 mt-2">
+                    <div className="w-full h-2 flex rounded-full overflow-hidden mb-3 mt-2 shadow-sm">
                       <div 
                         className="bg-success h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
