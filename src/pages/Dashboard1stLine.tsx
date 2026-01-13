@@ -1990,7 +1990,7 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Main stats row */}
-                      <div className="flex items-baseline gap-6 mb-3">
+                      <div className="flex items-baseline gap-6 mb-4">
                         <div>
                           <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
                           <span className="text-xs text-muted-foreground ml-1.5">Events</span>
@@ -2002,13 +2002,13 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Analysis badge */}
-                      <div className="flex items-center gap-2 mb-3 bg-primary/5 px-2.5 py-1.5 rounded-md border border-primary/20">
+                      <div className="flex items-center gap-2 mb-4 bg-primary/5 px-2.5 py-1.5 rounded-md border border-primary/20">
                         <Sparkles className="w-3 h-3 text-primary" />
                         <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
                       </div>
                       
                       {/* Status breakdown */}
-                      <div className="flex flex-wrap gap-4 text-[9px] text-muted-foreground mb-3 flex-1">
+                      <div className="flex flex-wrap gap-5 text-[9px] text-muted-foreground mb-auto">
                         <span className="flex items-center gap-1.5">
                           <span className="w-2 h-2 rounded-full bg-destructive" /> 
                           {lossEventsData.filter(e => e.status === "Pending").length} Pending
@@ -2023,7 +2023,7 @@ const Dashboard1stLine = () => {
                         </span>
                       </div>
                       
-                      <div className="border-t border-border mt-auto pt-2">
+                      <div className="border-t border-border mt-auto pt-2.5">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Click expand to view events with AI root cause analysis.
                         </p>
@@ -2049,14 +2049,14 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Critical & High count */}
-                      <div className="mb-3">
+                      <div className="mb-4">
                         <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
                         <span className="text-xs text-muted-foreground ml-2">Critical & High</span>
                       </div>
                       
                       {/* Donut chart with legend */}
-                      <div className="flex items-center justify-center gap-6 flex-1">
-                        <div className="relative w-20 h-20 flex-shrink-0">
+                      <div className="flex items-center justify-center gap-8 flex-1">
+                        <div className="relative w-24 h-24 flex-shrink-0">
                           {(() => {
                             const circumference = 2 * Math.PI * 14;
                             const total = inherentRiskCounts.total || 1;
@@ -2067,7 +2067,7 @@ const Dashboard1stLine = () => {
                             const highAngle = highPct * 360;
                             
                             return (
-                              <svg viewBox="0 0 36 36" className="w-20 h-20">
+                              <svg viewBox="0 0 36 36" className="w-24 h-24">
                                 <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                                 <circle 
                                   cx="18" cy="18" r="14" fill="none" 
@@ -2096,7 +2096,7 @@ const Dashboard1stLine = () => {
                           </div>
                         </div>
                         
-                        <div className="flex flex-col gap-1.5">
+                        <div className="flex flex-col gap-2">
                           <div className="flex items-center gap-1.5">
                             <div className="w-2 h-2 rounded-full bg-destructive" />
                             <span className="text-[9px] text-destructive font-medium">Critical</span>
@@ -2115,7 +2115,7 @@ const Dashboard1stLine = () => {
                         </div>
                       </div>
                       
-                      <div className="border-t border-border pt-2 mt-auto">
+                      <div className="border-t border-border pt-2.5 mt-auto">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Critical+High indicates exposure requiring strong controls.
                         </p>
