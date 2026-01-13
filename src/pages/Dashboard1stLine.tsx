@@ -1971,10 +1971,10 @@ const Dashboard1stLine = () => {
                     <CardContent className="p-3 h-full flex flex-col">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <Sparkles className="w-3.5 h-3.5 text-primary" />
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <Sparkles className="w-3 h-3 text-primary" />
                           </div>
-                          <span className="text-xs font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                             LOSS EVENTS & ROOT CAUSE
                           </span>
                         </div>
@@ -1989,36 +1989,36 @@ const Dashboard1stLine = () => {
                         </button>
                       </div>
                       
-                      {/* Main stats row - more prominent */}
+                      {/* Main stats row */}
                       <div className="flex items-baseline gap-6 mb-3">
                         <div>
-                          <span className="text-3xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
-                          <span className="text-base text-muted-foreground ml-1.5">Events</span>
+                          <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
+                          <span className="text-xs text-muted-foreground ml-1.5">Events</span>
                         </div>
                         <div>
-                          <span className="text-lg font-bold text-destructive">${lossEventsStats.totalAmount.toLocaleString()}</span>
-                          <span className="text-sm text-muted-foreground ml-1">Total Loss</span>
+                          <span className="text-base font-bold text-destructive">${lossEventsStats.totalAmount.toLocaleString()}</span>
+                          <span className="text-xs text-muted-foreground ml-1">Total Loss</span>
                         </div>
                       </div>
                       
-                      {/* Analysis badge - larger */}
-                      <div className="flex items-center gap-2.5 mb-3 bg-primary/5 px-3 py-2 rounded-md border border-primary/20">
-                        <Sparkles className="w-4 h-4 text-primary" />
-                        <span className="text-sm text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
+                      {/* Analysis badge */}
+                      <div className="flex items-center gap-2 mb-3 bg-primary/5 px-2.5 py-1.5 rounded-md border border-primary/20">
+                        <Sparkles className="w-3 h-3 text-primary" />
+                        <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
                       </div>
                       
-                      {/* Status breakdown - larger */}
-                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3 flex-1">
+                      {/* Status breakdown */}
+                      <div className="flex flex-wrap gap-4 text-[9px] text-muted-foreground mb-3 flex-1">
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> 
+                          <span className="w-2 h-2 rounded-full bg-destructive" /> 
                           {lossEventsData.filter(e => e.status === "Pending").length} Pending
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-warning" /> 
+                          <span className="w-2 h-2 rounded-full bg-warning" /> 
                           {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Review
                         </span>
                         <span className="flex items-center gap-1.5">
-                          <span className="w-2.5 h-2.5 rounded-full bg-success" /> 
+                          <span className="w-2 h-2 rounded-full bg-success" /> 
                           {lossEventsData.filter(e => e.status === "Closed").length} Closed
                         </span>
                       </div>
@@ -2036,27 +2036,27 @@ const Dashboard1stLine = () => {
                     <CardContent className="p-3 h-full flex flex-col">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <AlertTriangle className="w-3.5 h-3.5 text-primary" />
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <AlertTriangle className="w-3 h-3 text-primary" />
                           </div>
-                          <span className="text-xs font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                             INHERENT RISK RATINGS
                           </span>
                         </div>
-                        <span className="text-xs text-muted-foreground">
+                        <span className="text-[10px] text-muted-foreground">
                           {inherentRiskCounts.critical} crit, {inherentRiskCounts.high} high
                         </span>
                       </div>
                       
-                      {/* Critical & High count - more prominent */}
+                      {/* Critical & High count */}
                       <div className="mb-3">
-                        <span className="text-3xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
-                        <span className="text-base text-muted-foreground ml-2">Critical & High</span>
+                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                        <span className="text-xs text-muted-foreground ml-2">Critical & High</span>
                       </div>
                       
-                      {/* Donut chart with legend - larger */}
+                      {/* Donut chart with legend */}
                       <div className="flex items-center justify-center gap-6 flex-1">
-                        <div className="relative w-24 h-24 flex-shrink-0">
+                        <div className="relative w-20 h-20 flex-shrink-0">
                           {(() => {
                             const circumference = 2 * Math.PI * 14;
                             const total = inherentRiskCounts.total || 1;
@@ -2067,7 +2067,7 @@ const Dashboard1stLine = () => {
                             const highAngle = highPct * 360;
                             
                             return (
-                              <svg viewBox="0 0 36 36" className="w-24 h-24">
+                              <svg viewBox="0 0 36 36" className="w-20 h-20">
                                 <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                                 <circle 
                                   cx="18" cy="18" r="14" fill="none" 
@@ -2091,26 +2091,26 @@ const Dashboard1stLine = () => {
                             );
                           })()}
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-xl font-bold text-[#CE7900]">{criticalHighTotal}</span>
+                            <span className="text-base font-bold text-[#CE7900]">{criticalHighTotal}</span>
                             <span className="text-[8px] text-muted-foreground uppercase">CRIT+HIGH</span>
                           </div>
                         </div>
                         
-                        <div className="flex flex-col gap-2">
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-destructive" />
-                            <span className="text-sm text-destructive font-medium">Critical</span>
-                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-destructive" />
+                            <span className="text-[9px] text-destructive font-medium">Critical</span>
+                            <span className="text-[9px] font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-warning" />
-                            <span className="text-sm text-warning font-medium">High</span>
-                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-warning" />
+                            <span className="text-[9px] text-warning font-medium">High</span>
+                            <span className="text-[9px] font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <div className="w-3 h-3 rounded-full bg-accent" />
-                            <span className="text-sm text-accent font-medium">Medium</span>
-                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-accent" />
+                            <span className="text-[9px] text-accent font-medium">Medium</span>
+                            <span className="text-[9px] font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
                           </div>
                         </div>
                       </div>
@@ -2145,7 +2145,7 @@ const Dashboard1stLine = () => {
                     {/* "Needing Attention" on its own line */}
                     <div className="mb-1">
                       <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
-                      <span className="text-sm text-muted-foreground ml-2">Needing Attention</span>
+                      <span className="text-xs text-muted-foreground ml-2">Needing Attention</span>
                     </div>
                     
                     {/* Speedometer gauge - compact */}
@@ -2270,9 +2270,9 @@ const Dashboard1stLine = () => {
                           <span className="text-xl font-bold text-[#10052F] dark:text-white">
                             {remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation}
                           </span>
-                          <span className="text-sm text-muted-foreground">Open Tasks</span>
+                          <span className="text-xs text-muted-foreground">Open Tasks</span>
                         </div>
-                        <span className="text-sm font-semibold text-red-500">1 critical</span>
+                        <span className="text-xs font-semibold text-red-500">1 critical</span>
                       </div>
                     </div>
                     
