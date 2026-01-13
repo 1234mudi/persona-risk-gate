@@ -2202,7 +2202,7 @@ const Dashboard1stLine = () => {
                     {/* Bottom section - pinned */}
                     <div className="mt-auto w-full flex-shrink-0">
                       {/* Horizontal Stacked Bar Chart */}
-                      <div className="w-full h-[11px] flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-3">
+                      <div className="w-full h-[9px] flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-3">
                         <div 
                           className="bg-success h-full" 
                           style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
