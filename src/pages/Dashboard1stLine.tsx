@@ -2010,27 +2010,51 @@ const Dashboard1stLine = () => {
                         <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
                       </div>
                       
-                      {/* Status breakdown - centered vertically */}
-                      <div className="flex-1 flex items-center">
-                        <div className="flex flex-wrap gap-5 text-[9px] text-muted-foreground">
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> 
-                            {lossEventsData.filter(e => e.status === "Pending").length} Pending
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-warning" /> 
-                            {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Review
-                          </span>
-                          <span className="flex items-center gap-1.5">
-                            <span className="w-2.5 h-2.5 rounded-full bg-success" /> 
-                            {lossEventsData.filter(e => e.status === "Closed").length} Closed
-                          </span>
-                        </div>
+                      {/* Status breakdown with bar */}
+                      <div className="mt-auto">
+                        {(() => {
+                          const pending = lossEventsData.filter(e => e.status === "Pending").length;
+                          const review = lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length;
+                          const closed = lossEventsData.filter(e => e.status === "Closed").length;
+                          const total = pending + review + closed || 1;
+                          const pendingPct = (pending / total) * 100;
+                          const reviewPct = (review / total) * 100;
+                          const closedPct = (closed / total) * 100;
+                          
+                          return (
+                            <div className="w-full">
+                              {/* Progress bar */}
+                              <div className="flex h-3 rounded-full overflow-hidden mb-2 shadow-sm bg-gray-200 dark:bg-gray-700">
+                                <div className="bg-destructive" style={{ width: `${pendingPct}%` }} />
+                                <div className="bg-warning" style={{ width: `${reviewPct}%` }} />
+                                <div className="bg-success" style={{ width: `${closedPct}%` }} />
+                              </div>
+                              {/* Legend */}
+                              <div className="flex flex-wrap gap-5 text-[9px] text-muted-foreground">
+                                <span className="flex items-center gap-1.5">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> 
+                                  {pending} Pending
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-warning" /> 
+                                  {review} Review
+                                </span>
+                                <span className="flex items-center gap-1.5">
+                                  <span className="w-2.5 h-2.5 rounded-full bg-success" /> 
+                                  {closed} Closed
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        })()}
                       </div>
                       
-                      <div className="border-t border-border mt-auto pt-2">
+                      <div className="border-t border-border mt-3 pt-2">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Click expand to view events with AI root cause analysis.
+                        </p>
+                        <p className="text-[8px] text-muted-foreground/50 italic mt-0.5">
+                          How to read: Bar shows status mix. Red=pending action, orange=under review, green=resolved.
                         </p>
                       </div>
                     </CardContent>
@@ -2123,6 +2147,9 @@ const Dashboard1stLine = () => {
                       <div className="border-t border-border pt-2 mt-auto">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Critical+High indicates exposure requiring strong controls.
+                        </p>
+                        <p className="text-[8px] text-muted-foreground/50 italic mt-0.5">
+                          How to read: Donut shows distribution. Red=critical, orange=high, yellow=medium.
                         </p>
                       </div>
                     </CardContent>
@@ -2331,6 +2358,9 @@ const Dashboard1stLine = () => {
                     <div className="border-t border-border mt-auto pt-2">
                       <p className="text-[8px] text-muted-foreground/70 italic">
                         Track remediation progress. Target zero open items.
+                      </p>
+                      <p className="text-[8px] text-muted-foreground/50 italic mt-0.5">
+                        How to read: Bar shows task lifecycle. Red=open, orange=in progress, blue=validation, green=closed.
                       </p>
                     </div>
                   </CardContent>
