@@ -1838,7 +1838,7 @@ const Dashboard1stLine = () => {
               {/* Left Column - 50% */}
               <div className="flex flex-col gap-3">
                 {/* Assessment Status Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[260px]">
                   <CardContent className="p-2.5">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -1965,9 +1965,9 @@ const Dashboard1stLine = () => {
 
 
                 {/* Bottom row: Loss Events | Inherent Risk Ratings - side by side */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 flex-1">
                   {/* Loss Events & Root Cause Card */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[200px]">
                     <CardContent className="p-2.5 h-full flex flex-col">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
@@ -2032,7 +2032,7 @@ const Dashboard1stLine = () => {
                   </Card>
 
                   {/* Inherent Risk Ratings Card - moved from right column */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[200px]">
                     <CardContent className="p-2.5 h-full flex flex-col">
                       <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
@@ -2128,7 +2128,7 @@ const Dashboard1stLine = () => {
               {/* Right Column - 50% with equal height cards */}
               <div className="flex flex-col gap-3">
                 {/* Control Effectiveness Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[260px]">
                   <CardContent className="p-4 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
@@ -2242,7 +2242,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[200px]">
                   <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
