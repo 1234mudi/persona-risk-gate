@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity, Lightbulb, Download, Presentation, Loader2 } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity, Lightbulb, Download, Presentation, Loader2, DollarSign } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { generateDashboardDocx, generateDashboardPptx, downloadBlob } from "@/lib/generateDashboardExport";
 import { supabase } from "@/integrations/supabase/client";
@@ -94,7 +94,7 @@ const Dashboard1stLine = () => {
   const [deadlineFilter, setDeadlineFilter] = useState<string>("all");
   
   // Single expanded panel state - only one can be open at a time
-  type ExpandedPanel = 'naJustifications' | 'lossEvents' | 'driftAlerts' | 'remediation' | 'aiRootCause' | null;
+  type ExpandedPanel = 'naJustifications' | 'lossEvents' | 'driftAlerts' | 'remediation' | null;
   const [expandedPanel, setExpandedPanel] = useState<ExpandedPanel>(null);
   
   // Expanded card state for metric cards
@@ -120,8 +120,117 @@ const Dashboard1stLine = () => {
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
   const remediationRef = useRef<HTMLDivElement>(null);
   
-  // AI Root Cause ref
-  const aiRootCauseRef = useRef<HTMLDivElement>(null);
+  // Unified Loss Events with Root Cause data
+  const [expandedLossEventRows, setExpandedLossEventRows] = useState<Set<string>>(new Set());
+  
+  // Unified loss events data with embedded root cause analysis
+  const lossEventsData = [
+    {
+      id: "LE-2025-001",
+      description: "Unauthorized wire transfer due to compromised credentials",
+      amount: "$125,000",
+      businessUnit: "Retail Banking",
+      linkedRisk: "Operational Process Failure",
+      status: "Pending",
+      date: "Jan 10, 2025",
+      rootCause: {
+        summary: "Inadequate system access controls allowed unauthorized transactions",
+        contributingFactors: [
+          "Insufficient segregation of duties in transaction approval workflow",
+          "Delayed patch deployment left known vulnerability unaddressed",
+          "Weekend staffing reduction limited real-time monitoring capability"
+        ],
+        failedControls: [
+          { id: "Control-015", name: "Access Management Control" },
+          { id: "Control-023", name: "Transaction Monitoring Control" }
+        ],
+        recommendations: [
+          "Implement mandatory dual authorization for high-value transactions",
+          "Deploy real-time anomaly detection with automated alerts"
+        ]
+      }
+    },
+    {
+      id: "LE-2025-002",
+      description: "Customer data exposed during data synchronization",
+      amount: "$89,500",
+      businessUnit: "Operations",
+      linkedRisk: "Data Privacy Breach",
+      status: "Under Review",
+      date: "Jan 5, 2025",
+      rootCause: {
+        summary: "Insufficient encryption protocols on data transfer endpoints",
+        contributingFactors: [
+          "Legacy systems lacking modern encryption standards",
+          "Missing end-to-end encryption validation checks",
+          "Inadequate third-party vendor security assessment"
+        ],
+        failedControls: [
+          { id: "Control-008", name: "Data Encryption Control" },
+          { id: "Control-019", name: "Vendor Security Assessment" }
+        ],
+        recommendations: [
+          "Upgrade all data transfer endpoints to TLS 1.3",
+          "Implement automated encryption compliance monitoring"
+        ]
+      }
+    },
+    {
+      id: "LE-2025-003",
+      description: "Critical system outage across multiple regions",
+      amount: "$210,000",
+      businessUnit: "Technology",
+      linkedRisk: "System Availability",
+      status: "Escalated",
+      date: "Jan 2, 2025",
+      rootCause: {
+        summary: "Critical infrastructure dependency on single point of failure",
+        contributingFactors: [
+          "Insufficient redundancy in core network architecture",
+          "Outdated disaster recovery procedures",
+          "Delayed infrastructure modernization initiatives"
+        ],
+        failedControls: [
+          { id: "Control-031", name: "Infrastructure Redundancy Control" },
+          { id: "Control-027", name: "Disaster Recovery Testing" }
+        ],
+        recommendations: [
+          "Deploy multi-region failover capabilities",
+          "Conduct quarterly disaster recovery drills"
+        ]
+      }
+    },
+    {
+      id: "LE-2024-047",
+      description: "Payment processing delay affecting customer transactions",
+      amount: "$45,000",
+      businessUnit: "Retail Banking",
+      linkedRisk: "Transaction Processing Risk",
+      status: "Closed",
+      date: "Dec 28, 2024",
+      rootCause: null // No root cause analysis performed yet
+    }
+  ];
+  
+  const toggleLossEventRow = (eventId: string) => {
+    setExpandedLossEventRows(prev => {
+      const newSet = new Set(prev);
+      if (newSet.has(eventId)) {
+        newSet.delete(eventId);
+      } else {
+        newSet.add(eventId);
+      }
+      return newSet;
+    });
+  };
+  
+  // Calculate loss events stats
+  const lossEventsStats = {
+    totalAmount: lossEventsData.reduce((sum, e) => sum + parseFloat(e.amount.replace(/[$,]/g, '')), 0),
+    analyzedCount: lossEventsData.filter(e => e.rootCause).length,
+    totalCount: lossEventsData.length,
+    pendingCount: lossEventsData.filter(e => e.status === "Pending" || e.status === "Under Review" || e.status === "Escalated").length
+  };
   
   // Toggle panel helper - ensures only one panel is open at a time
   const togglePanel = (panel: ExpandedPanel, ref: React.RefObject<HTMLDivElement>) => {
@@ -148,8 +257,7 @@ const Dashboard1stLine = () => {
   const [metricDetailsOpen, setMetricDetailsOpen] = useState(false);
   const [showRiskTable, setShowRiskTable] = useState(false);
   
-  // AI Root Cause additional state
-  const [selectedLossEvent, setSelectedLossEvent] = useState<string | null>("LE-2025-001");
+  // AI Root Cause state (kept for compatibility, but now managed per-row)
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
     title: string;
@@ -1860,16 +1968,16 @@ const Dashboard1stLine = () => {
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
                   {/* Sub-column 1: Loss Events + Drift Alerts stacked */}
                   <div className="flex flex-col gap-3">
-                    {/* Loss Events Card - Compact */}
+                    {/* Loss Events & Root Cause Card - Unified */}
                     <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
                       <CardContent className="p-2.5">
                         <div className="flex items-center justify-between mb-1">
                           <div className="flex items-center gap-2">
                             <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                              <Info className="w-3 h-3 text-primary" />
+                              <Sparkles className="w-3 h-3 text-primary" />
                             </div>
                             <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                              LOSS EVENTS
+                              LOSS EVENTS & ROOT CAUSE
                             </span>
                           </div>
                           <button 
@@ -1883,68 +1991,46 @@ const Dashboard1stLine = () => {
                           </button>
                         </div>
                         
-                        <div className="mb-2">
-                          <span className="text-2xl font-bold text-[#10052F] dark:text-white">{lossEventsCounts.pendingTriage}</span>
-                          <span className="text-sm text-muted-foreground ml-1">Pending Triage</span>
+                        {/* Main stats row */}
+                        <div className="flex items-baseline gap-4 mb-2">
+                          <div>
+                            <span className="text-2xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
+                            <span className="text-sm text-muted-foreground ml-1">Events</span>
+                          </div>
+                          <div className="text-sm">
+                            <span className="font-semibold text-foreground">${lossEventsStats.totalAmount.toLocaleString()}</span>
+                            <span className="text-muted-foreground ml-1">Total Loss</span>
+                          </div>
                         </div>
                         
-                        {/* Larger segmented bar with rounded outer corners */}
-                        <div className="flex h-10 overflow-hidden rounded-lg mb-2">
-                          {(() => {
-                            const total = lossEventsCounts.pendingTriage + lossEventsCounts.inTriage + lossEventsCounts.closed;
-                            const pendingPct = total > 0 ? (lossEventsCounts.pendingTriage / total) * 100 : 0;
-                            const triagePct = total > 0 ? (lossEventsCounts.inTriage / total) * 100 : 0;
-                            const closedPct = total > 0 ? (lossEventsCounts.closed / total) * 100 : 0;
-                            return (
-                              <>
-                                {lossEventsCounts.pendingTriage > 0 && (
-                                  <div 
-                                    className="bg-destructive flex items-center justify-center text-white text-lg font-bold rounded-l-lg"
-                                    style={{width: `${pendingPct}%`, minWidth: '40px'}}
-                                  >
-                                    {lossEventsCounts.pendingTriage}
-                                  </div>
-                                )}
-                                {lossEventsCounts.inTriage > 0 && (
-                                  <div 
-                                    className="bg-warning flex items-center justify-center text-white text-lg font-bold"
-                                    style={{width: `${triagePct}%`, minWidth: '40px'}}
-                                  >
-                                    {lossEventsCounts.inTriage}
-                                  </div>
-                                )}
-                                {lossEventsCounts.closed > 0 && (
-                                  <div 
-                                    className="bg-success flex items-center justify-center text-white text-lg font-bold rounded-r-lg"
-                                    style={{width: `${closedPct}%`, minWidth: '40px'}}
-                                  >
-                                    {lossEventsCounts.closed}
-                                  </div>
-                                )}
-                              </>
-                            );
-                          })()}
+                        {/* Analysis badge */}
+                        <div className="flex items-center gap-2 mb-2 bg-primary/5 px-2 py-1.5 rounded border border-primary/20">
+                          <Sparkles className="w-3.5 h-3.5 text-primary" />
+                          <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount} of {lossEventsStats.totalCount} events have AI root cause analysis</span>
                         </div>
                         
-                        {/* Simple legend */}
-                        <div className="flex flex-wrap gap-3 text-[9px] text-muted-foreground">
+                        {/* Status breakdown */}
+                        <div className="flex flex-wrap gap-3 text-[9px] text-muted-foreground mb-2">
                           <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> Pending
+                            <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> 
+                            {lossEventsData.filter(e => e.status === "Pending").length} Pending
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-warning" /> In Triage
+                            <span className="w-2.5 h-2.5 rounded-full bg-warning" /> 
+                            {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Under Review
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-success" /> Closed
+                            <span className="w-2.5 h-2.5 rounded-full bg-success" /> 
+                            {lossEventsData.filter(e => e.status === "Closed").length} Closed
                           </span>
                         </div>
                         
                         <div className="border-t border-border mt-2 pt-1.5">
                           <p className="text-[9px] text-muted-foreground">
-                            Monitor loss events requiring triage and analysis.
+                            View loss events with inline AI root cause analysis.
                           </p>
                           <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                            How to read: Red (Pending) requires immediate triage. Orange (In Triage) is being analyzed. Green (Closed) is resolved. Larger red segment indicates backlog.
+                            How to read: Click to expand and view each event's AI-analyzed causal chain showing root cause, contributing factors, failed controls, and recommendations.
                           </p>
                         </div>
                       </CardContent>
@@ -2034,100 +2120,6 @@ const Dashboard1stLine = () => {
                     </Card>
                   </div>
 
-                  {/* Sub-column 2: AI Root Cause - Full Height */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full flex flex-col">
-                    <CardContent className="p-2.5 flex-1 flex flex-col">
-                      <div className="flex items-center justify-between mb-1.5">
-                        <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <Sparkles className="w-3 h-3 text-primary" />
-                          </div>
-                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                            AI ROOT CAUSE
-                          </span>
-                        </div>
-                        <button 
-                          onClick={() => togglePanel('aiRootCause', aiRootCauseRef)}
-                          className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
-                        >
-                          CLICK TO EXPAND
-                          <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                            <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'aiRootCause' && "rotate-180")} />
-                          </div>
-                        </button>
-                      </div>
-                      
-                      {/* Main stat */}
-                      <div className="mb-2">
-                        <span className="text-2xl font-bold text-[#10052F] dark:text-white">3</span>
-                        <span className="text-sm text-muted-foreground ml-1">Mapped Events</span>
-                      </div>
-                      
-                      {/* Event badge */}
-                      <div className="flex items-center justify-between mb-3 bg-blue-50 dark:bg-blue-900/20 px-3 py-2 rounded border border-blue-200 dark:border-blue-800">
-                        <span className="text-sm font-semibold text-blue-600 dark:text-blue-400">LE-2025-001</span>
-                        <span className="text-xs text-muted-foreground">Jan 8, 2025</span>
-                      </div>
-                      
-                      {/* Timeline layout - grows to fill space */}
-                      <div className="relative pl-5 space-y-2.5 flex-1">
-                        {/* Vertical connector line */}
-                        <div className="absolute left-[9px] top-2 bottom-2 w-0.5 bg-gray-200 dark:bg-gray-700" />
-                        
-                        {/* ROOT CAUSE */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-5 w-5 h-5 rounded-full bg-red-500 flex items-center justify-center z-10">
-                            <AlertCircle className="w-3 h-3 text-white" />
-                          </div>
-                          <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded px-2.5 py-2">
-                            <span className="text-[10px] font-semibold text-red-700 dark:text-red-400">ROOT CAUSE</span>
-                            <p className="text-[9px] text-red-600 dark:text-red-400/80 mt-0.5 line-clamp-2">
-                              Inadequate system access controls allowed unauthorized transactions...
-                            </p>
-                          </div>
-                        </div>
-                        
-                        {/* CONTRIBUTING FACTORS */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-5 w-5 h-5 rounded-full bg-yellow-500 flex items-center justify-center z-10">
-                            <Target className="w-3 h-3 text-white" />
-                          </div>
-                          <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded px-2.5 py-2">
-                            <span className="text-[10px] font-semibold text-yellow-700 dark:text-yellow-400">3 CONTRIBUTING FACTORS</span>
-                          </div>
-                        </div>
-                        
-                        {/* FAILED CONTROLS */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-5 w-5 h-5 rounded-full bg-orange-500 flex items-center justify-center z-10">
-                            <XCircle className="w-3 h-3 text-white" />
-                          </div>
-                          <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded px-2.5 py-2">
-                            <span className="text-[10px] font-semibold text-orange-700 dark:text-orange-400">2 FAILED CONTROLS</span>
-                          </div>
-                        </div>
-                        
-                        {/* ACTIONS */}
-                        <div className="relative flex items-start gap-2">
-                          <div className="absolute -left-5 w-5 h-5 rounded-full bg-green-500 flex items-center justify-center z-10">
-                            <Lightbulb className="w-3 h-3 text-white" />
-                          </div>
-                          <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded px-2.5 py-2">
-                            <span className="text-[10px] font-semibold text-green-700 dark:text-green-400">2 ACTIONS</span>
-                          </div>
-                        </div>
-                      </div>
-                      
-                      <div className="border-t border-border mt-3 pt-2">
-                        <p className="text-[9px] text-muted-foreground">
-                          AI-analyzed causal chains for <span className="underline cursor-pointer">loss events</span>.
-                        </p>
-                        <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                          How to read: Timeline shows AI-identified causal chain. Root cause leads to contributing factors, failed controls, and recommended actions. Click events for details.
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
                 </div>
               </div>
 
@@ -2647,11 +2639,12 @@ const Dashboard1stLine = () => {
                     <ChevronDown className="w-5 h-5 rotate-180" />
                   </button>
                   <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Info className="w-4 h-4 text-primary" />
+                    <Sparkles className="w-4 h-4 text-primary" />
                   </div>
-                  <span className="font-semibold text-lg text-foreground">Loss Event Triage</span>
-                  <Badge variant="outline" className="text-xs">4 events</Badge>
-                  <Badge className="bg-red-500 text-white text-xs">1 pending</Badge>
+                  <span className="font-semibold text-lg text-foreground">Loss Events & Root Cause Analysis</span>
+                  <Badge variant="outline" className="text-xs">{lossEventsData.length} events</Badge>
+                  <Badge className="bg-primary/10 text-primary border-primary/20 text-xs">{lossEventsStats.analyzedCount} analyzed</Badge>
+                  <Badge className="bg-red-500 text-white text-xs">{lossEventsStats.pendingCount} pending</Badge>
                 </div>
                 <button 
                   onClick={() => setExpandedPanel(null)}
@@ -2661,11 +2654,41 @@ const Dashboard1stLine = () => {
                 </button>
               </div>
 
+              {/* Summary Stats Banner */}
+              <div className="bg-muted/30 border border-border rounded-none p-3 mb-4 flex items-center justify-between">
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center gap-2">
+                    <DollarSign className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">Total Loss:</span>
+                    <span className="text-lg font-bold text-foreground">${lossEventsStats.totalAmount.toLocaleString()}</span>
+                  </div>
+                  <div className="h-6 w-px bg-border" />
+                  <div className="flex items-center gap-3 text-sm">
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-red-500" />
+                      {lossEventsData.filter(e => e.status === "Pending").length} Pending
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-orange-500" />
+                      {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Under Review
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="w-2 h-2 rounded-full bg-green-500" />
+                      {lossEventsData.filter(e => e.status === "Closed").length} Closed
+                    </span>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-4 h-4 text-primary" />
+                  <span className="text-sm text-muted-foreground">{lossEventsStats.analyzedCount} of {lossEventsStats.totalCount} events have AI root cause analysis</span>
+                </div>
+              </div>
+
               {/* Info Banner */}
               <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-none p-3 mb-4 flex items-center gap-2">
                 <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
                 <span className="text-sm text-blue-700 dark:text-blue-300">
-                  Loss events require triage to assess impact and link to relevant risks. Complete triage to close events.
+                  Click on any event row to view the AI-analyzed causal chain showing root cause, contributing factors, failed controls, and recommendations.
                 </span>
               </div>
 
@@ -2690,42 +2713,28 @@ const Dashboard1stLine = () => {
                     <Label htmlFor="showClosed" className="text-sm cursor-pointer text-foreground">Show closed</Label>
                   </div>
                 </div>
-                <div className="flex items-center gap-4 text-sm">
-                  <span className="flex items-center gap-1.5 text-foreground">
-                    <span className="w-2 h-2 rounded-full bg-red-500" />
-                    1 Pending
-                  </span>
-                  <span className="flex items-center gap-1.5 text-foreground">
-                    <span className="w-2 h-2 rounded-full bg-orange-500" />
-                    3 In Triage
-                  </span>
-                  <span className="flex items-center gap-1.5 text-foreground">
-                    <span className="w-2 h-2 rounded-full bg-green-500" />
-                    0 Closed
-                  </span>
-                </div>
+                <Button variant="outline" className="gap-2 text-xs">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  Run AI Analysis on All
+                </Button>
               </div>
 
-              {/* Table */}
+              {/* Table with Expandable Rows */}
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/30">
+                    <TableHead className="w-[40px]"></TableHead>
                     <TableHead className="w-[120px] text-xs font-semibold uppercase">Event ID</TableHead>
                     <TableHead className="w-[280px] text-xs font-semibold uppercase">Description</TableHead>
                     <TableHead className="w-[100px] text-xs font-semibold uppercase">Amount</TableHead>
-                    <TableHead className="w-[100px] text-xs font-semibold uppercase">Linked Risk</TableHead>
+                    <TableHead className="w-[120px] text-xs font-semibold uppercase">Business Unit</TableHead>
                     <TableHead className="w-[140px] text-xs font-semibold uppercase">Status</TableHead>
-                    <TableHead className="w-[120px] text-xs font-semibold uppercase">Date</TableHead>
-                    <TableHead className="w-[180px] text-xs font-semibold uppercase text-right">Actions</TableHead>
+                    <TableHead className="w-[100px] text-xs font-semibold uppercase">Date</TableHead>
+                    <TableHead className="w-[100px] text-xs font-semibold uppercase text-center">Analysis</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {[
-                    { id: "LE-2025-001", description: "Unauthorized transaction detected in payment processing", amount: "$12,500", linkedRisk: null, status: "Pending", date: "Jan 10, 2025" },
-                    { id: "LE-2025-002", description: "System outage causing delayed settlements", amount: "$8,200", linkedRisk: "R-003", status: "In Triage", date: "Jan 08, 2025" },
-                    { id: "LE-2025-003", description: "Data entry error in customer account", amount: "$3,100", linkedRisk: "R-001", status: "In Triage", date: "Jan 06, 2025" },
-                    { id: "LE-2025-004", description: "Vendor invoice processing discrepancy", amount: "$5,750", linkedRisk: null, status: "In Triage", date: "Jan 04, 2025" },
-                  ]
+                  {lossEventsData
                     .filter(event => {
                       if (!showClosedLossEvents && event.status === "Closed") return false;
                       if (lossEventSearchQuery) {
@@ -2736,81 +2745,198 @@ const Dashboard1stLine = () => {
                       return true;
                     })
                     .map((event) => (
-                    <TableRow key={event.id} className="hover:bg-muted/30">
-                      <TableCell className="font-mono text-sm text-primary">{event.id}</TableCell>
-                      <TableCell>
-                        <span className="font-medium text-sm text-foreground">{event.description}</span>
-                      </TableCell>
-                      <TableCell className="font-semibold text-sm text-foreground">{event.amount}</TableCell>
-                      <TableCell>
-                        {event.linkedRisk ? (
-                          <Badge variant="outline" className="bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-300 border-teal-200 dark:border-teal-700 text-xs">
-                            {event.linkedRisk}
-                          </Badge>
-                        ) : (
-                          <span className="text-muted-foreground">—</span>
+                    <React.Fragment key={event.id}>
+                      {/* Main Row */}
+                      <TableRow 
+                        className={cn(
+                          "hover:bg-muted/30 cursor-pointer transition-colors",
+                          expandedLossEventRows.has(event.id) && "bg-muted/20 border-b-0"
                         )}
-                      </TableCell>
-                      <TableCell>
-                        {event.status === "Pending" && (
-                          <Badge variant="outline" className="border-red-300 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 text-xs gap-1">
-                            <Clock className="w-3 h-3" />
-                            Pending
-                          </Badge>
-                        )}
-                        {event.status === "In Triage" && (
-                          <Badge variant="outline" className="border-orange-300 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 text-xs gap-1">
-                            <Activity className="w-3 h-3" />
-                            In Triage
-                          </Badge>
-                        )}
-                        {event.status === "Closed" && (
-                          <Badge variant="outline" className="border-green-300 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 text-xs gap-1">
-                            <CheckCircle className="w-3 h-3" />
-                            Closed
-                          </Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-sm text-muted-foreground">
-                        {event.date}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <div className="flex items-center justify-end gap-2">
-                          {event.status === "Pending" && (
-                            <>
-                              <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white gap-1">
-                                <Activity className="w-3 h-3" />
-                                Start Triage
-                              </Button>
-                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                                <Eye className="w-4 h-4 text-muted-foreground" />
-                              </Button>
-                            </>
+                        onClick={() => event.rootCause && toggleLossEventRow(event.id)}
+                      >
+                        <TableCell className="py-3">
+                          {event.rootCause ? (
+                            <ChevronDown className={cn(
+                              "w-4 h-4 text-muted-foreground transition-transform duration-200",
+                              expandedLossEventRows.has(event.id) && "rotate-180"
+                            )} />
+                          ) : (
+                            <span className="w-4 h-4" />
                           )}
-                          {event.status === "In Triage" && (
-                            <>
-                              <Button size="sm" className="h-7 text-xs bg-green-600 hover:bg-green-700 text-white gap-1">
-                                <CheckCircle className="w-3 h-3" />
-                                Complete
-                              </Button>
-                              {!event.linkedRisk && (
-                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0" title="Link to Risk">
-                                  <Link className="w-4 h-4 text-muted-foreground" />
-                                </Button>
-                              )}
-                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                                <Eye className="w-4 h-4 text-muted-foreground" />
-                              </Button>
-                            </>
+                        </TableCell>
+                        <TableCell className="font-mono text-sm text-primary font-medium">{event.id}</TableCell>
+                        <TableCell>
+                          <span className="font-medium text-sm text-foreground">{event.description}</span>
+                        </TableCell>
+                        <TableCell className="font-semibold text-sm text-foreground">{event.amount}</TableCell>
+                        <TableCell className="text-sm text-muted-foreground">{event.businessUnit}</TableCell>
+                        <TableCell>
+                          {event.status === "Pending" && (
+                            <Badge variant="outline" className="border-red-300 text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30 text-xs gap-1">
+                              <Clock className="w-3 h-3" />
+                              Pending
+                            </Badge>
+                          )}
+                          {event.status === "Under Review" && (
+                            <Badge variant="outline" className="border-orange-300 text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-900/30 text-xs gap-1">
+                              <Activity className="w-3 h-3" />
+                              Under Review
+                            </Badge>
+                          )}
+                          {event.status === "Escalated" && (
+                            <Badge variant="outline" className="border-purple-300 text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-900/30 text-xs gap-1">
+                              <AlertTriangle className="w-3 h-3" />
+                              Escalated
+                            </Badge>
                           )}
                           {event.status === "Closed" && (
-                            <Button size="sm" variant="ghost" className="h-7 w-7 p-0">
-                              <Eye className="w-4 h-4 text-muted-foreground" />
-                            </Button>
+                            <Badge variant="outline" className="border-green-300 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 text-xs gap-1">
+                              <CheckCircle className="w-3 h-3" />
+                              Closed
+                            </Badge>
                           )}
-                        </div>
-                      </TableCell>
-                    </TableRow>
+                        </TableCell>
+                        <TableCell className="text-sm text-muted-foreground">
+                          {event.date}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          {event.rootCause ? (
+                            <Badge className="bg-primary/10 text-primary border-primary/20 text-xs gap-1">
+                              <Sparkles className="w-3 h-3" />
+                              Analyzed
+                            </Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-muted-foreground text-xs">
+                              Pending
+                            </Badge>
+                          )}
+                        </TableCell>
+                      </TableRow>
+
+                      {/* Expanded Inline Causal Chain */}
+                      {expandedLossEventRows.has(event.id) && event.rootCause && (
+                        <TableRow className="bg-muted/10 hover:bg-muted/10">
+                          <TableCell colSpan={8} className="p-0">
+                            <div className="p-6 border-t border-border/50">
+                              <div className="max-w-4xl mx-auto space-y-4">
+                                {/* ROOT CAUSE Section */}
+                                <div className="border-2 border-red-300 dark:border-red-700 rounded-lg p-4 bg-red-50/50 dark:bg-red-900/20">
+                                  <div className="flex items-center gap-2 mb-3">
+                                    <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
+                                      <AlertCircle className="w-4 h-4 text-white" />
+                                    </div>
+                                    <span className="font-bold text-red-700 dark:text-red-400 uppercase text-sm">Root Cause</span>
+                                  </div>
+                                  <p className="text-sm text-red-600 dark:text-red-400/80">
+                                    {event.rootCause.summary}
+                                  </p>
+                                </div>
+
+                                {/* Arrow Connector */}
+                                <div className="flex justify-center py-1">
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
+                                    <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
+                                  </div>
+                                </div>
+
+                                {/* CONTRIBUTING FACTORS Section */}
+                                <div className="border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-4 bg-yellow-50/50 dark:bg-yellow-900/20">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
+                                        <Target className="w-4 h-4 text-white" />
+                                      </div>
+                                      <span className="font-bold text-yellow-700 dark:text-yellow-400 uppercase text-sm">Contributing Factors</span>
+                                    </div>
+                                    <Badge className="rounded-full bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600">{event.rootCause.contributingFactors.length}</Badge>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {event.rootCause.contributingFactors.map((factor, idx) => (
+                                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-800/50 text-yellow-800 dark:text-yellow-200 text-sm rounded-full border border-yellow-300 dark:border-yellow-600">
+                                        <span className="w-5 h-5 rounded-full bg-yellow-500 text-white text-xs flex items-center justify-center font-semibold">{idx + 1}</span>
+                                        {factor}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Arrow Connector */}
+                                <div className="flex justify-center py-1">
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
+                                    <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
+                                  </div>
+                                </div>
+
+                                {/* FAILED CONTROLS Section */}
+                                <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-4 bg-purple-50/50 dark:bg-purple-900/20">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
+                                        <XCircle className="w-4 h-4 text-white" />
+                                      </div>
+                                      <span className="font-bold text-purple-700 dark:text-purple-400 uppercase text-sm">Failed Controls</span>
+                                    </div>
+                                    <Badge className="rounded-full bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-600">{event.rootCause.failedControls.length}</Badge>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {event.rootCause.failedControls.map((control, idx) => (
+                                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-sm rounded-full border border-purple-300 dark:border-purple-600">
+                                        <span className="text-xs font-semibold text-purple-600 dark:text-purple-300">{control.id}</span>
+                                        {control.name}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Arrow Connector */}
+                                <div className="flex justify-center py-1">
+                                  <div className="flex flex-col items-center">
+                                    <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
+                                    <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
+                                  </div>
+                                </div>
+
+                                {/* RECOMMENDATIONS Section */}
+                                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-4 bg-green-50/50 dark:bg-green-900/20">
+                                  <div className="flex items-center justify-between mb-3">
+                                    <div className="flex items-center gap-2">
+                                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
+                                        <Lightbulb className="w-4 h-4 text-white" />
+                                      </div>
+                                      <span className="font-bold text-green-700 dark:text-green-400 uppercase text-sm">Recommendations</span>
+                                    </div>
+                                    <Badge className="rounded-full bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600">{event.rootCause.recommendations.length}</Badge>
+                                  </div>
+                                  <div className="flex flex-wrap gap-2">
+                                    {event.rootCause.recommendations.map((rec, idx) => (
+                                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 text-sm rounded-full border border-green-300 dark:border-green-600">
+                                        <span className="w-5 h-5 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-semibold">{idx + 1}</span>
+                                        {rec}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+
+                                {/* Event Details Footer */}
+                                <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                    <span><strong>Linked Risk:</strong> {event.linkedRisk}</span>
+                                    <span><strong>Business Unit:</strong> {event.businessUnit}</span>
+                                    <span><strong>Date:</strong> {event.date}</span>
+                                  </div>
+                                  <Button size="sm" variant="outline" className="gap-2 text-xs">
+                                    <Eye className="w-3.5 h-3.5" />
+                                    View Full Details
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </React.Fragment>
                   ))}
                 </TableBody>
               </Table>
@@ -3222,298 +3348,6 @@ const Dashboard1stLine = () => {
                   ))}
                 </TableBody>
               </Table>
-            </CardContent>
-          </Card>
-        )}
-
-        {/* AI Root Cause Expanded Panel */}
-        {expandedPanel === 'aiRootCause' && (
-          <Card ref={aiRootCauseRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
-            <CardContent className="p-4">
-              {/* Header with title, badges, close button */}
-              <div className="flex items-center justify-between mb-4">
-                <div className="flex items-center gap-3">
-                  <button 
-                    onClick={() => setExpandedPanel(null)}
-                    className="hover:bg-muted/50 rounded p-1"
-                  >
-                    <ChevronDown className="w-5 h-5 rotate-180" />
-                  </button>
-                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                    <Sparkles className="w-4 h-4 text-primary" />
-                  </div>
-                  <span className="font-semibold text-lg text-foreground">AI Causal Chain Analysis</span>
-                  <Badge variant="outline" className="text-xs">3 events</Badge>
-                </div>
-                <button 
-                  onClick={() => setExpandedPanel(null)}
-                  className="hover:bg-muted/50 rounded p-1"
-                >
-                  <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
-                </button>
-              </div>
-
-              {/* Info Banner */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-none p-3 mb-4 flex items-center gap-2">
-                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
-                <span className="text-sm text-blue-700 dark:text-blue-300">
-                  AI-analyzed causal chains for loss events. Select an event to view the full root cause analysis.
-                </span>
-              </div>
-
-              {/* Two-column layout: Causal Chain on left, Details + Other Events on right */}
-              <div className="flex gap-6">
-                {/* Left Column: Causal Chain Sections */}
-                <div className="flex-1">
-                  {selectedLossEvent && (
-                    <div className="space-y-3">
-                      {/* ROOT CAUSE Section */}
-                      <div className="border-2 border-red-300 dark:border-red-700 rounded-lg p-4 bg-red-50/50 dark:bg-red-900/20">
-                        <div className="flex items-center gap-2 mb-3">
-                          <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
-                            <AlertCircle className="w-4 h-4 text-white" />
-                          </div>
-                          <span className="font-bold text-red-700 dark:text-red-400 uppercase text-sm">Root Cause</span>
-                        </div>
-                        <p className="text-sm text-red-600 dark:text-red-400/80">
-                          {selectedLossEvent === "LE-2025-001" 
-                            ? "Unauthorized wire transfer due to compromised credentials"
-                            : selectedLossEvent === "LE-2025-002"
-                            ? "Insufficient encryption protocols on data transfer endpoints"
-                            : "Critical infrastructure dependency on single point of failure"}
-                        </p>
-                      </div>
-
-                      {/* Arrow Connector */}
-                      <div className="flex justify-center py-1">
-                        <div className="flex flex-col items-center">
-                          <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
-                          <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
-                        </div>
-                      </div>
-
-                      {/* CONTRIBUTING FACTORS Section */}
-                      <div className="border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-4 bg-yellow-50/50 dark:bg-yellow-900/20">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
-                              <Target className="w-4 h-4 text-white" />
-                            </div>
-                            <span className="font-bold text-yellow-700 dark:text-yellow-400 uppercase text-sm">Contributing Factors</span>
-                          </div>
-                          <Badge className="rounded-full bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600">3</Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-800/50 text-yellow-800 dark:text-yellow-200 text-sm rounded-full border border-yellow-300 dark:border-yellow-600">
-                            <span className="w-5 h-5 rounded-full bg-yellow-500 text-white text-xs flex items-center justify-center font-semibold">1</span>
-                            Insufficient segregation of duties in transaction approval workflow
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-800/50 text-yellow-800 dark:text-yellow-200 text-sm rounded-full border border-yellow-300 dark:border-yellow-600">
-                            <span className="w-5 h-5 rounded-full bg-yellow-500 text-white text-xs flex items-center justify-center font-semibold">2</span>
-                            Delayed patch deployment left known vulnerability unaddressed
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-800/50 text-yellow-800 dark:text-yellow-200 text-sm rounded-full border border-yellow-300 dark:border-yellow-600">
-                            <span className="w-5 h-5 rounded-full bg-yellow-500 text-white text-xs flex items-center justify-center font-semibold">3</span>
-                            Weekend staffing reduction limited real-time monitoring capability
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Arrow Connector */}
-                      <div className="flex justify-center py-1">
-                        <div className="flex flex-col items-center">
-                          <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
-                          <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
-                        </div>
-                      </div>
-
-                      {/* FAILED CONTROLS Section */}
-                      <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-4 bg-purple-50/50 dark:bg-purple-900/20">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
-                              <XCircle className="w-4 h-4 text-white" />
-                            </div>
-                            <span className="font-bold text-purple-700 dark:text-purple-400 uppercase text-sm">Failed Controls</span>
-                          </div>
-                          <Badge className="rounded-full bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-600">2</Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-sm rounded-full border border-purple-300 dark:border-purple-600">
-                            <span className="text-xs font-semibold text-purple-600 dark:text-purple-300">Control-015</span>
-                            Access Management Control
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-sm rounded-full border border-purple-300 dark:border-purple-600">
-                            <span className="text-xs font-semibold text-purple-600 dark:text-purple-300">Control-023</span>
-                            Transaction Monitoring Control
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Arrow Connector */}
-                      <div className="flex justify-center py-1">
-                        <div className="flex flex-col items-center">
-                          <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
-                          <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
-                        </div>
-                      </div>
-
-                      {/* RECOMMENDATIONS Section */}
-                      <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-4 bg-green-50/50 dark:bg-green-900/20">
-                        <div className="flex items-center justify-between mb-3">
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                              <Lightbulb className="w-4 h-4 text-white" />
-                            </div>
-                            <span className="font-bold text-green-700 dark:text-green-400 uppercase text-sm">Recommendations</span>
-                          </div>
-                          <Badge className="rounded-full bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600">2</Badge>
-                        </div>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 text-sm rounded-full border border-green-300 dark:border-green-600">
-                            <span className="w-5 h-5 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-semibold">1</span>
-                            Implement mandatory dual authorization for high-value transactions
-                          </span>
-                          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 text-sm rounded-full border border-green-300 dark:border-green-600">
-                            <span className="w-5 h-5 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-semibold">2</span>
-                            Deploy real-time anomaly detection with automated alerts
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {!selectedLossEvent && (
-                    <div className="flex items-center justify-center h-64 text-muted-foreground">
-                      <p className="text-sm">Select an event from the right panel to view causal chain analysis</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* Right Column: Event Details + Other Mapped Events */}
-                <div className="w-80 border-l border-border pl-6 space-y-6">
-                  {/* EVENT DETAILS Section */}
-                  {selectedLossEvent && (
-                    <div>
-                      <h3 className="text-xs font-semibold mb-4 uppercase tracking-wide text-muted-foreground">
-                        Event Details
-                      </h3>
-                      <div className="space-y-3">
-                        <div>
-                          <span className="text-xs text-muted-foreground">Description:</span>
-                          <p className="text-sm font-medium text-primary mt-0.5">
-                            {selectedLossEvent === "LE-2025-001" 
-                              ? "Unauthorized wire transfer due to compromised credentials"
-                              : selectedLossEvent === "LE-2025-002"
-                              ? "Customer data exposed during data synchronization"
-                              : "Critical system outage across multiple regions"}
-                          </p>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Amount:</span>
-                          <span className="text-sm font-semibold text-green-600 dark:text-green-400">
-                            {selectedLossEvent === "LE-2025-001" ? "$125,000" : selectedLossEvent === "LE-2025-002" ? "$89,500" : "$210,000"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Business Unit:</span>
-                          <span className="text-sm font-medium text-primary">
-                            {selectedLossEvent === "LE-2025-001" ? "Retail Banking" : selectedLossEvent === "LE-2025-002" ? "Customer Services" : "IT Infrastructure"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center">
-                          <span className="text-xs text-muted-foreground">Linked Risk:</span>
-                          <span className="text-sm font-medium text-primary">
-                            {selectedLossEvent === "LE-2025-001" ? "Operational Process Failure" : selectedLossEvent === "LE-2025-002" ? "Data Security Risk" : "Technology Risk"}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-
-                  {/* OTHER MAPPED EVENTS Section */}
-                  <div>
-                    <h3 className="text-xs font-semibold mb-4 uppercase tracking-wide text-muted-foreground">
-                      Other Mapped Events
-                    </h3>
-                    <div className="space-y-2">
-                      {/* Event LE-2025-001 */}
-                      <button 
-                        onClick={() => setSelectedLossEvent("LE-2025-001")}
-                        className={cn(
-                          "w-full text-left p-3 rounded transition-colors",
-                          selectedLossEvent === "LE-2025-001" 
-                            ? "bg-primary/10 border border-primary/30" 
-                            : "hover:bg-muted/50 border border-transparent"
-                        )}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className={cn(
-                            "text-sm font-medium",
-                            selectedLossEvent === "LE-2025-001" ? "text-primary" : "text-foreground"
-                          )}>LE-2025-001</span>
-                          <span className="text-xs text-muted-foreground">Jan 8</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          Unauthorized wire transfer due to compromised credentials
-                        </p>
-                      </button>
-
-                      {/* Event LE-2025-002 */}
-                      <button 
-                        onClick={() => setSelectedLossEvent("LE-2025-002")}
-                        className={cn(
-                          "w-full text-left p-3 rounded transition-colors",
-                          selectedLossEvent === "LE-2025-002" 
-                            ? "bg-primary/10 border border-primary/30" 
-                            : "hover:bg-muted/50 border border-transparent"
-                        )}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className={cn(
-                            "text-sm font-medium",
-                            selectedLossEvent === "LE-2025-002" ? "text-primary" : "text-foreground"
-                          )}>LE-2025-002</span>
-                          <span className="text-xs text-muted-foreground">Jan 5</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          Customer data exposed during data synchronization
-                        </p>
-                      </button>
-
-                      {/* Event LE-2025-003 */}
-                      <button 
-                        onClick={() => setSelectedLossEvent("LE-2025-003")}
-                        className={cn(
-                          "w-full text-left p-3 rounded transition-colors",
-                          selectedLossEvent === "LE-2025-003" 
-                            ? "bg-primary/10 border border-primary/30" 
-                            : "hover:bg-muted/50 border border-transparent"
-                        )}
-                      >
-                        <div className="flex justify-between items-center">
-                          <span className={cn(
-                            "text-sm font-medium",
-                            selectedLossEvent === "LE-2025-003" ? "text-primary" : "text-foreground"
-                          )}>LE-2025-003</span>
-                          <span className="text-xs text-muted-foreground">Jan 2</span>
-                        </div>
-                        <p className="text-xs text-muted-foreground mt-1 line-clamp-2">
-                          Critical system outage across multiple regions
-                        </p>
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Run New Analysis Button */}
-                  <div className="mt-6 pt-4 border-t border-border">
-                    <Button className="w-full rounded-none gap-2 bg-muted/50 hover:bg-muted text-foreground" variant="ghost">
-                      <Sparkles className="w-4 h-4 text-primary" />
-                      Run New Analysis
-                    </Button>
-                  </div>
-                </div>
-              </div>
             </CardContent>
           </Card>
         )}
