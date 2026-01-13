@@ -991,7 +991,7 @@ export function AIDocumentAssessmentModal({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-second-line">
                 <Search className="w-5 h-5 text-second-line" />
-                AI Document Scan
+                Risk Assessment Upload
               </DialogTitle>
               <DialogDescription>
                 Search results for selected risks
