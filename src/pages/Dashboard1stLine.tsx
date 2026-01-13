@@ -93,32 +93,44 @@ const Dashboard1stLine = () => {
   const [hierarchyViewMode, setHierarchyViewMode] = useState<"level1" | "level2" | "level3">("level1");
   const [deadlineFilter, setDeadlineFilter] = useState<string>("all");
   
-  // N/A Justifications expanded state
-  const [isNaJustificationsExpanded, setIsNaJustificationsExpanded] = useState(false);
+  // Single expanded panel state - only one can be open at a time
+  type ExpandedPanel = 'naJustifications' | 'lossEvents' | 'driftAlerts' | 'remediation' | 'aiRootCause' | null;
+  const [expandedPanel, setExpandedPanel] = useState<ExpandedPanel>(null);
+  
+  // N/A Justifications state
   const [naSearchQuery, setNaSearchQuery] = useState("");
   const [showApprovedNa, setShowApprovedNa] = useState(false);
   const naJustificationsRef = useRef<HTMLDivElement>(null);
   
-  // Loss Events expanded state
-  const [isLossEventsExpanded, setIsLossEventsExpanded] = useState(false);
+  // Loss Events state
   const [lossEventSearchQuery, setLossEventSearchQuery] = useState("");
   const [showClosedLossEvents, setShowClosedLossEvents] = useState(false);
   const lossEventsRef = useRef<HTMLDivElement>(null);
   
-  // Drift Alerts expanded state
-  const [isDriftAlertsExpanded, setIsDriftAlertsExpanded] = useState(false);
+  // Drift Alerts state
   const [driftAlertSearchQuery, setDriftAlertSearchQuery] = useState("");
   const [showResolvedAlerts, setShowResolvedAlerts] = useState(false);
   const driftAlertsRef = useRef<HTMLDivElement>(null);
   
-  // Remediation Tasks expanded state
-  const [isRemediationExpanded, setIsRemediationExpanded] = useState(false);
+  // Remediation Tasks state
   const [remediationSearchQuery, setRemediationSearchQuery] = useState("");
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
   const remediationRef = useRef<HTMLDivElement>(null);
   
-  // AI Root Cause expanded state
+  // AI Root Cause ref
   const aiRootCauseRef = useRef<HTMLDivElement>(null);
+  
+  // Toggle panel helper - ensures only one panel is open at a time
+  const togglePanel = (panel: ExpandedPanel, ref: React.RefObject<HTMLDivElement>) => {
+    if (expandedPanel === panel) {
+      setExpandedPanel(null);
+    } else {
+      setExpandedPanel(panel);
+      setTimeout(() => {
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    }
+  };
   
   // Export state
   const [isExporting, setIsExporting] = useState(false);
@@ -133,8 +145,7 @@ const Dashboard1stLine = () => {
   const [metricDetailsOpen, setMetricDetailsOpen] = useState(false);
   const [showRiskTable, setShowRiskTable] = useState(false);
   
-  // AI Root Cause expanded state
-  const [isAiRootCauseExpanded, setIsAiRootCauseExpanded] = useState(false);
+  // AI Root Cause additional state
   const [selectedLossEvent, setSelectedLossEvent] = useState<string | null>("LE-2025-001");
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
@@ -1815,19 +1826,12 @@ const Dashboard1stLine = () => {
                         </span>
                       </div>
                       <button 
-                        onClick={() => {
-                          setIsNaJustificationsExpanded(!isNaJustificationsExpanded);
-                          if (!isNaJustificationsExpanded) {
-                            setTimeout(() => {
-                              naJustificationsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                          }
-                        }}
+                        onClick={() => togglePanel('naJustifications', naJustificationsRef)}
                         className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                       >
                         CLICK TO EXPAND
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isNaJustificationsExpanded && "rotate-180")} />
+                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'naJustifications' && "rotate-180")} />
                         </div>
                       </button>
                     </div>
@@ -1906,19 +1910,12 @@ const Dashboard1stLine = () => {
                             </span>
                           </div>
                           <button 
-                            onClick={() => {
-                              setIsLossEventsExpanded(!isLossEventsExpanded);
-                              if (!isLossEventsExpanded) {
-                                setTimeout(() => {
-                                  lossEventsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }, 100);
-                              }
-                            }}
+                            onClick={() => togglePanel('lossEvents', lossEventsRef)}
                             className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                           >
                             CLICK TO EXPAND
                             <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                              <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isLossEventsExpanded && "rotate-180")} />
+                              <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'lossEvents' && "rotate-180")} />
                             </div>
                           </button>
                         </div>
@@ -2003,19 +2000,12 @@ const Dashboard1stLine = () => {
                             </span>
                           </div>
                           <button 
-                            onClick={() => {
-                              setIsDriftAlertsExpanded(!isDriftAlertsExpanded);
-                              if (!isDriftAlertsExpanded) {
-                                setTimeout(() => {
-                                  driftAlertsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                                }, 100);
-                              }
-                            }}
+                            onClick={() => togglePanel('driftAlerts', driftAlertsRef)}
                             className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                           >
                             CLICK TO EXPAND
                             <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                              <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isDriftAlertsExpanded && "rotate-180")} />
+                              <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'driftAlerts' && "rotate-180")} />
                             </div>
                           </button>
                         </div>
@@ -2094,19 +2084,12 @@ const Dashboard1stLine = () => {
                           </span>
                         </div>
                         <button 
-                          onClick={() => {
-                            setIsAiRootCauseExpanded(!isAiRootCauseExpanded);
-                            if (!isAiRootCauseExpanded) {
-                              setTimeout(() => {
-                                aiRootCauseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                              }, 100);
-                            }
-                          }}
+                          onClick={() => togglePanel('aiRootCause', aiRootCauseRef)}
                           className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                         >
                           CLICK TO EXPAND
                           <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                            <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isAiRootCauseExpanded && "rotate-180")} />
+                            <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'aiRootCause' && "rotate-180")} />
                           </div>
                         </button>
                       </div>
@@ -2409,19 +2392,12 @@ const Dashboard1stLine = () => {
                         </span>
                       </div>
                       <button 
-                        onClick={() => {
-                          setIsRemediationExpanded(!isRemediationExpanded);
-                          if (!isRemediationExpanded) {
-                            setTimeout(() => {
-                              remediationRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                            }, 100);
-                          }
-                        }}
+                        onClick={() => togglePanel('remediation', remediationRef)}
                         className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                       >
                         CLICK TO EXPAND
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isRemediationExpanded && "rotate-180")} />
+                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'remediation' && "rotate-180")} />
                         </div>
                       </button>
                     </div>
@@ -2529,14 +2505,14 @@ const Dashboard1stLine = () => {
         })()}
 
         {/* N/A Justifications Expanded Panel */}
-        {isNaJustificationsExpanded && (
+        {expandedPanel === 'naJustifications' && (
           <Card ref={naJustificationsRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
             <CardContent className="p-4">
               {/* Header with title, badges, close button */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setIsNaJustificationsExpanded(false)}
+                    onClick={() => setExpandedPanel(null)}
                     className="hover:bg-muted/50 rounded p-1"
                   >
                     <ChevronDown className="w-5 h-5 rotate-180" />
@@ -2549,7 +2525,7 @@ const Dashboard1stLine = () => {
                   <Badge className="bg-red-500 text-white text-xs">2 pending</Badge>
                 </div>
                 <button 
-                  onClick={() => setIsNaJustificationsExpanded(false)}
+                  onClick={() => setExpandedPanel(null)}
                   className="hover:bg-muted/50 rounded p-1"
                 >
                   <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
@@ -2728,14 +2704,14 @@ const Dashboard1stLine = () => {
         )}
 
         {/* Loss Events Triage Expanded Panel */}
-        {isLossEventsExpanded && (
+        {expandedPanel === 'lossEvents' && (
           <Card ref={lossEventsRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
             <CardContent className="p-4">
               {/* Header with title, badges, close button */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setIsLossEventsExpanded(false)}
+                    onClick={() => setExpandedPanel(null)}
                     className="hover:bg-muted/50 rounded p-1"
                   >
                     <ChevronDown className="w-5 h-5 rotate-180" />
@@ -2748,7 +2724,7 @@ const Dashboard1stLine = () => {
                   <Badge className="bg-red-500 text-white text-xs">1 pending</Badge>
                 </div>
                 <button 
-                  onClick={() => setIsLossEventsExpanded(false)}
+                  onClick={() => setExpandedPanel(null)}
                   className="hover:bg-muted/50 rounded p-1"
                 >
                   <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
@@ -2913,14 +2889,14 @@ const Dashboard1stLine = () => {
         )}
 
         {/* Control Drift Alerts Expanded Panel */}
-        {isDriftAlertsExpanded && (
+        {expandedPanel === 'driftAlerts' && (
           <Card ref={driftAlertsRef} className="border-[3px] border-border/50 dark:border-border shadow-md bg-card rounded-none scroll-mt-24">
             {/* Header */}
             <CardHeader className="border-b border-border/50 space-y-0 py-3 px-4">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setIsDriftAlertsExpanded(false)}
+                    onClick={() => setExpandedPanel(null)}
                     className="p-1 hover:bg-muted rounded"
                   >
                     <ChevronUp className="w-5 h-5 text-foreground" />
@@ -2939,7 +2915,7 @@ const Dashboard1stLine = () => {
                   </Badge>
                 </div>
                 <button 
-                  onClick={() => setIsDriftAlertsExpanded(false)}
+                  onClick={() => setExpandedPanel(null)}
                   className="p-1 hover:bg-muted rounded"
                 >
                   <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
@@ -3112,14 +3088,14 @@ const Dashboard1stLine = () => {
         )}
 
         {/* Remediation Tasks Expanded Panel */}
-        {isRemediationExpanded && (
+        {expandedPanel === 'remediation' && (
           <Card ref={remediationRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
             <CardContent className="p-4">
               {/* Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setIsRemediationExpanded(false)}
+                    onClick={() => setExpandedPanel(null)}
                     className="p-1 hover:bg-muted rounded"
                   >
                     <ChevronUp className="w-4 h-4 text-muted-foreground" />
@@ -3134,7 +3110,7 @@ const Dashboard1stLine = () => {
                 <Button 
                   variant="ghost" 
                   size="sm" 
-                  onClick={() => setIsRemediationExpanded(false)}
+                  onClick={() => setExpandedPanel(null)}
                   className="h-8 w-8 p-0"
                 >
                   <X className="w-4 h-4" />
@@ -3321,14 +3297,14 @@ const Dashboard1stLine = () => {
         )}
 
         {/* AI Root Cause Expanded Panel */}
-        {isAiRootCauseExpanded && (
+        {expandedPanel === 'aiRootCause' && (
           <Card ref={aiRootCauseRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
             <CardContent className="p-4">
               {/* Header with title, badges, close button */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
                   <button 
-                    onClick={() => setIsAiRootCauseExpanded(false)}
+                    onClick={() => setExpandedPanel(null)}
                     className="hover:bg-muted/50 rounded p-1"
                   >
                     <ChevronDown className="w-5 h-5 rotate-180" />
@@ -3340,7 +3316,7 @@ const Dashboard1stLine = () => {
                   <Badge variant="outline" className="text-xs">3 events</Badge>
                 </div>
                 <button 
-                  onClick={() => setIsAiRootCauseExpanded(false)}
+                  onClick={() => setExpandedPanel(null)}
                   className="hover:bg-muted/50 rounded p-1"
                 >
                   <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
