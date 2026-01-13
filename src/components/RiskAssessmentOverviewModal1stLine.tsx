@@ -261,64 +261,19 @@ const AssessmentCard = ({
                   <span className="ml-1">{primaryCta.label}</span>
                 </Button>
                 
-                {/* Assess Section Dropdown */}
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button 
-                      size="sm"
-                      variant="outline"
-                      className="text-[11px] h-7 px-2.5 bg-primary/5 hover:bg-primary/10 border-primary/30"
-                      disabled={isAIAssessing}
-                      onClick={(e) => e.stopPropagation()}
-                    >
-                      {isAIAssessing ? (
-                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                      ) : (
-                        <Sparkles className="w-3.5 h-3.5 text-primary" />
-                      )}
-                      <span className="ml-1">{isAIAssessing ? "Assessing..." : "Assess Section"}</span>
-                      {hasManualEdits && !isAIAssessing && (
-                        <AlertCircle className="w-3 h-3 text-amber-500 ml-1" />
-                      )}
-                      <ChevronDown className="w-3 h-3 ml-1" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="start" className="w-48">
-                    <DropdownMenuItem 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onAIAssess();
-                      }}
-                      disabled={isAIAssessing}
-                      className="flex items-center gap-2 text-xs cursor-pointer"
-                    >
-                      <Sparkles className="w-3.5 h-3.5 text-primary" />
-                      Assess with AI
-                      {hasManualEdits && (
-                        <TooltipProvider>
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <AlertCircle className="w-3 h-3 text-amber-500 ml-auto" />
-                            </TooltipTrigger>
-                            <TooltipContent>
-                              <p className="text-xs">Manual edits exist - AI may override</p>
-                            </TooltipContent>
-                          </Tooltip>
-                        </TooltipProvider>
-                      )}
-                    </DropdownMenuItem>
-                    <DropdownMenuItem 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleNavigate(e);
-                      }}
-                      className="flex items-center gap-2 text-xs cursor-pointer"
-                    >
-                      <FileText className="w-3.5 h-3.5" />
-                      Assess Manually
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {/* Assess Section Button */}
+                <Button 
+                  size="sm"
+                  variant="outline"
+                  className="text-[11px] h-7 px-2.5 bg-primary/5 hover:bg-primary/10 border-primary/30"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleNavigate(e);
+                  }}
+                >
+                  <FileText className="w-3.5 h-3.5 text-primary" />
+                  <span className="ml-1">Assess Section</span>
+                </Button>
               </div>
             </>
           )}
