@@ -1967,14 +1967,14 @@ const Dashboard1stLine = () => {
                 {/* Bottom row: Loss Events | Inherent Risk Ratings - side by side */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 flex-1">
                   {/* Loss Events & Root Cause Card */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[200px]">
-                    <CardContent className="p-2.5 h-full flex flex-col">
-                      <div className="flex items-center justify-between mb-1">
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[260px]">
+                    <CardContent className="p-3 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <Sparkles className="w-3 h-3 text-primary" />
+                          <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <Sparkles className="w-3.5 h-3.5 text-primary" />
                           </div>
-                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          <span className="text-xs font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                             LOSS EVENTS & ROOT CAUSE
                           </span>
                         </div>
@@ -1989,74 +1989,74 @@ const Dashboard1stLine = () => {
                         </button>
                       </div>
                       
-                      {/* Main stats row */}
-                      <div className="flex items-baseline gap-4 mb-2">
+                      {/* Main stats row - more prominent */}
+                      <div className="flex items-baseline gap-6 mb-3">
                         <div>
-                          <span className="text-2xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
-                          <span className="text-sm text-muted-foreground ml-1">Events</span>
+                          <span className="text-3xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
+                          <span className="text-base text-muted-foreground ml-1.5">Events</span>
                         </div>
-                        <div className="text-sm">
-                          <span className="font-semibold text-foreground">${lossEventsStats.totalAmount.toLocaleString()}</span>
-                          <span className="text-muted-foreground ml-1">Total Loss</span>
+                        <div>
+                          <span className="text-lg font-bold text-destructive">${lossEventsStats.totalAmount.toLocaleString()}</span>
+                          <span className="text-sm text-muted-foreground ml-1">Total Loss</span>
                         </div>
                       </div>
                       
-                      {/* Analysis badge */}
-                      <div className="flex items-center gap-2 mb-2 bg-primary/5 px-2 py-1 rounded border border-primary/20">
-                        <Sparkles className="w-3 h-3 text-primary" />
-                        <span className="text-[10px] text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
+                      {/* Analysis badge - larger */}
+                      <div className="flex items-center gap-2.5 mb-3 bg-primary/5 px-3 py-2 rounded-md border border-primary/20">
+                        <Sparkles className="w-4 h-4 text-primary" />
+                        <span className="text-sm text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
                       </div>
                       
-                      {/* Status breakdown */}
-                      <div className="flex flex-wrap gap-2 text-[9px] text-muted-foreground mb-2">
-                        <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-destructive" /> 
+                      {/* Status breakdown - larger */}
+                      <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mb-3 flex-1">
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> 
                           {lossEventsData.filter(e => e.status === "Pending").length} Pending
                         </span>
-                        <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-warning" /> 
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-warning" /> 
                           {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Review
                         </span>
-                        <span className="flex items-center gap-1">
-                          <span className="w-2 h-2 rounded-full bg-success" /> 
+                        <span className="flex items-center gap-1.5">
+                          <span className="w-2.5 h-2.5 rounded-full bg-success" /> 
                           {lossEventsData.filter(e => e.status === "Closed").length} Closed
                         </span>
                       </div>
                       
-                      <div className="border-t border-border mt-auto pt-1.5">
-                        <p className="text-[8px] text-muted-foreground/70 italic">
+                      <div className="border-t border-border mt-auto pt-2">
+                        <p className="text-[9px] text-muted-foreground/70 italic">
                           Click expand to view events with AI root cause analysis.
                         </p>
                       </div>
                     </CardContent>
                   </Card>
 
-                  {/* Inherent Risk Ratings Card - moved from right column */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[200px]">
-                    <CardContent className="p-2.5 h-full flex flex-col">
-                      <div className="flex items-center justify-between mb-1">
+                  {/* Inherent Risk Ratings Card */}
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[260px]">
+                    <CardContent className="p-3 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
-                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                            <AlertTriangle className="w-3 h-3 text-primary" />
+                          <div className="w-7 h-7 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <AlertTriangle className="w-3.5 h-3.5 text-primary" />
                           </div>
-                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          <span className="text-xs font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
                             INHERENT RISK RATINGS
                           </span>
                         </div>
-                        <span className="text-[10px] text-muted-foreground">
+                        <span className="text-xs text-muted-foreground">
                           {inherentRiskCounts.critical} crit, {inherentRiskCounts.high} high
                         </span>
                       </div>
                       
-                      {/* Critical & High count */}
-                      <div className="mb-2">
-                        <span className="text-2xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
-                        <span className="text-sm text-muted-foreground ml-2">Critical & High</span>
+                      {/* Critical & High count - more prominent */}
+                      <div className="mb-3">
+                        <span className="text-3xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                        <span className="text-base text-muted-foreground ml-2">Critical & High</span>
                       </div>
                       
-                      {/* Donut chart with legend */}
-                      <div className="flex items-center justify-center gap-4 flex-1">
-                        <div className="relative w-16 h-16 flex-shrink-0">
+                      {/* Donut chart with legend - larger */}
+                      <div className="flex items-center justify-center gap-6 flex-1">
+                        <div className="relative w-24 h-24 flex-shrink-0">
                           {(() => {
                             const circumference = 2 * Math.PI * 14;
                             const total = inherentRiskCounts.total || 1;
@@ -2067,7 +2067,7 @@ const Dashboard1stLine = () => {
                             const highAngle = highPct * 360;
                             
                             return (
-                              <svg viewBox="0 0 36 36" className="w-16 h-16">
+                              <svg viewBox="0 0 36 36" className="w-24 h-24">
                                 <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                                 <circle 
                                   cx="18" cy="18" r="14" fill="none" 
@@ -2091,32 +2091,32 @@ const Dashboard1stLine = () => {
                             );
                           })()}
                           <div className="absolute inset-0 flex flex-col items-center justify-center">
-                            <span className="text-base font-bold text-[#CE7900]">{criticalHighTotal}</span>
-                            <span className="text-[6px] text-muted-foreground">CRIT+HIGH</span>
+                            <span className="text-xl font-bold text-[#CE7900]">{criticalHighTotal}</span>
+                            <span className="text-[8px] text-muted-foreground uppercase">CRIT+HIGH</span>
                           </div>
                         </div>
                         
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-destructive" />
-                            <span className="text-[10px] text-destructive">Critical</span>
-                            <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
+                        <div className="flex flex-col gap-2">
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-destructive" />
+                            <span className="text-sm text-destructive font-medium">Critical</span>
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-warning" />
-                            <span className="text-[10px] text-warning">High</span>
-                            <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-warning" />
+                            <span className="text-sm text-warning font-medium">High</span>
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-accent" />
-                            <span className="text-[10px] text-accent">Medium</span>
-                            <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
+                          <div className="flex items-center gap-2">
+                            <div className="w-3 h-3 rounded-full bg-accent" />
+                            <span className="text-sm text-accent font-medium">Medium</span>
+                            <span className="text-sm font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="border-t border-border pt-1.5 mt-auto">
-                        <p className="text-[8px] text-muted-foreground/70 italic">
+                      <div className="border-t border-border pt-2 mt-auto">
+                        <p className="text-[9px] text-muted-foreground/70 italic">
                           Critical+High indicates exposure requiring strong controls.
                         </p>
                       </div>
@@ -2242,7 +2242,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[200px]">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[260px]">
                   <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
