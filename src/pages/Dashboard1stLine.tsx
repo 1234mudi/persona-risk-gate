@@ -1693,7 +1693,19 @@ const Dashboard1stLine = () => {
           };
 
           // Placeholder data for new cards
-          const naJustificationsCounts = { pending: 2, drafted: 1, awaiting: 1, approved: 1 };
+          // Calculate N/A justifications from actual risk data
+          const naJustificationsCounts = useMemo(() => {
+            let pending = 0, drafted = 0, awaiting = 0, approved = 0;
+            assessorFilteredRiskData.forEach(risk => {
+              if (risk.naJustifications) {
+                pending += risk.naJustifications.pending;
+                drafted += risk.naJustifications.drafted;
+                awaiting += risk.naJustifications.awaiting;
+                approved += risk.naJustifications.approved;
+              }
+            });
+            return { pending, drafted, awaiting, approved };
+          }, [assessorFilteredRiskData]);
           const lossEventsCounts = { pendingTriage: 1, inTriage: 3, closed: 0 };
           const driftAlertsCounts = { critical: 1, high: 1, medium: 1 };
           const remediationTasksCounts = { open: 2, inProgress: 1, validation: 1, closed: 0 };
@@ -1843,85 +1855,6 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
-                {/* N/A Justifications Card - Pipeline Flow Design */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
-                  <CardContent className="p-2.5">
-                    <div className="flex items-center justify-between mb-1.5">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <Ban className="w-3 h-3 text-primary" />
-                        </div>
-                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                          N/A JUSTIFICATIONS
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => togglePanel('naJustifications', naJustificationsRef)}
-                        className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
-                      >
-                        CLICK TO EXPAND
-                        <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'naJustifications' && "rotate-180")} />
-                        </div>
-                      </button>
-                    </div>
-                    
-                    <div className="mb-2">
-                      <span className="text-xl font-bold text-[#10052F] dark:text-white">{naJustificationsCounts.pending + naJustificationsCounts.drafted}</span>
-                      <span className="text-sm text-muted-foreground ml-1">Pending</span>
-                    </div>
-                    
-                    {/* Pipeline-style status boxes */}
-                    <div className="flex items-center justify-center mb-3">
-                      {/* PENDING box */}
-                      <div className="bg-[#FBC02D] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
-                        <div className="text-2xl font-bold">{naJustificationsCounts.pending}</div>
-                        <div className="text-[10px] uppercase font-semibold tracking-wide">PENDING</div>
-                      </div>
-                      {/* Chevron connector */}
-                      <span className="text-gray-300 text-lg mx-0.5">&gt;</span>
-                      {/* DRAFTED box */}
-                      <div className="bg-[#E65100] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
-                        <div className="text-2xl font-bold">{naJustificationsCounts.drafted}</div>
-                        <div className="text-[10px] uppercase font-semibold tracking-wide">DRAFTED</div>
-                      </div>
-                      {/* Chevron connector */}
-                      <span className="text-gray-300 text-lg mx-0.5">&gt;</span>
-                      {/* AWAITING box */}
-                      <div className="bg-[#7E57C2] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
-                        <div className="text-2xl font-bold">{naJustificationsCounts.awaiting}</div>
-                        <div className="text-[10px] uppercase font-semibold tracking-wide">AWAITING</div>
-                      </div>
-                      {/* Chevron connector */}
-                      <span className="text-gray-300 text-lg mx-0.5">&gt;</span>
-                      {/* APPROVED box */}
-                      <div className="bg-[#43A047] text-white px-6 py-4 text-center min-w-[90px] rounded-xl shadow-sm">
-                        <div className="text-2xl font-bold">{naJustificationsCounts.approved}</div>
-                        <div className="text-[10px] uppercase font-semibold tracking-wide">APPROVED</div>
-                      </div>
-                    </div>
-                    
-                    {/* Progress bar with Start/Complete labels */}
-                    <div className="mb-3">
-                      <div className="flex h-2 overflow-hidden rounded-full bg-[#B2DFDB]">
-                        <div className="bg-[#00897B] w-[25%]" />
-                      </div>
-                      <div className="flex justify-between mt-1">
-                        <span className="text-[9px] text-muted-foreground">Start</span>
-                        <span className="text-[9px] text-muted-foreground">Complete</span>
-                      </div>
-                    </div>
-                    
-                    <div className="border-t border-border pt-2">
-                      <p className="text-[9px] text-muted-foreground">
-                        Review and approve N/A control justifications.
-                      </p>
-                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                        How to read: Pipeline flows left-to-right. Pending items need justification drafts. Awaiting items require Risk Owner approval. Progress bar shows overall completion.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
 
                 {/* Bottom row: Loss+Drift | AI Root Cause */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
@@ -3880,6 +3813,7 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Residual Risk</TableHead>
                       <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Related Controls</TableHead>
                       <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Calculated Control Effectiveness</TableHead>
+                      <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">N/A Justifications</TableHead>
                       <TableHead className="min-w-[180px] py-1 border-r border-b border-border text-xs">Control Test Results</TableHead>
                       <TableHead className="min-w-[160px] py-1 border-b border-border text-xs">Status</TableHead>
                     </TableRow>
@@ -4382,6 +4316,68 @@ const Dashboard1stLine = () => {
                               </TooltipProvider>
                             )}
                           </div>
+                        </TableCell>
+                        {/* N/A Justifications */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          {risk.naJustifications && (risk.naJustifications.pending + risk.naJustifications.drafted + risk.naJustifications.awaiting) > 0 ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <button
+                                    onClick={() => togglePanel('naJustifications', naJustificationsRef)}
+                                    className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-amber-50 dark:bg-amber-900/30 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-colors"
+                                  >
+                                    <Ban className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                                    <span className="text-xs font-medium text-amber-700 dark:text-amber-300">
+                                      {risk.naJustifications.pending + risk.naJustifications.drafted + risk.naJustifications.awaiting}
+                                    </span>
+                                    <span className="text-[10px] text-amber-600/70 dark:text-amber-400/70">pending</span>
+                                  </button>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <div className="text-xs space-y-1">
+                                    <p className="font-medium">N/A Justification Status</p>
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-[#FBC02D]" />
+                                      <span>{risk.naJustifications.pending} Pending</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-[#E65100]" />
+                                      <span>{risk.naJustifications.drafted} Drafted</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-[#7E57C2]" />
+                                      <span>{risk.naJustifications.awaiting} Awaiting Approval</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                      <span className="w-2 h-2 rounded-full bg-[#43A047]" />
+                                      <span>{risk.naJustifications.approved} Approved</span>
+                                    </div>
+                                    <p className="text-muted-foreground mt-1">Click to view details</p>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ) : risk.naJustifications && risk.naJustifications.approved > 0 ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <div className="flex items-center gap-1.5 px-2 py-1">
+                                    <Ban className="w-3.5 h-3.5 text-green-600 dark:text-green-400" />
+                                    <span className="text-xs text-green-600 dark:text-green-400">{risk.naJustifications.approved} approved</span>
+                                  </div>
+                                </TooltipTrigger>
+                                <TooltipContent>
+                                  <div className="text-xs">
+                                    <p className="font-medium">All N/A Justifications Approved</p>
+                                    <p>{risk.naJustifications.approved} control(s) marked N/A with approved justification</p>
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ) : (
+                            <span className="text-xs text-muted-foreground">—</span>
+                          )}
                         </TableCell>
                         {/* Test Results */}
                         <TableCell className="py-2 border-r border-b border-border">
