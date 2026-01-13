@@ -902,13 +902,14 @@ const Dashboard1stLine = () => {
   const handleQuickLinkClick = (tab: "own" | "assess" | "approve") => {
     setActiveTab(tab);
     setHighlightedTab(tab);
+    setShowRiskTable(true); // Show the risk table first
     
     setTimeout(() => {
       reportSectionRef.current?.scrollIntoView({ 
         behavior: 'smooth', 
         block: 'start' 
       });
-    }, 100);
+    }, 150); // Slightly longer delay to allow render
     
     setTimeout(() => {
       setHighlightedTab(null);
@@ -1581,13 +1582,13 @@ const Dashboard1stLine = () => {
             <span className="text-gray-400 dark:text-gray-500">|</span>
             <Tooltip>
               <TooltipTrigger asChild>
-                <a href="/downloads/hierarchical-risk-assessments.csv" download className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs italic">
+                <a href="/downloads/sample-risk-import-data.csv" download className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs italic">
                   <FlaskConical className="w-3 h-3" />
-                  <span>Sample CSV for AI Assessment (Test Only)</span>
+                  <span>Download Sample Risk Data (for AI Parser Testing)</span>
                 </a>
               </TooltipTrigger>
               <TooltipContent>
-                <p>Download a sample CSV file to test the AI-powered risk assessment parser</p>
+                <p>Download sample risk assessment data to test the AI Document Parser feature</p>
               </TooltipContent>
             </Tooltip>
           </div>
