@@ -2000,7 +2000,7 @@ const Dashboard1stLine = () => {
                           onClick={() => togglePanel('lossEvents', lossEventsRef)}
                           className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                         >
-                          EXPAND
+                          {expandedPanel === 'lossEvents' ? 'COLLAPSE' : 'EXPAND'}
                           <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                             <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'lossEvents' && "rotate-180")} />
                           </div>
@@ -2309,7 +2309,7 @@ const Dashboard1stLine = () => {
                         onClick={() => togglePanel('remediation', remediationRef)}
                         className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                       >
-                        EXPAND
+                        {expandedPanel === 'remediation' ? 'COLLAPSE' : 'EXPAND'}
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                           <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'remediation' && "rotate-180")} />
                         </div>
