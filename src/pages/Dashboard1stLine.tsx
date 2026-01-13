@@ -3482,14 +3482,6 @@ const Dashboard1stLine = () => {
                       <p className="text-sm">Select an event from the right panel to view causal chain analysis</p>
                     </div>
                   )}
-
-                  {/* Run New Analysis Button */}
-                  <div className="mt-6 pt-4 border-t border-border">
-                    <Button className="w-full rounded-none gap-2 bg-muted/50 hover:bg-muted text-foreground" variant="ghost">
-                      <Sparkles className="w-4 h-4 text-primary" />
-                      Run New Analysis
-                    </Button>
-                  </div>
                 </div>
 
                 {/* Right Column: Event Details + Other Mapped Events */}
@@ -3605,6 +3597,14 @@ const Dashboard1stLine = () => {
                         </p>
                       </button>
                     </div>
+                  </div>
+
+                  {/* Run New Analysis Button */}
+                  <div className="mt-6 pt-4 border-t border-border">
+                    <Button className="w-full rounded-none gap-2 bg-muted/50 hover:bg-muted text-foreground" variant="ghost">
+                      <Sparkles className="w-4 h-4 text-primary" />
+                      Run New Analysis
+                    </Button>
                   </div>
                 </div>
               </div>
