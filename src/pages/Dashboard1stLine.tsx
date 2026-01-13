@@ -2004,10 +2004,12 @@ const Dashboard1stLine = () => {
                         </div>
                       </div>
                       
-                      {/* Analysis badge */}
-                      <div className="flex items-center gap-2 mb-4 bg-primary/5 px-2.5 py-1.5 rounded-md border border-primary/20">
-                        <Sparkles className="w-3 h-3 text-primary" />
-                        <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
+                      {/* Analysis badge + Status breakdown with bar */}
+                      <div className="flex-1 flex flex-col justify-center">
+                        <div className="flex items-center gap-2 mb-3 bg-primary/5 px-2.5 py-1.5 rounded-md border border-primary/20 w-fit">
+                          <Sparkles className="w-3 h-3 text-primary" />
+                          <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
+                        </div>
                       </div>
                       
                       {/* Status breakdown with bar */}
