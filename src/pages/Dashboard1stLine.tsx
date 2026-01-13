@@ -11,6 +11,7 @@ import { BulkAssessmentModal } from "@/components/BulkAssessmentModal";
 import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentOverviewModal1stLine";
 import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
 import { HistoricalAssessmentsModal } from "@/components/HistoricalAssessmentsModal";
+import { LossEventDetailsModal } from "@/components/LossEventDetailsModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -122,6 +123,10 @@ const Dashboard1stLine = () => {
   
   // Unified Loss Events with Root Cause data
   const [expandedLossEventRows, setExpandedLossEventRows] = useState<Set<string>>(new Set());
+  
+  // Loss Event Details Modal state
+  const [lossEventDetailsModalOpen, setLossEventDetailsModalOpen] = useState(false);
+  const [selectedLossEvent, setSelectedLossEvent] = useState<typeof lossEventsData[0] | null>(null);
   
   // Unified loss events data with embedded root cause analysis
   const lossEventsData = [
@@ -2873,7 +2878,16 @@ const Dashboard1stLine = () => {
                                     <span><strong>Business Unit:</strong> {event.businessUnit}</span>
                                     <span><strong>Date:</strong> {event.date}</span>
                                   </div>
-                                  <Button size="sm" variant="outline" className="gap-2 text-xs">
+                                  <Button 
+                                    size="sm" 
+                                    variant="outline" 
+                                    className="gap-2 text-xs"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setSelectedLossEvent(event);
+                                      setLossEventDetailsModalOpen(true);
+                                    }}
+                                  >
                                     <Eye className="w-3.5 h-3.5" />
                                     View Full Details
                                   </Button>
@@ -4750,6 +4764,13 @@ const Dashboard1stLine = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Loss Event Details Modal */}
+      <LossEventDetailsModal
+        open={lossEventDetailsModalOpen}
+        onOpenChange={setLossEventDetailsModalOpen}
+        event={selectedLossEvent}
+      />
     </div>
     </TooltipProvider>
   );
