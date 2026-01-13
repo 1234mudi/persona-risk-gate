@@ -1839,7 +1839,7 @@ const Dashboard1stLine = () => {
               <div className="flex flex-col gap-3">
                 {/* Assessment Status Card */}
                 <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[260px]">
-                  <CardContent className="p-2.5">
+                  <CardContent className="p-2.5 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
                         <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
@@ -1873,85 +1873,88 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
                     
-                    {/* Donut chart + Progress bars */}
-                    <div className="flex gap-4 items-center">
-                      {/* Donut chart */}
-                      <div className="relative w-16 h-16 flex-shrink-0">
-                        <svg viewBox="0 0 36 36" className="w-16 h-16">
-                          {/* Background circle - Gray track for incomplete */}
-                          <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                          {/* Progress circle - RED for complete portion */}
-                          <circle 
-                            cx="18" cy="18" r="15.9" fill="none" 
-                            stroke="hsl(var(--destructive))" strokeWidth="3"
-                            strokeDasharray={`${completionPercent} ${100 - completionPercent}`}
-                            strokeDashoffset="25"
-                          />
-                        </svg>
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-base font-bold text-success">{completionPercent}%</span>
-                          <span className="text-[7px] text-muted-foreground uppercase">Complete</span>
-                        </div>
-                      </div>
-                      
-                      {/* Progress bars */}
-                      <div className="flex-1 space-y-2">
-                        {/* WORKFLOW PROGRESS - aligned with 2nd line dashboard (6 statuses) */}
-                        <div>
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">WORKFLOW PROGRESS</span>
-                          <div className="flex h-2 overflow-hidden mt-0.5 rounded-full shadow-sm">
-                            {assessmentStatusCounts.sentForAssessment > 0 && (
-                              <div style={{backgroundColor: WORKFLOW_COLORS.sentForAssessment, width: `${(assessmentStatusCounts.sentForAssessment / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
-                            )}
-                            {assessmentStatusCounts.pendingReview > 0 && (
-                              <div style={{backgroundColor: WORKFLOW_COLORS.pendingReview, width: `${(assessmentStatusCounts.pendingReview / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
-                            )}
-                            {assessmentStatusCounts.pendingApproval > 0 && (
-                              <div style={{backgroundColor: WORKFLOW_COLORS.pendingApproval, width: `${(assessmentStatusCounts.pendingApproval / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
-                            )}
-                            {assessmentStatusCounts.completed > 0 && (
-                              <div style={{backgroundColor: WORKFLOW_COLORS.completed, width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
-                            )}
-                            {assessmentStatusCounts.overdue > 0 && (
-                              <div style={{backgroundColor: WORKFLOW_COLORS.overdue, width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
-                            )}
-                            {assessmentStatusCounts.reassigned > 0 && (
-                              <div style={{backgroundColor: WORKFLOW_COLORS.reassigned, width: `${(assessmentStatusCounts.reassigned / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
-                            )}
+                    {/* Donut chart + Progress bars - Centered vertically */}
+                    <div className="flex-1 flex items-center">
+                      <div className="flex gap-5 items-center w-full">
+                        {/* Donut chart - larger */}
+                        <div className="relative w-20 h-20 flex-shrink-0">
+                          <svg viewBox="0 0 36 36" className="w-20 h-20">
+                            {/* Background circle - Gray track for incomplete */}
+                            <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                            {/* Progress circle - RED for complete portion */}
+                            <circle 
+                              cx="18" cy="18" r="15.9" fill="none" 
+                              stroke="hsl(var(--destructive))" strokeWidth="3"
+                              strokeDasharray={`${completionPercent} ${100 - completionPercent}`}
+                              strokeDashoffset="25"
+                            />
+                          </svg>
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-base font-bold text-success">{completionPercent}%</span>
+                            <span className="text-[7px] text-muted-foreground uppercase">Complete</span>
                           </div>
                         </div>
                         
-                        {/* 6-segment legend in 3 columns (matching 2nd line) */}
-                        <div className="grid grid-cols-3 gap-x-3 gap-y-0 text-[9px] text-muted-foreground mt-1">
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.sentForAssessment}} />
-                            {assessmentStatusCounts.sentForAssessment} Sent
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.pendingReview}} />
-                            {assessmentStatusCounts.pendingReview} Review
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.pendingApproval}} />
-                            {assessmentStatusCounts.pendingApproval} Approval
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.completed}} />
-                            {assessmentStatusCounts.completed} Completed
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.overdue}} />
-                            {assessmentStatusCounts.overdue} Overdue
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.reassigned}} />
-                            {assessmentStatusCounts.reassigned} Reassigned
-                          </span>
+                        {/* Progress bars */}
+                        <div className="flex-1 space-y-3">
+                          {/* WORKFLOW PROGRESS - aligned with 2nd line dashboard (6 statuses) */}
+                          <div>
+                            <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">WORKFLOW PROGRESS</span>
+                            <div className="flex h-3 overflow-hidden mt-0.5 rounded-full shadow-sm">
+                              {assessmentStatusCounts.sentForAssessment > 0 && (
+                                <div style={{backgroundColor: WORKFLOW_COLORS.sentForAssessment, width: `${(assessmentStatusCounts.sentForAssessment / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                              )}
+                              {assessmentStatusCounts.pendingReview > 0 && (
+                                <div style={{backgroundColor: WORKFLOW_COLORS.pendingReview, width: `${(assessmentStatusCounts.pendingReview / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                              )}
+                              {assessmentStatusCounts.pendingApproval > 0 && (
+                                <div style={{backgroundColor: WORKFLOW_COLORS.pendingApproval, width: `${(assessmentStatusCounts.pendingApproval / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                              )}
+                              {assessmentStatusCounts.completed > 0 && (
+                                <div style={{backgroundColor: WORKFLOW_COLORS.completed, width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                              )}
+                              {assessmentStatusCounts.overdue > 0 && (
+                                <div style={{backgroundColor: WORKFLOW_COLORS.overdue, width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                              )}
+                              {assessmentStatusCounts.reassigned > 0 && (
+                                <div style={{backgroundColor: WORKFLOW_COLORS.reassigned, width: `${(assessmentStatusCounts.reassigned / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                              )}
+                            </div>
+                          </div>
+                          
+                          {/* 6-segment legend in 3 columns (matching 2nd line) */}
+                          <div className="grid grid-cols-3 gap-x-3 gap-y-0 text-[9px] text-muted-foreground mt-1">
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.sentForAssessment}} />
+                              {assessmentStatusCounts.sentForAssessment} Sent
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.pendingReview}} />
+                              {assessmentStatusCounts.pendingReview} Review
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.pendingApproval}} />
+                              {assessmentStatusCounts.pendingApproval} Approval
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.completed}} />
+                              {assessmentStatusCounts.completed} Completed
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.overdue}} />
+                              {assessmentStatusCounts.overdue} Overdue
+                            </span>
+                            <span className="flex items-center gap-1">
+                              <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.reassigned}} />
+                              {assessmentStatusCounts.reassigned} Reassigned
+                            </span>
+                          </div>
                         </div>
                       </div>
                     </div>
                     
-                    <div className="border-t border-border pt-2 mt-3">
+                    {/* Footer - pushed to bottom */}
+                    <div className="border-t border-border pt-2 mt-auto">
                       <p className="text-[9px] text-muted-foreground">
                         Track assessment workflow stages. Address overdue and pending items promptly.
                       </p>
