@@ -2010,23 +2010,25 @@ const Dashboard1stLine = () => {
                         <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
                       </div>
                       
-                      {/* Status breakdown */}
-                      <div className="flex flex-wrap gap-5 text-[9px] text-muted-foreground mb-auto">
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-destructive" /> 
-                          {lossEventsData.filter(e => e.status === "Pending").length} Pending
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-warning" /> 
-                          {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Review
-                        </span>
-                        <span className="flex items-center gap-1.5">
-                          <span className="w-2 h-2 rounded-full bg-success" /> 
-                          {lossEventsData.filter(e => e.status === "Closed").length} Closed
-                        </span>
+                      {/* Status breakdown - centered vertically */}
+                      <div className="flex-1 flex items-center">
+                        <div className="flex flex-wrap gap-5 text-[9px] text-muted-foreground">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> 
+                            {lossEventsData.filter(e => e.status === "Pending").length} Pending
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-warning" /> 
+                            {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Review
+                          </span>
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-2.5 h-2.5 rounded-full bg-success" /> 
+                            {lossEventsData.filter(e => e.status === "Closed").length} Closed
+                          </span>
+                        </div>
                       </div>
                       
-                      <div className="border-t border-border mt-auto pt-2.5">
+                      <div className="border-t border-border mt-auto pt-2">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Click expand to view events with AI root cause analysis.
                         </p>
@@ -2057,9 +2059,9 @@ const Dashboard1stLine = () => {
                         <span className="text-xs text-muted-foreground ml-2">Critical & High</span>
                       </div>
                       
-                      {/* Donut chart with legend */}
+                      {/* Donut chart with legend - centered vertically */}
                       <div className="flex items-center justify-center gap-8 flex-1">
-                        <div className="relative w-24 h-24 flex-shrink-0">
+                        <div className="relative w-28 h-28 flex-shrink-0">
                           {(() => {
                             const circumference = 2 * Math.PI * 14;
                             const total = inherentRiskCounts.total || 1;
@@ -2070,7 +2072,7 @@ const Dashboard1stLine = () => {
                             const highAngle = highPct * 360;
                             
                             return (
-                              <svg viewBox="0 0 36 36" className="w-24 h-24">
+                              <svg viewBox="0 0 36 36" className="w-28 h-28">
                                 <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                                 <circle 
                                   cx="18" cy="18" r="14" fill="none" 
@@ -2099,26 +2101,26 @@ const Dashboard1stLine = () => {
                           </div>
                         </div>
                         
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-2.5">
                           <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-destructive" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
                             <span className="text-[9px] text-destructive font-medium">Critical</span>
                             <span className="text-[9px] font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-warning" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-warning" />
                             <span className="text-[9px] text-warning font-medium">High</span>
                             <span className="text-[9px] font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
                           </div>
                           <div className="flex items-center gap-1.5">
-                            <div className="w-2 h-2 rounded-full bg-accent" />
+                            <div className="w-2.5 h-2.5 rounded-full bg-accent" />
                             <span className="text-[9px] text-accent font-medium">Medium</span>
                             <span className="text-[9px] font-bold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
                           </div>
                         </div>
                       </div>
                       
-                      <div className="border-t border-border pt-2.5 mt-auto">
+                      <div className="border-t border-border pt-2 mt-auto">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Critical+High indicates exposure requiring strong controls.
                         </p>
@@ -2151,10 +2153,10 @@ const Dashboard1stLine = () => {
                       <span className="text-xs text-muted-foreground ml-2">Needing Attention</span>
                     </div>
                     
-                    {/* Speedometer gauge - larger */}
+                    {/* Speedometer gauge - larger and centered */}
                     <div className="flex flex-col items-center justify-center flex-1">
-                      <div className="w-40">
-                        <svg viewBox="0 0 100 55" className="w-40 h-20">
+                      <div className="w-44">
+                        <svg viewBox="0 0 100 55" className="w-44 h-22">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2198,7 +2200,7 @@ const Dashboard1stLine = () => {
                     </div>
 
                     {/* Horizontal Stacked Bar Chart */}
-                    <div className="w-full h-2.5 flex rounded-full overflow-hidden mb-2 mt-3 shadow-sm">
+                    <div className="w-full h-3 flex rounded-full overflow-hidden mb-2 mt-3 shadow-sm">
                       <div 
                         className="bg-success h-full" 
                         style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
@@ -2267,7 +2269,7 @@ const Dashboard1stLine = () => {
                       </button>
                     </div>
                     
-                    <div className="mb-2">
+                    <div className="mb-3">
                       <div className="flex items-baseline justify-between">
                         <div className="flex items-baseline gap-1">
                           <span className="text-xl font-bold text-[#10052F] dark:text-white">
@@ -2279,49 +2281,51 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
                     
-                    {/* Single segmented progress bar */}
-                    {(() => {
-                      const total = remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed;
-                      if (total === 0) return null;
-                      
-                      const segments = [
-                        { label: "Open", value: remediationTasksCounts.open, color: "bg-red-500" },
-                        { label: "In Progress", value: remediationTasksCounts.inProgress, color: "bg-amber-500" },
-                        { label: "Validation", value: remediationTasksCounts.validation, color: "bg-blue-500" },
-                        { label: "Closed", value: remediationTasksCounts.closed, color: "bg-green-500" },
-                      ];
-                      
-                      return (
-                        <>
-                          {/* Progress bar */}
-                          <div className="flex h-2 rounded-full overflow-hidden mb-2 shadow-sm">
-                            {segments.map((segment, idx) => {
-                              const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                              return (
-                                <div
-                                  key={idx}
-                                  className={segment.color}
-                                  style={{ width: `${percentage}%` }}
-                                />
-                              );
-                            })}
+                    {/* Single segmented progress bar - centered vertically */}
+                    <div className="flex-1 flex items-center">
+                      {(() => {
+                        const total = remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed;
+                        if (total === 0) return null;
+                        
+                        const segments = [
+                          { label: "Open", value: remediationTasksCounts.open, color: "bg-red-500" },
+                          { label: "In Progress", value: remediationTasksCounts.inProgress, color: "bg-amber-500" },
+                          { label: "Validation", value: remediationTasksCounts.validation, color: "bg-blue-500" },
+                          { label: "Closed", value: remediationTasksCounts.closed, color: "bg-green-500" },
+                        ];
+                        
+                        return (
+                          <div className="w-full">
+                            {/* Progress bar */}
+                            <div className="flex h-3 rounded-full overflow-hidden mb-2 shadow-sm">
+                              {segments.map((segment, idx) => {
+                                const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                                return (
+                                  <div
+                                    key={idx}
+                                    className={segment.color}
+                                    style={{ width: `${percentage}%` }}
+                                  />
+                                );
+                              })}
+                            </div>
+                            {/* Legend */}
+                            <div className="flex flex-wrap gap-x-3 gap-y-1">
+                              {segments.map((segment, idx) => (
+                                <div key={idx} className="flex items-center gap-1">
+                                  <div className={`w-2.5 h-2.5 rounded-sm ${segment.color}`} />
+                                  <span className="text-[9px] font-medium text-muted-foreground">
+                                    {segment.value} {segment.label}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
                           </div>
-                          {/* Legend */}
-                          <div className="flex flex-wrap gap-x-2 gap-y-0.5 mb-2">
-                            {segments.map((segment, idx) => (
-                              <div key={idx} className="flex items-center gap-1">
-                                <div className={`w-2 h-2 rounded-sm ${segment.color}`} />
-                                <span className="text-[9px] font-medium text-muted-foreground">
-                                  {segment.value} {segment.label}
-                                </span>
-                              </div>
-                            ))}
-                          </div>
-                        </>
-                      );
-                    })()}
+                        );
+                      })()}
+                    </div>
                     
-                    <div className="border-t border-border mt-auto pt-1.5">
+                    <div className="border-t border-border mt-auto pt-2">
                       <p className="text-[8px] text-muted-foreground/70 italic">
                         Track remediation progress. Target zero open items.
                       </p>
