@@ -2271,13 +2271,15 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     <div className="mb-2">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">
-                          {remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation}
-                        </span>
-                        <span className="text-sm text-muted-foreground">Open Tasks</span>
+                      <div className="flex items-baseline justify-between">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-xl font-bold text-[#10052F] dark:text-white">
+                            {remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation}
+                          </span>
+                          <span className="text-sm text-muted-foreground">Open Tasks</span>
+                        </div>
+                        <span className="text-sm font-semibold text-red-500">1 critical</span>
                       </div>
-                      <span className="text-sm font-semibold text-red-500">1 critical</span>
                     </div>
                     
                     {/* Single segmented progress bar - matching "Ongoing Review & Challenge" style */}
@@ -2295,7 +2297,7 @@ const Dashboard1stLine = () => {
                       return (
                         <>
                           {/* Progress bar */}
-                          <div className="flex h-1.5 rounded overflow-hidden mb-2">
+                          <div className="flex h-2 rounded-full overflow-hidden mb-2 shadow-sm">
                             {segments.map((segment, idx) => {
                               const percentage = total > 0 ? (segment.value / total) * 100 : 0;
                               return (
