@@ -117,6 +117,9 @@ const Dashboard1stLine = () => {
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
   const remediationRef = useRef<HTMLDivElement>(null);
   
+  // AI Root Cause expanded state
+  const aiRootCauseRef = useRef<HTMLDivElement>(null);
+  
   // Export state
   const [isExporting, setIsExporting] = useState(false);
   const [exportModalOpen, setExportModalOpen] = useState(false);
@@ -130,8 +133,8 @@ const Dashboard1stLine = () => {
   const [metricDetailsOpen, setMetricDetailsOpen] = useState(false);
   const [showRiskTable, setShowRiskTable] = useState(false);
   
-  // AI Root Cause Modal state
-  const [aiRootCauseModalOpen, setAiRootCauseModalOpen] = useState(false);
+  // AI Root Cause expanded state
+  const [isAiRootCauseExpanded, setIsAiRootCauseExpanded] = useState(false);
   const [selectedLossEvent, setSelectedLossEvent] = useState<string | null>("LE-2025-001");
   const [selectedRiskForOverview, setSelectedRiskForOverview] = useState<{ 
     id: string; 
@@ -2091,12 +2094,19 @@ const Dashboard1stLine = () => {
                           </span>
                         </div>
                         <button 
-                          onClick={() => setAiRootCauseModalOpen(true)}
+                          onClick={() => {
+                            setIsAiRootCauseExpanded(!isAiRootCauseExpanded);
+                            if (!isAiRootCauseExpanded) {
+                              setTimeout(() => {
+                                aiRootCauseRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                              }, 100);
+                            }
+                          }}
                           className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                         >
                           CLICK TO EXPAND
                           <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                            <ChevronDown className="w-3 h-3" />
+                            <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", isAiRootCauseExpanded && "rotate-180")} />
                           </div>
                         </button>
                       </div>
@@ -3306,6 +3316,241 @@ const Dashboard1stLine = () => {
                   ))}
                 </TableBody>
               </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* AI Root Cause Expanded Panel */}
+        {isAiRootCauseExpanded && (
+          <Card ref={aiRootCauseRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
+            <CardContent className="p-4">
+              {/* Header with title, badges, close button */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setIsAiRootCauseExpanded(false)}
+                    className="hover:bg-muted/50 rounded p-1"
+                  >
+                    <ChevronDown className="w-5 h-5 rotate-180" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                    <Sparkles className="w-4 h-4 text-primary" />
+                  </div>
+                  <span className="font-semibold text-lg text-foreground">AI Causal Chain Analysis</span>
+                  <Badge variant="outline" className="text-xs">3 events</Badge>
+                </div>
+                <button 
+                  onClick={() => setIsAiRootCauseExpanded(false)}
+                  className="hover:bg-muted/50 rounded p-1"
+                >
+                  <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+                </button>
+              </div>
+
+              {/* Info Banner */}
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-none p-3 mb-4 flex items-center gap-2">
+                <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+                <span className="text-sm text-blue-700 dark:text-blue-300">
+                  AI-analyzed causal chains for loss events. Select an event to view the full root cause analysis.
+                </span>
+              </div>
+
+              {/* Two-column layout: Event selector + Chain on left, Details on right */}
+              <div className="flex gap-6">
+                {/* Left Column: Event Selector + Causal Chain */}
+                <div className="flex-1">
+                  {/* Event Selector Dropdown */}
+                  <div className="mb-6">
+                    <Select value={selectedLossEvent || ""} onValueChange={setSelectedLossEvent}>
+                      <SelectTrigger className="w-full rounded-none">
+                        <SelectValue placeholder="Select an event" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-none bg-background">
+                        <SelectItem value="LE-2025-001">LE-2025-001 - Unauthorized Transaction Processing</SelectItem>
+                        <SelectItem value="LE-2025-002">LE-2025-002 - Data Breach Incident</SelectItem>
+                        <SelectItem value="LE-2025-003">LE-2025-003 - System Outage Event</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  {/* Causal Chain Visualization */}
+                  {selectedLossEvent && (
+                    <div className="relative pl-8 space-y-4">
+                      {/* Vertical connector line */}
+                      <div className="absolute left-3 top-4 bottom-4 w-0.5 bg-gray-200 dark:bg-gray-700" />
+                      
+                      {/* ROOT CAUSE Node */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center z-10">
+                          <AlertCircle className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
+                          <span className="text-xs font-bold text-red-700 dark:text-red-400">ROOT CAUSE</span>
+                          <p className="text-sm text-red-600 dark:text-red-400/80 mt-1">
+                            {selectedLossEvent === "LE-2025-001" 
+                              ? "Inadequate system access controls allowed unauthorized transactions to be processed without proper verification steps. The primary authentication mechanism was bypassed due to a configuration error in the access management system."
+                              : selectedLossEvent === "LE-2025-002"
+                              ? "Insufficient encryption protocols on data transfer endpoints exposed sensitive customer information during routine data synchronization processes."
+                              : "Critical infrastructure dependency on single point of failure caused cascading system outage across multiple service regions."}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* CONTRIBUTING FACTOR 1 */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center z-10">
+                          <Target className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                          <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">CONTRIBUTING FACTOR 1</span>
+                          <p className="text-sm text-yellow-600 dark:text-yellow-400/80 mt-1">
+                            Staff training gaps in transaction verification procedures led to delayed detection of anomalous transaction patterns.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* CONTRIBUTING FACTOR 2 */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center z-10">
+                          <Target className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                          <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">CONTRIBUTING FACTOR 2</span>
+                          <p className="text-sm text-yellow-600 dark:text-yellow-400/80 mt-1">
+                            Lack of real-time monitoring for transaction anomalies allowed unauthorized activity to continue undetected for an extended period.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* CONTRIBUTING FACTOR 3 */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center z-10">
+                          <Target className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
+                          <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">CONTRIBUTING FACTOR 3</span>
+                          <p className="text-sm text-yellow-600 dark:text-yellow-400/80 mt-1">
+                            Insufficient segregation of duties in the approval workflow enabled single-user execution of high-value transactions.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* FAILED CONTROL 1 */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center z-10">
+                          <XCircle className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                          <span className="text-xs font-bold text-orange-700 dark:text-orange-400">FAILED CONTROL 1</span>
+                          <p className="text-sm text-orange-600 dark:text-orange-400/80 mt-1">
+                            Transaction limit controls were bypassed due to a system configuration error that occurred during the last maintenance window.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* FAILED CONTROL 2 */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center z-10">
+                          <XCircle className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
+                          <span className="text-xs font-bold text-orange-700 dark:text-orange-400">FAILED CONTROL 2</span>
+                          <p className="text-sm text-orange-600 dark:text-orange-400/80 mt-1">
+                            Dual approval requirement was not enforced for high-value transactions due to an exception rule that was incorrectly applied.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* RECOMMENDATION 1 */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center z-10">
+                          <Lightbulb className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                          <span className="text-xs font-bold text-green-700 dark:text-green-400">RECOMMENDATION 1</span>
+                          <p className="text-sm text-green-600 dark:text-green-400/80 mt-1">
+                            Implement mandatory dual authorization for all transactions above $10,000 with biometric verification for approvers.
+                          </p>
+                        </div>
+                      </div>
+                      
+                      {/* RECOMMENDATION 2 */}
+                      <div className="relative flex items-start gap-3">
+                        <div className="absolute -left-5 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center z-10">
+                          <Lightbulb className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+                          <span className="text-xs font-bold text-green-700 dark:text-green-400">RECOMMENDATION 2</span>
+                          <p className="text-sm text-green-600 dark:text-green-400/80 mt-1">
+                            Deploy real-time anomaly detection system with automated alerts and immediate transaction suspension capabilities.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Run New Analysis Button */}
+                  <div className="mt-6 pt-4 border-t border-border">
+                    <Button className="w-full rounded-none gap-2" variant="outline">
+                      <Sparkles className="w-4 h-4" />
+                      Run New Analysis
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Right Column: Event Details Sidebar */}
+                {selectedLossEvent && (
+                  <div className="w-72 border-l border-border pl-6">
+                    <h3 className="text-sm font-semibold mb-4 uppercase tracking-wide">Event Details</h3>
+                    <div className="space-y-4">
+                      <div>
+                        <span className="text-xs text-muted-foreground">Loss ID</span>
+                        <p className="text-sm font-medium">{selectedLossEvent}</p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Loss Amount</span>
+                        <p className="text-sm font-medium text-red-600">
+                          {selectedLossEvent === "LE-2025-001" ? "$125,000" : selectedLossEvent === "LE-2025-002" ? "$89,500" : "$210,000"}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Date Occurred</span>
+                        <p className="text-sm font-medium">
+                          {selectedLossEvent === "LE-2025-001" ? "Jan 8, 2025" : selectedLossEvent === "LE-2025-002" ? "Jan 5, 2025" : "Jan 2, 2025"}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Status</span>
+                        <Badge variant="outline" className="rounded-none mt-1">
+                          {selectedLossEvent === "LE-2025-001" ? "Under Investigation" : selectedLossEvent === "LE-2025-002" ? "Remediation In Progress" : "Closed"}
+                        </Badge>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Category</span>
+                        <p className="text-sm font-medium">
+                          {selectedLossEvent === "LE-2025-001" ? "Fraud & Authorization" : selectedLossEvent === "LE-2025-002" ? "Data Security" : "Technology"}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Business Unit</span>
+                        <p className="text-sm font-medium">
+                          {selectedLossEvent === "LE-2025-001" ? "Treasury Operations" : selectedLossEvent === "LE-2025-002" ? "Customer Services" : "IT Infrastructure"}
+                        </p>
+                      </div>
+                      <div>
+                        <span className="text-xs text-muted-foreground">Description</span>
+                        <p className="text-sm mt-1 text-muted-foreground">
+                          {selectedLossEvent === "LE-2025-001" 
+                            ? "Unauthorized transactions were processed through the payment system due to a failure in access control mechanisms."
+                            : selectedLossEvent === "LE-2025-002"
+                            ? "Customer data was exposed during a data synchronization process due to insufficient encryption protocols."
+                            : "Critical system outage affected multiple regions due to infrastructure dependency failures."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
             </CardContent>
           </Card>
         )}
@@ -4685,229 +4930,6 @@ const Dashboard1stLine = () => {
               Reports include AI-generated narratives for all {metrics.length} dashboard components.
             </p>
           </DialogFooter>
-        </DialogContent>
-      </Dialog>
-
-      {/* AI Root Cause Expanded Modal */}
-      <Dialog open={aiRootCauseModalOpen} onOpenChange={setAiRootCauseModalOpen}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-hidden rounded-none p-0" hideCloseButton>
-          <div className="flex h-[80vh]">
-            {/* Main Content Area - Left Side */}
-            <div className="flex-1 p-6 overflow-y-auto">
-              <DialogHeader className="mb-4">
-                <div className="flex items-center justify-between">
-                  <DialogTitle className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                      <Sparkles className="w-4 h-4 text-primary" />
-                    </div>
-                    AI Causal Chain Analysis
-                  </DialogTitle>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setAiRootCauseModalOpen(false)}
-                    className="rounded-none"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-                <DialogDescription>
-                  AI-powered root cause analysis for loss events
-                </DialogDescription>
-              </DialogHeader>
-              
-              {/* Event Selector Dropdown */}
-              <div className="mb-6">
-                <Select value={selectedLossEvent || ""} onValueChange={setSelectedLossEvent}>
-                  <SelectTrigger className="w-full rounded-none">
-                    <SelectValue placeholder="Select an event" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-none bg-background">
-                    <SelectItem value="LE-2025-001">LE-2025-001 - Unauthorized Transaction Processing</SelectItem>
-                    <SelectItem value="LE-2025-002">LE-2025-002 - Data Breach Incident</SelectItem>
-                    <SelectItem value="LE-2025-003">LE-2025-003 - System Outage Event</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              
-              {/* Causal Chain Visualization */}
-              {selectedLossEvent && (
-                <div className="relative pl-8 space-y-4">
-                  {/* Vertical connector line */}
-                  <div className="absolute left-3 top-4 bottom-4 w-0.5 bg-gray-200 dark:bg-gray-700" />
-                  
-                  {/* ROOT CAUSE Node */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-red-500 flex items-center justify-center z-10">
-                      <AlertCircle className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-red-50 dark:bg-red-900/20 rounded-lg p-4 border border-red-200 dark:border-red-800">
-                      <span className="text-xs font-bold text-red-700 dark:text-red-400">ROOT CAUSE</span>
-                      <p className="text-sm text-red-600 dark:text-red-400/80 mt-1">
-                        {selectedLossEvent === "LE-2025-001" 
-                          ? "Inadequate system access controls allowed unauthorized transactions to be processed without proper verification steps. The primary authentication mechanism was bypassed due to a configuration error in the access management system."
-                          : selectedLossEvent === "LE-2025-002"
-                          ? "Insufficient encryption protocols on data transfer endpoints exposed sensitive customer information during routine data synchronization processes."
-                          : "Critical infrastructure dependency on single point of failure caused cascading system outage across multiple service regions."}
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* CONTRIBUTING FACTOR 1 */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center z-10">
-                      <Target className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                      <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">CONTRIBUTING FACTOR 1</span>
-                      <p className="text-sm text-yellow-600 dark:text-yellow-400/80 mt-1">
-                        Staff training gaps in transaction verification procedures led to delayed detection of anomalous transaction patterns.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* CONTRIBUTING FACTOR 2 */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center z-10">
-                      <Target className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                      <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">CONTRIBUTING FACTOR 2</span>
-                      <p className="text-sm text-yellow-600 dark:text-yellow-400/80 mt-1">
-                        Lack of real-time monitoring for transaction anomalies allowed unauthorized activity to continue undetected for an extended period.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* CONTRIBUTING FACTOR 3 */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center z-10">
-                      <Target className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg p-4 border border-yellow-200 dark:border-yellow-800">
-                      <span className="text-xs font-bold text-yellow-700 dark:text-yellow-400">CONTRIBUTING FACTOR 3</span>
-                      <p className="text-sm text-yellow-600 dark:text-yellow-400/80 mt-1">
-                        Insufficient segregation of duties in the approval workflow enabled single-user execution of high-value transactions.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* FAILED CONTROL 1 */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center z-10">
-                      <XCircle className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
-                      <span className="text-xs font-bold text-orange-700 dark:text-orange-400">FAILED CONTROL 1</span>
-                      <p className="text-sm text-orange-600 dark:text-orange-400/80 mt-1">
-                        Transaction limit controls were bypassed due to a system configuration error that occurred during the last maintenance window.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* FAILED CONTROL 2 */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-orange-500 flex items-center justify-center z-10">
-                      <XCircle className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-orange-50 dark:bg-orange-900/20 rounded-lg p-4 border border-orange-200 dark:border-orange-800">
-                      <span className="text-xs font-bold text-orange-700 dark:text-orange-400">FAILED CONTROL 2</span>
-                      <p className="text-sm text-orange-600 dark:text-orange-400/80 mt-1">
-                        Dual approval requirement was not enforced for high-value transactions due to an exception rule that was incorrectly applied.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* RECOMMENDATION 1 */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center z-10">
-                      <Lightbulb className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
-                      <span className="text-xs font-bold text-green-700 dark:text-green-400">RECOMMENDATION 1</span>
-                      <p className="text-sm text-green-600 dark:text-green-400/80 mt-1">
-                        Implement mandatory dual authorization for all transactions above $10,000 with biometric verification for approvers.
-                      </p>
-                    </div>
-                  </div>
-                  
-                  {/* RECOMMENDATION 2 */}
-                  <div className="relative flex items-start gap-3">
-                    <div className="absolute -left-5 w-6 h-6 rounded-full bg-green-500 flex items-center justify-center z-10">
-                      <Lightbulb className="w-3.5 h-3.5 text-white" />
-                    </div>
-                    <div className="flex-1 bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
-                      <span className="text-xs font-bold text-green-700 dark:text-green-400">RECOMMENDATION 2</span>
-                      <p className="text-sm text-green-600 dark:text-green-400/80 mt-1">
-                        Deploy real-time anomaly detection system with automated alerts and immediate transaction suspension capabilities.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              )}
-              
-              {/* Run New Analysis Button */}
-              <div className="mt-6 pt-4 border-t border-border">
-                <Button className="w-full rounded-none gap-2" variant="outline">
-                  <Sparkles className="w-4 h-4" />
-                  Run New Analysis
-                </Button>
-              </div>
-            </div>
-            
-            {/* Event Details Sidebar - Right Side */}
-            {selectedLossEvent && (
-              <div className="w-80 border-l border-border bg-muted/30 p-6">
-                <h3 className="text-sm font-semibold mb-4 uppercase tracking-wide">Event Details</h3>
-                <div className="space-y-4">
-                  <div>
-                    <span className="text-xs text-muted-foreground">Loss ID</span>
-                    <p className="text-sm font-medium">{selectedLossEvent}</p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Loss Amount</span>
-                    <p className="text-sm font-medium text-red-600">
-                      {selectedLossEvent === "LE-2025-001" ? "$125,000" : selectedLossEvent === "LE-2025-002" ? "$89,500" : "$210,000"}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Date Occurred</span>
-                    <p className="text-sm font-medium">
-                      {selectedLossEvent === "LE-2025-001" ? "Jan 8, 2025" : selectedLossEvent === "LE-2025-002" ? "Jan 5, 2025" : "Jan 2, 2025"}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Status</span>
-                    <Badge variant="outline" className="rounded-none mt-1">
-                      {selectedLossEvent === "LE-2025-001" ? "Under Investigation" : selectedLossEvent === "LE-2025-002" ? "Remediation In Progress" : "Closed"}
-                    </Badge>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Category</span>
-                    <p className="text-sm font-medium">
-                      {selectedLossEvent === "LE-2025-001" ? "Fraud & Authorization" : selectedLossEvent === "LE-2025-002" ? "Data Security" : "Technology"}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Business Unit</span>
-                    <p className="text-sm font-medium">
-                      {selectedLossEvent === "LE-2025-001" ? "Treasury Operations" : selectedLossEvent === "LE-2025-002" ? "Customer Services" : "IT Infrastructure"}
-                    </p>
-                  </div>
-                  <div>
-                    <span className="text-xs text-muted-foreground">Description</span>
-                    <p className="text-sm mt-1 text-muted-foreground">
-                      {selectedLossEvent === "LE-2025-001" 
-                        ? "Unauthorized transactions were processed through the payment system due to a failure in access control mechanisms."
-                        : selectedLossEvent === "LE-2025-002"
-                        ? "Customer data was exposed during a data synchronization process due to insufficient encryption protocols."
-                        : "Critical system outage affected multiple regions due to infrastructure dependency failures."}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
         </DialogContent>
       </Dialog>
     </div>
