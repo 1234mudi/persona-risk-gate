@@ -2200,101 +2200,6 @@ const Dashboard1stLine = () => {
 
               {/* Right Column - 50% with equal height cards */}
               <div className="flex flex-col gap-3">
-                {/* Inherent Risk Ratings Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[280px]">
-                  <CardContent className="p-4 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <AlertTriangle className="w-3 h-3 text-primary" />
-                        </div>
-                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                          INHERENT RISK RATINGS
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
-                      </span>
-                    </div>
-                    
-                    {/* "Critical & High" on its own line */}
-                    <div className="mb-3">
-                      <span className="text-2xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
-                      <span className="text-sm text-muted-foreground ml-2">Critical & High</span>
-                    </div>
-                    
-                    {/* Donut chart centered with legend on right */}
-                    <div className="flex items-center justify-center gap-6 flex-1">
-                      <div className="relative w-24 h-24 flex-shrink-0">
-                        {(() => {
-                          const circumference = 2 * Math.PI * 14;
-                          const total = inherentRiskCounts.total || 1;
-                          const criticalPct = inherentRiskCounts.critical / total;
-                          const highPct = inherentRiskCounts.high / total;
-                          const mediumPct = inherentRiskCounts.medium / total;
-                          const criticalAngle = criticalPct * 360;
-                          const highAngle = highPct * 360;
-                          
-                          return (
-                            <svg viewBox="0 0 36 36" className="w-24 h-24">
-                              <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                              <circle 
-                                cx="18" cy="18" r="14" fill="none" 
-                                stroke="hsl(var(--destructive))" strokeWidth="3"
-                                strokeDasharray={`${criticalPct * circumference} ${circumference}`}
-                                transform="rotate(-90 18 18)"
-                              />
-                              <circle 
-                                cx="18" cy="18" r="14" fill="none" 
-                                stroke="hsl(var(--warning))" strokeWidth="3"
-                                strokeDasharray={`${highPct * circumference} ${circumference}`}
-                                transform={`rotate(${criticalAngle - 90} 18 18)`}
-                              />
-                              <circle 
-                                cx="18" cy="18" r="14" fill="none" 
-                                stroke="hsl(var(--accent))" strokeWidth="3"
-                                strokeDasharray={`${mediumPct * circumference} ${circumference}`}
-                                transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
-                              />
-                            </svg>
-                          );
-                        })()}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-xl font-bold text-[#CE7900]">{criticalHighTotal}</span>
-                          <span className="text-[8px] text-muted-foreground">CRIT+HIGH</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
-                          <span className="text-xs text-destructive">Critical</span>
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-warning" />
-                          <span className="text-xs text-warning">High</span>
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-accent" />
-                          <span className="text-xs text-accent">Medium</span>
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="border-t border-border pt-2 mt-auto">
-                      <p className="text-[9px] text-muted-foreground">
-                        Review Critical and High ratings for control adequacy.
-                      </p>
-                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                        How to read: Donut shows risk distribution. Critical+High total indicates exposure requiring strong controls. Larger red/orange segments signal elevated inherent risk.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-
                 {/* Control Effectiveness Card */}
                 <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
                   <CardContent className="p-4 h-full flex flex-col">
@@ -2525,6 +2430,101 @@ const Dashboard1stLine = () => {
                       </p>
                       <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
                         How to read: Bar lengths show relative counts. Open (red) needs assignment. In Progress (orange) is being worked. Validation (blue) awaits sign-off. Target zero open items.
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Inherent Risk Ratings Card */}
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[280px]">
+                  <CardContent className="p-4 h-full flex flex-col">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                          <AlertTriangle className="w-3 h-3 text-primary" />
+                        </div>
+                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                          INHERENT RISK RATINGS
+                        </span>
+                      </div>
+                      <span className="text-xs text-muted-foreground">
+                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
+                      </span>
+                    </div>
+                    
+                    {/* "Critical & High" on its own line */}
+                    <div className="mb-3">
+                      <span className="text-2xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                      <span className="text-sm text-muted-foreground ml-2">Critical & High</span>
+                    </div>
+                    
+                    {/* Donut chart centered with legend on right */}
+                    <div className="flex items-center justify-center gap-6 flex-1">
+                      <div className="relative w-24 h-24 flex-shrink-0">
+                        {(() => {
+                          const circumference = 2 * Math.PI * 14;
+                          const total = inherentRiskCounts.total || 1;
+                          const criticalPct = inherentRiskCounts.critical / total;
+                          const highPct = inherentRiskCounts.high / total;
+                          const mediumPct = inherentRiskCounts.medium / total;
+                          const criticalAngle = criticalPct * 360;
+                          const highAngle = highPct * 360;
+                          
+                          return (
+                            <svg viewBox="0 0 36 36" className="w-24 h-24">
+                              <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="hsl(var(--destructive))" strokeWidth="3"
+                                strokeDasharray={`${criticalPct * circumference} ${circumference}`}
+                                transform="rotate(-90 18 18)"
+                              />
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="hsl(var(--warning))" strokeWidth="3"
+                                strokeDasharray={`${highPct * circumference} ${circumference}`}
+                                transform={`rotate(${criticalAngle - 90} 18 18)`}
+                              />
+                              <circle 
+                                cx="18" cy="18" r="14" fill="none" 
+                                stroke="hsl(var(--accent))" strokeWidth="3"
+                                strokeDasharray={`${mediumPct * circumference} ${circumference}`}
+                                transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
+                              />
+                            </svg>
+                          );
+                        })()}
+                        <div className="absolute inset-0 flex flex-col items-center justify-center">
+                          <span className="text-xl font-bold text-[#CE7900]">{criticalHighTotal}</span>
+                          <span className="text-[8px] text-muted-foreground">CRIT+HIGH</span>
+                        </div>
+                      </div>
+                      
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
+                          <span className="text-xs text-destructive">Critical</span>
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-warning" />
+                          <span className="text-xs text-warning">High</span>
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-accent" />
+                          <span className="text-xs text-accent">Medium</span>
+                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="border-t border-border pt-2 mt-auto">
+                      <p className="text-[9px] text-muted-foreground">
+                        Review Critical and High ratings for control adequacy.
+                      </p>
+                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
+                        How to read: Donut shows risk distribution. Critical+High total indicates exposure requiring strong controls. Larger red/orange segments signal elevated inherent risk.
                       </p>
                     </div>
                   </CardContent>
