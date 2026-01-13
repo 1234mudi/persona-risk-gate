@@ -1007,24 +1007,35 @@ const Dashboard1stLine = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   });
 
-  // Combined assessment status counts (deadline urgency + workflow progress)
+  // Workflow status colors (consistent with 2nd line dashboard)
+  const WORKFLOW_COLORS = {
+    sentForAssessment: "#0A84FF",  // Blue
+    pendingReview: "#FF9F0A",       // Orange  
+    pendingApproval: "#BF5AF2",     // Purple
+    completed: "#34C759",           // Green
+    overdue: "#FF453A",             // Red
+    reassigned: "#64D2FF",          // Light Blue
+  };
+
+  // Combined assessment status counts (deadline urgency + workflow progress) - aligned with 2nd line
   const assessmentStatusCounts = useMemo(() => {
     const today = startOfDay(new Date());
     const weekEnd = endOfWeek(today, { weekStartsOn: 1 }); // Monday start
     const monthEnd = endOfMonth(today);
     
     // Deadline urgency counts
-    let overdue = 0;
+    let overdueDeadline = 0;
     let dueThisWeek = 0;
     let dueThisMonth = 0;
     let future = 0;
     
-    // Workflow progress counts
-    let notStarted = 0;
-    let inProgress = 0;
+    // Workflow progress counts (aligned with 2nd line dashboard)
+    let sentForAssessment = 0;
+    let pendingReview = 0;
     let pendingApproval = 0;
-    let challenge = 0;
     let completed = 0;
+    let overdue = 0;
+    let reassigned = 0;
     
     assessorFilteredRiskData.forEach(risk => {
       // Due date categorization
@@ -1033,7 +1044,7 @@ const Dashboard1stLine = () => {
         const dueDateStart = startOfDay(dueDate);
         
         if (isBefore(dueDateStart, today)) {
-          overdue++;
+          overdueDeadline++;
         } else if (isBefore(dueDateStart, weekEnd) || isToday(dueDate)) {
           dueThisWeek++;
         } else if (isBefore(dueDateStart, monthEnd)) {
@@ -1045,26 +1056,33 @@ const Dashboard1stLine = () => {
         // Skip invalid dates
       }
       
-      // Workflow status categorization
+      // Workflow status categorization (aligned with 2nd line dashboard)
       const status = risk.status?.toLowerCase() || "";
-      if (status === "completed" || status === "complete" || status === "closed") {
-        completed++;
-      } else if (status === "review/challenge" || status === "challenge") {
-        challenge++;
-      } else if (status === "pending approval" || status === "pending review") {
+      
+      if (status.includes('sent') || status.includes('assessment') || status === 'not started') {
+        sentForAssessment++;
+      } else if (status.includes('review') && !status.includes('approval')) {
+        pendingReview++;
+      } else if (status.includes('approval')) {
         pendingApproval++;
-      } else if (status === "in progress" || status === "under review") {
-        inProgress++;
+      } else if (status.includes('completed') || status.includes('complete') || status.includes('closed')) {
+        completed++;
+      } else if (status.includes('overdue')) {
+        overdue++;
+      } else if (status.includes('reassigned')) {
+        reassigned++;
+      } else if (status.includes('in progress')) {
+        pendingReview++; // Map "in progress" to pending review
       } else {
-        notStarted++;
+        sentForAssessment++; // Default to sent for assessment
       }
     });
     
     return {
       // Deadline data
-      overdue, dueThisWeek, dueThisMonth, future,
-      // Workflow data
-      notStarted, inProgress, pendingApproval, challenge, completed,
+      overdueDeadline, dueThisWeek, dueThisMonth, future,
+      // Workflow data (aligned with 2nd line)
+      sentForAssessment, pendingReview, pendingApproval, completed, overdue, reassigned,
       total: assessorFilteredRiskData.length
     };
   }, [assessorFilteredRiskData]);
@@ -1758,49 +1776,56 @@ const Dashboard1stLine = () => {
                       
                       {/* Progress bars */}
                       <div className="flex-1 space-y-2">
-                        <div>
-                          <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">DEADLINE STATUS</span>
-                          <div className="flex h-2 overflow-hidden mt-0.5 rounded-full shadow-sm">
-                            {assessmentStatusCounts.overdue > 0 && (
-                              <div className="bg-destructive first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} />
-                            )}
-                            {assessmentStatusCounts.dueThisWeek > 0 && (
-                              <div className="bg-warning first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.dueThisWeek / totalAssessments) * 100}%`}} />
-                            )}
-                            {assessmentStatusCounts.dueThisMonth > 0 && (
-                              <div className="bg-success first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.dueThisMonth / totalAssessments) * 100}%`}} />
-                            )}
-                          </div>
-                        </div>
+                        {/* WORKFLOW PROGRESS - aligned with 2nd line dashboard (6 statuses) */}
                         <div>
                           <span className="text-[10px] text-muted-foreground uppercase tracking-wide font-medium">WORKFLOW PROGRESS</span>
                           <div className="flex h-2 overflow-hidden mt-0.5 rounded-full shadow-sm">
-                            {assessmentStatusCounts.completed > 0 && (
-                              <div className="bg-success first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} />
+                            {assessmentStatusCounts.sentForAssessment > 0 && (
+                              <div style={{backgroundColor: WORKFLOW_COLORS.sentForAssessment, width: `${(assessmentStatusCounts.sentForAssessment / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                            )}
+                            {assessmentStatusCounts.pendingReview > 0 && (
+                              <div style={{backgroundColor: WORKFLOW_COLORS.pendingReview, width: `${(assessmentStatusCounts.pendingReview / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
                             )}
                             {assessmentStatusCounts.pendingApproval > 0 && (
-                              <div className="bg-[#A361CF] first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.pendingApproval / totalAssessments) * 100}%`}} />
+                              <div style={{backgroundColor: WORKFLOW_COLORS.pendingApproval, width: `${(assessmentStatusCounts.pendingApproval / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
                             )}
-                            {assessmentStatusCounts.inProgress > 0 && (
-                              <div className="bg-warning first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.inProgress / totalAssessments) * 100}%`}} />
+                            {assessmentStatusCounts.completed > 0 && (
+                              <div style={{backgroundColor: WORKFLOW_COLORS.completed, width: `${(assessmentStatusCounts.completed / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
                             )}
-                            {assessmentStatusCounts.notStarted > 0 && (
-                              <div className="bg-destructive first:rounded-l-full last:rounded-r-full" style={{width: `${(assessmentStatusCounts.notStarted / totalAssessments) * 100}%`}} />
+                            {assessmentStatusCounts.overdue > 0 && (
+                              <div style={{backgroundColor: WORKFLOW_COLORS.overdue, width: `${(assessmentStatusCounts.overdue / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
+                            )}
+                            {assessmentStatusCounts.reassigned > 0 && (
+                              <div style={{backgroundColor: WORKFLOW_COLORS.reassigned, width: `${(assessmentStatusCounts.reassigned / totalAssessments) * 100}%`}} className="first:rounded-l-full last:rounded-r-full" />
                             )}
                           </div>
                         </div>
-                        <div className="flex flex-wrap gap-x-3 gap-y-0 text-[9px] text-muted-foreground">
+                        
+                        {/* 6-segment legend in 3 columns (matching 2nd line) */}
+                        <div className="grid grid-cols-3 gap-x-3 gap-y-0 text-[9px] text-muted-foreground mt-1">
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-success" />
-                            {assessmentStatusCounts.completed} Done
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.sentForAssessment}} />
+                            {assessmentStatusCounts.sentForAssessment} Sent
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-destructive" />
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.pendingReview}} />
+                            {assessmentStatusCounts.pendingReview} Review
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.pendingApproval}} />
+                            {assessmentStatusCounts.pendingApproval} Approval
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.completed}} />
+                            {assessmentStatusCounts.completed} Completed
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.overdue}} />
                             {assessmentStatusCounts.overdue} Overdue
                           </span>
                           <span className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full bg-warning" />
-                            {assessmentStatusCounts.inProgress} In Progress
+                            <span className="w-2 h-2 rounded-full" style={{backgroundColor: WORKFLOW_COLORS.reassigned}} />
+                            {assessmentStatusCounts.reassigned} Reassigned
                           </span>
                         </div>
                       </div>
@@ -1808,10 +1833,10 @@ const Dashboard1stLine = () => {
                     
                     <div className="border-t border-border pt-2 mt-3">
                       <p className="text-[9px] text-muted-foreground">
-                        Track assessment deadlines and workflow progress.
+                        Track assessment workflow stages. Address overdue and pending items promptly.
                       </p>
                       <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                        How to read: Donut shows completion %. Red bars indicate overdue items needing immediate attention. Green bars show completed work. Prioritize overdue items first.
+                        How to read: Donut shows completion %. Progress bar shows workflow distribution. Prioritize overdue (red) and pending items first.
                       </p>
                     </div>
                     
