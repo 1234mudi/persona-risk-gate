@@ -97,6 +97,9 @@ const Dashboard1stLine = () => {
   type ExpandedPanel = 'naJustifications' | 'lossEvents' | 'driftAlerts' | 'remediation' | 'aiRootCause' | null;
   const [expandedPanel, setExpandedPanel] = useState<ExpandedPanel>(null);
   
+  // Expanded card state for metric cards
+  const [expandedCard, setExpandedCard] = useState<string | null>(null);
+  
   // N/A Justifications state
   const [naSearchQuery, setNaSearchQuery] = useState("");
   const [showApprovedNa, setShowApprovedNa] = useState(false);
@@ -903,6 +906,7 @@ const Dashboard1stLine = () => {
     setActiveTab(tab);
     setHighlightedTab(tab);
     setShowRiskTable(true); // Show the risk table first
+    setExpandedCard('assessment'); // Sync expanded card state
     
     setTimeout(() => {
       reportSectionRef.current?.scrollIntoView({ 
@@ -1650,12 +1654,11 @@ const Dashboard1stLine = () => {
             }
           };
 
-          // Expanded card state
-          const [expandedCard, setExpandedCard] = React.useState<string | null>(null);
           const toggleCardExpand = (cardId: string) => {
             if (cardId === 'assessment') {
               const newShowState = !showRiskTable;
               setShowRiskTable(newShowState);
+              setExpandedCard(newShowState ? 'assessment' : null);
               
               // Auto-scroll to table when showing
               if (newShowState) {
@@ -1666,8 +1669,9 @@ const Dashboard1stLine = () => {
                   });
                 }, 100);
               }
+            } else {
+              setExpandedCard(prev => prev === cardId ? null : cardId);
             }
-            setExpandedCard(prev => prev === cardId ? null : cardId);
           };
 
           // Placeholder data for new cards
@@ -1714,7 +1718,7 @@ const Dashboard1stLine = () => {
                         {showRiskTable ? 'CLICK TO COLLAPSE' : 'CLICK TO EXPAND'}
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                           <ChevronDown className={cn("w-3 h-3 transition-transform", 
-                            expandedCard === 'assessment' && "rotate-180")} />
+                            showRiskTable && "rotate-180")} />
                         </div>
                       </button>
                     </div>
@@ -3604,6 +3608,17 @@ const Dashboard1stLine = () => {
                   ({assessorFilteredRiskData.filter(r => r.tabCategory === activeTab).length})
                 </span>
               </div>
+              {/* Right: Close Button */}
+              <button 
+                onClick={() => {
+                  setShowRiskTable(false);
+                  setExpandedCard(null);
+                }}
+                className="mr-4 p-1.5 hover:bg-muted/50 rounded-full transition-colors"
+                title="Close table"
+              >
+                <X className="w-5 h-5 text-muted-foreground hover:text-foreground" />
+              </button>
             </div>
           </CardHeader>
 
