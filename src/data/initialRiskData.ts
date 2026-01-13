@@ -41,6 +41,13 @@ export interface ControlRecord {
   testingStatus?: "Tested" | "Not Tested" | "Pending";
 }
 
+export interface NAJustificationStatus {
+  pending: number;
+  drafted: number;
+  awaiting: number;
+  approved: number;
+}
+
 export interface SharedRiskData {
   id: string;
   title: string;
@@ -82,6 +89,7 @@ export interface SharedRiskData {
   tabCategory: "own" | "assess" | "approve";
   historicalAssessments?: HistoricalAssessment[];
   hasActionPlan?: boolean;
+  naJustifications?: NAJustificationStatus;
 }
 
 // Based on 2nd Line dashboard data with orgLevel fields added
@@ -200,7 +208,8 @@ export const initialRiskData: SharedRiskData[] = [
           { id: "Control-003", name: "Quality Assurance", designEffectiveness: "Ineffective", operatingEffectiveness: "Ineffective", overallScore: 1 }
         ]
       }
-    ]
+    ],
+    naJustifications: { pending: 2, drafted: 1, awaiting: 0, approved: 1 }
   },
   {
     id: "R-001-A",
@@ -282,7 +291,8 @@ export const initialRiskData: SharedRiskData[] = [
           { id: "Control-009", name: "Branch Audits", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 }
         ]
       }
-    ]
+    ],
+    naJustifications: { pending: 0, drafted: 1, awaiting: 1, approved: 0 }
   },
   {
     id: "R-001-A-1",
@@ -367,7 +377,8 @@ export const initialRiskData: SharedRiskData[] = [
           { id: "Control-012", name: "Dual Authorization", designEffectiveness: "Partially Effective", operatingEffectiveness: "Partially Effective", overallScore: 3 }
         ]
       }
-    ]
+    ],
+    naJustifications: { pending: 1, drafted: 0, awaiting: 0, approved: 2 }
   },
   {
     id: "R-002",
