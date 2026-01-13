@@ -1964,78 +1964,164 @@ const Dashboard1stLine = () => {
                 </Card>
 
 
-                {/* Bottom row: Loss+Drift | AI Root Cause */}
+                {/* Bottom row: Loss Events | Inherent Risk Ratings - side by side */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3">
-                  {/* Sub-column 1: Loss Events + Drift Alerts stacked */}
-                  <div className="flex flex-col gap-3">
-                    {/* Loss Events & Root Cause Card - Unified */}
-                    <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
-                      <CardContent className="p-2.5">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                              <Sparkles className="w-3 h-3 text-primary" />
-                            </div>
-                            <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                              LOSS EVENTS & ROOT CAUSE
-                            </span>
+                  {/* Loss Events & Root Cause Card */}
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
+                    <CardContent className="p-2.5 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <Sparkles className="w-3 h-3 text-primary" />
                           </div>
-                          <button 
-                            onClick={() => togglePanel('lossEvents', lossEventsRef)}
-                            className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
-                          >
-                            CLICK TO EXPAND
-                            <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                              <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'lossEvents' && "rotate-180")} />
-                            </div>
-                          </button>
-                        </div>
-                        
-                        {/* Main stats row */}
-                        <div className="flex items-baseline gap-4 mb-2">
-                          <div>
-                            <span className="text-2xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
-                            <span className="text-sm text-muted-foreground ml-1">Events</span>
-                          </div>
-                          <div className="text-sm">
-                            <span className="font-semibold text-foreground">${lossEventsStats.totalAmount.toLocaleString()}</span>
-                            <span className="text-muted-foreground ml-1">Total Loss</span>
-                          </div>
-                        </div>
-                        
-                        {/* Analysis badge */}
-                        <div className="flex items-center gap-2 mb-2 bg-primary/5 px-2 py-1.5 rounded border border-primary/20">
-                          <Sparkles className="w-3.5 h-3.5 text-primary" />
-                          <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount} of {lossEventsStats.totalCount} events have AI root cause analysis</span>
-                        </div>
-                        
-                        {/* Status breakdown */}
-                        <div className="flex flex-wrap gap-3 text-[9px] text-muted-foreground mb-2">
-                          <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-destructive" /> 
-                            {lossEventsData.filter(e => e.status === "Pending").length} Pending
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-warning" /> 
-                            {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Under Review
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <span className="w-2.5 h-2.5 rounded-full bg-success" /> 
-                            {lossEventsData.filter(e => e.status === "Closed").length} Closed
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                            LOSS EVENTS & ROOT CAUSE
                           </span>
                         </div>
-                        
-                        <div className="border-t border-border mt-2 pt-1.5">
-                          <p className="text-[9px] text-muted-foreground">
-                            View loss events with inline AI root cause analysis.
-                          </p>
-                          <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                            How to read: Click to expand and view each event's AI-analyzed causal chain showing root cause, contributing factors, failed controls, and recommendations.
-                          </p>
+                        <button 
+                          onClick={() => togglePanel('lossEvents', lossEventsRef)}
+                          className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
+                        >
+                          EXPAND
+                          <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                            <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'lossEvents' && "rotate-180")} />
+                          </div>
+                        </button>
+                      </div>
+                      
+                      {/* Main stats row */}
+                      <div className="flex items-baseline gap-4 mb-2">
+                        <div>
+                          <span className="text-2xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
+                          <span className="text-sm text-muted-foreground ml-1">Events</span>
                         </div>
-                      </CardContent>
-                    </Card>
-                  </div>
+                        <div className="text-sm">
+                          <span className="font-semibold text-foreground">${lossEventsStats.totalAmount.toLocaleString()}</span>
+                          <span className="text-muted-foreground ml-1">Total Loss</span>
+                        </div>
+                      </div>
+                      
+                      {/* Analysis badge */}
+                      <div className="flex items-center gap-2 mb-2 bg-primary/5 px-2 py-1 rounded border border-primary/20">
+                        <Sparkles className="w-3 h-3 text-primary" />
+                        <span className="text-[10px] text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
+                      </div>
+                      
+                      {/* Status breakdown */}
+                      <div className="flex flex-wrap gap-2 text-[9px] text-muted-foreground mb-2">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-destructive" /> 
+                          {lossEventsData.filter(e => e.status === "Pending").length} Pending
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-warning" /> 
+                          {lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length} Review
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-success" /> 
+                          {lossEventsData.filter(e => e.status === "Closed").length} Closed
+                        </span>
+                      </div>
+                      
+                      <div className="border-t border-border mt-auto pt-1.5">
+                        <p className="text-[8px] text-muted-foreground/70 italic">
+                          Click expand to view events with AI root cause analysis.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Inherent Risk Ratings Card - moved from right column */}
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
+                    <CardContent className="p-2.5 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <AlertTriangle className="w-3 h-3 text-primary" />
+                          </div>
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                            INHERENT RISK RATINGS
+                          </span>
+                        </div>
+                        <span className="text-[10px] text-muted-foreground">
+                          {inherentRiskCounts.critical} crit, {inherentRiskCounts.high} high
+                        </span>
+                      </div>
+                      
+                      {/* Critical & High count */}
+                      <div className="mb-2">
+                        <span className="text-2xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                        <span className="text-sm text-muted-foreground ml-2">Critical & High</span>
+                      </div>
+                      
+                      {/* Donut chart with legend */}
+                      <div className="flex items-center justify-center gap-4 flex-1">
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          {(() => {
+                            const circumference = 2 * Math.PI * 14;
+                            const total = inherentRiskCounts.total || 1;
+                            const criticalPct = inherentRiskCounts.critical / total;
+                            const highPct = inherentRiskCounts.high / total;
+                            const mediumPct = inherentRiskCounts.medium / total;
+                            const criticalAngle = criticalPct * 360;
+                            const highAngle = highPct * 360;
+                            
+                            return (
+                              <svg viewBox="0 0 36 36" className="w-16 h-16">
+                                <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="hsl(var(--destructive))" strokeWidth="3"
+                                  strokeDasharray={`${criticalPct * circumference} ${circumference}`}
+                                  transform="rotate(-90 18 18)"
+                                />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="hsl(var(--warning))" strokeWidth="3"
+                                  strokeDasharray={`${highPct * circumference} ${circumference}`}
+                                  transform={`rotate(${criticalAngle - 90} 18 18)`}
+                                />
+                                <circle 
+                                  cx="18" cy="18" r="14" fill="none" 
+                                  stroke="hsl(var(--accent))" strokeWidth="3"
+                                  strokeDasharray={`${mediumPct * circumference} ${circumference}`}
+                                  transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
+                                />
+                              </svg>
+                            );
+                          })()}
+                          <div className="absolute inset-0 flex flex-col items-center justify-center">
+                            <span className="text-base font-bold text-[#CE7900]">{criticalHighTotal}</span>
+                            <span className="text-[6px] text-muted-foreground">CRIT+HIGH</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-destructive" />
+                            <span className="text-[10px] text-destructive">Critical</span>
+                            <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-warning" />
+                            <span className="text-[10px] text-warning">High</span>
+                            <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
+                          </div>
+                          <div className="flex items-center gap-1.5">
+                            <div className="w-2 h-2 rounded-full bg-accent" />
+                            <span className="text-[10px] text-accent">Medium</span>
+                            <span className="text-[10px] font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      <div className="border-t border-border pt-1.5 mt-auto">
+                        <p className="text-[8px] text-muted-foreground/70 italic">
+                          Critical+High indicates exposure requiring strong controls.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
                 </div>
               </div>
 
@@ -2156,7 +2242,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
                   <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
@@ -2171,7 +2257,7 @@ const Dashboard1stLine = () => {
                         onClick={() => togglePanel('remediation', remediationRef)}
                         className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                       >
-                        CLICK TO EXPAND
+                        EXPAND
                         <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
                           <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'remediation' && "rotate-180")} />
                         </div>
@@ -2190,7 +2276,7 @@ const Dashboard1stLine = () => {
                       </div>
                     </div>
                     
-                    {/* Single segmented progress bar - matching "Ongoing Review & Challenge" style */}
+                    {/* Single segmented progress bar */}
                     {(() => {
                       const total = remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed;
                       if (total === 0) return null;
@@ -2233,110 +2319,13 @@ const Dashboard1stLine = () => {
                     })()}
                     
                     <div className="border-t border-border mt-auto pt-1.5">
-                      <p className="text-[9px] text-muted-foreground">
-                        Track remediation progress across all risks.
-                      </p>
-                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                        How to read: Bar lengths show relative counts. Open (red) needs assignment. In Progress (orange) is being worked. Validation (blue) awaits sign-off. Target zero open items.
+                      <p className="text-[8px] text-muted-foreground/70 italic">
+                        Track remediation progress. Target zero open items.
                       </p>
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Inherent Risk Ratings Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[280px]">
-                  <CardContent className="p-4 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <AlertTriangle className="w-3 h-3 text-primary" />
-                        </div>
-                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                          INHERENT RISK RATINGS
-                        </span>
-                      </div>
-                      <span className="text-xs text-muted-foreground">
-                        {inherentRiskCounts.critical} critical, {inherentRiskCounts.high} high
-                      </span>
-                    </div>
-                    
-                    {/* "Critical & High" on its own line */}
-                    <div className="mb-3">
-                      <span className="text-2xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
-                      <span className="text-sm text-muted-foreground ml-2">Critical & High</span>
-                    </div>
-                    
-                    {/* Donut chart centered with legend on right */}
-                    <div className="flex items-center justify-center gap-6 flex-1">
-                      <div className="relative w-24 h-24 flex-shrink-0">
-                        {(() => {
-                          const circumference = 2 * Math.PI * 14;
-                          const total = inherentRiskCounts.total || 1;
-                          const criticalPct = inherentRiskCounts.critical / total;
-                          const highPct = inherentRiskCounts.high / total;
-                          const mediumPct = inherentRiskCounts.medium / total;
-                          const criticalAngle = criticalPct * 360;
-                          const highAngle = highPct * 360;
-                          
-                          return (
-                            <svg viewBox="0 0 36 36" className="w-24 h-24">
-                              <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
-                              <circle 
-                                cx="18" cy="18" r="14" fill="none" 
-                                stroke="hsl(var(--destructive))" strokeWidth="3"
-                                strokeDasharray={`${criticalPct * circumference} ${circumference}`}
-                                transform="rotate(-90 18 18)"
-                              />
-                              <circle 
-                                cx="18" cy="18" r="14" fill="none" 
-                                stroke="hsl(var(--warning))" strokeWidth="3"
-                                strokeDasharray={`${highPct * circumference} ${circumference}`}
-                                transform={`rotate(${criticalAngle - 90} 18 18)`}
-                              />
-                              <circle 
-                                cx="18" cy="18" r="14" fill="none" 
-                                stroke="hsl(var(--accent))" strokeWidth="3"
-                                strokeDasharray={`${mediumPct * circumference} ${circumference}`}
-                                transform={`rotate(${criticalAngle + highAngle - 90} 18 18)`}
-                              />
-                            </svg>
-                          );
-                        })()}
-                        <div className="absolute inset-0 flex flex-col items-center justify-center">
-                          <span className="text-xl font-bold text-[#CE7900]">{criticalHighTotal}</span>
-                          <span className="text-[8px] text-muted-foreground">CRIT+HIGH</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex flex-col gap-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
-                          <span className="text-xs text-destructive">Critical</span>
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.critical}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-warning" />
-                          <span className="text-xs text-warning">High</span>
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.high}</span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-accent" />
-                          <span className="text-xs text-accent">Medium</span>
-                          <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">{inherentRiskCounts.medium}</span>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    <div className="border-t border-border pt-2 mt-auto">
-                      <p className="text-[9px] text-muted-foreground">
-                        Review Critical and High ratings for control adequacy.
-                      </p>
-                      <p className="text-[8px] text-muted-foreground/70 italic mt-1 border-t border-border/20 pt-1">
-                        How to read: Donut shows risk distribution. Critical+High total indicates exposure requiring strong controls. Larger red/orange segments signal elevated inherent risk.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
               </div>
             </div>
           );
