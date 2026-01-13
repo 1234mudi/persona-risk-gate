@@ -2153,8 +2153,8 @@ const Dashboard1stLine = () => {
                       <span className="text-xs text-muted-foreground ml-2">Needing Attention</span>
                     </div>
                     
-                    {/* Speedometer gauge - larger and centered */}
-                    <div className="flex flex-col items-center justify-center flex-1">
+                    {/* Speedometer gauge and bar - centered */}
+                    <div className="flex-1 flex flex-col items-center justify-center">
                       <div className="w-44">
                         <svg viewBox="0 0 100 55" className="w-44 h-22">
                           <defs>
@@ -2197,42 +2197,42 @@ const Dashboard1stLine = () => {
                         <span className="text-xl font-bold text-success">{effectivenessPercent}%</span>
                         <span className="text-[10px] text-muted-foreground block">Effective</span>
                       </div>
-                    </div>
+                      
+                      {/* Horizontal Stacked Bar Chart */}
+                      <div className="w-full h-3 flex rounded-full overflow-hidden mt-4 shadow-sm bg-gray-200 dark:bg-gray-700">
+                        <div 
+                          className="bg-success h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
+                        />
+                        <div 
+                          className="bg-warning h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
+                        />
+                        <div 
+                          className="bg-destructive h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
+                        />
+                        <div 
+                          className="bg-gray-400 h-full" 
+                          style={{ width: `${totalControlRisks > 0 ? 0 : 0}%` }}
+                        />
+                      </div>
 
-                    {/* Horizontal Stacked Bar Chart */}
-                    <div className="w-full h-3 flex rounded-full overflow-hidden mb-2 mt-3 shadow-sm bg-gray-200 dark:bg-gray-700">
-                      <div 
-                        className="bg-success h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-warning h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.partiallyEffective / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-destructive h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? (controlEvidenceCounts.ineffective / totalControlRisks) * 100 : 0}%` }}
-                      />
-                      <div 
-                        className="bg-gray-400 h-full" 
-                        style={{ width: `${totalControlRisks > 0 ? 0 : 0}%` }}
-                      />
-                    </div>
-
-                    {/* Legend */}
-                    <div className="flex justify-between text-[9px] text-muted-foreground mb-2">
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-success" /> Effective: {effectiveControls}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-warning" /> Partial: {controlEvidenceCounts.partiallyEffective}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-destructive" /> Ineffective: {controlEvidenceCounts.ineffective}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0
-                      </span>
+                      {/* Legend */}
+                      <div className="flex justify-between w-full text-[9px] text-muted-foreground mt-2">
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-success" /> Effective: {effectiveControls}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-warning" /> Partial: {controlEvidenceCounts.partiallyEffective}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-destructive" /> Ineffective: {controlEvidenceCounts.ineffective}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <span className="w-2 h-2 rounded-full bg-gray-400" /> N/A: 0
+                        </span>
+                      </div>
                     </div>
                     
                     <div className="border-t border-border pt-2 mt-auto">
