@@ -1719,7 +1719,7 @@ const Dashboard1stLine = () => {
               <TooltipTrigger asChild>
                 <a href="/downloads/sample-risk-import-data.csv" download className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs italic">
                   <FlaskConical className="w-3 h-3" />
-                  <span>Download Sample Risk Data (for AI Parser Testing)</span>
+                  <span>Download Sample Risk Data (for AI document upload)</span>
                 </a>
               </TooltipTrigger>
               <TooltipContent>
