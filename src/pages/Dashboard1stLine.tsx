@@ -2744,44 +2744,44 @@ const Dashboard1stLine = () => {
                       {expandedLossEventRows.has(event.id) && event.rootCause && (
                         <TableRow className="bg-muted/10 hover:bg-muted/10">
                           <TableCell colSpan={8} className="p-0">
-                            <div className="p-6 border-t border-border/50">
-                              <div className="max-w-4xl mx-auto space-y-4">
+                            <div className="p-4 border-t border-border/50">
+                              <div className="max-w-4xl mx-auto space-y-2">
                                 {/* ROOT CAUSE Section */}
-                                <div className="border-2 border-red-300 dark:border-red-700 rounded-lg p-4 bg-red-50/50 dark:bg-red-900/20">
-                                  <div className="flex items-center gap-2 mb-3">
-                                    <div className="w-8 h-8 rounded-full bg-red-500 flex items-center justify-center">
-                                      <AlertCircle className="w-4 h-4 text-white" />
+                                <div className="border-2 border-red-300 dark:border-red-700 rounded-lg p-3 bg-red-50/50 dark:bg-red-900/20">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <div className="w-6 h-6 rounded-full bg-red-500 flex items-center justify-center">
+                                      <AlertCircle className="w-3 h-3 text-white" />
                                     </div>
-                                    <span className="font-bold text-red-700 dark:text-red-400 uppercase text-sm">Root Cause</span>
+                                    <span className="font-bold text-red-700 dark:text-red-400 uppercase text-xs">Root Cause</span>
                                   </div>
-                                  <p className="text-sm text-red-600 dark:text-red-400/80">
+                                  <p className="text-xs text-red-600 dark:text-red-400/80">
                                     {event.rootCause.summary}
                                   </p>
                                 </div>
 
                                 {/* Arrow Connector */}
-                                <div className="flex justify-center py-1">
+                                <div className="flex justify-center py-0.5">
                                   <div className="flex flex-col items-center">
-                                    <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
-                                    <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
+                                    <div className="w-0.5 h-3 border-l-2 border-dashed border-muted-foreground/40" />
+                                    <ChevronDown className="w-3 h-3 text-muted-foreground/40 -mt-0.5" />
                                   </div>
                                 </div>
 
                                 {/* CONTRIBUTING FACTORS Section */}
-                                <div className="border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-4 bg-yellow-50/50 dark:bg-yellow-900/20">
-                                  <div className="flex items-center justify-between mb-3">
+                                <div className="border-2 border-yellow-300 dark:border-yellow-700 rounded-lg p-3 bg-yellow-50/50 dark:bg-yellow-900/20">
+                                  <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-2">
-                                      <div className="w-8 h-8 rounded-full bg-yellow-500 flex items-center justify-center">
-                                        <Target className="w-4 h-4 text-white" />
+                                      <div className="w-6 h-6 rounded-full bg-yellow-500 flex items-center justify-center">
+                                        <Target className="w-3 h-3 text-white" />
                                       </div>
-                                      <span className="font-bold text-yellow-700 dark:text-yellow-400 uppercase text-sm">Contributing Factors</span>
+                                      <span className="font-bold text-yellow-700 dark:text-yellow-400 uppercase text-xs">Contributing Factors</span>
                                     </div>
-                                    <Badge className="rounded-full bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600">{event.rootCause.contributingFactors.length}</Badge>
+                                    <Badge className="rounded-full bg-yellow-100 dark:bg-yellow-800 text-yellow-700 dark:text-yellow-300 border-yellow-300 dark:border-yellow-600 text-xs">{event.rootCause.contributingFactors.length}</Badge>
                                   </div>
-                                  <div className="flex flex-wrap gap-2">
+                                  <div className="flex flex-wrap gap-1.5">
                                     {event.rootCause.contributingFactors.map((factor, idx) => (
-                                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-yellow-100 dark:bg-yellow-800/50 text-yellow-800 dark:text-yellow-200 text-sm rounded-full border border-yellow-300 dark:border-yellow-600">
-                                        <span className="w-5 h-5 rounded-full bg-yellow-500 text-white text-xs flex items-center justify-center font-semibold">{idx + 1}</span>
+                                      <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 bg-yellow-100 dark:bg-yellow-800/50 text-yellow-800 dark:text-yellow-200 text-xs rounded-full border border-yellow-300 dark:border-yellow-600">
+                                        <span className="w-4 h-4 rounded-full bg-yellow-500 text-white text-[10px] flex items-center justify-center font-semibold">{idx + 1}</span>
                                         {factor}
                                       </span>
                                     ))}
@@ -2789,28 +2789,28 @@ const Dashboard1stLine = () => {
                                 </div>
 
                                 {/* Arrow Connector */}
-                                <div className="flex justify-center py-1">
+                                <div className="flex justify-center py-0.5">
                                   <div className="flex flex-col items-center">
-                                    <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
-                                    <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
+                                    <div className="w-0.5 h-3 border-l-2 border-dashed border-muted-foreground/40" />
+                                    <ChevronDown className="w-3 h-3 text-muted-foreground/40 -mt-0.5" />
                                   </div>
                                 </div>
 
                                 {/* FAILED CONTROLS Section */}
-                                <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-4 bg-purple-50/50 dark:bg-purple-900/20">
-                                  <div className="flex items-center justify-between mb-3">
+                                <div className="border-2 border-purple-300 dark:border-purple-700 rounded-lg p-3 bg-purple-50/50 dark:bg-purple-900/20">
+                                  <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-2">
-                                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
-                                        <XCircle className="w-4 h-4 text-white" />
+                                      <div className="w-6 h-6 rounded-full bg-purple-500 flex items-center justify-center">
+                                        <XCircle className="w-3 h-3 text-white" />
                                       </div>
-                                      <span className="font-bold text-purple-700 dark:text-purple-400 uppercase text-sm">Failed Controls</span>
+                                      <span className="font-bold text-purple-700 dark:text-purple-400 uppercase text-xs">Failed Controls</span>
                                     </div>
-                                    <Badge className="rounded-full bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-600">{event.rootCause.failedControls.length}</Badge>
+                                    <Badge className="rounded-full bg-purple-100 dark:bg-purple-800 text-purple-700 dark:text-purple-300 border-purple-300 dark:border-purple-600 text-xs">{event.rootCause.failedControls.length}</Badge>
                                   </div>
-                                  <div className="flex flex-wrap gap-2">
+                                  <div className="flex flex-wrap gap-1.5">
                                     {event.rootCause.failedControls.map((control, idx) => (
-                                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-purple-100 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-sm rounded-full border border-purple-300 dark:border-purple-600">
-                                        <span className="text-xs font-semibold text-purple-600 dark:text-purple-300">{control.id}</span>
+                                      <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 bg-purple-100 dark:bg-purple-800/50 text-purple-800 dark:text-purple-200 text-xs rounded-full border border-purple-300 dark:border-purple-600">
+                                        <span className="text-[10px] font-semibold text-purple-600 dark:text-purple-300">{control.id}</span>
                                         {control.name}
                                       </span>
                                     ))}
@@ -2818,28 +2818,28 @@ const Dashboard1stLine = () => {
                                 </div>
 
                                 {/* Arrow Connector */}
-                                <div className="flex justify-center py-1">
+                                <div className="flex justify-center py-0.5">
                                   <div className="flex flex-col items-center">
-                                    <div className="w-0.5 h-4 border-l-2 border-dashed border-muted-foreground/40" />
-                                    <ChevronDown className="w-4 h-4 text-muted-foreground/40 -mt-1" />
+                                    <div className="w-0.5 h-3 border-l-2 border-dashed border-muted-foreground/40" />
+                                    <ChevronDown className="w-3 h-3 text-muted-foreground/40 -mt-0.5" />
                                   </div>
                                 </div>
 
                                 {/* RECOMMENDATIONS Section */}
-                                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-4 bg-green-50/50 dark:bg-green-900/20">
-                                  <div className="flex items-center justify-between mb-3">
+                                <div className="border-2 border-green-300 dark:border-green-700 rounded-lg p-3 bg-green-50/50 dark:bg-green-900/20">
+                                  <div className="flex items-center justify-between mb-2">
                                     <div className="flex items-center gap-2">
-                                      <div className="w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
-                                        <Lightbulb className="w-4 h-4 text-white" />
+                                      <div className="w-6 h-6 rounded-full bg-green-500 flex items-center justify-center">
+                                        <Lightbulb className="w-3 h-3 text-white" />
                                       </div>
-                                      <span className="font-bold text-green-700 dark:text-green-400 uppercase text-sm">Recommendations</span>
+                                      <span className="font-bold text-green-700 dark:text-green-400 uppercase text-xs">Recommendations</span>
                                     </div>
-                                    <Badge className="rounded-full bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600">{event.rootCause.recommendations.length}</Badge>
+                                    <Badge className="rounded-full bg-green-100 dark:bg-green-800 text-green-700 dark:text-green-300 border-green-300 dark:border-green-600 text-xs">{event.rootCause.recommendations.length}</Badge>
                                   </div>
-                                  <div className="flex flex-wrap gap-2">
+                                  <div className="flex flex-wrap gap-1.5">
                                     {event.rootCause.recommendations.map((rec, idx) => (
-                                      <span key={idx} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 text-sm rounded-full border border-green-300 dark:border-green-600">
-                                        <span className="w-5 h-5 rounded-full bg-green-500 text-white text-xs flex items-center justify-center font-semibold">{idx + 1}</span>
+                                      <span key={idx} className="inline-flex items-center gap-1 px-2.5 py-1 bg-green-100 dark:bg-green-800/50 text-green-800 dark:text-green-200 text-xs rounded-full border border-green-300 dark:border-green-600">
+                                        <span className="w-4 h-4 rounded-full bg-green-500 text-white text-[10px] flex items-center justify-center font-semibold">{idx + 1}</span>
                                         {rec}
                                       </span>
                                     ))}
@@ -2847,8 +2847,8 @@ const Dashboard1stLine = () => {
                                 </div>
 
                                 {/* Event Details Footer */}
-                                <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                                <div className="flex items-center justify-between pt-3 border-t border-border/50">
+                                  <div className="flex items-center gap-4 text-xs text-muted-foreground">
                                     <span><strong>Linked Risk:</strong> {event.linkedRisk}</span>
                                     <span><strong>Business Unit:</strong> {event.businessUnit}</span>
                                     <span><strong>Date:</strong> {event.date}</span>
@@ -2856,14 +2856,14 @@ const Dashboard1stLine = () => {
                                   <Button 
                                     size="sm" 
                                     variant="outline" 
-                                    className="gap-2 text-xs"
+                                    className="gap-2 text-xs h-7"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       setSelectedLossEvent(event);
                                       setLossEventDetailsModalOpen(true);
                                     }}
                                   >
-                                    <Eye className="w-3.5 h-3.5" />
+                                    <Eye className="w-3 h-3" />
                                     View Full Details
                                   </Button>
                                 </div>
