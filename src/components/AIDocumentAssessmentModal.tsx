@@ -968,7 +968,7 @@ export function AIDocumentAssessmentModal({
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">Document Parser</h2>
+                  <h2 className="text-lg font-semibold text-foreground">Risk Assessment Upload</h2>
                   <p className="text-sm text-muted-foreground">Review and import {parsedRisks.length} parsed risk assessments</p>
                 </div>
               </div>
@@ -1003,12 +1003,12 @@ export function AIDocumentAssessmentModal({
                 {skipReviewScreen ? (
                   <>
                     <Search className="w-5 h-5 text-[hsl(210,17%,24%)]" />
-                    Find Risks in Document
+                    Risk Assessment Upload
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5 text-[hsl(210,17%,24%)]" />
-                    Document Parser
+                    Risk Assessment Upload
                   </>
                 )}
               </DialogTitle>

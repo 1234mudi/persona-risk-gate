@@ -517,8 +517,8 @@ export const DocumentParserBulkAssessmentModal = ({
                 <Layers className="w-5 h-5 text-white" />
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-[hsl(210,17%,24%)]">Review Selected Risks</h2>
-                <p className="text-sm text-muted-foreground">Review and edit {selectedRisks.length} risk{selectedRisks.length !== 1 ? 's' : ''} before import</p>
+                <h2 className="text-lg font-semibold text-[hsl(210,17%,24%)]">Risk Assessment Upload</h2>
+                <p className="text-sm text-muted-foreground">Review and edit {selectedRisks.length} risk{selectedRisks.length !== 1 ? 's' : ''} before upload</p>
               </div>
             </div>
             <div className="flex items-center gap-3">
