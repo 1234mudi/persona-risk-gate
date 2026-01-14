@@ -524,48 +524,22 @@ const Dashboard1stLine = () => {
       }
       return visible;
     } else {
-      // Level 1 mode: Show Level 1 risks as primary with Level 2 and Level 3 nested
+      // Level 1 mode: Show Level 1 with Level 2 children always visible (no expansion, no Level 3)
       const visible: RiskData[] = [];
-      const addedLevel3Ids = new Set<string>();
       
       level1Risks.forEach(l1Risk => {
         visible.push(l1Risk);
-        if (expandedRows.has(l1Risk.id)) {
-          // Only show Level 2 risks that belong to this Level 1 (matching parentRisk)
-          const childLevel2Risks = level2Risks.filter(l2 => 
-            l2.parentRisk === l1Risk.title
-          );
-          
-          childLevel2Risks.forEach(l2Risk => {
-            visible.push(l2Risk);
-            if (expandedRows.has(l2Risk.id)) {
-              // Only show Level 3 risks that belong to this Level 2
-              const childLevel3Risks = level3Risks.filter(l3 => 
-                l3.parentRisk === l2Risk.title && 
-                !addedLevel3Ids.has(l3.id)
-              );
-              childLevel3Risks.forEach(l3 => addedLevel3Ids.add(l3.id));
-              visible.push(...childLevel3Risks);
-            }
-          });
-        }
+        // Always show Level 2 children - no expansion check needed
+        const childLevel2Risks = level2Risks.filter(l2 => 
+          l2.parentRisk === l1Risk.title
+        );
+        visible.push(...childLevel2Risks);
+        // Do NOT include Level 3 risks
       });
-      // If no Level 1 risks, fall back to showing Level 2 and Level 3
-      if (level1Risks.length === 0) {
-        level2Risks.forEach(l2Risk => {
-          visible.push(l2Risk);
-          if (expandedRows.has(l2Risk.id)) {
-            const childLevel3Risks = level3Risks.filter(l3 => 
-              l3.parentRisk === l2Risk.title && 
-              !addedLevel3Ids.has(l3.id)
-            );
-            childLevel3Risks.forEach(l3 => addedLevel3Ids.add(l3.id));
-            visible.push(...childLevel3Risks);
-          }
-        });
-        if (level2Risks.length === 0) {
-          return level3Risks;
-        }
+      
+      // If no Level 1 risks, fall back to showing Level 2 only
+      if (level1Risks.length === 0 && level2Risks.length > 0) {
+        return level2Risks;
       }
       return visible;
     }
@@ -3636,42 +3610,6 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         <TableCell className="py-2 border-r border-b border-border">
                           <div className="flex items-start gap-1.5">
-                            {/* Expand/collapse button - only for Level 1 with children */}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 1" && canExpand && (
-                              <button
-                                onClick={() => toggleRow(risk.id)}
-                                className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
-                              >
-                                <ChevronRight className={cn(
-                                  "w-3 h-3 text-muted-foreground transition-transform duration-200",
-                                  isExpanded && "rotate-90"
-                                )} />
-                              </button>
-                            )}
-                            
-                            {/* Spacer for Level 1 without children */}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 1" && !canExpand && (
-                              <div className="w-4" />
-                            )}
-                            
-                            {/* Level 2 expand button (when viewing by Level 1) - to expand Level 3 children */}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && canExpand && (
-                              <button
-                                onClick={() => toggleRow(risk.id)}
-                                className="p-0.5 hover:bg-muted rounded transition-colors flex-shrink-0 mt-0.5"
-                              >
-                                <ChevronRight className={cn(
-                                  "w-3 h-3 text-muted-foreground transition-transform duration-200",
-                                  isExpanded && "rotate-90"
-                                )} />
-                              </button>
-                            )}
-
-                            {/* Level 2 spacer (when viewing by Level 1 and no children) */}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 2" && !canExpand && (
-                              <div className="w-4" />
-                            )}
-                            
                             {/* Level 2 expand button (when viewing by Level 2) */}
                             {hierarchyViewMode === "level2" && risk.riskLevel === "Level 2" && canExpand && (
                               <button
@@ -3685,13 +3623,7 @@ const Dashboard1stLine = () => {
                               </button>
                             )}
                             
-                            {/* Spacer + tree indicator for Level 3 */}
-                            {hierarchyViewMode === "level1" && risk.riskLevel === "Level 3" && (
-                              <>
-                                <div className="w-4" />
-                                <span className="text-orange-500 dark:text-orange-400 font-light text-sm leading-none mt-0.5">└</span>
-                              </>
-                            )}
+                            {/* Spacer + tree indicator for Level 3 (only in level2 view mode) */}
                             {hierarchyViewMode === "level2" && risk.riskLevel === "Level 3" && (
                               <>
                                 <div className="w-4" />
@@ -3699,8 +3631,11 @@ const Dashboard1stLine = () => {
                               </>
                             )}
                             
-                            {/* Main content wrapper */}
-                            <div className="flex flex-col gap-2">
+                            {/* Main content wrapper with inverted hierarchy indentation */}
+                            <div className={cn(
+                              "flex flex-col gap-2",
+                              hierarchyViewMode === "level1" && risk.riskLevel === "Level 1" && "pl-6"
+                            )}>
                               {/* Risk Title and Info */}
                               <div className="flex flex-col gap-1">
                                 <span className="font-mono text-xs text-[#10052F] dark:text-white">{risk.id}</span>
