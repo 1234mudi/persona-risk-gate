@@ -2020,15 +2020,15 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Analysis badge + Status breakdown with bar */}
-                      <div className="flex-1 flex flex-col justify-center">
-                        <div className="flex items-center gap-2 mb-3 bg-primary/5 px-2.5 py-1.5 rounded-md border border-primary/20 w-fit">
-                          <Sparkles className="w-3 h-3 text-primary" />
+                      <div className="flex-1 flex flex-col justify-center py-2">
+                        <div className="flex items-center justify-center gap-3 mb-4 bg-primary/5 px-4 py-2.5 rounded-md border border-primary/20 w-full">
+                          <Sparkles className="w-4 h-4 text-primary" />
                           <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
                         </div>
                       </div>
                       
                       {/* Status breakdown with bar */}
-                      <div className="mt-auto">
+                      <div className="mt-auto pt-2">
                         {(() => {
                           const pending = lossEventsData.filter(e => e.status === "Pending").length;
                           const review = lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length;
