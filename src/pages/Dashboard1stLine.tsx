@@ -3588,11 +3588,11 @@ const Dashboard1stLine = () => {
                       <TableHead className="min-w-[180px] py-1 border-r border-b border-border text-xs">Assessors/Collaborators</TableHead>
                       <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">Last Assessed Date</TableHead>
                       <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Inherent Risk</TableHead>
-                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Residual Risk</TableHead>
                       <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Related Controls</TableHead>
                       <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Calculated Control Effectiveness</TableHead>
                       <TableHead className="min-w-[140px] py-1 border-r border-b border-border text-xs">N/A Justifications</TableHead>
                       <TableHead className="min-w-[180px] py-1 border-r border-b border-border text-xs">Control Test Results</TableHead>
+                      <TableHead className="min-w-[200px] py-1 border-r border-b border-border text-xs">Residual Risk</TableHead>
                       <TableHead className="min-w-[160px] py-1 border-b border-border text-xs">Status</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -3946,49 +3946,6 @@ const Dashboard1stLine = () => {
                             )}
                           </div>
                         </TableCell>
-                        {/* Residual Risk - enhanced with score + rating + trend + aggregation */}
-                        <TableCell className="py-2 border-r border-b border-border">
-                          <div className="flex flex-col gap-1">
-                            <div className="flex items-center gap-2">
-                              {risk.residualRisk.score && (
-                                <span className="font-bold text-sm min-w-[20px] text-[#10052F] dark:text-white">{risk.residualRisk.score}</span>
-                              )}
-                              {renderEditableCell(
-                                risk.id,
-                                'residualRisk',
-                                risk.residualRisk.level,
-                                <Badge variant="outline" className={`${getRiskBadgeColor(risk.residualRisk.color)}`}>
-                                  {risk.residualRisk.level}
-                                </Badge>,
-                                'select',
-                                ['Critical', 'High', 'Medium', 'Low']
-                              )}
-                              <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-[#D21C1C]' : 'text-[#46AF6A]'}`}>
-                                {risk.residualTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
-                                {risk.residualTrend.value}
-                              </span>
-                            </div>
-                            {residualAgg && (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
-                                      <span className="font-medium text-[#10052F] dark:text-white">Σ Avg: {residualAgg.avgScore}</span>
-                                      <span className="text-[#10052F] dark:text-white">|</span>
-                                      <span className="text-[#10052F] dark:text-white">Max: {residualAgg.maxScore}</span>
-                                      <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(residualAgg.avgScore).color)}`}>
-                                        {getRiskLevelFromScore(residualAgg.avgScore).level}
-                                      </Badge>
-                                    </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent>
-                                    <p>Aggregated from {residualAgg.childCount} child risk(s)</p>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            )}
-                          </div>
-                        </TableCell>
                         {/* Related Controls - tabular layout */}
                         <TableCell className="py-2 border-r border-b border-border min-w-[320px]">
                           <div className="text-xs max-h-32 overflow-y-auto">
@@ -4163,6 +4120,49 @@ const Dashboard1stLine = () => {
                             <Badge className="bg-green-500 text-white text-[10px] px-2 py-0.5 rounded-full">{risk.testResults.label}</Badge>
                             {risk.testResults.sublabel && (
                               <div className="text-xs text-muted-foreground">{risk.testResults.sublabel}</div>
+                            )}
+                          </div>
+                        </TableCell>
+                        {/* Residual Risk - enhanced with score + rating + trend + aggregation */}
+                        <TableCell className="py-2 border-r border-b border-border">
+                          <div className="flex flex-col gap-1">
+                            <div className="flex items-center gap-2">
+                              {risk.residualRisk.score && (
+                                <span className="font-bold text-sm min-w-[20px] text-[#10052F] dark:text-white">{risk.residualRisk.score}</span>
+                              )}
+                              {renderEditableCell(
+                                risk.id,
+                                'residualRisk',
+                                risk.residualRisk.level,
+                                <Badge variant="outline" className={`${getRiskBadgeColor(risk.residualRisk.color)}`}>
+                                  {risk.residualRisk.level}
+                                </Badge>,
+                                'select',
+                                ['Critical', 'High', 'Medium', 'Low']
+                              )}
+                              <span className={`text-xs flex items-center gap-0.5 ${risk.residualTrend.up ? 'text-[#D21C1C]' : 'text-[#46AF6A]'}`}>
+                                {risk.residualTrend.up ? <ArrowUp className="w-3 h-3" /> : <ArrowDown className="w-3 h-3" />}
+                                {risk.residualTrend.value}
+                              </span>
+                            </div>
+                            {residualAgg && (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div className="flex items-center gap-1 text-[10px] text-muted-foreground bg-muted/50 px-1.5 py-0.5 rounded">
+                                      <span className="font-medium text-[#10052F] dark:text-white">Σ Avg: {residualAgg.avgScore}</span>
+                                      <span className="text-[#10052F] dark:text-white">|</span>
+                                      <span className="text-[#10052F] dark:text-white">Max: {residualAgg.maxScore}</span>
+                                      <Badge variant="outline" className={`text-[9px] px-1 py-0 ${getRiskBadgeColor(getRiskLevelFromScore(residualAgg.avgScore).color)}`}>
+                                        {getRiskLevelFromScore(residualAgg.avgScore).level}
+                                      </Badge>
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent>
+                                    <p>Aggregated from {residualAgg.childCount} child risk(s)</p>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
                             )}
                           </div>
                         </TableCell>
