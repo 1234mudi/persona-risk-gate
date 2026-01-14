@@ -968,7 +968,7 @@ export function AIDocumentAssessmentModal({
                   <FileText className="w-5 h-5 text-white" />
                 </div>
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">Analyze and Upload</h2>
+                  <h2 className="text-lg font-semibold text-foreground">AI-Assisted Risk Upload</h2>
                   <p className="text-sm text-muted-foreground">Review and import {parsedRisks.length} parsed risk assessments</p>
                 </div>
               </div>
@@ -991,7 +991,7 @@ export function AIDocumentAssessmentModal({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2 text-second-line">
                 <Search className="w-5 h-5 text-second-line" />
-                Analyze and Upload
+                AI-Assisted Risk Upload
               </DialogTitle>
               <DialogDescription>
                 Search results for selected risks
@@ -1003,12 +1003,12 @@ export function AIDocumentAssessmentModal({
                 {skipReviewScreen ? (
                   <>
                     <Search className="w-5 h-5 text-[hsl(210,17%,24%)]" />
-                    Analyze and Upload
+                    AI-Assisted Risk Upload
                   </>
                 ) : (
                   <>
                     <Sparkles className="w-5 h-5 text-[hsl(210,17%,24%)]" />
-                    Analyze and Upload
+                    AI-Assisted Risk Upload
                   </>
                 )}
               </DialogTitle>
