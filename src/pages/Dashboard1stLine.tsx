@@ -3580,8 +3580,8 @@ const Dashboard1stLine = () => {
                         risk.riskLevel === "Level 3" && hierarchyViewMode === "level2" && "border-l-4 border-l-orange-500 animate-fade-in"
                       )}>
                         {activeTab !== "own" && (
-                          <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border">
-                            <div className="flex items-center justify-center px-2">
+                          <TableCell className="w-14 min-w-[56px] py-2 border-r border-b border-border align-top">
+                            <div className="flex items-start justify-center px-2 pt-0.5">
                               <Checkbox 
                                 checked={selectedRisks.has(risk.id)}
                                 onCheckedChange={() => toggleRiskSelection(risk.id)}
@@ -3589,7 +3589,7 @@ const Dashboard1stLine = () => {
                             </div>
                           </TableCell>
                         )}
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           {(risk.status === "Completed" || risk.status === "Complete" || risk.status === "Closed") && (
                             <TooltipProvider>
                               <Tooltip>
@@ -3608,7 +3608,7 @@ const Dashboard1stLine = () => {
                             </TooltipProvider>
                           )}
                         </TableCell>
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           <div className="flex items-start gap-1.5">
                             {/* Level 2 expand button (when viewing by Level 2) */}
                             {hierarchyViewMode === "level2" && risk.riskLevel === "Level 2" && canExpand && (
@@ -3662,13 +3662,13 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         {/* Risk Hierarchy - moved next to Risk Title */}
-                        <TableCell className="py-2 border-r border-b border-border align-middle">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           <Badge variant="outline" className={`text-xs ${getRiskLevelColor(risk.riskLevel)}`}>
                             {risk.riskLevel}
                           </Badge>
                         </TableCell>
                         {/* Due Date */}
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           {(() => {
                             const dueDate = new Date(risk.dueDate);
                             const completionDate = risk.completionDate ? new Date(risk.completionDate) : null;
@@ -3693,7 +3693,7 @@ const Dashboard1stLine = () => {
                         </TableCell>
                         {/* Completion Date - moved next to Due Date, only for "own" tab */}
                         {activeTab === "own" && (
-                          <TableCell className="py-2 border-r border-b border-border">
+                          <TableCell className="py-2 border-r border-b border-border align-top">
                             {risk.completionDate ? (
                               <div className="flex items-center gap-2">
                                 <CalendarCheck className="w-4 h-4 text-green-500" />
@@ -3705,7 +3705,7 @@ const Dashboard1stLine = () => {
                           </TableCell>
                         )}
                         {/* Assessment Progress */}
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           <div className="space-y-1">
                             <div className="flex gap-1">
                               <div className={`h-2 flex-1 rounded-sm ${
@@ -3763,13 +3763,13 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         {/* Business Unit */}
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           <Badge variant="outline" className="text-[10px] font-medium bg-slate-50 dark:bg-slate-900/30 border-slate-200 dark:border-slate-700 text-[#10052F] dark:text-white">
                             {risk.businessUnit}
                           </Badge>
                         </TableCell>
                         {/* Assessors */}
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           <div className="flex flex-col gap-1">
                             {risk.assessors.slice(0, 2).map((assessor, idx) => {
                               const initials = assessor.split(' ').map(n => n[0]).join('');
@@ -3809,7 +3809,7 @@ const Dashboard1stLine = () => {
                           </div>
                         </TableCell>
                         {/* Last Assessed Date - clickable drilldown */}
-                        <TableCell className="py-2 border-r border-b border-border">
+                        <TableCell className="py-2 border-r border-b border-border align-top">
                           <div className="text-sm text-[#10052F] dark:text-white">{format(new Date(risk.lastAssessed), 'MMM dd, yyyy')}</div>
                           {risk.previousAssessments > 0 && (
                             <button 
