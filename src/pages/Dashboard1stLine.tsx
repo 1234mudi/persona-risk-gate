@@ -1818,7 +1818,7 @@ const Dashboard1stLine = () => {
               {/* Left Column - 50% */}
               <div className="flex flex-col gap-2 h-full">
                 {/* Assessment Status Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[280px]">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px]">
                   <CardContent className="p-2.5 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -1948,9 +1948,9 @@ const Dashboard1stLine = () => {
 
 
                 {/* Bottom row: Loss Events | Inherent Risk Ratings - side by side */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1" style={{ minHeight: '260px' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1" style={{ minHeight: '200px' }}>
                   {/* Loss Events & Root Cause Card */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[260px]">
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[200px]">
                     <CardContent className="p-3 h-full flex flex-col">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -1986,7 +1986,7 @@ const Dashboard1stLine = () => {
                       
                       {/* Analysis badge + Status breakdown with bar - equally spaced */}
                       <div className="flex-1 flex flex-col justify-evenly">
-                        <div className="flex items-center justify-center gap-3 bg-primary/5 px-4 py-2.5 rounded-md border border-primary/20 w-full">
+                        <div className="flex items-center justify-center gap-3 bg-primary/5 px-3 py-1.5 rounded-md border border-primary/20 w-full">
                           <Sparkles className="w-4 h-4 text-primary" />
                           <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
                         </div>
@@ -2043,9 +2043,9 @@ const Dashboard1stLine = () => {
                   </Card>
 
                   {/* Inherent Risk Ratings Card */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[260px]">
-                    <CardContent className="p-3 h-full flex flex-col">
-                      <div className="flex items-center justify-between mb-1">
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[200px]">
+                    <CardContent className="p-2.5 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-0.5">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                             <AlertTriangle className="w-3 h-3 text-primary" />
@@ -2060,14 +2060,14 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Critical & High count */}
-                      <div className="mb-2">
-                        <span className="text-lg font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                      <div className="mb-1">
+                        <span className="text-base font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
                         <span className="text-xs text-muted-foreground ml-2">Critical & High</span>
                       </div>
                       
                       {/* Donut chart with legend - centered vertically */}
-                      <div className="flex items-center justify-center gap-6 flex-1">
-                        <div className="relative w-24 h-24 flex-shrink-0">
+                      <div className="flex items-center justify-center gap-4 flex-1">
+                        <div className="relative w-20 h-20 flex-shrink-0">
                           {(() => {
                             const circumference = 2 * Math.PI * 14;
                             const total = inherentRiskCounts.total || 1;
@@ -2078,7 +2078,7 @@ const Dashboard1stLine = () => {
                             const highAngle = highPct * 360;
                             
                             return (
-                              <svg viewBox="0 0 36 36" className="w-24 h-24">
+                              <svg viewBox="0 0 36 36" className="w-20 h-20">
                                 <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                                 <circle 
                                   cx="18" cy="18" r="14" fill="none" 
@@ -2107,7 +2107,7 @@ const Dashboard1stLine = () => {
                           </div>
                         </div>
                         
-                        <div className="flex flex-col gap-2.5">
+                        <div className="flex flex-col gap-1.5">
                           <div className="flex items-center gap-1.5">
                             <div className="w-2.5 h-2.5 rounded-full bg-destructive" />
                             <span className="text-[9px] text-destructive font-medium">Critical</span>
@@ -2126,7 +2126,7 @@ const Dashboard1stLine = () => {
                         </div>
                       </div>
                       
-                      <div className="border-t border-border pt-2 mt-auto">
+                      <div className="border-t border-border pt-1.5 mt-auto">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Critical+High indicates exposure requiring strong controls.
                         </p>
@@ -2142,7 +2142,7 @@ const Dashboard1stLine = () => {
               {/* Right Column - 50% with equal height cards */}
               <div className="flex flex-col gap-2 h-full">
                 {/* Control Effectiveness Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[320px] overflow-hidden">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[270px] overflow-hidden">
                   <CardContent className="p-2.5 pb-3 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -2164,8 +2164,8 @@ const Dashboard1stLine = () => {
                     
                     {/* Speedometer gauge - centered */}
                     <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-                      <div className="w-40">
-                        <svg viewBox="0 0 100 55" className="w-40 h-[80px]">
+                      <div className="w-36">
+                        <svg viewBox="0 0 100 55" className="w-36 h-[72px]">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2202,8 +2202,8 @@ const Dashboard1stLine = () => {
                           <span className="text-[8px] leading-none text-muted-foreground">100%</span>
                         </div>
                       </div>
-                      <div className="text-center mt-2">
-                        <span className="text-xl font-bold text-success">{effectivenessPercent}%</span>
+                      <div className="text-center mt-1">
+                        <span className="text-lg font-bold text-success">{effectivenessPercent}%</span>
                         <span className="text-[10px] text-muted-foreground block">Effective</span>
                       </div>
                     </div>
@@ -2211,7 +2211,7 @@ const Dashboard1stLine = () => {
                     {/* Bottom section - pinned */}
                     <div className="mt-auto w-full flex-shrink-0">
                       {/* Horizontal Stacked Bar Chart */}
-                      <div className="w-full h-[9px] flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-3">
+                      <div className="w-full h-[7px] flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-2">
                         <div 
                           className="bg-success h-full" 
                           style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
@@ -2231,7 +2231,7 @@ const Dashboard1stLine = () => {
                       </div>
 
                       {/* Legend */}
-                      <div className="grid grid-cols-2 gap-x-3 gap-y-1 w-full text-[9px] text-muted-foreground mt-2 mb-2">
+                      <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 w-full text-[9px] text-muted-foreground mt-1 mb-1">
                         <span className="flex items-center gap-1">
                           <span className="w-2 h-2 rounded-full bg-success" /> Effective: {effectiveControls}
                         </span>
@@ -2246,7 +2246,7 @@ const Dashboard1stLine = () => {
                         </span>
                       </div>
                       
-                      <div className="border-t border-border pt-2">
+                      <div className="border-t border-border pt-1.5">
                         <p className="text-[9px] text-muted-foreground">
                           Aggregate control effectiveness across all risks.
                         </p>
@@ -2259,7 +2259,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[220px]">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[180px]">
                   <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
@@ -2281,7 +2281,7 @@ const Dashboard1stLine = () => {
                       </button>
                     </div>
                     
-                    <div className="mb-3">
+                    <div className="mb-2">
                       <div className="flex items-baseline justify-between">
                         <div className="flex items-baseline gap-1">
                           <span className="text-xl font-bold text-[#10052F] dark:text-white">
@@ -2309,7 +2309,7 @@ const Dashboard1stLine = () => {
                         return (
                           <div className="w-full">
                             {/* Progress bar */}
-                            <div className="flex h-3 rounded-full overflow-hidden mb-2 shadow-sm">
+                            <div className="flex h-2.5 rounded-full overflow-hidden mb-1.5 shadow-sm">
                               {segments.map((segment, idx) => {
                                 const percentage = total > 0 ? (segment.value / total) * 100 : 0;
                                 return (
@@ -2337,7 +2337,7 @@ const Dashboard1stLine = () => {
                       })()}
                     </div>
                     
-                    <div className="border-t border-border mt-auto pt-2">
+                    <div className="border-t border-border mt-auto pt-1.5">
                       <p className="text-[8px] text-muted-foreground/70 italic">
                         Track remediation progress. Target zero open items.
                       </p>
