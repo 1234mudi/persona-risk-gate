@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import { getInitialRiskDataCopy, SharedRiskData, HistoricalAssessment, ControlRecord } from "@/data/initialRiskData";
 import { format, parseISO, isAfter, isBefore, startOfDay, endOfDay, addDays, endOfWeek, endOfMonth, isToday } from "date-fns";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity, Lightbulb, Download, Presentation, Loader2, DollarSign } from "lucide-react";
+import { ClipboardCheck, AlertTriangle, FileCheck, Clock, TrendingUp, TrendingDown, UserPlus, Users as UsersIcon, RotateCcw, Edit2, LogOut, User, ChevronDown, ChevronRight, ChevronUp, Sparkles, Plus, RefreshCw, MoreHorizontal, Link, CheckCircle, CheckSquare, AlertCircle, Lock, ArrowUp, ArrowDown, Mail, X, XCircle, Send, FileText, Upload, Menu, Check, CalendarCheck, BarChart, Target, FlaskConical, Shield, Eye, LayoutList, Building2, Filter, Layers, Search, Ban, Info, Activity, Lightbulb, Download, Presentation, Loader2, DollarSign, MessageSquareWarning } from "lucide-react";
 import { downloadRiskDocx } from "@/lib/generateRiskDocx";
 import { generateDashboardDocx, generateDashboardPptx, downloadBlob } from "@/lib/generateDashboardExport";
 import { supabase } from "@/integrations/supabase/client";
@@ -96,7 +96,7 @@ const Dashboard1stLine = () => {
   const [deadlineFilter, setDeadlineFilter] = useState<string>("all");
   
   // Single expanded panel state - only one can be open at a time
-  type ExpandedPanel = 'naJustifications' | 'lossEvents' | 'driftAlerts' | 'remediation' | null;
+  type ExpandedPanel = 'naJustifications' | 'lossEvents' | 'driftAlerts' | 'remediation' | 'challenges' | null;
   const [expandedPanel, setExpandedPanel] = useState<ExpandedPanel>(null);
   
   // Expanded card state for metric cards
@@ -1797,6 +1797,7 @@ const Dashboard1stLine = () => {
           const lossEventsCounts = { pendingTriage: 1, inTriage: 3, closed: 0 };
           const driftAlertsCounts = { critical: 1, high: 1, medium: 1 };
           const remediationTasksCounts = { open: 2, inProgress: 1, validation: 1, closed: 0 };
+          const challengesCounts = { open: 3, inProgress: 2, resolved: 4, total: 9 };
 
           // Calculate assessment percentages
           const totalAssessments = assessmentStatusCounts.total;
@@ -2258,95 +2259,181 @@ const Dashboard1stLine = () => {
                   </CardContent>
                 </Card>
 
-                {/* Remediation Tasks Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[180px]">
-                  <CardContent className="p-2.5 h-full flex flex-col">
-                    <div className="flex items-center justify-between mb-1">
-                      <div className="flex items-center gap-2">
-                        <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
-                          <CheckSquare className="w-3 h-3 text-primary" />
-                        </div>
-                        <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
-                          REMEDIATION TASKS
-                        </span>
-                      </div>
-                      <button 
-                        onClick={() => togglePanel('remediation', remediationRef)}
-                        className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
-                      >
-                        {expandedPanel === 'remediation' ? 'COLLAPSE' : 'EXPAND'}
-                        <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                          <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'remediation' && "rotate-180")} />
-                        </div>
-                      </button>
-                    </div>
-                    
-                    <div className="mb-2">
-                      <div className="flex items-baseline justify-between">
-                        <div className="flex items-baseline gap-1">
-                          <span className="text-xl font-bold text-[#10052F] dark:text-white">
-                            {remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation}
-                          </span>
-                          <span className="text-xs text-muted-foreground">Open Tasks</span>
-                        </div>
-                        <span className="text-xs font-semibold text-red-500">1 critical</span>
-                      </div>
-                    </div>
-                    
-                    {/* Single segmented progress bar - centered vertically */}
-                    <div className="flex-1 flex items-center">
-                      {(() => {
-                        const total = remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed;
-                        if (total === 0) return null;
-                        
-                        const segments = [
-                          { label: "Open", value: remediationTasksCounts.open, color: "bg-red-500" },
-                          { label: "In Progress", value: remediationTasksCounts.inProgress, color: "bg-amber-500" },
-                          { label: "Validation", value: remediationTasksCounts.validation, color: "bg-blue-500" },
-                          { label: "Closed", value: remediationTasksCounts.closed, color: "bg-green-500" },
-                        ];
-                        
-                        return (
-                          <div className="w-full">
-                            {/* Progress bar */}
-                            <div className="flex h-2.5 rounded-full overflow-hidden mb-1.5 shadow-sm">
-                              {segments.map((segment, idx) => {
-                                const percentage = total > 0 ? (segment.value / total) * 100 : 0;
-                                return (
-                                  <div
-                                    key={idx}
-                                    className={segment.color}
-                                    style={{ width: `${percentage}%` }}
-                                  />
-                                );
-                              })}
-                            </div>
-                            {/* Legend */}
-                            <div className="flex flex-wrap gap-x-3 gap-y-1">
-                              {segments.map((segment, idx) => (
-                                <div key={idx} className="flex items-center gap-1">
-                                  <div className={`w-2.5 h-2.5 rounded-sm ${segment.color}`} />
-                                  <span className="text-[9px] font-medium text-muted-foreground">
-                                    {segment.value} {segment.label}
-                                  </span>
-                                </div>
-                              ))}
-                            </div>
+                {/* Bottom row: Remediation Tasks | Challenges */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1" style={{ minHeight: '180px' }}>
+                  {/* Remediation Tasks Card */}
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[180px]">
+                    <CardContent className="p-2.5 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
+                            <CheckSquare className="w-3 h-3 text-primary" />
                           </div>
-                        );
-                      })()}
-                    </div>
-                    
-                    <div className="border-t border-border mt-auto pt-1.5">
-                      <p className="text-[8px] text-muted-foreground/70 italic">
-                        Track remediation progress. Target zero open items.
-                      </p>
-                      <p className="text-[8px] text-muted-foreground/50 italic mt-0.5">
-                        How to read: Bar shows task lifecycle. Red=open, orange=in progress, blue=validation, green=closed.
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                            REMEDIATION TASKS
+                          </span>
+                        </div>
+                        <button 
+                          onClick={() => togglePanel('remediation', remediationRef)}
+                          className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
+                        >
+                          {expandedPanel === 'remediation' ? 'COLLAPSE' : 'EXPAND'}
+                          <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                            <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'remediation' && "rotate-180")} />
+                          </div>
+                        </button>
+                      </div>
+                      
+                      <div className="mb-2">
+                        <div className="flex items-baseline justify-between">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-xl font-bold text-[#10052F] dark:text-white">
+                              {remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation}
+                            </span>
+                            <span className="text-xs text-muted-foreground">Open Tasks</span>
+                          </div>
+                          <span className="text-xs font-semibold text-red-500">1 critical</span>
+                        </div>
+                      </div>
+                      
+                      {/* Single segmented progress bar - centered vertically */}
+                      <div className="flex-1 flex items-center">
+                        {(() => {
+                          const total = remediationTasksCounts.open + remediationTasksCounts.inProgress + remediationTasksCounts.validation + remediationTasksCounts.closed;
+                          if (total === 0) return null;
+                          
+                          const segments = [
+                            { label: "Open", value: remediationTasksCounts.open, color: "bg-red-500" },
+                            { label: "In Progress", value: remediationTasksCounts.inProgress, color: "bg-amber-500" },
+                            { label: "Validation", value: remediationTasksCounts.validation, color: "bg-blue-500" },
+                            { label: "Closed", value: remediationTasksCounts.closed, color: "bg-green-500" },
+                          ];
+                          
+                          return (
+                            <div className="w-full">
+                              {/* Progress bar */}
+                              <div className="flex h-2.5 rounded-full overflow-hidden mb-1.5 shadow-sm">
+                                {segments.map((segment, idx) => {
+                                  const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                                  return (
+                                    <div
+                                      key={idx}
+                                      className={segment.color}
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  );
+                                })}
+                              </div>
+                              {/* Legend */}
+                              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                                {segments.map((segment, idx) => (
+                                  <div key={idx} className="flex items-center gap-1">
+                                    <div className={`w-2.5 h-2.5 rounded-sm ${segment.color}`} />
+                                    <span className="text-[9px] font-medium text-muted-foreground">
+                                      {segment.value} {segment.label}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      
+                      <div className="border-t border-border mt-auto pt-1.5">
+                        <p className="text-[8px] text-muted-foreground/70 italic">
+                          Track remediation progress. Target zero open items.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+
+                  {/* Challenges Card */}
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[180px]">
+                    <CardContent className="p-2.5 h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-1">
+                        <div className="flex items-center gap-2">
+                          <div className="w-6 h-6 rounded-full bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 flex items-center justify-center">
+                            <MessageSquareWarning className="w-3 h-3 text-orange-500" />
+                          </div>
+                          <span className="text-[10px] font-bold text-[#10052F] dark:text-white uppercase tracking-wide">
+                            CHALLENGES
+                          </span>
+                        </div>
+                        <button 
+                          onClick={() => togglePanel('challenges', remediationRef)}
+                          className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
+                        >
+                          {expandedPanel === 'challenges' ? 'COLLAPSE' : 'EXPAND'}
+                          <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                            <ChevronDown className={cn("w-3 h-3 transition-transform duration-200", expandedPanel === 'challenges' && "rotate-180")} />
+                          </div>
+                        </button>
+                      </div>
+                      
+                      <div className="mb-2">
+                        <div className="flex items-baseline justify-between">
+                          <div className="flex items-baseline gap-1">
+                            <span className="text-xl font-bold text-[#10052F] dark:text-white">
+                              {challengesCounts.open + challengesCounts.inProgress}
+                            </span>
+                            <span className="text-xs text-muted-foreground">Pending Response</span>
+                          </div>
+                          <span className="text-xs font-semibold text-orange-500">2 urgent</span>
+                        </div>
+                      </div>
+                      
+                      {/* Single segmented progress bar - centered vertically */}
+                      <div className="flex-1 flex items-center">
+                        {(() => {
+                          const total = challengesCounts.total;
+                          if (total === 0) return null;
+                          
+                          const segments = [
+                            { label: "Open", value: challengesCounts.open, color: "bg-red-500" },
+                            { label: "In Progress", value: challengesCounts.inProgress, color: "bg-amber-500" },
+                            { label: "Resolved", value: challengesCounts.resolved, color: "bg-green-500" },
+                          ];
+                          
+                          return (
+                            <div className="w-full">
+                              {/* Progress bar */}
+                              <div className="flex h-2.5 rounded-full overflow-hidden mb-1.5 shadow-sm">
+                                {segments.map((segment, idx) => {
+                                  const percentage = total > 0 ? (segment.value / total) * 100 : 0;
+                                  return (
+                                    <div
+                                      key={idx}
+                                      className={segment.color}
+                                      style={{ width: `${percentage}%` }}
+                                    />
+                                  );
+                                })}
+                              </div>
+                              {/* Legend */}
+                              <div className="flex flex-wrap gap-x-3 gap-y-1">
+                                {segments.map((segment, idx) => (
+                                  <div key={idx} className="flex items-center gap-1">
+                                    <div className={`w-2.5 h-2.5 rounded-sm ${segment.color}`} />
+                                    <span className="text-[9px] font-medium text-muted-foreground">
+                                      {segment.value} {segment.label}
+                                    </span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </div>
+                      
+                      <div className="border-t border-border mt-auto pt-1.5">
+                        <p className="text-[8px] text-muted-foreground/70 italic">
+                          Respond to 2nd line challenges on your risk assessments.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
               </div>
             </div>
