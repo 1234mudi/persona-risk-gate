@@ -64,7 +64,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent position="top" layout="flex" className="max-w-lg !p-0 !gap-0 overflow-hidden">
+      <DialogContent position="top" layout="flex" className="max-w-lg !p-0 !gap-0 overflow-hidden max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-4rem)]">
         <DialogHeader className="p-6 pb-4 shrink-0">
           <DialogTitle className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
@@ -82,7 +82,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
         {/* Scrollable Content Area */}
         <div className="flex-1 overflow-y-auto min-h-0">
           {/* Full Edit Access Toggle */}
-          <div className="mx-6 mb-4 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
+          <div className="mx-6 mb-3 p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-200 dark:border-blue-800">
             <div className="flex items-center justify-between">
               <div>
                 <div className="font-medium text-blue-900 dark:text-blue-100">Collaborators can edit the full assessment form</div>
@@ -104,7 +104,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
           </div>
 
           {/* Select Collaborators Section */}
-          <div className="mx-6 mb-4">
+          <div className="mx-6 mb-3">
             <Card className="border shadow-sm">
               <div className="p-4 border-b">
                 <div className="flex items-center justify-between">
@@ -152,7 +152,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
           </div>
 
           {/* Current Access Section */}
-          <div className="mx-6 mb-6">
+          <div className="mx-6 mb-4">
             <Card className="border shadow-sm bg-amber-50/50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-800">
               <div className="p-4">
                 <div className="flex items-center justify-between mb-3">
@@ -181,7 +181,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
         </div>
 
         {/* Footer Buttons - Fixed at bottom */}
-        <div className="flex items-center justify-end gap-3 p-6 pt-4 border-t bg-muted/30 shrink-0">
+        <div className="flex items-center justify-end gap-3 p-4 border-t bg-muted/30 shrink-0">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
