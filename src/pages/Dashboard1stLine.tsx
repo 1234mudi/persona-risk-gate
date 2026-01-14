@@ -12,6 +12,7 @@ import { RiskAssessmentOverviewModal1stLine } from "@/components/RiskAssessmentO
 import { AIDocumentAssessmentModal } from "@/components/AIDocumentAssessmentModal";
 import { HistoricalAssessmentsModal } from "@/components/HistoricalAssessmentsModal";
 import { LossEventDetailsModal } from "@/components/LossEventDetailsModal";
+import ManageCollaboratorsModal from "@/components/ManageCollaboratorsModal";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -355,13 +356,17 @@ const Dashboard1stLine = () => {
 
   const [actionDialog, setActionDialog] = useState<{
     open: boolean;
-    type: "reassign" | "collaborate" | "reassess" | null;
+    type: "reassign" | "reassess" | null;
     riskId: string | null;
   }>({
     open: false,
     type: null,
     riskId: null,
   });
+
+  // Separate state for collaborators modal
+  const [collaboratorsModalOpen, setCollaboratorsModalOpen] = useState(false);
+  const [collaboratorsRiskId, setCollaboratorsRiskId] = useState<string | null>(null);
 
   const [riskData, setRiskData] = useState<RiskData[]>(() => getInitialRiskDataCopy() as RiskData[]);
 
@@ -1009,9 +1014,7 @@ const Dashboard1stLine = () => {
   };
 
   const handleActionSubmit = () => {
-    const actionName = actionDialog.type === "reassign" ? "Reassignment" : 
-                       actionDialog.type === "collaborate" ? "Collaboration request" : 
-                       "Reassessment";
+    const actionName = actionDialog.type === "reassign" ? "Reassignment" : "Reassessment";
     toast.success(`${actionName} completed successfully`);
     setActionDialog({ open: false, type: null, riskId: null });
   };
@@ -3518,7 +3521,10 @@ const Dashboard1stLine = () => {
                       size="sm" 
                       variant="outline"
                       className="h-8 border-primary/50 text-primary hover:bg-primary/10 rounded-none"
-                      onClick={() => setActionDialog({ open: true, type: "collaborate", riskId: Array.from(selectedRisks).join(",") })}
+                      onClick={() => {
+                        setCollaboratorsRiskId(Array.from(selectedRisks).join(","));
+                        setCollaboratorsModalOpen(true);
+                      }}
                     >
                       <UsersIcon className="w-4 h-4 mr-1.5" />
                       Collaborate
@@ -4344,21 +4350,17 @@ const Dashboard1stLine = () => {
           <DialogHeader>
             <DialogTitle>
               {actionDialog.type === "reassign" && "Reassign Assessors"}
-              {actionDialog.type === "collaborate" && "Manage Collaborators"}
               {actionDialog.type === "reassess" && "Request Reassessment"}
             </DialogTitle>
             <DialogDescription>
               {actionDialog.type === "reassign" && `Update assessors for ${actionDialog.riskId?.split(",").length || 1} selected risk${(actionDialog.riskId?.split(",").length || 1) > 1 ? "s" : ""}`}
-              {actionDialog.type === "collaborate" && `Manage collaborators for ${actionDialog.riskId?.split(",").length || 1} selected risk${(actionDialog.riskId?.split(",").length || 1) > 1 ? "s" : ""}`}
               {actionDialog.type === "reassess" && "Request a reassessment of this risk"}
             </DialogDescription>
           </DialogHeader>
           <div className="py-4 space-y-4">
             {/* Current Assignees */}
             <div>
-              <Label className="text-sm font-medium">
-                {actionDialog.type === "collaborate" ? "Current Collaborators" : "Current Assessors"}
-              </Label>
+              <Label className="text-sm font-medium">Current Assessors</Label>
               <div className="mt-3 space-y-2">
                 {actionDialog.riskId?.split(",").slice(0, 3).map((riskId) => {
                   const risk = riskData.find(r => r.id === riskId.trim());
@@ -4399,7 +4401,7 @@ const Dashboard1stLine = () => {
 
             {/* Add New User */}
             <div>
-              <Label>{actionDialog.type === "collaborate" ? "Add Collaborator" : "Add/Replace Assessor"}</Label>
+              <Label>Add/Replace Assessor</Label>
               <Select>
                 <SelectTrigger className="mt-2">
                   <SelectValue placeholder="Choose a user..." />
@@ -4426,12 +4428,18 @@ const Dashboard1stLine = () => {
             <Button variant="outline" onClick={() => setActionDialog({ open: false, type: null, riskId: null })}>
               Cancel
             </Button>
-            <Button onClick={handleActionSubmit}>
-              {actionDialog.type === "collaborate" ? "Add Collaborator" : "Update Assessors"}
-            </Button>
+            <Button onClick={handleActionSubmit}>Update Assessors</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Manage Collaborators Modal */}
+      <ManageCollaboratorsModal
+        open={collaboratorsModalOpen}
+        onOpenChange={setCollaboratorsModalOpen}
+        riskId={collaboratorsRiskId}
+        riskCount={collaboratorsRiskId?.split(",").length || 1}
+      />
 
       {/* Metric Details Dialog */}
       <Dialog open={metricDetailsOpen} onOpenChange={setMetricDetailsOpen}>
