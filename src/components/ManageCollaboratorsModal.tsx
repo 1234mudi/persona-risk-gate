@@ -64,7 +64,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-lg p-0 gap-0 overflow-hidden flex flex-col max-h-[90vh]">
+      <DialogContent className="max-w-lg p-0 sm:p-0 gap-0 overflow-y-auto flex flex-col max-h-[calc(100dvh-2rem)]">
         <DialogHeader className="p-6 pb-4 shrink-0">
           <DialogTitle className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
@@ -112,7 +112,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
                   <Badge className="bg-purple-600 text-white">{selectedCollaborators.length} selected</Badge>
                 </div>
               </div>
-              <ScrollArea className="max-h-[180px]">
+              <ScrollArea className="max-h-[min(180px,25dvh)]">
                 <div className="p-2 space-y-1">
                   {availableCollaborators.map((c) => (
                     <div 
@@ -181,7 +181,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
         </div>
 
         {/* Footer Buttons - Fixed at bottom */}
-        <div className="flex items-center justify-end gap-3 p-6 pt-4 border-t bg-muted/30">
+        <div className="flex items-center justify-end gap-3 p-6 pt-4 border-t bg-muted/30 shrink-0">
           <Button variant="outline" onClick={handleClose}>
             Cancel
           </Button>
