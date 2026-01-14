@@ -1722,18 +1722,6 @@ const Dashboard1stLine = () => {
               <CheckCircle className="w-3 h-3" />
               <span>View Completed Assessments</span>
             </button>
-            <span className="text-gray-400 dark:text-gray-500">|</span>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <a href="/downloads/sample-risk-import-data.csv" download className="flex items-center gap-1 text-gray-500 dark:text-gray-400 hover:underline text-xs italic">
-                  <FlaskConical className="w-3 h-3" />
-                  <span>Download Sample Risk Data (for AI document upload)</span>
-                </a>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Download sample risk assessment data to test the Risk Assessment Upload feature</p>
-              </TooltipContent>
-            </Tooltip>
           </div>
           
           {/* Action Buttons - Right side */}
