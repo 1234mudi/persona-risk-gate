@@ -1707,8 +1707,8 @@ const Dashboard1stLine = () => {
               onClick={() => setAiDocumentModalOpen(true)}
               className="h-7 text-xs rounded-none border-primary text-primary hover:bg-primary/10 gap-1.5"
             >
-              <FileText className="w-3.5 h-3.5" />
-              Risk Assessment Upload
+                <FileText className="w-3.5 h-3.5" />
+                Analyze and Upload
             </Button>
             
             {/* Summarize and Export Button */}
