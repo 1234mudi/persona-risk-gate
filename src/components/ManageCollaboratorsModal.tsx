@@ -64,7 +64,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent position="top" layout="flex" className="max-w-lg !p-0 !gap-0 overflow-hidden max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-4rem)]">
+      <DialogContent position="top" layout="flex" className="max-w-lg !p-0 !gap-0 overflow-hidden">
         <DialogHeader className="p-6 pb-4 shrink-0">
           <DialogTitle className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">
@@ -112,7 +112,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
                   <Badge className="bg-purple-600 text-white">{selectedCollaborators.length} selected</Badge>
                 </div>
               </div>
-              <ScrollArea className="max-h-[min(180px,25dvh)]">
+              <ScrollArea className="max-h-[min(160px,20dvh)]">
                 <div className="p-2 space-y-1">
                   {availableCollaborators.map((c) => (
                     <div 
