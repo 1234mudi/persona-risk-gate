@@ -2020,7 +2020,7 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Analysis badge + Status breakdown with bar */}
-                      <div className="flex-1 flex flex-col justify-center py-2">
+                      <div className="mt-4">
                         <div className="flex items-center justify-center gap-3 mb-4 bg-primary/5 px-4 py-2.5 rounded-md border border-primary/20 w-full">
                           <Sparkles className="w-4 h-4 text-primary" />
                           <span className="text-xs text-primary font-medium">{lossEventsStats.analyzedCount}/{lossEventsStats.totalCount} AI analyzed</span>
@@ -2028,7 +2028,7 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Status breakdown with bar */}
-                      <div className="mt-auto pt-2">
+                      <div className="mt-3">
                         {(() => {
                           const pending = lossEventsData.filter(e => e.status === "Pending").length;
                           const review = lossEventsData.filter(e => e.status === "Under Review" || e.status === "Escalated").length;
@@ -2066,7 +2066,7 @@ const Dashboard1stLine = () => {
                         })()}
                       </div>
                       
-                      <div className="border-t border-border mt-3 pt-2">
+                      <div className="border-t border-border mt-4 pt-2">
                         <p className="text-[9px] text-muted-foreground/70 italic">
                           Click expand to view events with AI root cause analysis.
                         </p>
