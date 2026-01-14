@@ -260,20 +260,6 @@ const AssessmentCard = ({
                   {primaryCta.icon}
                   <span className="ml-1">{primaryCta.label}</span>
                 </Button>
-                
-                {/* Assess Section Button */}
-                <Button 
-                  size="sm"
-                  variant="outline"
-                  className="text-[11px] h-7 px-2.5 bg-primary/5 hover:bg-primary/10 border-primary/30"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleNavigate(e);
-                  }}
-                >
-                  <FileText className="w-3.5 h-3.5 text-primary" />
-                  <span className="ml-1">Assess Section</span>
-                </Button>
               </div>
             </>
           )}
