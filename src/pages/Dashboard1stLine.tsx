@@ -122,6 +122,11 @@ const Dashboard1stLine = () => {
   const [showCompletedTasks, setShowCompletedTasks] = useState(false);
   const remediationRef = useRef<HTMLDivElement>(null);
   
+  // Challenges state
+  const [challengesSearchQuery, setChallengesSearchQuery] = useState("");
+  const [showResolvedChallenges, setShowResolvedChallenges] = useState(false);
+  const challengesRef = useRef<HTMLDivElement>(null);
+  
   // Unified Loss Events with Root Cause data
   const [expandedLossEventRows, setExpandedLossEventRows] = useState<Set<string>>(new Set());
   
@@ -215,6 +220,70 @@ const Dashboard1stLine = () => {
       status: "Closed",
       date: "Dec 28, 2024",
       rootCause: null // No root cause analysis performed yet
+    }
+  ];
+  
+  // Challenges data from 2nd Line
+  const challengesData = [
+    {
+      id: "CH-001",
+      description: "Residual risk rating appears underestimated given recent loss events",
+      affectedRisk: "Cybersecurity Threat",
+      riskId: "R-001",
+      raisedBy: "Sarah Chen",
+      raisedDate: "Jan 10, 2025",
+      dueDate: "Jan 17, 2025",
+      isOverdue: false,
+      isUrgent: true,
+      status: "Open"
+    },
+    {
+      id: "CH-002", 
+      description: "Control effectiveness assessment lacks supporting evidence",
+      affectedRisk: "Third-Party Vendor Risk",
+      riskId: "R-002",
+      raisedBy: "Michael Torres",
+      raisedDate: "Jan 08, 2025",
+      dueDate: "Jan 12, 2025",
+      isOverdue: true,
+      isUrgent: true,
+      status: "Open"
+    },
+    {
+      id: "CH-003",
+      description: "Risk taxonomy mapping needs clarification",
+      affectedRisk: "Regulatory Compliance Risk",
+      riskId: "R-003",
+      raisedBy: "Sarah Chen",
+      raisedDate: "Jan 05, 2025",
+      dueDate: "Jan 15, 2025",
+      isOverdue: false,
+      isUrgent: false,
+      status: "In Progress"
+    },
+    {
+      id: "CH-004",
+      description: "Inherent risk likelihood score conflicts with historical data",
+      affectedRisk: "Operational Process Failure",
+      riskId: "R-004",
+      raisedBy: "Emily Watson",
+      raisedDate: "Jan 03, 2025",
+      dueDate: "Jan 10, 2025",
+      isOverdue: true,
+      isUrgent: false,
+      status: "In Progress"
+    },
+    {
+      id: "CH-005",
+      description: "Missing documentation for key risk indicator thresholds",
+      affectedRisk: "Cybersecurity Threat",
+      riskId: "R-001",
+      raisedBy: "Michael Torres",
+      raisedDate: "Dec 20, 2024",
+      dueDate: "Jan 05, 2025",
+      isOverdue: false,
+      isUrgent: false,
+      status: "Resolved"
     }
   ];
   
@@ -2361,7 +2430,7 @@ const Dashboard1stLine = () => {
                           </span>
                         </div>
                         <button 
-                          onClick={() => togglePanel('challenges', remediationRef)}
+                          onClick={() => togglePanel('challenges', challengesRef)}
                           className="flex items-center gap-2 text-[10px] text-muted-foreground hover:text-foreground uppercase tracking-wide cursor-pointer"
                         >
                           {expandedPanel === 'challenges' ? 'COLLAPSE' : 'EXPAND'}
@@ -3366,6 +3435,146 @@ const Dashboard1stLine = () => {
                             <Eye className="w-4 h-4 text-muted-foreground" />
                           </Button>
                         </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Challenges Expanded Panel */}
+        {expandedPanel === 'challenges' && (
+          <Card ref={challengesRef} className="border border-border/50 shadow-md bg-card scroll-mt-24 rounded-none">
+            <CardContent className="p-4">
+              {/* Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <button 
+                    onClick={() => setExpandedPanel(null)}
+                    className="p-1 hover:bg-muted rounded"
+                  >
+                    <ChevronUp className="w-4 h-4 text-muted-foreground" />
+                  </button>
+                  <div className="w-8 h-8 rounded-full bg-orange-100 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-700 flex items-center justify-center">
+                    <MessageSquareWarning className="w-4 h-4 text-orange-500" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground">2nd Line Challenges</h3>
+                  <Badge variant="outline" className="text-xs">{challengesData.filter(c => c.status !== 'Resolved').length} pending</Badge>
+                  <Badge className="text-xs bg-orange-500 text-white">{challengesData.filter(c => c.isUrgent && c.status !== 'Resolved').length} urgent</Badge>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setExpandedPanel(null)}
+                  className="h-8 w-8 p-0"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+
+              {/* Info Banner */}
+              <div className="bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 rounded-none p-3 mb-4 flex items-center gap-2">
+                <MessageSquareWarning className="w-4 h-4 text-orange-600 dark:text-orange-400 flex-shrink-0" />
+                <span className="text-sm text-orange-700 dark:text-orange-300">
+                  2nd Line has raised challenges on your risk assessments. Review and respond to maintain assessment quality.
+                </span>
+              </div>
+
+              {/* Filter Row */}
+              <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
+                <div className="relative w-64">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search challenges..."
+                    value={challengesSearchQuery}
+                    onChange={(e) => setChallengesSearchQuery(e.target.value)}
+                    className="pl-9 h-9 text-sm"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <Checkbox 
+                      id="showResolvedChallenges" 
+                      checked={showResolvedChallenges}
+                      onCheckedChange={(checked) => setShowResolvedChallenges(!!checked)}
+                    />
+                    <Label htmlFor="showResolvedChallenges" className="text-xs text-foreground cursor-pointer">
+                      Show resolved
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Challenges Table */}
+              <Table>
+                <TableHeader>
+                  <TableRow className="hover:bg-transparent">
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Challenge ID</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Description</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Affected Risk</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Raised By</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Due Date</TableHead>
+                    <TableHead className="text-xs font-semibold uppercase text-foreground py-2 px-3">Status</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {challengesData
+                    .filter(challenge => {
+                      if (!showResolvedChallenges && challenge.status === 'Resolved') return false;
+                      if (!challengesSearchQuery.trim()) return true;
+                      const query = challengesSearchQuery.toLowerCase();
+                      return challenge.id.toLowerCase().includes(query) || 
+                             challenge.description.toLowerCase().includes(query) ||
+                             challenge.affectedRisk.toLowerCase().includes(query);
+                    })
+                    .map((challenge) => (
+                    <TableRow key={challenge.id} className="hover:bg-muted/50">
+                      <TableCell className="text-xs font-medium text-primary py-2 px-3">
+                        {challenge.id}
+                      </TableCell>
+                      <TableCell className="py-2 px-3 max-w-md">
+                        <p className="text-xs font-medium text-foreground">{challenge.description}</p>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div>
+                          <p className="text-xs font-medium text-success">{challenge.affectedRisk}</p>
+                          <p className="text-[10px] text-muted-foreground">{challenge.riskId}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div>
+                          <p className="text-xs text-foreground">{challenge.raisedBy}</p>
+                          <p className="text-[10px] text-muted-foreground">{challenge.raisedDate}</p>
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs text-foreground">{challenge.dueDate}</span>
+                          {challenge.isOverdue && (
+                            <Badge className="text-[10px] bg-red-500 text-white">Overdue</Badge>
+                          )}
+                          {challenge.isUrgent && !challenge.isOverdue && (
+                            <Badge className="text-[10px] bg-orange-500 text-white">Urgent</Badge>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell className="py-2 px-3">
+                        <Badge 
+                          variant="outline" 
+                          className={cn(
+                            "text-[10px] font-medium flex items-center gap-1 w-fit",
+                            challenge.status === "Open" && "border-red-200 bg-white dark:bg-transparent text-red-600",
+                            challenge.status === "In Progress" && "border-amber-200 bg-white dark:bg-transparent text-amber-600",
+                            challenge.status === "Resolved" && "border-green-200 bg-green-100 dark:bg-green-900/20 text-green-700"
+                          )}
+                        >
+                          {challenge.status === "Open" && <AlertTriangle className="w-3 h-3" />}
+                          {challenge.status === "In Progress" && <Clock className="w-3 h-3" />}
+                          {challenge.status === "Resolved" && <CheckCircle className="w-3 h-3" />}
+                          {challenge.status}
+                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))}
