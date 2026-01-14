@@ -1708,7 +1708,7 @@ const Dashboard1stLine = () => {
               className="h-7 text-xs rounded-none border-primary text-primary hover:bg-primary/10 gap-1.5"
             >
                 <FileText className="w-3.5 h-3.5" />
-                Analyze and Upload
+                AI-Assisted Risk Upload
             </Button>
             
             {/* Summarize and Export Button */}
