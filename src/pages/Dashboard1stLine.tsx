@@ -1814,11 +1814,11 @@ const Dashboard1stLine = () => {
           const criticalHighTotal = inherentRiskCounts.critical + inherentRiskCounts.high;
 
           return (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 mb-4" style={{ minHeight: 'calc(100vh - 180px)' }}>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 mb-3">
               {/* Left Column - 50% */}
-              <div className="flex flex-col gap-3 h-full">
+              <div className="flex flex-col gap-2 h-full">
                 {/* Assessment Status Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[320px]">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[280px]">
                   <CardContent className="p-2.5 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-1.5">
                       <div className="flex items-center gap-2">
@@ -1857,8 +1857,8 @@ const Dashboard1stLine = () => {
                     <div className="flex-1 flex items-center">
                       <div className="flex gap-5 items-center w-full">
                         {/* Donut chart - larger */}
-                        <div className="relative w-20 h-20 flex-shrink-0">
-                          <svg viewBox="0 0 36 36" className="w-20 h-20">
+                        <div className="relative w-16 h-16 flex-shrink-0">
+                          <svg viewBox="0 0 36 36" className="w-16 h-16">
                             {/* Background circle - Gray track for incomplete */}
                             <circle cx="18" cy="18" r="15.9" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                             {/* Progress circle - RED for complete portion */}
@@ -1948,9 +1948,9 @@ const Dashboard1stLine = () => {
 
 
                 {/* Bottom row: Loss Events | Inherent Risk Ratings - side by side */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 sm:gap-3 flex-1" style={{ minHeight: '320px' }}>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 flex-1" style={{ minHeight: '260px' }}>
                   {/* Loss Events & Root Cause Card */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[320px]">
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[260px]">
                     <CardContent className="p-3 h-full flex flex-col">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-2">
@@ -1973,7 +1973,7 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Main stats row */}
-                      <div className="flex items-baseline gap-6 mb-4">
+                      <div className="flex items-baseline gap-6 mb-2">
                         <div>
                           <span className="text-xl font-bold text-[#10052F] dark:text-white">{lossEventsData.length}</span>
                           <span className="text-xs text-muted-foreground ml-1.5">Events</span>
@@ -2043,9 +2043,9 @@ const Dashboard1stLine = () => {
                   </Card>
 
                   {/* Inherent Risk Ratings Card */}
-                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[320px]">
+                  <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-full min-h-[260px]">
                     <CardContent className="p-3 h-full flex flex-col">
-                      <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center justify-between mb-1">
                         <div className="flex items-center gap-2">
                           <div className="w-6 h-6 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center">
                             <AlertTriangle className="w-3 h-3 text-primary" />
@@ -2060,14 +2060,14 @@ const Dashboard1stLine = () => {
                       </div>
                       
                       {/* Critical & High count */}
-                      <div className="mb-4">
-                        <span className="text-xl font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
+                      <div className="mb-2">
+                        <span className="text-lg font-bold text-[#10052F] dark:text-white">{criticalHighTotal}</span>
                         <span className="text-xs text-muted-foreground ml-2">Critical & High</span>
                       </div>
                       
                       {/* Donut chart with legend - centered vertically */}
-                      <div className="flex items-center justify-center gap-8 flex-1">
-                        <div className="relative w-32 h-32 flex-shrink-0">
+                      <div className="flex items-center justify-center gap-6 flex-1">
+                        <div className="relative w-24 h-24 flex-shrink-0">
                           {(() => {
                             const circumference = 2 * Math.PI * 14;
                             const total = inherentRiskCounts.total || 1;
@@ -2078,7 +2078,7 @@ const Dashboard1stLine = () => {
                             const highAngle = highPct * 360;
                             
                             return (
-                              <svg viewBox="0 0 36 36" className="w-32 h-32">
+                              <svg viewBox="0 0 36 36" className="w-24 h-24">
                                 <circle cx="18" cy="18" r="14" fill="none" stroke="#E5E7EB" strokeWidth="3" />
                                 <circle 
                                   cx="18" cy="18" r="14" fill="none" 
@@ -2140,9 +2140,9 @@ const Dashboard1stLine = () => {
               </div>
 
               {/* Right Column - 50% with equal height cards */}
-              <div className="flex flex-col gap-3 h-full">
+              <div className="flex flex-col gap-2 h-full">
                 {/* Control Effectiveness Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[380px] overflow-hidden">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[320px] overflow-hidden">
                   <CardContent className="p-2.5 pb-3 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -2164,8 +2164,8 @@ const Dashboard1stLine = () => {
                     
                     {/* Speedometer gauge - centered */}
                     <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-                      <div className="w-48">
-                        <svg viewBox="0 0 100 55" className="w-48 h-[96px]">
+                      <div className="w-40">
+                        <svg viewBox="0 0 100 55" className="w-40 h-[80px]">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2259,7 +2259,7 @@ const Dashboard1stLine = () => {
                 </Card>
 
                 {/* Remediation Tasks Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[260px]">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none flex-1 min-h-[220px]">
                   <CardContent className="p-2.5 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
