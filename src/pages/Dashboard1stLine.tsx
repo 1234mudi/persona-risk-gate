@@ -2142,7 +2142,7 @@ const Dashboard1stLine = () => {
               {/* Right Column - 50% with equal height cards */}
               <div className="flex flex-col gap-2 h-full">
                 {/* Control Effectiveness Card */}
-                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[270px] overflow-hidden">
+                <Card className="border border-border/50 dark:border-border shadow-sm bg-card rounded-none h-[240px] overflow-hidden">
                   <CardContent className="p-2.5 pb-3 h-full flex flex-col">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
@@ -2157,15 +2157,15 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* "Needing Attention" on its own line */}
-                    <div className="mb-2">
+                    <div className="mb-1">
                       <span className="text-xl font-bold text-[#10052F] dark:text-white">{needsAttention}</span>
                       <span className="text-xs text-muted-foreground ml-2">Needing Attention</span>
                     </div>
                     
                     {/* Speedometer gauge - centered */}
                     <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-                      <div className="w-36">
-                        <svg viewBox="0 0 100 55" className="w-36 h-[72px]">
+                      <div className="w-32">
+                        <svg viewBox="0 0 100 55" className="w-32 h-[60px]">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2203,7 +2203,7 @@ const Dashboard1stLine = () => {
                         </div>
                       </div>
                       <div className="text-center mt-1">
-                        <span className="text-lg font-bold text-success">{effectivenessPercent}%</span>
+                        <span className="text-base font-bold text-success">{effectivenessPercent}%</span>
                         <span className="text-[10px] text-muted-foreground block">Effective</span>
                       </div>
                     </div>
@@ -2211,7 +2211,7 @@ const Dashboard1stLine = () => {
                     {/* Bottom section - pinned */}
                     <div className="mt-auto w-full flex-shrink-0">
                       {/* Horizontal Stacked Bar Chart */}
-                      <div className="w-full h-[7px] flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-2">
+                      <div className="w-full h-[7px] flex rounded-full overflow-hidden shadow-sm bg-gray-200 dark:bg-gray-700 mt-1">
                         <div 
                           className="bg-success h-full" 
                           style={{ width: `${totalControlRisks > 0 ? (effectiveControls / totalControlRisks) * 100 : 0}%` }}
