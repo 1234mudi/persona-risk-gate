@@ -64,7 +64,7 @@ const ManageCollaboratorsModal: React.FC<ManageCollaboratorsModalProps> = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent position="top" className="max-w-lg !p-0 gap-0 overflow-hidden flex flex-col">
+      <DialogContent position="top" layout="flex" className="max-w-lg !p-0 !gap-0 overflow-hidden">
         <DialogHeader className="p-6 pb-4 shrink-0">
           <DialogTitle className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900 flex items-center justify-center">

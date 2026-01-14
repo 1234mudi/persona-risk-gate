@@ -33,16 +33,18 @@ const DialogContent = React.forwardRef<
     fullScreenMobile?: boolean;
     hideCloseButton?: boolean;
     position?: "center" | "top";
+    layout?: "grid" | "flex";
   }
->(({ className, children, fullScreenMobile = false, hideCloseButton = false, position = "center", ...props }, ref) => (
+>(({ className, children, fullScreenMobile = false, hideCloseButton = false, position = "center", layout = "grid", ...props }, ref) => (
   <DialogPortal>
     <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] translate-x-[-50%] z-50 grid w-full max-w-lg gap-4 border bg-background p-4 sm:p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95",
+        "fixed left-[50%] translate-x-[-50%] z-50 w-full max-w-lg gap-4 border bg-background p-4 sm:p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 min-h-0",
+        layout === "flex" ? "flex flex-col" : "grid",
         position === "top"
-          ? "top-4 sm:top-8 translate-y-0 max-h-[calc(100dvh-2rem)] data-[state=closed]:slide-out-to-top-4 data-[state=open]:slide-in-from-top-4"
+          ? "top-4 sm:top-8 bottom-4 sm:bottom-8 translate-y-0 data-[state=closed]:slide-out-to-top-4 data-[state=open]:slide-in-from-top-4"
           : "top-[50%] translate-y-[-50%] data-[state=closed]:slide-out-to-left-1/2 data-[state=closed]:slide-out-to-top-[48%] data-[state=open]:slide-in-from-left-1/2 data-[state=open]:slide-in-from-top-[48%]",
         fullScreenMobile 
           ? "max-h-[100dvh] sm:max-h-[92vh] rounded-none sm:rounded-lg inset-0 sm:inset-auto sm:left-[50%] sm:top-[50%] sm:translate-x-[-50%] sm:translate-y-[-50%]"
