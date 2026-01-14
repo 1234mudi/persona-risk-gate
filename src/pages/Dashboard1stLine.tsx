@@ -2163,9 +2163,9 @@ const Dashboard1stLine = () => {
                     </div>
                     
                     {/* Speedometer gauge - centered */}
-                    <div className="flex-1 flex flex-col items-center justify-center min-h-0">
-                      <div className="w-32">
-                        <svg viewBox="0 0 100 55" className="w-32 h-[60px]">
+                    <div className="flex-1 flex flex-row items-center justify-center gap-3 min-h-0">
+                      <div className="w-28">
+                        <svg viewBox="0 0 100 55" className="w-28 h-[52px]">
                           <defs>
                             <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
                               <stop offset="0%" stopColor="hsl(143 57% 43%)" />
@@ -2197,13 +2197,13 @@ const Dashboard1stLine = () => {
                           />
                           <circle cx="50" cy="50" r="4" fill="hsl(143 57% 43%)" />
                         </svg>
-                        <div className="flex justify-between px-3 -mt-0.5">
+                        <div className="flex justify-between px-2 -mt-0.5">
                           <span className="text-[8px] leading-none text-muted-foreground">0%</span>
                           <span className="text-[8px] leading-none text-muted-foreground">100%</span>
                         </div>
                       </div>
-                      <div className="text-center mt-1">
-                        <span className="text-base font-bold text-success">{effectivenessPercent}%</span>
+                      <div className="text-left">
+                        <span className="text-lg font-bold text-success">{effectivenessPercent}%</span>
                         <span className="text-[10px] text-muted-foreground block">Effective</span>
                       </div>
                     </div>
